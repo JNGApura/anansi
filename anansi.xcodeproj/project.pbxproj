@@ -15,6 +15,7 @@
 		2C70FBD420021793002E97E7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */; };
 		2C70FBDF20021794002E97E7 /* anansiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C70FBDE20021794002E97E7 /* anansiTests.swift */; };
 		2C70FBEA20021794002E97E7 /* anansiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C70FBE920021794002E97E7 /* anansiUITests.swift */; };
+		2C7B601220044CFA00FF5488 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601120044CFA00FF5488 /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		2C70FBE520021794002E97E7 /* anansiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = anansiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C70FBE920021794002E97E7 /* anansiUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = anansiUITests.swift; sourceTree = "<group>"; };
 		2C70FBEB20021794002E97E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2C7B601120044CFA00FF5488 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				2C70FBC720021793002E97E7 /* AppDelegate.swift */,
+				2C7B601120044CFA00FF5488 /* Extensions.swift */,
 				2C70FBC920021793002E97E7 /* FirstViewController.swift */,
 				2C70FBCB20021793002E97E7 /* SecondViewController.swift */,
 				2C70FBCD20021793002E97E7 /* Main.storyboard */,
@@ -265,6 +268,7 @@
 				2C70FBCC20021793002E97E7 /* SecondViewController.swift in Sources */,
 				2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */,
 				2C70FBCA20021793002E97E7 /* FirstViewController.swift in Sources */,
+				2C7B601220044CFA00FF5488 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -431,6 +435,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BHE99ZFAUF;
 				INFOPLIST_FILE = anansi/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.JNGApura.anansi;
@@ -445,6 +450,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BHE99ZFAUF;
 				INFOPLIST_FILE = anansi/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.JNGApura.anansi;

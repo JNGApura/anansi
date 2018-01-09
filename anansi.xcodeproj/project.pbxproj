@@ -8,14 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C70FBC720021793002E97E7 /* AppDelegate.swift */; };
-		2C70FBCA20021793002E97E7 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C70FBC920021793002E97E7 /* FirstViewController.swift */; };
-		2C70FBCC20021793002E97E7 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C70FBCB20021793002E97E7 /* SecondViewController.swift */; };
-		2C70FBCF20021793002E97E7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C70FBCD20021793002E97E7 /* Main.storyboard */; };
 		2C70FBD120021793002E97E7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C70FBD020021793002E97E7 /* Assets.xcassets */; };
 		2C70FBD420021793002E97E7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */; };
 		2C70FBDF20021794002E97E7 /* anansiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C70FBDE20021794002E97E7 /* anansiTests.swift */; };
 		2C70FBEA20021794002E97E7 /* anansiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C70FBE920021794002E97E7 /* anansiUITests.swift */; };
 		2C7B601220044CFA00FF5488 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601120044CFA00FF5488 /* Extensions.swift */; };
+		2C7B601620044F4D00FF5488 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601520044F4D00FF5488 /* TabBarController.swift */; };
+		2C7B60182004665500FF5488 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B60172004665500FF5488 /* ProfileViewController.swift */; };
+		2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B60192004666100FF5488 /* EventViewController.swift */; };
+		2C7B601C2004666A00FF5488 /* ExploreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601B2004666A00FF5488 /* ExploreViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,9 +39,6 @@
 /* Begin PBXFileReference section */
 		2C70FBC420021793002E97E7 /* anansi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = anansi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C70FBC720021793002E97E7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		2C70FBC920021793002E97E7 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
-		2C70FBCB20021793002E97E7 /* SecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
-		2C70FBCE20021793002E97E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2C70FBD020021793002E97E7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2C70FBD320021793002E97E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2C70FBD520021793002E97E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -51,6 +49,10 @@
 		2C70FBE920021794002E97E7 /* anansiUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = anansiUITests.swift; sourceTree = "<group>"; };
 		2C70FBEB20021794002E97E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2C7B601120044CFA00FF5488 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		2C7B601520044F4D00FF5488 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		2C7B60172004665500FF5488 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		2C7B60192004666100FF5488 /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
+		2C7B601B2004666A00FF5488 /* ExploreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,9 +105,10 @@
 			children = (
 				2C70FBC720021793002E97E7 /* AppDelegate.swift */,
 				2C7B601120044CFA00FF5488 /* Extensions.swift */,
-				2C70FBC920021793002E97E7 /* FirstViewController.swift */,
-				2C70FBCB20021793002E97E7 /* SecondViewController.swift */,
-				2C70FBCD20021793002E97E7 /* Main.storyboard */,
+				2C7B601520044F4D00FF5488 /* TabBarController.swift */,
+				2C7B601B2004666A00FF5488 /* ExploreViewController.swift */,
+				2C7B60192004666100FF5488 /* EventViewController.swift */,
+				2C7B60172004665500FF5488 /* ProfileViewController.swift */,
 				2C70FBD020021793002E97E7 /* Assets.xcassets */,
 				2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */,
 				2C70FBD520021793002E97E7 /* Info.plist */,
@@ -240,7 +243,6 @@
 			files = (
 				2C70FBD420021793002E97E7 /* LaunchScreen.storyboard in Resources */,
 				2C70FBD120021793002E97E7 /* Assets.xcassets in Resources */,
-				2C70FBCF20021793002E97E7 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,9 +267,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C70FBCC20021793002E97E7 /* SecondViewController.swift in Sources */,
+				2C7B60182004665500FF5488 /* ProfileViewController.swift in Sources */,
+				2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */,
 				2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */,
-				2C70FBCA20021793002E97E7 /* FirstViewController.swift in Sources */,
+				2C7B601C2004666A00FF5488 /* ExploreViewController.swift in Sources */,
+				2C7B601620044F4D00FF5488 /* TabBarController.swift in Sources */,
 				2C7B601220044CFA00FF5488 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -304,14 +308,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		2C70FBCD20021793002E97E7 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				2C70FBCE20021793002E97E7 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

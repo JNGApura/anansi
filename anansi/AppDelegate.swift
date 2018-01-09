@@ -19,7 +19,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+
+        // Initiate app with tabbar view controller
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = UINavigationController(rootViewController: TabBarController())
+        window?.makeKeyAndVisible()
+        
+        // Add TED color as main color
+        // TO DO: add theme
+        let mainColor : UIColor = UIColor(red: 230/255.0, green: 43/255.0, blue: 30/255.0, alpha: 1.0)
+        UIApplication.shared.delegate?.window??.tintColor = mainColor
+        
+        // Remove shadow below navigation bar
+        UINavigationBar.appearance().shadowImage = UIImage()
+        UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
+        
         return true
     }
 

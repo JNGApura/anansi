@@ -17,6 +17,7 @@
 		2C7B60182004665500FF5488 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B60172004665500FF5488 /* ProfileViewController.swift */; };
 		2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B60192004666100FF5488 /* EventViewController.swift */; };
 		2C7B601C2004666A00FF5488 /* ExploreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601B2004666A00FF5488 /* ExploreViewController.swift */; };
+		2C7B601E2004675C00FF5488 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601D2004675C00FF5488 /* SettingsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		2C7B60172004665500FF5488 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		2C7B60192004666100FF5488 /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
 		2C7B601B2004666A00FF5488 /* ExploreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewController.swift; sourceTree = "<group>"; };
+		2C7B601D2004675C00FF5488 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,9 +108,10 @@
 				2C70FBC720021793002E97E7 /* AppDelegate.swift */,
 				2C7B601120044CFA00FF5488 /* Extensions.swift */,
 				2C7B601520044F4D00FF5488 /* TabBarController.swift */,
-				2C7B601B2004666A00FF5488 /* ExploreViewController.swift */,
 				2C7B60192004666100FF5488 /* EventViewController.swift */,
+				2C7B601B2004666A00FF5488 /* ExploreViewController.swift */,
 				2C7B60172004665500FF5488 /* ProfileViewController.swift */,
+				2C7B601D2004675C00FF5488 /* SettingsViewController.swift */,
 				2C70FBD020021793002E97E7 /* Assets.xcassets */,
 				2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */,
 				2C70FBD520021793002E97E7 /* Info.plist */,
@@ -269,6 +272,7 @@
 			files = (
 				2C7B60182004665500FF5488 /* ProfileViewController.swift in Sources */,
 				2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */,
+				2C7B601E2004675C00FF5488 /* SettingsViewController.swift in Sources */,
 				2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */,
 				2C7B601C2004666A00FF5488 /* ExploreViewController.swift in Sources */,
 				2C7B601620044F4D00FF5488 /* TabBarController.swift in Sources */,

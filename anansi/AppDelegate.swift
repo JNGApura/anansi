@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Initiate app with tabbar view controller
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = UINavigationController(rootViewController: TabBarController())
+        window?.rootViewController = UINavigationController(rootViewController: SettingsViewController()) //TabBarController())
         window?.makeKeyAndVisible()
         
         // Add TED color as main color

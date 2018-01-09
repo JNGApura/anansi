@@ -74,3 +74,40 @@ extension UIFont {
         }
     }
 }
+
+extension UILabel {
+    
+    func formatTextWithLineSpacing(lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, alignment: NSTextAlignment = .left) {
+        
+        guard let labelText = self.text else { return }
+        
+        let style = NSMutableParagraphStyle()
+        style.lineSpacing = lineSpacing
+        style.lineHeightMultiple = lineHeightMultiple
+        style.hyphenationFactor = 1.0
+        style.alignment = alignment
+        
+        let text : NSMutableAttributedString
+        if let labelattributedText = self.attributedText {
+            text = NSMutableAttributedString(attributedString: labelattributedText)
+        } else {
+            text = NSMutableAttributedString(string: labelText)
+        }
+        
+        text.addAttribute(NSAttributedStringKey.paragraphStyle, value:style, range: NSMakeRange(0, text.length))
+        self.attributedText = text
+    }
+    
+    func labelSizeWithString(text: String,fontSize: CGFloat, maxWidth : CGFloat,numberOfLines: Int) -> CGRect{
+        
+        let font = UIFont.systemFont(ofSize: fontSize)//(name: "HelveticaNeue", size: fontSize)!
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: maxWidth, height: CGFloat.greatestFiniteMagnitude))
+        label.numberOfLines = numberOfLines
+        label.font = font
+        label.text = text
+        
+        label.sizeToFit()
+        
+        return label.frame
+    }
+}

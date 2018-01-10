@@ -107,17 +107,8 @@
 		2C70FBC620021793002E97E7 /* anansi */ = {
 			isa = PBXGroup;
 			children = (
-				2C70FBC720021793002E97E7 /* AppDelegate.swift */,
-				2CCE51FC20060E4A00DFC9B1 /* Constants.swift */,
-				2C7B601120044CFA00FF5488 /* Extensions.swift */,
-				2C7B601520044F4D00FF5488 /* TabBarController.swift */,
-				2C7B60192004666100FF5488 /* EventViewController.swift */,
-				2C7B601B2004666A00FF5488 /* ExploreViewController.swift */,
-				2C7B60172004665500FF5488 /* ProfileViewController.swift */,
-				2C7B601D2004675C00FF5488 /* SettingsViewController.swift */,
-				2C70FBD020021793002E97E7 /* Assets.xcassets */,
-				2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */,
-				2C70FBD520021793002E97E7 /* Info.plist */,
+				2CCE51FF2006120400DFC9B1 /* Controllers */,
+				2CCE51FE200611B100DFC9B1 /* SupportFiles */,
 			);
 			path = anansi;
 			sourceTree = "<group>";
@@ -138,6 +129,71 @@
 				2C70FBEB20021794002E97E7 /* Info.plist */,
 			);
 			path = anansiUITests;
+			sourceTree = "<group>";
+		};
+		2CCE51FE200611B100DFC9B1 /* SupportFiles */ = {
+			isa = PBXGroup;
+			children = (
+				2C70FBC720021793002E97E7 /* AppDelegate.swift */,
+				2CCE51FC20060E4A00DFC9B1 /* Constants.swift */,
+				2C7B601120044CFA00FF5488 /* Extensions.swift */,
+				2C70FBD020021793002E97E7 /* Assets.xcassets */,
+				2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */,
+				2C70FBD520021793002E97E7 /* Info.plist */,
+			);
+			path = SupportFiles;
+			sourceTree = "<group>";
+		};
+		2CCE51FF2006120400DFC9B1 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				2CCE52002006127300DFC9B1 /* Event */,
+				2CCE52042006127300DFC9B1 /* Explore */,
+				2CCE52032006127300DFC9B1 /* Onboarding */,
+				2CCE52012006127300DFC9B1 /* Profile */,
+				2CCE52022006127300DFC9B1 /* Settings */,
+				2C7B601520044F4D00FF5488 /* TabBarController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		2CCE52002006127300DFC9B1 /* Event */ = {
+			isa = PBXGroup;
+			children = (
+				2C7B60192004666100FF5488 /* EventViewController.swift */,
+			);
+			path = Event;
+			sourceTree = "<group>";
+		};
+		2CCE52012006127300DFC9B1 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				2C7B60172004665500FF5488 /* ProfileViewController.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		2CCE52022006127300DFC9B1 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				2C7B601D2004675C00FF5488 /* SettingsViewController.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		2CCE52032006127300DFC9B1 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		2CCE52042006127300DFC9B1 /* Explore */ = {
+			isa = PBXGroup;
+			children = (
+				2C7B601B2004666A00FF5488 /* ExploreViewController.swift */,
+			);
+			path = Explore;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

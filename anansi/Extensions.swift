@@ -9,6 +9,20 @@
 import Foundation
 import UIKit
 
+// Bundle extension to extract release & build versions to use in Settings View Controller
+extension Bundle {
+    var releaseVersionNumber: String? {
+        return infoDictionary?["CFBundleShortVersionString"] as? String
+    }
+    var buildVersionNumber: String? {
+        return infoDictionary?["CFBundleVersion"] as? String
+    }
+    var releaseVersionBuildPretty: String {
+        return "Version \(releaseVersionNumber ?? "1.0.0") (\(buildVersionNumber ?? "1.0.0"))"
+    }
+}
+
+// UIFont extension to use of custom font programatically
 struct AppFontName {
     static let regular = "Avenir-Roman" // Cera-Regular
     static let bold = "Avenir-Heavy" // Cera-Bold
@@ -54,6 +68,7 @@ extension UIFont {
         }
     }
     
+    // Override systemFont method by customFont
     class func overrideInitialize() {
         if self == UIFont.self {
             let systemFontMethod = class_getClassMethod(self, #selector(systemFont(ofSize:)))
@@ -75,6 +90,7 @@ extension UIFont {
     }
 }
 
+// UILabel extension to add lineSpacing, paragraphHeight and hyphenationFactor as parameters
 extension UILabel {
     
     func formatTextWithLineSpacing(lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, alignment: NSTextAlignment = .left) {
@@ -98,6 +114,7 @@ extension UILabel {
         self.attributedText = text
     }
     
+    /*
     func labelSizeWithString(text: String,fontSize: CGFloat, maxWidth : CGFloat,numberOfLines: Int) -> CGRect{
         
         let font = UIFont.systemFont(ofSize: fontSize)//(name: "HelveticaNeue", size: fontSize)!
@@ -109,5 +126,5 @@ extension UILabel {
         label.sizeToFit()
         
         return label.frame
-    }
+    }*/
 }

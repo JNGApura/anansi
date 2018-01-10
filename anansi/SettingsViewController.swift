@@ -9,27 +9,17 @@
 import UIKit
 //import SafariServices
 
-extension Bundle {
-    var releaseVersionNumber: String? {
-        return infoDictionary?["CFBundleShortVersionString"] as? String
-    }
-    var buildVersionNumber: String? {
-        return infoDictionary?["CFBundleVersion"] as? String
-    }
-    var releaseVersionBuildPretty: String {
-        return "Version \(releaseVersionNumber ?? "1.0.0") (\(buildVersionNumber ?? "1.0.0"))"
-    }
-}
-
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-
     
+    // Custom initializers
     var tableView: UITableView = UITableView()
     var data = ["Notifications","Allow notifications","Follow us on social media","Facebook","Instagram","Twitter","Linkedin","About","Give us feedback!","TEDxISTAlameda","Privacy policy","Terms & Conditions","","Log out",""]
     var sectionRows = [0,2,7,12]
     var socialMediaRows = [3,4,5,6]
     var socialMediaImages = ["facebook","instagram","twitter","linkedin"]
     
+    
+    // MARK: TableViewDelegate
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -161,10 +151,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    @objc func backAction() -> Void {
-        self.navigationController?.popViewController(animated: true)
-    }
     
+    // MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -197,13 +185,18 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
     }
     
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: User Interaction
     @objc func switchChanged(_ sender : UISwitch!){
         print("The switch is \(sender.isOn ? "ON" : "OFF")")
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    @objc func backAction() -> Void {
+        self.navigationController?.popViewController(animated: true)
     }
     
 }

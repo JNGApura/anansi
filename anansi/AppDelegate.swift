@@ -27,8 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Add TED color as main color
         // TO DO: add theme
-        let mainColor : UIColor = UIColor(red: 230/255.0, green: 43/255.0, blue: 30/255.0, alpha: 1.0)
-        UIApplication.shared.delegate?.window??.tintColor = mainColor
+        UIApplication.shared.delegate?.window??.tintColor = Color.primary
         
         // Remove shadow below navigation bar
         UINavigationBar.appearance().shadowImage = UIImage()

@@ -10,8 +10,8 @@ import UIKit
 
 class TabBarController: UITabBarController {
 
+    // Custom initializers
     var itemList = ["Profile", "Event", "Explore"]
-    
     fileprivate lazy var tabBarViewControllers: [UIViewController] = {
         return [
             ProfileViewController(),
@@ -20,6 +20,7 @@ class TabBarController: UITabBarController {
         ]
     }()
     
+    // MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -38,7 +39,7 @@ class TabBarController: UITabBarController {
             vc.title = itemList[pos]
             
             // Updates vc's background color
-            vc.view.backgroundColor = .white
+            vc.view.backgroundColor = Color.background
             
             pos += 1
         }
@@ -49,8 +50,8 @@ class TabBarController: UITabBarController {
         //tabBarItem.setTitleTextAttributes([NSAttributedStringKey.foregroundColor: .red], for: .selected)
         
         // Set the color of inactive tabs
-        tabBar.unselectedItemTintColor = .black
-        tabBarItem.setTitleTextAttributes([NSAttributedStringKey.foregroundColor: UIColor.black], for: .normal)
+        tabBar.unselectedItemTintColor = Color.secondary
+        tabBarItem.setTitleTextAttributes([NSAttributedStringKey.foregroundColor: Color.secondary], for: .normal)
         
         // Remove label to tab bar items
         removeTabBarItemText()
@@ -64,8 +65,7 @@ class TabBarController: UITabBarController {
         // Dispose of any resources that can be recreated.
     }
     
-    // MARK: - TabBarUI
-    
+    // MARK: TabBar layout (UI)
     func removeTabBarItemText() {
         if let items = tabBar.items {
             for item in items {

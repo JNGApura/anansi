@@ -14,7 +14,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     // Custom initializers
     private var tableView : UITableView = UITableView()
     private var items = [TableRow]()
-
+    
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
@@ -32,12 +32,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         // Adds table to view
         view.addSubview(tableView)
         
-        // Fetch data from JSON and assign to items of type [TableRow]
-        guard let data = dataFromFile("SettingsData"), let settingsData = Settings(data: data) else {
-            return
-        }
-        if !settingsData.table.isEmpty {
-            items = settingsData.table
+        // Fetches data (JSON) from database, via Network Manager, to Model
+        NetworkManager.shared.loadSettingsData { [weak self] settings in
+            DispatchQueue.main.async {
+                self!.items = settings.table
+                self!.tableView.reloadData()
+            }
         }
     }
 
@@ -93,12 +93,22 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             cell.textLabel?.text = item.value
             cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 15)
             cell.backgroundColor = Color.tertiary
+            cell.accessoryView = .none
             cell.selectionStyle = .none
             cell.isMultipleTouchEnabled = false
             cell.isUserInteractionEnabled = false
             
         case .normal:
             cell.textLabel?.text = item.value
+            cell.backgroundColor = Color.background
+            
+            if !item.iconUrl!.isEmpty {
+                if let image = UIImage(named: item.iconUrl!) {
+                    cell.imageView!.image = image
+                }
+            } else {
+                cell.imageView!.image = nil
+            }
             
             switch item.action {
             case "toggle"?:
@@ -112,16 +122,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 //cell.isUserInteractionEnabled = false
                 
             case "popup"?:
+                cell.accessoryView = .none
                 cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 15)
                 cell.textLabel?.textColor = Color.primary
-                
-            case "link"?:
-                if let image = UIImage(named: item.iconUrl!) {
-                    cell.imageView!.image = image
-                }
-                cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
-                
+
             default:
+                cell.accessoryView = .none
                 cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
             }
         }
@@ -147,8 +153,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
         // Action is "view", then view controller should be pushed
         } else if item.action == "view" {
-            guard let controller = storyboard?.instantiateViewController(withIdentifier: item.url!) else {
-                print("View controller \(item.url!) not found")
+            guard let url = item.url, let controller = storyboard?.instantiateViewController(withIdentifier: url) else {
+                print("View controller not found")
                 return
             }
             self.navigationController?.pushViewController(controller, animated: true)

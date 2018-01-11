@@ -8,34 +8,18 @@
 
 import Foundation
 
-// Extracts the content from the .json file, and represents it as Data
-public func dataFromFile(_ filename: String) -> Data? {
-    @objc class TestClass: NSObject { }
-    
-    let bundle = Bundle(for: TestClass.self)
-    if let path = bundle.path(forResource: filename, ofType: "json") {
-        return (try? Data(contentsOf: URL(fileURLWithPath: path)))
-    }
-    return nil
-}
-
 // Settings Model
 class Settings {
     var table = [TableRow]()
     
-    init?(data: Data) {
-        do {
-            // I use standard Swift JSONSerialization to keep the project simple
-            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any], let body = json["data"] as? [String: Any] {
-                
-                // Gets row data from JSON and maps into the table object
-                if let table = body["table"] as? [[String: Any]] {
-                    self.table = table.map { TableRow(json: $0)}
-                }
-            }
-        } catch {
-            print("Error deserializing JSON: \(error)")
-            return nil
+    init?(data: [String: AnyObject]?) {
+        guard let body = data else {
+            return
+        }
+        
+        // Gets row data and maps into the table object
+        if let table = body["table"] as? [[String: Any]] {
+            self.table = table.map { TableRow(json: $0)}
         }
     }
 }

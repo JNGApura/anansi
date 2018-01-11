@@ -7,7 +7,25 @@
 		<key>anansi.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>7</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>2C70FBC320021793002E97E7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2C70FBD920021794002E97E7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2C70FBE420021794002E97E7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

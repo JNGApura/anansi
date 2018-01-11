@@ -1,0 +1,102 @@
+{
+    "data": {
+        "id": 1,
+        "table": [
+                 {
+                 "ofType": "section",
+                 "value": "Notifications",
+                 "iconUrl": ""
+                 },
+                 {
+                 "ofType": "normal",
+                 "value": "Allow notifications",
+                 "iconUrl": "",
+                 "action": "toggle"
+                 },
+                 {
+                 "ofType": "section",
+                 "value": "Follow us on social media",
+                 "iconUrl": ""
+                 },
+                 {
+                 "ofType": "normal",
+                 "value": "Facebook",
+                 "iconUrl": "facebook",
+                 "action": "link",
+                 "url": "https://www.facebook.com/tedxistalameda"
+                 },
+                 {
+                 "ofType": "normal",
+                 "value": "Instagram",
+                 "iconUrl": "instagram",
+                 "action": "link",
+                 "url": "https://www.instagram.com/tedxistalameda"
+                 },
+                 {
+                 "ofType": "normal",
+                 "value": "Twitter",
+                 "iconUrl": "twitter",
+                 "action": "link",
+                 "url": "https://twitter.com/tedxistalameda"
+                 },
+                 {
+                 "ofType": "normal",
+                 "value": "LinkedIn",
+                 "iconUrl": "linkedin",
+                 "action": "link",
+                 "url": "https://www.linkedin.com/company/10585070/"
+                 },
+                 {
+                 "ofType": "section",
+                 "value": "About",
+                 "iconUrl": ""
+                 },
+                 {
+                 "ofType": "normal",
+                 "value": "Give us feedback",
+                 "iconUrl": "",
+                 "action": "view",
+                 "url": "feedback"
+                 },
+                 {
+                 "ofType": "normal",
+                 "value": "TEDxISTAlameda",
+                 "iconUrl": "",
+                 "action": "view",
+                 "url": "tedxistalameda"
+                 },
+                 {
+                 "ofType": "normal",
+                 "value": "Privacy Policy",
+                 "iconUrl": "",
+                 "action": "view",
+                 "url": "privacy"
+                 },
+                 {
+                 "ofType": "normal",
+                 "value": "Terms & Conditions",
+                 "iconUrl": "",
+                 "action": "view",
+                 "url": "terms"
+                 },
+                 {
+                 "ofType": "section",
+                 "value": "",
+                 "iconUrl": ""
+                 },
+                 {
+                 "ofType": "normal",
+                 "value": "Log out",
+                 "iconUrl": "",
+                 "action": "popup",
+                 },
+                 {
+                 "ofType": "section",
+                 "value": "",
+                 "iconUrl": ""
+                 }
+                ]
+    },
+    "error": 0,
+    "message": "Success"
+}

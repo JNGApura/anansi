@@ -12,36 +12,31 @@ class TabBarController: UITabBarController {
 
     // Custom initializers
     var itemList = ["Profile", "Event", "Explore"]
-    fileprivate lazy var tabBarViewControllers: [UIViewController] = {
-        return [
-            ProfileViewController(),
-            EventViewController(),
-            ExploreViewController(),
-        ]
-    }()
+    fileprivate var tabBarViewControllers = [UIViewController]()
     
     // MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Add view controllers to tab bar
-        var pos = 0
-        for vc in tabBarViewControllers {
+        for value in itemList {
             
             // Get normal & selected images
-            let itemNormal = UIImage(named: itemList[pos])?.withRenderingMode(.alwaysTemplate)
-            let itemSelected = UIImage(named: itemList[pos] + "_filled")?.withRenderingMode(.alwaysTemplate)
+            let itemNormal = UIImage(named: value)?.withRenderingMode(.alwaysTemplate)
+            let itemSelected = UIImage(named: value + "_filled")?.withRenderingMode(.alwaysTemplate)
+            
+            // Presents view controller from string and adds to the array of viewcontrollers
+            let vc = NSObject.fromClassName(name: value + "ViewController") as! UIViewController
+            tabBarViewControllers.append(vc)
             
             // Creates tabBarItem with title and previous images
-            vc.tabBarItem = UITabBarItem(title: itemList[pos], image: itemNormal, selectedImage: itemSelected)
+            vc.tabBarItem = UITabBarItem(title: value, image: itemNormal, selectedImage: itemSelected)
             
             // Updates vc's title
-            vc.title = itemList[pos]
+            vc.title = value
             
             // Updates vc's background color
             vc.view.backgroundColor = Color.background
-            
-            pos += 1
         }
         viewControllers = tabBarViewControllers
         

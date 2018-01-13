@@ -10,21 +10,28 @@ import Foundation
 
 // Settings Model
 class Settings {
-    var table = [TableRow]()
+    var structure = [TableRow]()
+    var about = [AboutPage]()
     
     init?(data: [String: AnyObject]?) {
         guard let body = data else {
             return
         }
         
-        // Gets row data and maps into the table object
-        if let table = body["table"] as? [[String: Any]] {
-            self.table = table.map { TableRow(json: $0)}
+        // Gets data and maps into the structure object
+        if let structure = body["structure"] as? [[String: Any]] {
+            self.structure = structure.map { TableRow(json: $0)}
         }
+        
+        // Gets data and maps into the about object
+        if let about = body["about"] as? [[String: Any]] {
+            self.about = about.map { AboutPage(json: $0)}
+        }
+        
     }
 }
 
-// Row type initialization
+// TableRow initialization
 class TableRow {
     var ofType: RowType
     var value: String?
@@ -37,7 +44,7 @@ class TableRow {
         self.value = json["value"] as? String
         self.iconUrl = json["iconUrl"] as? String
         self.action = json["action"] as? String
-        if let url = json["url"] as? String {
+        if let url = json["url"] as? String { // to be safe
             self.url = url
         }
     }
@@ -45,4 +52,27 @@ class TableRow {
 enum RowType {
     case normal
     case section
+}
+
+// AboutSection initialization
+class AboutPage {
+    var id: String?
+    var section: [AboutPageSection]?
+    
+    init(json: [String : Any]) {
+        self.id = json["id"] as? String
+        if let section = json["section"] as? [[String: Any]] {
+            self.section = section.map {AboutPageSection (json: $0)}
+        }
+    }
+}
+
+class AboutPageSection {
+    var title: String?
+    var text: String?
+    
+    init(json: [String: Any]){
+        self.title = json["title"] as? String
+        self.text = json["text"] as? String
+    }
 }

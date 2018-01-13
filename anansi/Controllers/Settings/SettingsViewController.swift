@@ -14,6 +14,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     // Custom initializers
     private var tableView : UITableView = UITableView()
     private var items = [TableRow]()
+    private var about = [AboutPage]()
     
     // MARK: View Lifecycle
     
@@ -21,7 +22,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         super.viewDidLoad()
         
         // Sets up navigation bar
-        setupNavigationBarItems(withTitle: "Settings")
+        setupNavigationBarItems(title: "Settings")
         
         // Initialize tableView
         setupTableView()
@@ -35,7 +36,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         // Fetches data (JSON) from database, via Network Manager, to Model
         NetworkManager.shared.loadSettingsData { [weak self] settings in
             DispatchQueue.main.async {
-                self!.items = settings.table
+                self!.items = settings.structure
+                self!.about = settings.about
                 self!.tableView.reloadData()
             }
         }
@@ -47,7 +49,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     // MARK: Layout
     
-    func setupNavigationBarItems(withTitle title: String) {
+    func setupNavigationBarItems(title: String) {
         
         let navigationBar = navigationController?.navigationBar
         navigationBar!.barTintColor = Color.background
@@ -60,9 +62,16 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func setupTableView() {
+        
+        // Constants
+        let screenWidth = self.view.frame.width
+        let screenHeight = self.view.frame.height
+        let statusBarHeight = UIApplication.shared.statusBarFrame.size.height
+        let navigationBarHeight = (self.navigationController?.navigationBar.frame.size.height)!
+        
         tableView.separatorColor = Color.tertiary
         tableView.backgroundColor = Color.tertiary
-        tableView.frame = CGRect(x: 0 ,y: 0 , width:self.view.frame.width, height: self.view.frame.height - UIApplication.shared.statusBarFrame.size.height);
+        tableView.frame = CGRect(x: 0 ,y: 0 , width: screenWidth, height: screenHeight - statusBarHeight - navigationBarHeight);
     }
     
     // MARK: TableViewDataSource
@@ -153,11 +162,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
         // Action is "view", then view controller should be pushed
         } else if item.action == "view" {
-            guard let url = item.url, let controller = storyboard?.instantiateViewController(withIdentifier: url) else {
-                print("View controller not found")
-                return
-            }
-            self.navigationController?.pushViewController(controller, animated: true)
+            let url = item.url
+            presentController(identifier: url!)
         }
         
         // TO DO: add logout action
@@ -192,5 +198,27 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         // Open link inside the app, instead of leaving the app. Needs import SafariServices
         /*let vc = SFSafariViewController(url: url)
          present(vc, animated: true, completion: nil)*/
+    }
+    
+    // Presents view controller from string (did a few tweaks here and there)
+    func presentController(identifier: String){
+        let controller : UIViewController
+        
+        if identifier == "feedback" {
+            controller = FeedbackPagesViewController()
+        } else {
+            
+            var aboutSection = [AboutPageSection]()
+            for item in about {
+                if item.id == identifier {
+                    aboutSection = item.section!
+                }
+            }
+            controller = AboutPages(section: aboutSection)
+            // check with about section the identifier corresponds to
+            // send section to view controller?
+        }
+        
+        self.navigationController?.pushViewController(controller, animated: true)
     }
 }

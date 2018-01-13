@@ -15,14 +15,16 @@ class NetworkManager {
     // Singleton
     static let shared = NetworkManager()
     
-    // Accesses database's child "settings"
+    // Database's child "settings"
     private var settingsDB = Database.database().reference().child("settings")
     
-    // Sets a listener for any changes (DataEventType) to the database reference (asynchronous), triggered every time the data (including any children) changes. The event callback is passed a snapshot containing all data at that location (if that is no data, the value returned is nil).
+    // Sets a listener for any changes (DataEventType) to the database reference (asynchronous), triggered every time the data (including any children) changes.
     func loadSettingsData(onSuccess: @escaping (Settings) -> Void){
+        
+        // The event callback is passed a snapshot containing all data at that location (if that is no data, the value returned is nil).
         settingsDB.observe(DataEventType.value, with: { (snapshot) in
-            if !snapshot.exists() { return }
-            let dict = snapshot.value as? [String : AnyObject]
+            if !snapshot.exists() { return } // just to be safe
+            let dict = snapshot.value as? [String : AnyObject] // snapshot as dictionary of [string: any]
             if let settings = Settings(data: dict) {
                 onSuccess(settings)
             }

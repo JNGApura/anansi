@@ -90,17 +90,27 @@ extension UIFont {
     }
 }
 
-// UILabel extension to add lineSpacing, paragraphHeight and hyphenationFactor as parameters
+// NSObject extension, to get an NSObject from its classname. More information: @ github.com/damienromito/NSObject-FromClassName
+// NOTE: does not handle when NSClassFromString returns nil
+extension NSObject {
+    class func fromClassName(name : String) -> NSObject {
+        let className = Bundle.main.infoDictionary!["CFBundleName"] as! String + "." + name
+        let aClass = NSClassFromString(className) as! UIViewController.Type
+        return aClass.init()
+    }
+}
+
+// UILabel extension to customize lineSpacing, lineHeightMultiple, hyphenationFactor and alignment to label text
 extension UILabel {
     
-    func formatTextWithLineSpacing(lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, alignment: NSTextAlignment = .left) {
+    func formatTextWithLineSpacing(lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, hyphenation: Float = 1.0, alignment: NSTextAlignment = .left) {
         
         guard let labelText = self.text else { return }
         
         let style = NSMutableParagraphStyle()
         style.lineSpacing = lineSpacing
         style.lineHeightMultiple = lineHeightMultiple
-        style.hyphenationFactor = 1.0
+        style.hyphenationFactor = hyphenation
         style.alignment = alignment
         
         let text : NSMutableAttributedString
@@ -127,4 +137,26 @@ extension UILabel {
         
         return label.frame
     }*/
+}
+
+// UITextView extension to customize lineSpacing, lineHeightMultiple, hyphenationFactor and alignment to HTML text
+extension UITextView {
+    
+    func formatHTMLText(htmlText: String, lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, hyphenation: Float = 1.0, alignment: NSTextAlignment = .left) {
+        
+        // style is a NSMutableParagraphStyle object
+        let style = NSMutableParagraphStyle()
+        style.lineSpacing = lineSpacing
+        style.lineHeightMultiple = lineHeightMultiple
+        style.hyphenationFactor = hyphenation
+        style.alignment = alignment
+        
+        // att is a tentative NSMutableAttributeString which converts htmlText (string) to .utf8 (special characters) with DocumentType HTML and Encoding UTF8 (as attributes), adds black color for text
+        let att = try! NSMutableAttributedString(data: htmlText.data(using: .utf8)!, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
+        att.addAttributes([NSAttributedStringKey.paragraphStyle: style,
+                           NSAttributedStringKey.foregroundColor: Color.secondary], range: NSMakeRange(0, att.length))
+        
+        // NSMutableAttributedString is attributed to text
+        self.attributedText = NSMutableAttributedString(attributedString: att)
+    }
 }

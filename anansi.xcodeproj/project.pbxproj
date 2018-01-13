@@ -15,6 +15,9 @@
 		2C7B60182004665500FF5488 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B60172004665500FF5488 /* ProfileViewController.swift */; };
 		2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B60192004666100FF5488 /* EventViewController.swift */; };
 		2C7B601C2004666A00FF5488 /* ExploreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601B2004666A00FF5488 /* ExploreViewController.swift */; };
+		2CA3E0CE200961C2005617A9 /* AboutPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0CD200961C2005617A9 /* AboutPages.swift */; };
+		2CA3E0D0200974B9005617A9 /* FeedbackPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0CF200974B9005617A9 /* FeedbackPages.swift */; };
+		2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */; };
 		2CCE51FD20060E4A00DFC9B1 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE51FC20060E4A00DFC9B1 /* Constants.swift */; };
 		2CCE520B20061CB300DFC9B1 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */; };
 		2CEE5F6C2006ED3100E86365 /* SettingsData.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CEE5F6B2006ED3100E86365 /* SettingsData.json */; };
@@ -57,6 +60,9 @@
 		2C7B60172004665500FF5488 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		2C7B60192004666100FF5488 /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
 		2C7B601B2004666A00FF5488 /* ExploreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewController.swift; sourceTree = "<group>"; };
+		2CA3E0CD200961C2005617A9 /* AboutPages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPages.swift; sourceTree = "<group>"; };
+		2CA3E0CF200974B9005617A9 /* FeedbackPages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPages.swift; sourceTree = "<group>"; };
+		2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPagesViewController.swift; sourceTree = "<group>"; };
 		2CCE51FC20060E4A00DFC9B1 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		2CEE5F6B2006ED3100E86365 /* SettingsData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = SettingsData.json; sourceTree = "<group>"; };
@@ -180,8 +186,11 @@
 			isa = PBXGroup;
 			children = (
 				2CEE5F6B2006ED3100E86365 /* SettingsData.json */,
-				2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */,
 				2CEE5F6D2006F3C100E86365 /* SettingsModel.swift */,
+				2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */,
+				2CA3E0CD200961C2005617A9 /* AboutPages.swift */,
+				2CA3E0CF200974B9005617A9 /* FeedbackPages.swift */,
+				2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -532,6 +541,7 @@
 			files = (
 				2CEE5F6E2006F3C100E86365 /* SettingsModel.swift in Sources */,
 				2C7B60182004665500FF5488 /* ProfileViewController.swift in Sources */,
+				2CA3E0CE200961C2005617A9 /* AboutPages.swift in Sources */,
 				2CEE5F7A2007619300E86365 /* NetworkManager.swift in Sources */,
 				2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */,
 				2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */,
@@ -540,6 +550,8 @@
 				2C7B601220044CFA00FF5488 /* Extensions.swift in Sources */,
 				2CCE51FD20060E4A00DFC9B1 /* Constants.swift in Sources */,
 				2CCE520B20061CB300DFC9B1 /* SettingsViewController.swift in Sources */,
+				2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */,
+				2CA3E0D0200974B9005617A9 /* FeedbackPages.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

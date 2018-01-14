@@ -103,7 +103,7 @@ extension NSObject {
 // UILabel extension to customize lineSpacing, lineHeightMultiple, hyphenationFactor and alignment to label text
 extension UILabel {
     
-    func formatTextWithLineSpacing(lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, hyphenation: Float = 1.0, alignment: NSTextAlignment = .left) {
+    func formatTextWithLineSpacing(lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, hyphenation: Float = 1.0, alignment: NSTextAlignment = .natural) {
         
         guard let labelText = self.text else { return }
         
@@ -142,7 +142,7 @@ extension UILabel {
 // UITextView extension to customize lineSpacing, lineHeightMultiple, hyphenationFactor and alignment to HTML text
 extension UITextView {
     
-    func formatHTMLText(htmlText: String, lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, hyphenation: Float = 1.0, alignment: NSTextAlignment = .left) {
+    func formatHTMLText(htmlText: String, lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, hyphenation: Float = 1.0, alignment: NSTextAlignment = .natural) {
         
         // style is a NSMutableParagraphStyle object
         let style = NSMutableParagraphStyle()

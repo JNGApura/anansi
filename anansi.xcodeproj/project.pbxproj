@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C70FBC720021793002E97E7 /* AppDelegate.swift */; };
-		2C70FBD120021793002E97E7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C70FBD020021793002E97E7 /* Assets.xcassets */; };
 		2C70FBD420021793002E97E7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */; };
 		2C7B601220044CFA00FF5488 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601120044CFA00FF5488 /* Extensions.swift */; };
 		2C7B601620044F4D00FF5488 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601520044F4D00FF5488 /* TabBarController.swift */; };
@@ -18,6 +17,7 @@
 		2CA3E0CE200961C2005617A9 /* AboutPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0CD200961C2005617A9 /* AboutPages.swift */; };
 		2CA3E0D0200974B9005617A9 /* FeedbackPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0CF200974B9005617A9 /* FeedbackPages.swift */; };
 		2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */; };
+		2CA8C4B02009D0330007F067 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2CA8C4AF2009D0330007F067 /* Assets.xcassets */; };
 		2CCE51FD20060E4A00DFC9B1 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE51FC20060E4A00DFC9B1 /* Constants.swift */; };
 		2CCE520B20061CB300DFC9B1 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */; };
 		2CEE5F6C2006ED3100E86365 /* SettingsData.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CEE5F6B2006ED3100E86365 /* SettingsData.json */; };
@@ -50,7 +50,6 @@
 		1C5C16022A37BE4973F0C034 /* Pods-anansiUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-anansiUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-anansiUITests/Pods-anansiUITests.release.xcconfig"; sourceTree = "<group>"; };
 		2C70FBC420021793002E97E7 /* anansi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = anansi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C70FBC720021793002E97E7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		2C70FBD020021793002E97E7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2C70FBD320021793002E97E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2C70FBD520021793002E97E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = anansi/SupportFiles/Info.plist; sourceTree = SOURCE_ROOT; };
 		2C70FBDA20021794002E97E7 /* anansiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = anansiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -63,6 +62,7 @@
 		2CA3E0CD200961C2005617A9 /* AboutPages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPages.swift; sourceTree = "<group>"; };
 		2CA3E0CF200974B9005617A9 /* FeedbackPages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPages.swift; sourceTree = "<group>"; };
 		2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPagesViewController.swift; sourceTree = "<group>"; };
+		2CA8C4AF2009D0330007F067 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2CCE51FC20060E4A00DFC9B1 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		2CEE5F6B2006ED3100E86365 /* SettingsData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = SettingsData.json; sourceTree = "<group>"; };
@@ -137,6 +137,23 @@
 			path = anansi;
 			sourceTree = "<group>";
 		};
+		2CA3E0D320098441005617A9 /* Feedback */ = {
+			isa = PBXGroup;
+			children = (
+				2CA3E0CF200974B9005617A9 /* FeedbackPages.swift */,
+				2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */,
+			);
+			path = Feedback;
+			sourceTree = "<group>";
+		};
+		2CA3E0D420098441005617A9 /* About */ = {
+			isa = PBXGroup;
+			children = (
+				2CA3E0CD200961C2005617A9 /* AboutPages.swift */,
+			);
+			path = About;
+			sourceTree = "<group>";
+		};
 		2CCE51FE200611B100DFC9B1 /* SupportFiles */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,7 +161,7 @@
 				2CEE5F792007619300E86365 /* NetworkManager.swift */,
 				2CCE51FC20060E4A00DFC9B1 /* Constants.swift */,
 				2C7B601120044CFA00FF5488 /* Extensions.swift */,
-				2C70FBD020021793002E97E7 /* Assets.xcassets */,
+				2CA8C4AF2009D0330007F067 /* Assets.xcassets */,
 				2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */,
 				2C70FBD520021793002E97E7 /* Info.plist */,
 				2CEE5F7B20077C4100E86365 /* anansi.entitlements */,
@@ -186,11 +203,10 @@
 			isa = PBXGroup;
 			children = (
 				2CEE5F6B2006ED3100E86365 /* SettingsData.json */,
+				2CA3E0D420098441005617A9 /* About */,
+				2CA3E0D320098441005617A9 /* Feedback */,
 				2CEE5F6D2006F3C100E86365 /* SettingsModel.swift */,
 				2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */,
-				2CA3E0CD200961C2005617A9 /* AboutPages.swift */,
-				2CA3E0CF200974B9005617A9 /* FeedbackPages.swift */,
-				2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -357,8 +373,8 @@
 			files = (
 				2C70FBD420021793002E97E7 /* LaunchScreen.storyboard in Resources */,
 				2CEE5F7620075C0F00E86365 /* GoogleService-Info.plist in Resources */,
+				2CA8C4B02009D0330007F067 /* Assets.xcassets in Resources */,
 				2CEE5F6C2006ED3100E86365 /* SettingsData.json in Resources */,
-				2C70FBD120021793002E97E7 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -718,7 +734,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -736,7 +752,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.JNGApura.anansi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

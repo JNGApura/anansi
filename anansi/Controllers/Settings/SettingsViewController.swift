@@ -12,7 +12,7 @@ import UIKit
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
 
     // Custom initializers
-    private var tableView : UITableView = UITableView()
+    private var tableView = UITableView()
     private var items = [TableRow]()
     private var about = [AboutPage]()
     
@@ -49,7 +49,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     // MARK: Layout
     
-    func setupNavigationBarItems(title: String) {
+    private func setupNavigationBarItems(title: String) {
         
         let navigationBar = navigationController?.navigationBar
         navigationBar!.barTintColor = Color.background
@@ -61,7 +61,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedStringKey.font : UIFont.boldSystemFont(ofSize: 17)], for: .normal)
     }
     
-    func setupTableView() {
+    private func setupTableView() {
         
         // Constants
         let screenWidth = self.view.frame.width
@@ -205,9 +205,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         let controller : UIViewController
         
         if identifier == "feedback" {
-            controller = FeedbackPagesViewController()
+            controller = FeedbackPagesViewController() // PageViewController for "Give us feedback"
         } else {
             
+            // Chooses which section to send to AboutPages, based on item.id
             var aboutSection = [AboutPageSection]()
             for item in about {
                 if item.id == identifier {
@@ -215,8 +216,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
             }
             controller = AboutPages(section: aboutSection)
-            // check with about section the identifier corresponds to
-            // send section to view controller?
         }
         
         self.navigationController?.pushViewController(controller, animated: true)

@@ -10,7 +10,7 @@ import UIKit
 
 enum Color {
 
-    static let primary = UIColor(red: 230/255.0, green: 43/255.0, blue: 30/255.0, alpha: 1.0)
+    static let primary = UIColor.red //UIColor(red: 230/255.0, green: 43/255.0, blue: 30/255.0, alpha: 1.0)
     static let secondary = UIColor.black
     static let tertiary = UIColor(red: 235/255.0, green: 235/255.0, blue: 241/255.0, alpha: 1.0)
     static let background = UIColor.white

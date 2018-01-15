@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "Unhappy.pdf",
+      "filename" : "unhappy.pdf",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Unhappy@2x.pdf",
+      "filename" : "unhappy@2x.pdf",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Unhappy@3x.pdf",
+      "filename" : "unhappy@3x.pdf",
       "scale" : "3x"
     }
   ],

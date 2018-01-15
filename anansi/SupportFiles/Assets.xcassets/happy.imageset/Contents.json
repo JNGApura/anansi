@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "Happy.pdf",
+      "filename" : "happy.pdf",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Happy@2x.pdf",
+      "filename" : "happy@2x.pdf",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Happy@3x.pdf",
+      "filename" : "happy@3x.pdf",
       "scale" : "3x"
     }
   ],

@@ -9,14 +9,12 @@
 import Foundation
 
 // Settings Model
-class Settings {
+struct Settings {
     var structure = [TableRow]()
     var about = [AboutPage]()
     
     init?(data: [String: AnyObject]?) {
-        guard let body = data else {
-            return
-        }
+        guard let body = data else { return }
         
         // Gets data and maps into the structure object
         if let structure = body["structure"] as? [[String: Any]] {
@@ -27,12 +25,11 @@ class Settings {
         if let about = body["about"] as? [[String: Any]] {
             self.about = about.map { AboutPage(json: $0)}
         }
-        
     }
 }
 
 // TableRow initialization
-class TableRow {
+struct TableRow {
     var ofType: RowType
     var value: String?
     var iconUrl: String?
@@ -55,7 +52,7 @@ enum RowType {
 }
 
 // AboutSection initialization
-class AboutPage {
+struct AboutPage {
     var id: String?
     var section: [AboutPageSection]?
     
@@ -67,7 +64,7 @@ class AboutPage {
     }
 }
 
-class AboutPageSection {
+struct AboutPageSection {
     var title: String?
     var text: String?
     

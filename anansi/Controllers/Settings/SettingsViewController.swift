@@ -179,15 +179,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         // TO DO: add notification enable/disable mode
     }
     
-    // Back action
-    @objc func backAction() -> Void {
-        self.navigationController?.popViewController(animated: true)
-    }
-    
     // MARK: Custom functions
     
     // Open URL from a String
-    func openURLfromString(string : String) {
+    private func openURLfromString(string : String) {
         let url = URL(string: string)!
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
@@ -201,7 +196,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     // Presents view controller from string (did a few tweaks here and there)
-    func presentController(identifier: String){
+    private func presentController(identifier: String){
         let controller : UIViewController
         
         if identifier == "feedback" {
@@ -217,7 +212,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }
             controller = AboutPages(section: aboutSection)
         }
-        
         self.navigationController?.pushViewController(controller, animated: true)
     }
 }

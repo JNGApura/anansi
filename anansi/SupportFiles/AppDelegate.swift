@@ -37,6 +37,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().shadowImage = UIImage()
         UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
         
+        // Enable Keyboard accessory view
+        let accessoryView = KeyboardAccessoryToolbar()
+        UITextField.appearance().inputAccessoryView = accessoryView
+        UITextView.appearance().inputAccessoryView = accessoryView
+        
         return true
     }
 

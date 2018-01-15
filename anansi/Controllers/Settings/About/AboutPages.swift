@@ -30,7 +30,6 @@ class AboutPages: UIViewController, UIScrollViewDelegate {
         self.section = section
         super.init(nibName: nil, bundle: nil)
     }
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -83,20 +82,15 @@ class AboutPages: UIViewController, UIScrollViewDelegate {
                 text.formatHTMLText(htmlText: item.text!, lineSpacing: 10, lineHeightMultiple: 1.2, hyphenation: 0, alignment: .left)
                 return text
             }()
-
-            let contentSize = itemText.sizeThatFits(itemText.bounds.size)
-            var frame = itemText.frame
-            frame.size.height = contentSize.height
-            itemText.frame = frame
             
             // Creates sectionStackView from title + text views
             let sectionStackView = UIStackView(arrangedSubviews: [itemTitle, itemText])
             sectionStackView.translatesAutoresizingMaskIntoConstraints = false
             sectionStackView.axis = .vertical
-            sectionStackView.alignment = .fill
+            sectionStackView.distribution = .fill
             scrollView.addSubview(sectionStackView)
             
-            // Adds constraints to itemTitle and sectionStackView
+            // Adds constraints
             NSLayoutConstraint.activate([
                 itemTitle.widthAnchor.constraint(equalTo: sectionStackView.widthAnchor, constant: -40.0),
                 itemTitle.topAnchor.constraint(equalTo: sectionStackView.topAnchor, constant: 4.0),
@@ -104,9 +98,9 @@ class AboutPages: UIViewController, UIScrollViewDelegate {
                 itemTitle.heightAnchor.constraint(equalToConstant: navigationBarHeight),
                 sectionStackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
                 sectionStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
-                ])
+            ])
             
-            // Sets contraints to previous sectionStackView to display the next one after the bottomAnchor of the previous one
+            // Sets contraints to sectionStackView to display the next one after the bottomAnchor of the previous one
             previousViewElement == nil ? NSLayoutConstraint.activate([sectionStackView.topAnchor.constraint(equalTo: scrollView.topAnchor)]) : NSLayoutConstraint.activate([sectionStackView.topAnchor.constraint(equalTo: previousViewElement.bottomAnchor, constant: -8.0)])
             previousViewElement = sectionStackView
             
@@ -128,7 +122,14 @@ class AboutPages: UIViewController, UIScrollViewDelegate {
         navigationBar!.barTintColor = Color.background
         navigationBar!.isTranslucent = false
         
+        // Adds custom leftBarButton
+        let backButton = UIBarButtonItem(image: UIImage(named:"back"), style: .plain, target: self, action:#selector(backAction(_:)))
+        navigationItem.leftBarButtonItem = backButton
     }
     
     // MARK: Custom functions
+    
+    @objc func backAction(_ sender: UIBarButtonItem) {
+        navigationController?.popViewController(animated: true)
+    }
 }

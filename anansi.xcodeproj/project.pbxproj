@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C66D18F200C75E500146296 /* CustomButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C66D18E200C75E500146296 /* CustomButtons.swift */; };
+		2C708BDC200C40A0006E5ABD /* FeedbackPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C708BDB200C40A0006E5ABD /* FeedbackPageView.swift */; };
 		2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C70FBC720021793002E97E7 /* AppDelegate.swift */; };
 		2C70FBD420021793002E97E7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */; };
 		2C7B601220044CFA00FF5488 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601120044CFA00FF5488 /* Extensions.swift */; };
@@ -14,8 +16,9 @@
 		2C7B60182004665500FF5488 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B60172004665500FF5488 /* ProfileViewController.swift */; };
 		2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B60192004666100FF5488 /* EventViewController.swift */; };
 		2C7B601C2004666A00FF5488 /* ExploreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601B2004666A00FF5488 /* ExploreViewController.swift */; };
+		2C7B7E0A200B726A007CCE7C /* FeedbackModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B7E09200B726A007CCE7C /* FeedbackModel.swift */; };
+		2C87DACF200CA072004F8730 /* CustomClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C87DACE200CA072004F8730 /* CustomClasses.swift */; };
 		2CA3E0CE200961C2005617A9 /* AboutPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0CD200961C2005617A9 /* AboutPages.swift */; };
-		2CA3E0D0200974B9005617A9 /* FeedbackPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0CF200974B9005617A9 /* FeedbackPages.swift */; };
 		2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */; };
 		2CA8C4B02009D0330007F067 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2CA8C4AF2009D0330007F067 /* Assets.xcassets */; };
 		2CCE51FD20060E4A00DFC9B1 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE51FC20060E4A00DFC9B1 /* Constants.swift */; };
@@ -48,6 +51,9 @@
 
 /* Begin PBXFileReference section */
 		1C5C16022A37BE4973F0C034 /* Pods-anansiUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-anansiUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-anansiUITests/Pods-anansiUITests.release.xcconfig"; sourceTree = "<group>"; };
+		2C66D18E200C75E500146296 /* CustomButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtons.swift; sourceTree = "<group>"; };
+		2C66D1BA200C946900146296 /* IQKeyboardManagerSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = IQKeyboardManagerSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C708BDB200C40A0006E5ABD /* FeedbackPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPageView.swift; sourceTree = "<group>"; };
 		2C70FBC420021793002E97E7 /* anansi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = anansi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C70FBC720021793002E97E7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2C70FBD320021793002E97E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -59,8 +65,9 @@
 		2C7B60172004665500FF5488 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		2C7B60192004666100FF5488 /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
 		2C7B601B2004666A00FF5488 /* ExploreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewController.swift; sourceTree = "<group>"; };
+		2C7B7E09200B726A007CCE7C /* FeedbackModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackModel.swift; sourceTree = "<group>"; };
+		2C87DACE200CA072004F8730 /* CustomClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomClasses.swift; sourceTree = "<group>"; };
 		2CA3E0CD200961C2005617A9 /* AboutPages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPages.swift; sourceTree = "<group>"; };
-		2CA3E0CF200974B9005617A9 /* FeedbackPages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPages.swift; sourceTree = "<group>"; };
 		2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPagesViewController.swift; sourceTree = "<group>"; };
 		2CA8C4AF2009D0330007F067 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2CCE51FC20060E4A00DFC9B1 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -137,10 +144,30 @@
 			path = anansi;
 			sourceTree = "<group>";
 		};
+		2C87DAD0200CA0BC004F8730 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				2CEE5F6B2006ED3100E86365 /* SettingsData.json */,
+				2CEE5F792007619300E86365 /* NetworkManager.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		2C87DAD1200CA0BC004F8730 /* CustomFiles */ = {
+			isa = PBXGroup;
+			children = (
+				2C66D18E200C75E500146296 /* CustomButtons.swift */,
+				2C87DACE200CA072004F8730 /* CustomClasses.swift */,
+				2CCE51FC20060E4A00DFC9B1 /* Constants.swift */,
+			);
+			path = CustomFiles;
+			sourceTree = "<group>";
+		};
 		2CA3E0D320098441005617A9 /* Feedback */ = {
 			isa = PBXGroup;
 			children = (
-				2CA3E0CF200974B9005617A9 /* FeedbackPages.swift */,
+				2C7B7E09200B726A007CCE7C /* FeedbackModel.swift */,
+				2C708BDB200C40A0006E5ABD /* FeedbackPageView.swift */,
 				2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */,
 			);
 			path = Feedback;
@@ -157,9 +184,9 @@
 		2CCE51FE200611B100DFC9B1 /* SupportFiles */ = {
 			isa = PBXGroup;
 			children = (
+				2C87DAD1200CA0BC004F8730 /* CustomFiles */,
+				2C87DAD0200CA0BC004F8730 /* Network */,
 				2C70FBC720021793002E97E7 /* AppDelegate.swift */,
-				2CEE5F792007619300E86365 /* NetworkManager.swift */,
-				2CCE51FC20060E4A00DFC9B1 /* Constants.swift */,
 				2C7B601120044CFA00FF5488 /* Extensions.swift */,
 				2CA8C4AF2009D0330007F067 /* Assets.xcassets */,
 				2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */,
@@ -202,7 +229,6 @@
 		2CCE52022006127300DFC9B1 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				2CEE5F6B2006ED3100E86365 /* SettingsData.json */,
 				2CA3E0D420098441005617A9 /* About */,
 				2CA3E0D320098441005617A9 /* Feedback */,
 				2CEE5F6D2006F3C100E86365 /* SettingsModel.swift */,
@@ -242,6 +268,7 @@
 		B434CDAC607721A40C4D7228 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2C66D1BA200C946900146296 /* IQKeyboardManagerSwift.framework */,
 				37FD1B723E6AE023E8F8018A /* Pods_anansi.framework */,
 				E29D30928CE4C329A504D4F0 /* Pods_anansiTests.framework */,
 				D18096C91B3B26560BA2F602 /* Pods_anansiUITests.framework */,
@@ -557,9 +584,12 @@
 			files = (
 				2CEE5F6E2006F3C100E86365 /* SettingsModel.swift in Sources */,
 				2C7B60182004665500FF5488 /* ProfileViewController.swift in Sources */,
+				2C7B7E0A200B726A007CCE7C /* FeedbackModel.swift in Sources */,
 				2CA3E0CE200961C2005617A9 /* AboutPages.swift in Sources */,
+				2C66D18F200C75E500146296 /* CustomButtons.swift in Sources */,
 				2CEE5F7A2007619300E86365 /* NetworkManager.swift in Sources */,
 				2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */,
+				2C87DACF200CA072004F8730 /* CustomClasses.swift in Sources */,
 				2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */,
 				2C7B601C2004666A00FF5488 /* ExploreViewController.swift in Sources */,
 				2C7B601620044F4D00FF5488 /* TabBarController.swift in Sources */,
@@ -567,7 +597,7 @@
 				2CCE51FD20060E4A00DFC9B1 /* Constants.swift in Sources */,
 				2CCE520B20061CB300DFC9B1 /* SettingsViewController.swift in Sources */,
 				2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */,
-				2CA3E0D0200974B9005617A9 /* FeedbackPages.swift in Sources */,
+				2C708BDC200C40A0006E5ABD /* FeedbackPageView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

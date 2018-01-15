@@ -123,20 +123,6 @@ extension UILabel {
         text.addAttribute(NSAttributedStringKey.paragraphStyle, value:style, range: NSMakeRange(0, text.length))
         self.attributedText = text
     }
-    
-    /*
-    func labelSizeWithString(text: String,fontSize: CGFloat, maxWidth : CGFloat,numberOfLines: Int) -> CGRect{
-        
-        let font = UIFont.systemFont(ofSize: fontSize)//(name: "HelveticaNeue", size: fontSize)!
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: maxWidth, height: CGFloat.greatestFiniteMagnitude))
-        label.numberOfLines = numberOfLines
-        label.font = font
-        label.text = text
-        
-        label.sizeToFit()
-        
-        return label.frame
-    }*/
 }
 
 // UITextView extension to customize lineSpacing, lineHeightMultiple, hyphenationFactor and alignment to HTML text
@@ -159,4 +145,151 @@ extension UITextView {
         // NSMutableAttributedString is attributed to text
         self.attributedText = NSMutableAttributedString(attributedString: att)
     }
+    
+    func formatTextWithLineSpacing(lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, hyphenation: Float = 1.0, alignment: NSTextAlignment = .natural) {
+        
+        guard let labelText = self.text else { return }
+        
+        let style = NSMutableParagraphStyle()
+        style.lineSpacing = lineSpacing
+        style.lineHeightMultiple = lineHeightMultiple
+        style.hyphenationFactor = hyphenation
+        style.alignment = alignment
+        
+        let text : NSMutableAttributedString
+        if let labelattributedText = self.attributedText {
+            text = NSMutableAttributedString(attributedString: labelattributedText)
+        } else {
+            text = NSMutableAttributedString(string: labelText)
+        }
+        
+        text.addAttribute(NSAttributedStringKey.paragraphStyle, value:style, range: NSMakeRange(0, text.length))
+        self.attributedText = text
+    }
 }
+
+/*
+extension UIView {
+    
+    func addTopBorder(_ color: UIColor, height: CGFloat) {
+        let border = UIView()
+        border.backgroundColor = color
+        border.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(border)
+        border.addConstraint(NSLayoutConstraint(item: border,
+                                                attribute: NSLayoutAttribute.height,
+                                                relatedBy: NSLayoutRelation.equal,
+                                                toItem: nil,
+                                                attribute: NSLayoutAttribute.height,
+                                                multiplier: 1, constant: height))
+        self.addConstraint(NSLayoutConstraint(item: border,
+                                              attribute: NSLayoutAttribute.top,
+                                              relatedBy: NSLayoutRelation.equal,
+                                              toItem: self,
+                                              attribute: NSLayoutAttribute.top,
+                                              multiplier: 1, constant: 0))
+        self.addConstraint(NSLayoutConstraint(item: border,
+                                              attribute: NSLayoutAttribute.leading,
+                                              relatedBy: NSLayoutRelation.equal,
+                                              toItem: self,
+                                              attribute: NSLayoutAttribute.leading,
+                                              multiplier: 1, constant: 0))
+        self.addConstraint(NSLayoutConstraint(item: border,
+                                              attribute: NSLayoutAttribute.trailing,
+                                              relatedBy: NSLayoutRelation.equal,
+                                              toItem: self,
+                                              attribute: NSLayoutAttribute.trailing,
+                                              multiplier: 1, constant: 0))
+    }
+    
+    func addBottomBorder(_ color: UIColor, height: CGFloat) {
+        let border = UIView()
+        border.backgroundColor = color
+        border.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(border)
+        border.addConstraint(NSLayoutConstraint(item: border,
+                                                attribute: NSLayoutAttribute.height,
+                                                relatedBy: NSLayoutRelation.equal,
+                                                toItem: nil,
+                                                attribute: NSLayoutAttribute.height,
+                                                multiplier: 1, constant: height))
+        self.addConstraint(NSLayoutConstraint(item: border,
+                                              attribute: NSLayoutAttribute.bottom,
+                                              relatedBy: NSLayoutRelation.equal,
+                                              toItem: self,
+                                              attribute: NSLayoutAttribute.bottom,
+                                              multiplier: 1, constant: 0))
+        self.addConstraint(NSLayoutConstraint(item: border,
+                                              attribute: NSLayoutAttribute.leading,
+                                              relatedBy: NSLayoutRelation.equal,
+                                              toItem: self,
+                                              attribute: NSLayoutAttribute.leading,
+                                              multiplier: 1, constant: 0))
+        self.addConstraint(NSLayoutConstraint(item: border,
+                                              attribute: NSLayoutAttribute.trailing,
+                                              relatedBy: NSLayoutRelation.equal,
+                                              toItem: self,
+                                              attribute: NSLayoutAttribute.trailing,
+                                              multiplier: 1, constant: 0))
+    }
+    func addLeftBorder(_ color: UIColor, width: CGFloat) {
+        let border = UIView()
+        border.backgroundColor = color
+        border.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(border)
+        border.addConstraint(NSLayoutConstraint(item: border,
+                                                attribute: NSLayoutAttribute.width,
+                                                relatedBy: NSLayoutRelation.equal,
+                                                toItem: nil,
+                                                attribute: NSLayoutAttribute.width,
+                                                multiplier: 1, constant: width))
+        self.addConstraint(NSLayoutConstraint(item: border,
+                                              attribute: NSLayoutAttribute.leading,
+                                              relatedBy: NSLayoutRelation.equal,
+                                              toItem: self,
+                                              attribute: NSLayoutAttribute.leading,
+                                              multiplier: 1, constant: 0))
+        self.addConstraint(NSLayoutConstraint(item: border,
+                                              attribute: NSLayoutAttribute.bottom,
+                                              relatedBy: NSLayoutRelation.equal,
+                                              toItem: self,
+                                              attribute: NSLayoutAttribute.bottom,
+                                              multiplier: 1, constant: 0))
+        self.addConstraint(NSLayoutConstraint(item: border,
+                                              attribute: NSLayoutAttribute.top,
+                                              relatedBy: NSLayoutRelation.equal,
+                                              toItem: self,
+                                              attribute: NSLayoutAttribute.top,
+                                              multiplier: 1, constant: 0))
+    }
+    func addRightBorder(_ color: UIColor, width: CGFloat) {
+        let border = UIView()
+        border.backgroundColor = color
+        border.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(border)
+        border.addConstraint(NSLayoutConstraint(item: border,
+                                                attribute: NSLayoutAttribute.width,
+                                                relatedBy: NSLayoutRelation.equal,
+                                                toItem: nil,
+                                                attribute: NSLayoutAttribute.width,
+                                                multiplier: 1, constant: width))
+        self.addConstraint(NSLayoutConstraint(item: border,
+                                              attribute: NSLayoutAttribute.trailing,
+                                              relatedBy: NSLayoutRelation.equal,
+                                              toItem: self,
+                                              attribute: NSLayoutAttribute.trailing,
+                                              multiplier: 1, constant: 0))
+        self.addConstraint(NSLayoutConstraint(item: border,
+                                              attribute: NSLayoutAttribute.bottom,
+                                              relatedBy: NSLayoutRelation.equal,
+                                              toItem: self,
+                                              attribute: NSLayoutAttribute.bottom,
+                                              multiplier: 1, constant: 0))
+        self.addConstraint(NSLayoutConstraint(item: border,
+                                              attribute: NSLayoutAttribute.top,
+                                              relatedBy: NSLayoutRelation.equal,
+                                              toItem: self,
+                                              attribute: NSLayoutAttribute.top,
+                                              multiplier: 1, constant: 0))
+    }
+}*/

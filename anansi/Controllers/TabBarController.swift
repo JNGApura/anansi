@@ -11,10 +11,12 @@ import UIKit
 class TabBarController: UITabBarController {
 
     // Custom initializers
+    
     var itemList = ["Profile", "Event", "Explore"]
-    fileprivate var tabBarViewControllers = [UIViewController]()
+    fileprivate var tabBarViewControllers = [UINavigationController]()
     
     // MARK: View Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -25,9 +27,13 @@ class TabBarController: UITabBarController {
             let itemNormal = UIImage(named: value)?.withRenderingMode(.alwaysTemplate)
             let itemSelected = UIImage(named: value + "_filled")?.withRenderingMode(.alwaysTemplate)
             
-            // Presents view controller from string and adds to the array of viewcontrollers
+            // Gets view controller from string and adds to the array of viewcontrollers
             let vc = NSObject.fromClassName(name: value + "ViewController") as! UIViewController
-            tabBarViewControllers.append(vc)
+            
+            // Inserts the view controller inside a UINavigationController stack object, so each item can have their own navigation stack
+            let nc = UINavigationController()
+            nc.viewControllers = [vc]
+            tabBarViewControllers.append(nc)
             
             // Creates tabBarItem with title and previous images
             vc.tabBarItem = UITabBarItem(title: value, image: itemNormal, selectedImage: itemSelected)
@@ -52,7 +58,7 @@ class TabBarController: UITabBarController {
         removeTabBarItemText()
         
         // Remove translucence in tab bar
-        tabBar.isTranslucent = false
+        tabBar.isTranslucent = false        
     }
     
     override func didReceiveMemoryWarning() {
@@ -61,6 +67,7 @@ class TabBarController: UITabBarController {
     }
     
     // MARK: TabBar layout (UI)
+    
     func removeTabBarItemText() {
         if let items = tabBar.items {
             for item in items {

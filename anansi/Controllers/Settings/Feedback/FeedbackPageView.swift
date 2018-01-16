@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelegate {
     
@@ -120,9 +121,6 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Sets up navigation bar
-        //setupNavigationBarItems()
-        
         // Set title text
         pageTitle.text = page.title
         pageTitle.formatTextWithLineSpacing(lineSpacing: 10, lineHeightMultiple: 1.2, hyphenation: 0.5, alignment: .left)
@@ -230,17 +228,6 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
     
     // MARK: Layout
     
-    private func setupNavigationBarItems() {
-        
-        let navigationBar = navigationController?.navigationBar
-        navigationBar!.barTintColor = Color.background
-        navigationBar!.isTranslucent = false
-        
-        // Adds custom leftBarButton
-        let backButton = UIBarButtonItem(image: UIImage(named:"back")?.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action:#selector(backAction(_:)))
-        navigationItem.leftBarButtonItem = backButton
-    }
-    
     private func setupLayoutConstraints() {
      
         // Activates contraints of the elements that belong to all pages (scrollView, pageTitle and sectionStackView)
@@ -304,8 +291,8 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         // Posts notification to NotificationCenter, so pageViewController knows what page is next
         NotificationCenter.default.post(name: Notification.Name(rawValue: "happyFlow"), object: self)
         
-        // TO DO: why of storing this in the back-end somehow
-        print("happy button clicked")
+        // TO DO: Storing number of happyIconTaps?
+        //print("happy button clicked")
     }
     
     @objc func unhappyIconTapped(_ sender: UIImageView) {
@@ -313,8 +300,8 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         // Posts notification to NotificationCenter, so pageViewController knows what page is next
         NotificationCenter.default.post(name: Notification.Name(rawValue: "unhappyFlow"), object: self)
         
-        // TO DO: why of storing this in the back-end somehow
-        print("unhappy button clicked")
+        // TO DO: Storing number of unhappyIconTaps?
+        //print("unhappy button clicked")
     }
     
     @objc func leaveFlow(){
@@ -332,7 +319,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
             UIApplication.shared.openURL(url)
         }
         
-        // TO DO: add # successes in the back-end
+        // TO DO: add # taps in the back-end
         
         let when = DispatchTime.now() + 0.4 // change 2 to desired number of seconds
         DispatchQueue.main.asyncAfter(deadline: when) {
@@ -342,7 +329,14 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
     
     @objc func submitFeedback(_ sender: UIButton){
         
-        // TO DO: send to back-end
+        // Sends feedback to back-end
+        let feedbackMessage = feedbackTextBox.text!
+        let post : [String : Any] = ["message": feedbackMessage]
+        
+        let databaseReference = Database.database().reference()
+        databaseReference.child("FeedbackPosts").childByAutoId().setValue(post)
+        
+        // TO DO: send feedback when authenticated to user's db
         
         //print(sender.params["text"] ?? "Nothing was sent.")
         NotificationCenter.default.post(name: Notification.Name(rawValue: "feedbackSubmitted"), object: self)
@@ -383,10 +377,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
             textView.textColor = Color.secondary.withAlphaComponent(0.8)
             firstButton.isEnabled = false
             firstButton.alpha = 0.4
-        } else {
-            print(textView.text)
         }
-        //firstButton.params["text"] = textView.text
         textView.resignFirstResponder()
     }
 }

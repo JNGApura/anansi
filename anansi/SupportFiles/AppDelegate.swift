@@ -26,11 +26,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Initiate app with TabBar view controller
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = UINavigationController(rootViewController: SettingsViewController()) //TabBarController())
+        window?.rootViewController = TabBarController() //UINavigationController(rootViewController: )
         window?.makeKeyAndVisible()
         
-        // Add TED color as main color
-        // TO DO: add theme
+        // Add red (TED's) color as main color
         UIApplication.shared.delegate?.window??.tintColor = Color.primary
         
         // Remove shadow below navigation bar

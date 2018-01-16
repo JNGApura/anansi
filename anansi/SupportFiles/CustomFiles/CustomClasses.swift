@@ -8,7 +8,7 @@
 
 import UIKit
 
-// Class to add KeyBoardAcessoryToolbar on top of UIToolbar with customizable buttons
+// UIToolbar subclass to add KeyBoardAcessoryToolbar on top of UIToolbar with customizable buttons
 class KeyboardAccessoryToolbar: UIToolbar {
     
     convenience init() {
@@ -36,5 +36,14 @@ class KeyboardAccessoryToolbar: UIToolbar {
     @objc func cancel() {
         // Call "cancel" method on first object in the responder chain that implements it.
         UIApplication.shared.sendAction(#selector(cancel), to: nil, from: nil, for: nil)
+    }
+}
+
+// UILabel subclass to add custom UIEdgeInsets as property to UILabel
+class LabelWithInsets : UILabel {
+    
+    override func drawText(in rect: CGRect) {
+        let insets = UIEdgeInsets.init(top: 7.0, left: 16.0 + 15.0, bottom: 7.0, right: 16.0)
+        super.drawText(in: UIEdgeInsetsInsetRect(rect, insets))
     }
 }

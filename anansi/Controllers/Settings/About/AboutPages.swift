@@ -51,7 +51,7 @@ class AboutPages: UIViewController, UIScrollViewDelegate {
             scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            ])
+        ])
     }
     
     override func viewDidLayoutSubviews() {
@@ -118,13 +118,14 @@ class AboutPages: UIViewController, UIScrollViewDelegate {
     
     private func setupNavigationBarItems() {
         
-        let navigationBar = navigationController?.navigationBar
-        navigationBar!.barTintColor = Color.background
-        navigationBar!.isTranslucent = false
-        
-        // Adds custom leftBarButton
-        let backButton = UIBarButtonItem(image: UIImage(named:"back"), style: .plain, target: self, action:#selector(backAction(_:)))
-        navigationItem.leftBarButtonItem = backButton
+        if let navigationBar = navigationController?.navigationBar {
+            navigationBar.barTintColor = Color.background
+            navigationBar.isTranslucent = false
+            
+            // Adds custom leftBarButton
+            let backButton = UIBarButtonItem(image: UIImage(named:"back"), style: .plain, target: self, action:#selector(backAction(_:)))
+            navigationItem.leftBarButtonItem = backButton
+        }
     }
     
     // MARK: Custom functions

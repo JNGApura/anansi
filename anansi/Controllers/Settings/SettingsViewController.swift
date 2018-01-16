@@ -51,14 +51,15 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     private func setupNavigationBarItems(title: String) {
         
-        let navigationBar = navigationController?.navigationBar
-        navigationBar!.barTintColor = Color.background
-        navigationBar!.isTranslucent = false
-        navigationItem.title = title
+        if let navigationBar = navigationController?.navigationBar {
+            navigationBar.barTintColor = Color.background
+            navigationBar.isTranslucent = false
+            navigationItem.title = title
+            
+            // Set custom font for title and right button label
+            navigationBar.titleTextAttributes = [NSAttributedStringKey.font : UIFont.boldSystemFont(ofSize: 17)]
+            navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedStringKey.font : UIFont.boldSystemFont(ofSize: 17)], for: .normal)}
         
-        // Set custom font for title and right button label
-        navigationBar!.titleTextAttributes = [NSAttributedStringKey.font : UIFont.boldSystemFont(ofSize: 17)]
-        navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedStringKey.font : UIFont.boldSystemFont(ofSize: 17)], for: .normal)
     }
     
     private func setupTableView() {

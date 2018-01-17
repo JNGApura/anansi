@@ -47,3 +47,16 @@ class LabelWithInsets : UILabel {
         super.drawText(in: UIEdgeInsetsInsetRect(rect, insets))
     }
 }
+
+/*let layer = CAGradientLayer()
+ layer.frame = view.layer.frame
+ layer.colors = [UIColor.magenta.withAlphaComponent(1).cgColor, UIColor.cyan.withAlphaComponent(0.4).cgColor]
+ layer.startPoint = CGPoint(x: 0.23, y: 0.77)
+ layer.endPoint = CGPoint(x: 1, y: 0.23)
+ view.layer.addSublayer(layer)
+ 
+ let blurEffect = UIBlurEffect(style: .regular)
+ let blurEffectView = UIVisualEffectView(effect: blurEffect)
+ blurEffectView.frame = self.view.frame
+ blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+ view.addSubview(blurEffectView)*/

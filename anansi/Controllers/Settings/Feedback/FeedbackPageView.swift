@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Firebase
+import FirebaseDatabase
 
 class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelegate {
     

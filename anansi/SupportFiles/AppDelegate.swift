@@ -24,9 +24,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Connect to Firebase
         FirebaseApp.configure()
 
-        // Initiate app with TabBar view controller
+        // Initiate app with OnboardingViewController or, in case the user has completed onboarding, then initializes TabBarController
+        let defaults = UserDefaults.standard
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = TabBarController() //UINavigationController(rootViewController: )
+        if !defaults.bool(forKey: "onboardingComplete") {
+            window?.rootViewController = OnboardingViewController()
+        } else {
+            window?.rootViewController = TabBarController()
+        }
         window?.makeKeyAndVisible()
         
         // Add red (TED's) color as main color

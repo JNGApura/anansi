@@ -58,6 +58,10 @@ class FeedbackPagesViewController: UIPageViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(completionPage), name: NSNotification.Name(rawValue: "feedbackSubmitted"), object: nil)
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

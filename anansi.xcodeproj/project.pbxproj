@@ -7,10 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C18A770200E98CC00C03B20 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C18A76F200E98CC00C03B20 /* Assets.xcassets */; };
+		2C18A774200EFB0600C03B20 /* OnboardingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C18A773200EFB0600C03B20 /* OnboardingPage.swift */; };
+		2C18A776200F3F4900C03B20 /* intro-video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 2C18A775200F3F4300C03B20 /* intro-video.mp4 */; };
+		2C18A77C200F469700C03B20 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C18A77B200F469700C03B20 /* OnboardingViewController.swift */; };
+		2C4F5F1C200DFE270028B712 /* OnboardingPageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4F5F1B200DFE270028B712 /* OnboardingPageCell.swift */; };
 		2C66D18F200C75E500146296 /* CustomButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C66D18E200C75E500146296 /* CustomButtons.swift */; };
 		2C708BDC200C40A0006E5ABD /* FeedbackPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C708BDB200C40A0006E5ABD /* FeedbackPageView.swift */; };
 		2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C70FBC720021793002E97E7 /* AppDelegate.swift */; };
-		2C70FBD420021793002E97E7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */; };
 		2C7B601220044CFA00FF5488 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601120044CFA00FF5488 /* Extensions.swift */; };
 		2C7B601620044F4D00FF5488 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601520044F4D00FF5488 /* TabBarController.swift */; };
 		2C7B60182004665500FF5488 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B60172004665500FF5488 /* ProfileViewController.swift */; };
@@ -20,7 +24,6 @@
 		2C87DACF200CA072004F8730 /* CustomClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C87DACE200CA072004F8730 /* CustomClasses.swift */; };
 		2CA3E0CE200961C2005617A9 /* AboutPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0CD200961C2005617A9 /* AboutPages.swift */; };
 		2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */; };
-		2CA8C4B02009D0330007F067 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2CA8C4AF2009D0330007F067 /* Assets.xcassets */; };
 		2CCE51FD20060E4A00DFC9B1 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE51FC20060E4A00DFC9B1 /* Constants.swift */; };
 		2CCE520B20061CB300DFC9B1 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */; };
 		2CEE5F6C2006ED3100E86365 /* SettingsData.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CEE5F6B2006ED3100E86365 /* SettingsData.json */; };
@@ -51,6 +54,11 @@
 
 /* Begin PBXFileReference section */
 		1C5C16022A37BE4973F0C034 /* Pods-anansiUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-anansiUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-anansiUITests/Pods-anansiUITests.release.xcconfig"; sourceTree = "<group>"; };
+		2C18A76F200E98CC00C03B20 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2C18A773200EFB0600C03B20 /* OnboardingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPage.swift; sourceTree = "<group>"; };
+		2C18A775200F3F4300C03B20 /* intro-video.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "intro-video.mp4"; sourceTree = "<group>"; };
+		2C18A77B200F469700C03B20 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		2C4F5F1B200DFE270028B712 /* OnboardingPageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageCell.swift; sourceTree = "<group>"; };
 		2C66D18E200C75E500146296 /* CustomButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtons.swift; sourceTree = "<group>"; };
 		2C66D1BA200C946900146296 /* IQKeyboardManagerSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = IQKeyboardManagerSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C708BDB200C40A0006E5ABD /* FeedbackPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPageView.swift; sourceTree = "<group>"; };
@@ -69,7 +77,6 @@
 		2C87DACE200CA072004F8730 /* CustomClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomClasses.swift; sourceTree = "<group>"; };
 		2CA3E0CD200961C2005617A9 /* AboutPages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPages.swift; sourceTree = "<group>"; };
 		2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPagesViewController.swift; sourceTree = "<group>"; };
-		2CA8C4AF2009D0330007F067 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2CCE51FC20060E4A00DFC9B1 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		2CEE5F6B2006ED3100E86365 /* SettingsData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = SettingsData.json; sourceTree = "<group>"; };
@@ -184,15 +191,16 @@
 		2CCE51FE200611B100DFC9B1 /* SupportFiles */ = {
 			isa = PBXGroup;
 			children = (
+				2C18A76F200E98CC00C03B20 /* Assets.xcassets */,
 				2C87DAD1200CA0BC004F8730 /* CustomFiles */,
 				2C87DAD0200CA0BC004F8730 /* Network */,
 				2C70FBC720021793002E97E7 /* AppDelegate.swift */,
 				2C7B601120044CFA00FF5488 /* Extensions.swift */,
-				2CA8C4AF2009D0330007F067 /* Assets.xcassets */,
 				2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */,
 				2C70FBD520021793002E97E7 /* Info.plist */,
 				2CEE5F7B20077C4100E86365 /* anansi.entitlements */,
 				2CEE5F7520075C0F00E86365 /* GoogleService-Info.plist */,
+				2C18A775200F3F4300C03B20 /* intro-video.mp4 */,
 			);
 			path = SupportFiles;
 			sourceTree = "<group>";
@@ -240,6 +248,9 @@
 		2CCE52032006127300DFC9B1 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				2C18A773200EFB0600C03B20 /* OnboardingPage.swift */,
+				2C4F5F1B200DFE270028B712 /* OnboardingPageCell.swift */,
+				2C18A77B200F469700C03B20 /* OnboardingViewController.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -398,9 +409,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C70FBD420021793002E97E7 /* LaunchScreen.storyboard in Resources */,
+				2C18A776200F3F4900C03B20 /* intro-video.mp4 in Resources */,
 				2CEE5F7620075C0F00E86365 /* GoogleService-Info.plist in Resources */,
-				2CA8C4B02009D0330007F067 /* Assets.xcassets in Resources */,
+				2C18A770200E98CC00C03B20 /* Assets.xcassets in Resources */,
 				2CEE5F6C2006ED3100E86365 /* SettingsData.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -589,15 +600,18 @@
 				2C66D18F200C75E500146296 /* CustomButtons.swift in Sources */,
 				2CEE5F7A2007619300E86365 /* NetworkManager.swift in Sources */,
 				2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */,
+				2C18A77C200F469700C03B20 /* OnboardingViewController.swift in Sources */,
 				2C87DACF200CA072004F8730 /* CustomClasses.swift in Sources */,
 				2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */,
 				2C7B601C2004666A00FF5488 /* ExploreViewController.swift in Sources */,
+				2C4F5F1C200DFE270028B712 /* OnboardingPageCell.swift in Sources */,
 				2C7B601620044F4D00FF5488 /* TabBarController.swift in Sources */,
 				2C7B601220044CFA00FF5488 /* Extensions.swift in Sources */,
 				2CCE51FD20060E4A00DFC9B1 /* Constants.swift in Sources */,
 				2CCE520B20061CB300DFC9B1 /* SettingsViewController.swift in Sources */,
 				2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */,
 				2C708BDC200C40A0006E5ABD /* FeedbackPageView.swift in Sources */,
+				2C18A774200EFB0600C03B20 /* OnboardingPage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

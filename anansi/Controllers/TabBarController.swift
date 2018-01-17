@@ -58,7 +58,10 @@ class TabBarController: UITabBarController {
         removeTabBarItemText()
         
         // Remove translucence in tab bar
-        tabBar.isTranslucent = false        
+        tabBar.isTranslucent = false
+        
+        // Sets "onboardingComplete" to UserDefaults
+        onboarded()
     }
     
     override func didReceiveMemoryWarning() {
@@ -76,5 +79,15 @@ class TabBarController: UITabBarController {
                 item.setTitleTextAttributes([NSAttributedStringKey.foregroundColor:UIColor.clear], for: .normal)
             }
         }
+    }
+    
+    // MARK: Custom functions
+    
+    // Sets "onboardingComplete" to UserDefaults
+    func onboarded() {
+        
+        let defaults = UserDefaults.standard
+        defaults.set(true, forKey: "onboardingComplete")
+        defaults.synchronize()
     }
 }

@@ -1,0 +1,100 @@
+//
+//  OnboardingPageCell.swift
+//  anansi
+//
+//  Created by João Nuno Gaspar Apura on 16/01/2018.
+//  Copyright © 2018 João Apura. All rights reserved.
+//
+
+import UIKit
+
+class OnboardingPageCell : UICollectionViewCell {
+    
+    // Custom initializers
+    
+    var page: OnboardingPage? {
+        didSet{
+            guard let unwrappedPage = page else { return }
+            
+            // Set title text
+            cellTitle.text = unwrappedPage.title
+            cellTitle.formatTextWithLineSpacing(lineSpacing: 10, lineHeightMultiple: 1.2, hyphenation: 0.5, alignment: .left)
+            
+            // Set description text
+            cellDescription.text = unwrappedPage.description
+            cellDescription.formatTextWithLineSpacing(lineSpacing: 10, lineHeightMultiple: 1.2, hyphenation: 0.5, alignment: .left)
+        }
+    }
+    
+    private let cellTitle: UILabel = {
+        let title = UILabel()
+        title.textColor = Color.primary
+        title.numberOfLines = 0
+        title.lineBreakMode = NSLineBreakMode.byWordWrapping
+        title.font = UIFont.boldSystemFont(ofSize: 24.0)
+        return title
+    }()
+    
+    private let cellDescription: UILabel = {
+        let description = UILabel()
+        description.numberOfLines = 0
+        description.lineBreakMode = NSLineBreakMode.byWordWrapping
+        description.font = UIFont.systemFont(ofSize: 17.0)
+        return description
+    }()
+    
+    private let stackView : UIStackView = {
+        let ssv = UIStackView()
+        ssv.translatesAutoresizingMaskIntoConstraints = false
+        ssv.axis = .vertical
+        ssv.alignment = .fill
+        return ssv
+    }()
+    
+    private let topBorder: UIView = {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.backgroundColor = Color.primary
+        return v
+    }()
+    
+    // Initialization
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        // Adds topBorder to pagecell
+        addSubview(topBorder)
+        
+        // Adds stackView to pagecell
+        stackView.addArrangedSubview(cellTitle)
+        stackView.addArrangedSubview(cellDescription)
+        stackView.setCustomSpacing(20.0, after: cellTitle)
+        addSubview(stackView)
+        
+        // Sets up layout constraints
+        setupLayoutConstraints()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: Layout
+    
+    private func setupLayoutConstraints() {
+        
+        NSLayoutConstraint.activate([
+            topBorder.topAnchor.constraint(equalTo: topAnchor),
+            topBorder.leadingAnchor.constraint(equalTo: leadingAnchor),
+            topBorder.trailingAnchor.constraint(equalTo: trailingAnchor),
+            topBorder.heightAnchor.constraint(equalToConstant: 4.0),
+            
+            stackView.topAnchor.constraint(equalTo: topBorder.topAnchor, constant: 36.0),
+            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20.0),
+            stackView.widthAnchor.constraint(equalTo: widthAnchor, constant: -40.0)
+        ])
+                
+    }
+    
+}

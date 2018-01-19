@@ -60,8 +60,8 @@ class TabBarController: UITabBarController {
         // Remove translucence in tab bar
         tabBar.isTranslucent = false
         
-        // Sets "onboardingComplete" to UserDefaults
-        onboarded()
+        // Sets "isLoggedIn" to UserDefaults
+        UserDefaults.standard.setIsLoggedIn(value: true)
     }
     
     override func didReceiveMemoryWarning() {
@@ -79,15 +79,5 @@ class TabBarController: UITabBarController {
                 item.setTitleTextAttributes([NSAttributedStringKey.foregroundColor:UIColor.clear], for: .normal)
             }
         }
-    }
-    
-    // MARK: Custom functions
-    
-    // Sets "onboardingComplete" to UserDefaults
-    func onboarded() {
-        
-        let defaults = UserDefaults.standard
-        defaults.set(true, forKey: "onboardingComplete")
-        defaults.synchronize()
     }
 }

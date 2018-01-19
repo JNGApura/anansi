@@ -257,7 +257,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
                 iconStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: CGFloat(-marginDist*3)),
                 iconStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
                 iconStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
-                ])
+            ])
         
         // Activates contraints buttonStackView
         } else {

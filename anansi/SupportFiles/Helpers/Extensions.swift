@@ -168,6 +168,27 @@ extension UITextView {
     }
 }
 
+extension UserDefaults {
+    
+    func setIsOnboarded(value: Bool) {
+        set(value, forKey: "isOnboarded")
+        synchronize()
+    }
+    
+    func setIsLoggedIn(value: Bool) {
+        set(value, forKey: "isLoggedIn")
+        synchronize()
+    }
+    
+    func isOnboarded() -> Bool {
+        return bool(forKey: "isOnboarded")
+    }
+    
+    func isLoggedIn() -> Bool {
+        return bool(forKey: "isLoggedIn")
+    }
+}
+
 /*
 extension UIView {
     

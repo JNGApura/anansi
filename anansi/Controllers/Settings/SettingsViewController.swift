@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 //import SafariServices
 
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
@@ -165,9 +166,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         } else if item.action == "view" {
             let url = item.url
             presentController(identifier: url!)
+        } else if item.action == "popup" {
+            handleLogout()
         }
         
-        // TO DO: add logout action
+        // TO DO: add logout action (better UX)
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -214,5 +217,40 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             controller = AboutPages(section: aboutSection)
         }
         self.navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    // Handles logout
+    func handleLogout() {
+        
+        if !Reachability.isConnectedToNetwork(){
+            
+            let alertController = UIAlertController(title: "No internet connection", message: "It seems you are not connected to the internet. Please enable Wifi or Cellular data, and try again.", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "Got it!", style: .default, handler: nil)
+            alertController.addAction(ok)
+            present(alertController, animated: true, completion: nil)
+            
+            return
+        }
+        
+        // Logs user out
+        do {
+            try Auth.auth().signOut()
+        } catch let logoutError {
+            print(logoutError)
+        }
+        
+        // Sets "isLoggedIn" to false in UserDefaults
+        UserDefaults.standard.setIsLoggedIn(value: false)
+
+        // Sets transition animation
+        let transition = CATransition()
+        transition.duration = 0.5
+        transition.type = kCATransitionPush
+        transition.subtype = kCATransitionFromLeft
+        transition.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
+        self.view.window!.layer.add(transition, forKey: kCATransition)
+        
+        let loginController = LoginController()
+        present(loginController, animated: false, completion: nil)
     }
 }

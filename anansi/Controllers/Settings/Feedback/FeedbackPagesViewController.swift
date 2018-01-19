@@ -88,18 +88,18 @@ class FeedbackPagesViewController: UIPageViewController {
     @objc func ratingPage(_:AnyObject) {
         let identifier = 1
         let p = FeedbackPageView(identifier: identifier, page: feedbackPages[identifier])
-        self.setViewControllers([p], direction: .forward, animated: true, completion: nil)
+        setViewControllers([p], direction: .forward, animated: true, completion: nil)
     }
     
     @objc func feedbackPage(_:AnyObject) {
         let identifier = 2
         let p = FeedbackPageView(identifier: identifier, page: feedbackPages[identifier])
-        self.setViewControllers([p], direction: .forward, animated: true, completion: nil)
+        setViewControllers([p], direction: .forward, animated: true, completion: nil)
     }
     
     @objc func completionPage(_:AnyObject) {
         let identifier = 3
         let p = FeedbackPageView(identifier: identifier, page: feedbackPages[identifier])
-        self.setViewControllers([p], direction: .forward, animated: true, completion: nil)
+        setViewControllers([p], direction: .forward, animated: true, completion: nil)
     }
 }

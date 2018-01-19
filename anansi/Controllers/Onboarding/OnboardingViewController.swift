@@ -142,6 +142,7 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
     override func viewDidDisappear(_ animated: Bool) {
         NotificationCenter.default.removeObserver(self)
         self.avPlayerController.player?.pause()
+        self.avPlayerController.player = nil
     }
     
     override func didReceiveMemoryWarning() {
@@ -185,12 +186,8 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
         let nextIndex = min(cellControl.currentPage + 1, pages.count - 1)
         let indexPath = IndexPath(item: nextIndex, section: 0)
         cellControl.currentPage = nextIndex
-        
-        if cellControl.currentPage != pages.count - 1 {
-            nextButton.setTitle("Next", for: .normal)
-            nextButton.setImage(nil, for: .normal)
-            nextButton.addTarget(self, action: #selector(handleNext), for: .touchUpInside)
-        } else {
+                
+        if cellControl.currentPage == pages.count - 1 {
             nextButton.setTitle("Got it!  ", for: .normal)
             nextButton.setImage(#imageLiteral(resourceName: "next").withRenderingMode(.alwaysTemplate), for: .normal)
             nextButton.addTarget(self, action: #selector(openTabViewController), for: .touchUpInside)
@@ -208,8 +205,8 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
         transition.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseInEaseOut)
         view.window!.layer.add(transition, forKey: kCATransition)
         
-        let controller = TabBarController()
-        self.present(controller, animated: false, completion: nil)
+        let controller = LoginController()//TabBarController()
+        present(controller, animated: false, completion: nil)
     }
     
     @objc private func playsound() {
@@ -263,7 +260,7 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
         if cellControl.currentPage != pages.count - 1 {
             nextButton.setTitle("Next", for: .normal)
             nextButton.setImage(nil, for: .normal)
-            nextButton.addTarget(self, action: #selector(handleNext), for: .touchUpInside)
+            nextButton.removeTarget(self, action: #selector(openTabViewController), for: .touchUpInside)
         } else {
             nextButton.setTitle("Got it!  ", for: .normal)
             nextButton.setImage(#imageLiteral(resourceName: "next").withRenderingMode(.alwaysTemplate), for: .normal)

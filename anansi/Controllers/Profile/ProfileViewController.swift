@@ -197,7 +197,7 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate {
         let settingsController = SettingsViewController()
         settingsController.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(dismissSettingsView))
         let navController = UINavigationController(rootViewController: settingsController)
-        self.present(navController, animated: true, completion: nil)
+        present(navController, animated: true, completion: nil)
  
     }
     

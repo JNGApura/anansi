@@ -222,35 +222,35 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     // Handles logout
     func handleLogout() {
         
+        // Alerts the user that the app is not conencted to internet
         if !Reachability.isConnectedToNetwork(){
-            
             let alertController = UIAlertController(title: "No internet connection", message: "It seems you are not connected to the internet. Please enable Wifi or Cellular data, and try again.", preferredStyle: .alert)
             let ok = UIAlertAction(title: "Got it!", style: .default, handler: nil)
             alertController.addAction(ok)
             present(alertController, animated: true, completion: nil)
-            
             return
         }
         
-        // Logs user out
         do {
+            // Logs user out
             try Auth.auth().signOut()
+            
+            // Sets "isLoggedIn" to false in UserDefaults
+            UserDefaults.standard.setIsLoggedIn(value: false)
+            
+            // Sets transition animation
+            let transition = CATransition()
+            transition.duration = 0.5
+            transition.type = kCATransitionPush
+            transition.subtype = kCATransitionFromLeft
+            transition.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
+            self.view.window!.layer.add(transition, forKey: kCATransition)
+            
+            let loginController = LoginController()
+            present(loginController, animated: false, completion: nil)
+            
         } catch let logoutError {
             print(logoutError)
         }
-        
-        // Sets "isLoggedIn" to false in UserDefaults
-        UserDefaults.standard.setIsLoggedIn(value: false)
-
-        // Sets transition animation
-        let transition = CATransition()
-        transition.duration = 0.5
-        transition.type = kCATransitionPush
-        transition.subtype = kCATransitionFromLeft
-        transition.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
-        self.view.window!.layer.add(transition, forKey: kCATransition)
-        
-        let loginController = LoginController()
-        present(loginController, animated: false, completion: nil)
     }
 }

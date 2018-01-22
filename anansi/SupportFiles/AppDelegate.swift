@@ -27,9 +27,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Initiate app with OnboardingViewController or, in case the user has completed onboarding, then initializes TabBarController
         let defaults = UserDefaults.standard
         window = UIWindow(frame: UIScreen.main.bounds)
-        //if !defaults.isOnboarded() {
-        //    window?.rootViewController = OnboardingViewController()
-        //} else
+        if !defaults.isOnboarded() {
+            window?.rootViewController = OnboardingViewController()
+        } else
         if !defaults.isLoggedIn() {
             window?.rootViewController = LoginController()
         } else {

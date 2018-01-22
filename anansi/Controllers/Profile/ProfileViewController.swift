@@ -7,16 +7,24 @@
 //
 
 import UIKit
+import FirebaseAuth
+import FirebaseDatabase
+import FirebaseStorage
 
-class ProfileViewController: UIViewController, UIScrollViewDelegate {
+class ProfileViewController: UIViewController, UIScrollViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     // Custom initializers
+    let user = User()
     
-    private let profileImage: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "joao"))
+    lazy var profileImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = #imageLiteral(resourceName: "profileImage").withRenderingMode(.alwaysOriginal)
         imageView.layer.cornerRadius = 50.0
         imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleSelectProfileImageView)))
+        imageView.isUserInteractionEnabled = true
         return imageView
     }()
     
@@ -102,6 +110,9 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate {
         // Sets scrollview for entire view
         scrollView.delegate = self
         view.addSubview(scrollView)
+
+        // Check if user is logged in
+        checkIfUserIsLoggedIn()
     }
     
     override func viewDidLayoutSubviews() {
@@ -190,6 +201,21 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate {
         ])
     }
     
+    private func checkIfUserIsLoggedIn() {
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value) { (snapshot) in
+            if let dictionary = snapshot.value as? [String: AnyObject] {
+                
+                if let profileImageURL = dictionary["profileImageURL"] as? String {
+                    self.profileImage.loadImageUsingCacheWithUrlString(urlString: profileImageURL) }
+                else {
+                    self.profileImage.image = #imageLiteral(resourceName: "profileImage").withRenderingMode(.alwaysOriginal)
+                }
+            }
+        }
+    }
+    
     // MARK: Custom functions
     
     @objc func navigateToSettingsViewController(_ sender: UIBarButtonItem){
@@ -203,6 +229,16 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate {
     
     @objc func dismissSettingsView(){
         dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func handleSelectProfileImageView() {
+        let picker = UIImagePickerController()
+        
+        picker.delegate = self
+        picker.allowsEditing = true
+        picker.navigationBar.isTranslucent = false
+        
+        present(picker, animated: true, completion: nil)
     }
     
     // MARK: ScrollViewDidScroll function
@@ -223,5 +259,58 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate {
         } else {
             label.alpha = 0.0
         }
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        
+        var selectedImageFromPicker: UIImage?
+        
+        if let editedImage = info[UIImagePickerControllerEditedImage] as? UIImage {
+            selectedImageFromPicker = editedImage
+        } else if let originalImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            selectedImageFromPicker = originalImage
+        }
+        
+        if let selectedImage = selectedImageFromPicker {
+            self.profileImage.image = selectedImage
+            
+            guard let uid = Auth.auth().currentUser?.uid else { return }
+
+            // Stores profileImage into Firebase Storage
+            let imageName = NSUUID().uuidString
+            let storageRef = Storage.storage().reference().child("profile_images").child("\(imageName).png")
+            
+            if let profileImage = self.profileImage.image, let uploadData = UIImageJPEGRepresentation(profileImage, 0.1) {
+                storageRef.putData(uploadData, metadata: nil, completion: { (metadata, error) in
+                    
+                    if error != nil {
+                        print(error!)
+                        return
+                    }
+                    
+                    if let profileImageURL = metadata?.downloadURL()?.absoluteString {
+                        let values = ["profileImageURL": profileImageURL]
+                        
+                        // Register profileImage's URL (from Firebase Storage) into database
+                        let databaseReference = Database.database().reference()
+                        let usersReference = databaseReference.child("users").child(uid)
+                        usersReference.updateChildValues(values, withCompletionBlock: { (error, usersReference) in
+                            if error != nil {
+                                print(error!.localizedDescription)
+                                return
+                            }
+                        })
+                    }
+                    
+                })
+            }
+        }
+
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        print("canceled picker")
+        dismiss(animated: true, completion: nil)
     }
 }

@@ -48,15 +48,68 @@ class LabelWithInsets : UILabel {
     }
 }
 
-/*let layer = CAGradientLayer()
- layer.frame = view.layer.frame
- layer.colors = [UIColor.magenta.withAlphaComponent(1).cgColor, UIColor.cyan.withAlphaComponent(0.4).cgColor]
- layer.startPoint = CGPoint(x: 0.23, y: 0.77)
- layer.endPoint = CGPoint(x: 1, y: 0.23)
- view.layer.addSublayer(layer)
- 
- let blurEffect = UIBlurEffect(style: .regular)
+/*let blurEffect = UIBlurEffect(style: .regular)
  let blurEffectView = UIVisualEffectView(effect: blurEffect)
  blurEffectView.frame = self.view.frame
  blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
  view.addSubview(blurEffectView)*/
+
+// Primary button, subclassed from UIButton
+class PrimaryButton : UIButton {
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+        backgroundColor = Color.primary
+        setTitleColor(Color.background, for: .normal)
+        layer.cornerRadius = 24.0
+        layer.borderWidth = 1.5
+        layer.borderColor = Color.primary.cgColor
+        translatesAutoresizingMaskIntoConstraints = false
+        clipsToBounds = true
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// Secondary button, subclassed from UIButton
+class SecondaryButton : UIButton {
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+        backgroundColor = Color.background
+        setTitleColor(Color.secondary, for: .normal)
+        layer.cornerRadius = 24.0
+        layer.borderWidth = 1.5
+        layer.borderColor = Color.secondary.cgColor
+        translatesAutoresizingMaskIntoConstraints = false
+        clipsToBounds = true
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// Tertiary button, subclassed from UIButton
+class TertiaryButton : UIButton {
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+        backgroundColor = Color.background
+        setTitleColor(Color.secondary, for: .normal)
+        translatesAutoresizingMaskIntoConstraints = false
+        clipsToBounds = true
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}

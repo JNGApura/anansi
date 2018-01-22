@@ -11,7 +11,7 @@ import FirebaseAuth
 import FirebaseDatabase
 
 class LoginController: UIViewController {
-    
+        
     let backgroundImage: UIImageView = {
         let i = UIImageView(image: #imageLiteral(resourceName: "attendees-bw"))
         i.translatesAutoresizingMaskIntoConstraints = false
@@ -291,14 +291,14 @@ class LoginController: UIViewController {
                         let usersReference = databaseReference.child("users").child(uid)
                         usersReference.updateChildValues([
                             "email" : email,
-                            "ticket reference" : password
+                            "ticket" : password
                             ], withCompletionBlock: { (erro, usersReference) in
                                 if erro != nil {
                                     print(erro!.localizedDescription)
                                     self.hideLoadingInButton()
                                     return
                                 }
-                                
+                                                                
                                 self.errorEmail.text = ""
                                 self.errorTicket.text = ""
                                 self.pushTabBarController()
@@ -326,7 +326,7 @@ class LoginController: UIViewController {
         }
     }
     
-    func pushTabBarController() {
+   private func pushTabBarController() {
         
         let transition = CATransition()
         transition.duration = 0.5
@@ -339,7 +339,7 @@ class LoginController: UIViewController {
         present(controller, animated: false, completion: nil)
     }
     
-    func showLoadingInButton() {
+    private func showLoadingInButton() {
         
         loginButton.setTitle("", for: .normal)
         loginButton.isEnabled = false
@@ -347,7 +347,7 @@ class LoginController: UIViewController {
         activityIndicator.startAnimating()
     }
     
-    func hideLoadingInButton() {
+    private func hideLoadingInButton() {
         
         loginButton.setTitle("Log into your account", for: .normal)
         loginButton.isEnabled = true

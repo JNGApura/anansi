@@ -23,12 +23,6 @@ extension Bundle {
 }
 
 // UIFont extension to use of custom font programatically
-struct AppFontName {
-    static let regular = "Avenir-Roman" // Cera-Regular
-    static let bold = "Avenir-Heavy" // Cera-Bold
-    static let italic = "Avenir-Oblique" // Cera-RegularItalic
-}
-
 extension UIFont {
     
     @objc class func mySystemFont(ofSize size: CGFloat) -> UIFont {
@@ -168,6 +162,7 @@ extension UITextView {
     }
 }
 
+// Adds fours methods to UserDefatuls, to check whether the user has been onboarded and has logged in
 extension UserDefaults {
     
     func setIsOnboarded(value: Bool) {
@@ -189,128 +184,31 @@ extension UserDefaults {
     }
 }
 
-/*
-extension UIView {
+// Load image using cache
+let imageCache = NSCache<NSString, UIImage>()
+extension UIImageView {
     
-    func addTopBorder(_ color: UIColor, height: CGFloat) {
-        let border = UIView()
-        border.backgroundColor = color
-        border.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(border)
-        border.addConstraint(NSLayoutConstraint(item: border,
-                                                attribute: NSLayoutAttribute.height,
-                                                relatedBy: NSLayoutRelation.equal,
-                                                toItem: nil,
-                                                attribute: NSLayoutAttribute.height,
-                                                multiplier: 1, constant: height))
-        self.addConstraint(NSLayoutConstraint(item: border,
-                                              attribute: NSLayoutAttribute.top,
-                                              relatedBy: NSLayoutRelation.equal,
-                                              toItem: self,
-                                              attribute: NSLayoutAttribute.top,
-                                              multiplier: 1, constant: 0))
-        self.addConstraint(NSLayoutConstraint(item: border,
-                                              attribute: NSLayoutAttribute.leading,
-                                              relatedBy: NSLayoutRelation.equal,
-                                              toItem: self,
-                                              attribute: NSLayoutAttribute.leading,
-                                              multiplier: 1, constant: 0))
-        self.addConstraint(NSLayoutConstraint(item: border,
-                                              attribute: NSLayoutAttribute.trailing,
-                                              relatedBy: NSLayoutRelation.equal,
-                                              toItem: self,
-                                              attribute: NSLayoutAttribute.trailing,
-                                              multiplier: 1, constant: 0))
+    func loadImageUsingCacheWithUrlString(urlString: String) {
+        
+        //self.image = nil
+        if let cachedImage = imageCache.object(forKey: urlString as NSString) {
+            self.image = cachedImage
+            return
+        }
+        
+        let url = URL(string: urlString)
+        URLSession.shared.dataTask(with: url!, completionHandler: { (data, response, error) in
+            
+            if error != nil {
+                print(error!)
+                return
+            }
+            DispatchQueue.main.async {
+                if let downloadedImage = UIImage(data: data!) {
+                    imageCache.setObject(downloadedImage, forKey: urlString as NSString)
+                    self.image = downloadedImage
+                }
+            }
+        }).resume()
     }
-    
-    func addBottomBorder(_ color: UIColor, height: CGFloat) {
-        let border = UIView()
-        border.backgroundColor = color
-        border.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(border)
-        border.addConstraint(NSLayoutConstraint(item: border,
-                                                attribute: NSLayoutAttribute.height,
-                                                relatedBy: NSLayoutRelation.equal,
-                                                toItem: nil,
-                                                attribute: NSLayoutAttribute.height,
-                                                multiplier: 1, constant: height))
-        self.addConstraint(NSLayoutConstraint(item: border,
-                                              attribute: NSLayoutAttribute.bottom,
-                                              relatedBy: NSLayoutRelation.equal,
-                                              toItem: self,
-                                              attribute: NSLayoutAttribute.bottom,
-                                              multiplier: 1, constant: 0))
-        self.addConstraint(NSLayoutConstraint(item: border,
-                                              attribute: NSLayoutAttribute.leading,
-                                              relatedBy: NSLayoutRelation.equal,
-                                              toItem: self,
-                                              attribute: NSLayoutAttribute.leading,
-                                              multiplier: 1, constant: 0))
-        self.addConstraint(NSLayoutConstraint(item: border,
-                                              attribute: NSLayoutAttribute.trailing,
-                                              relatedBy: NSLayoutRelation.equal,
-                                              toItem: self,
-                                              attribute: NSLayoutAttribute.trailing,
-                                              multiplier: 1, constant: 0))
-    }
-    func addLeftBorder(_ color: UIColor, width: CGFloat) {
-        let border = UIView()
-        border.backgroundColor = color
-        border.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(border)
-        border.addConstraint(NSLayoutConstraint(item: border,
-                                                attribute: NSLayoutAttribute.width,
-                                                relatedBy: NSLayoutRelation.equal,
-                                                toItem: nil,
-                                                attribute: NSLayoutAttribute.width,
-                                                multiplier: 1, constant: width))
-        self.addConstraint(NSLayoutConstraint(item: border,
-                                              attribute: NSLayoutAttribute.leading,
-                                              relatedBy: NSLayoutRelation.equal,
-                                              toItem: self,
-                                              attribute: NSLayoutAttribute.leading,
-                                              multiplier: 1, constant: 0))
-        self.addConstraint(NSLayoutConstraint(item: border,
-                                              attribute: NSLayoutAttribute.bottom,
-                                              relatedBy: NSLayoutRelation.equal,
-                                              toItem: self,
-                                              attribute: NSLayoutAttribute.bottom,
-                                              multiplier: 1, constant: 0))
-        self.addConstraint(NSLayoutConstraint(item: border,
-                                              attribute: NSLayoutAttribute.top,
-                                              relatedBy: NSLayoutRelation.equal,
-                                              toItem: self,
-                                              attribute: NSLayoutAttribute.top,
-                                              multiplier: 1, constant: 0))
-    }
-    func addRightBorder(_ color: UIColor, width: CGFloat) {
-        let border = UIView()
-        border.backgroundColor = color
-        border.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(border)
-        border.addConstraint(NSLayoutConstraint(item: border,
-                                                attribute: NSLayoutAttribute.width,
-                                                relatedBy: NSLayoutRelation.equal,
-                                                toItem: nil,
-                                                attribute: NSLayoutAttribute.width,
-                                                multiplier: 1, constant: width))
-        self.addConstraint(NSLayoutConstraint(item: border,
-                                              attribute: NSLayoutAttribute.trailing,
-                                              relatedBy: NSLayoutRelation.equal,
-                                              toItem: self,
-                                              attribute: NSLayoutAttribute.trailing,
-                                              multiplier: 1, constant: 0))
-        self.addConstraint(NSLayoutConstraint(item: border,
-                                              attribute: NSLayoutAttribute.bottom,
-                                              relatedBy: NSLayoutRelation.equal,
-                                              toItem: self,
-                                              attribute: NSLayoutAttribute.bottom,
-                                              multiplier: 1, constant: 0))
-        self.addConstraint(NSLayoutConstraint(item: border,
-                                              attribute: NSLayoutAttribute.top,
-                                              relatedBy: NSLayoutRelation.equal,
-                                              toItem: self,
-                                              attribute: NSLayoutAttribute.top,
-                                              multiplier: 1, constant: 0))
-    }
-}*/
+}

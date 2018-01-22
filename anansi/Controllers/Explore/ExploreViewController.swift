@@ -7,29 +7,111 @@
 //
 
 import UIKit
+import FirebaseDatabase
 
-class ExploreViewController: UIViewController {
+class ExploreViewController: UITableViewController {
+    
+    let cellIdentifier = "cellId"
 
+    var users = [User]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        // Update navigation bar
+        
+        tableView.register(UserCell.self, forCellReuseIdentifier: cellIdentifier)
+        
+        // Fetch users
+        fetchUsers()
+        
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    func fetchUsers() {
+        
+        Database.database().reference().child("users").observe(.childAdded, with: { (snapshot) in
+            if !snapshot.exists() { return } // just to be safe
+            if let dictionary = snapshot.value as? [String: AnyObject] {
+                let user = User()
+                let email = dictionary["email"] as? String ?? ""
+                let ticketReference = dictionary["ticket"] as? String ?? ""
+                let profileImage = dictionary["profileImageURL"] as? String ?? ""
+                
+                user.email = email
+                user.ticketReference = ticketReference
+                user.profileImageURL = profileImage
+                self.users.append(user)
+                
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            }
+        }, withCancel: nil)
     }
-    */
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return users.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! UserCell
+        
+        let user = users[indexPath.row]
+        cell.textLabel?.text = user.email
+        cell.detailTextLabel?.text = user.ticketReference
+        
+        if let profileImageURL = user.profileImageURL {
+            if profileImageURL.isEmpty {
+                cell.profileImageView.image = #imageLiteral(resourceName: "profileImageTemplate").withRenderingMode(.alwaysOriginal)
+            } else {
+                cell.profileImageView.loadImageUsingCacheWithUrlString(urlString: profileImageURL)
+            }
+        }
+        
+        return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 72
+    }
+    
+}
 
+class UserCell: UITableViewCell {
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        textLabel?.frame = CGRect(x: 64, y: textLabel!.frame.origin.y - 2, width: textLabel!.frame.width, height: textLabel!.frame.height)
+        detailTextLabel?.frame = CGRect(x: 64, y: detailTextLabel!.frame.origin.y + 2, width: detailTextLabel!.frame.width, height: detailTextLabel!.frame.height)
+    }
+    
+    let profileImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.layer.cornerRadius = 24
+        imageView.layer.masksToBounds = true
+        return imageView
+    }()
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
+        
+        addSubview(profileImageView)
+        NSLayoutConstraint.activate([
+            profileImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            profileImageView.widthAnchor.constraint(equalToConstant: 48.0),
+            profileImageView.heightAnchor.constraint(equalToConstant: 48.0)
+        ])
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }

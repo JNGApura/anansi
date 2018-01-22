@@ -24,9 +24,10 @@
 		2C7B601C2004666A00FF5488 /* ExploreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601B2004666A00FF5488 /* ExploreViewController.swift */; };
 		2C7B7E0A200B726A007CCE7C /* FeedbackModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B7E09200B726A007CCE7C /* FeedbackModel.swift */; };
 		2C87DACF200CA072004F8730 /* Classes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C87DACE200CA072004F8730 /* Classes.swift */; };
-		2CA3E0CE200961C2005617A9 /* AboutPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0CD200961C2005617A9 /* AboutPages.swift */; };
 		2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */; };
-		2CC3EF62201566A600EBC7B2 /* settings.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CC3EF61201566A500EBC7B2 /* settings.json */; };
+		2CC3EF642015752000EBC7B2 /* settings.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CC3EF61201566A500EBC7B2 /* settings.json */; };
+		2CC3EF68201577B900EBC7B2 /* AboutPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC3EF67201577B900EBC7B2 /* AboutPage.swift */; };
+		2CC3EF6A201577DD00EBC7B2 /* AboutPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC3EF69201577DD00EBC7B2 /* AboutPageView.swift */; };
 		2CCE51FD20060E4A00DFC9B1 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE51FC20060E4A00DFC9B1 /* Constants.swift */; };
 		2CCE520B20061CB300DFC9B1 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */; };
 		2CEE5F6E2006F3C100E86365 /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEE5F6D2006F3C100E86365 /* SettingsModel.swift */; };
@@ -79,9 +80,10 @@
 		2C7B601B2004666A00FF5488 /* ExploreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewController.swift; sourceTree = "<group>"; };
 		2C7B7E09200B726A007CCE7C /* FeedbackModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackModel.swift; sourceTree = "<group>"; };
 		2C87DACE200CA072004F8730 /* Classes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Classes.swift; sourceTree = "<group>"; };
-		2CA3E0CD200961C2005617A9 /* AboutPages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPages.swift; sourceTree = "<group>"; };
 		2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPagesViewController.swift; sourceTree = "<group>"; };
 		2CC3EF61201566A500EBC7B2 /* settings.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
+		2CC3EF67201577B900EBC7B2 /* AboutPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPage.swift; sourceTree = "<group>"; };
+		2CC3EF69201577DD00EBC7B2 /* AboutPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPageView.swift; sourceTree = "<group>"; };
 		2CCE51FC20060E4A00DFC9B1 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		2CEE5F6D2006F3C100E86365 /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModel.swift; sourceTree = "<group>"; };
@@ -195,7 +197,8 @@
 		2CA3E0D420098441005617A9 /* About */ = {
 			isa = PBXGroup;
 			children = (
-				2CA3E0CD200961C2005617A9 /* AboutPages.swift */,
+				2CC3EF67201577B900EBC7B2 /* AboutPage.swift */,
+				2CC3EF69201577DD00EBC7B2 /* AboutPageView.swift */,
 			);
 			path = About;
 			sourceTree = "<group>";
@@ -423,8 +426,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CC3EF642015752000EBC7B2 /* settings.json in Resources */,
 				2C18A776200F3F4900C03B20 /* intro-video.mp4 in Resources */,
-				2CC3EF62201566A600EBC7B2 /* settings.json in Resources */,
 				2CEE5F7620075C0F00E86365 /* GoogleService-Info.plist in Resources */,
 				2C18A770200E98CC00C03B20 /* Assets.xcassets in Resources */,
 			);
@@ -609,14 +612,15 @@
 			files = (
 				2CEE5F6E2006F3C100E86365 /* SettingsModel.swift in Sources */,
 				2C7B60182004665500FF5488 /* ProfileViewController.swift in Sources */,
+				2CC3EF6A201577DD00EBC7B2 /* AboutPageView.swift in Sources */,
 				2C7B7E0A200B726A007CCE7C /* FeedbackModel.swift in Sources */,
-				2CA3E0CE200961C2005617A9 /* AboutPages.swift in Sources */,
 				2CEE5F7A2007619300E86365 /* NetworkManager.swift in Sources */,
 				2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */,
 				2C18A77C200F469700C03B20 /* OnboardingViewController.swift in Sources */,
 				2C87DACF200CA072004F8730 /* Classes.swift in Sources */,
 				2C18A77F20101BA000C03B20 /* LoginController.swift in Sources */,
 				2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */,
+				2CC3EF68201577B900EBC7B2 /* AboutPage.swift in Sources */,
 				2C7B601C2004666A00FF5488 /* ExploreViewController.swift in Sources */,
 				2C4F5F1C200DFE270028B712 /* OnboardingPageCell.swift in Sources */,
 				2C7B601620044F4D00FF5488 /* TabBarController.swift in Sources */,

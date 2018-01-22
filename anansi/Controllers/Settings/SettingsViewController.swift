@@ -7,15 +7,13 @@
 //
 
 import UIKit
-import FirebaseAuth
 //import SafariServices
 
-class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
+class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     // Custom initializers
     private var tableView = UITableView()
-    private var items = [TableRow]()
-    private var about = [AboutPage]()
+    private var items = [SettingsRow]()
     
     // MARK: View Lifecycle
     
@@ -34,14 +32,21 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         // Adds table to view
         view.addSubview(tableView)
         
+        // Fetches data from settings.JSON
+        if let data = dataFromFile("settings") {
+            if let settings = Settings(data: data) {
+                items = settings.structure
+            }
+        }
+        
         // Fetches data (JSON) from database, via Network Manager, to Model
-        NetworkManager.shared.loadSettingsData { [weak self] settings in
+        /*NetworkManager.shared.loadSettingsData { [weak self] settings in
             DispatchQueue.main.async {
                 self!.items = settings.structure
                 self!.about = settings.about
                 self!.tableView.reloadData()
             }
-        }
+        }*/
     }
 
     override func didReceiveMemoryWarning() {
@@ -206,21 +211,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         if identifier == "feedback" {
             controller = FeedbackPagesViewController() // PageViewController for "Give us feedback"
         } else {
-            
-            // Chooses which section to send to AboutPages, based on item.id
-            var aboutSection = [AboutPageSection]()
-            for item in about {
-                if item.id == identifier {
-                    aboutSection = item.section!
-                }
-            }
-            controller = AboutPages(section: aboutSection)
+            controller = AboutPageView(id: identifier) // About Pages
         }
         self.navigationController?.pushViewController(controller, animated: true)
     }
     
     // Handles logout
-    func handleLogout() {
+    private func handleLogout() {
         
         // Alerts the user that the app is not conencted to internet
         if !Reachability.isConnectedToNetwork(){
@@ -231,26 +228,19 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             return
         }
         
-        do {
-            // Logs user out
-            try Auth.auth().signOut()
-            
-            // Sets "isLoggedIn" to false in UserDefaults
-            UserDefaults.standard.setIsLoggedIn(value: false)
-            
-            // Sets transition animation
-            let transition = CATransition()
-            transition.duration = 0.5
-            transition.type = kCATransitionPush
-            transition.subtype = kCATransitionFromLeft
-            transition.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
-            self.view.window!.layer.add(transition, forKey: kCATransition)
-            
-            let loginController = LoginController()
-            present(loginController, animated: false, completion: nil)
-            
-        } catch let logoutError {
-            print(logoutError)
+        NetworkManager.shared.logout {
+            DispatchQueue.main.async {
+                // Sets transition animation
+                let transition = CATransition()
+                transition.duration = 0.5
+                transition.type = kCATransitionPush
+                transition.subtype = kCATransitionFromLeft
+                transition.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
+                self.view.window!.layer.add(transition, forKey: kCATransition)
+                
+                let loginController = LoginController()
+                self.present(loginController, animated: false, completion: nil)
+            }
         }
     }
 }

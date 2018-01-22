@@ -1,14 +1,14 @@
 //
-//  AboutPages.swift
+//  AboutPageView.swift
 //  anansi
 //
-//  Created by João Nuno Gaspar Apura on 12/01/2018.
+//  Created by João Nuno Gaspar Apura on 21/01/2018.
 //  Copyright © 2018 João Apura. All rights reserved.
 //
 
 import UIKit
 
-class AboutPages: UIViewController, UIScrollViewDelegate {
+class AboutPageView: UIViewController, UIScrollViewDelegate {
     
     // Custom initializers
     private let scrollView: UIScrollView = {
@@ -25,9 +25,19 @@ class AboutPages: UIViewController, UIScrollViewDelegate {
     private var section = [AboutPageSection]()
     
     // AboutPages initializer > gets AboutPageSection from SettingsViewController
-    
-    init(section: [AboutPageSection]) {
-        self.section = section
+    init(id: String) {
+        
+        // Fetches about data from settings.JSON
+        if let data = dataFromFile("settings") {
+            if let aboutPages = About(data: data) {
+                for item in aboutPages.data {
+                    if item.id == id {
+                        self.section = item.section!
+                    }
+                }
+            }
+        }
+        
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder aDecoder: NSCoder) {
@@ -98,7 +108,7 @@ class AboutPages: UIViewController, UIScrollViewDelegate {
                 itemTitle.heightAnchor.constraint(equalToConstant: navigationBarHeight),
                 sectionStackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
                 sectionStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
-            ])
+                ])
             
             // Sets contraints to sectionStackView to display the next one after the bottomAnchor of the previous one
             previousViewElement == nil ? NSLayoutConstraint.activate([sectionStackView.topAnchor.constraint(equalTo: scrollView.topAnchor)]) : NSLayoutConstraint.activate([sectionStackView.topAnchor.constraint(equalTo: previousViewElement.bottomAnchor, constant: -8.0)])

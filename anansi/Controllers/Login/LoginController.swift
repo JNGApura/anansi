@@ -7,11 +7,11 @@
 //
 
 import UIKit
-import FirebaseAuth
-import FirebaseDatabase
 
 class LoginController: UIViewController {
-        
+    
+    // Custom initializers
+    
     let backgroundImage: UIImageView = {
         let i = UIImageView(image: #imageLiteral(resourceName: "attendees-bw"))
         i.translatesAutoresizingMaskIntoConstraints = false
@@ -112,19 +112,15 @@ class LoginController: UIViewController {
         return ai
     }()
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+    // MARK: View Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        //view.backgroundColor = .white
         
         // Background image
-        
         view.addSubview(backgroundImage)
-        
         NSLayoutConstraint.activate([
             backgroundImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             backgroundImage.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -141,9 +137,7 @@ class LoginController: UIViewController {
         view.layer.addSublayer(layer)
         
         // Logo
-        
         view.addSubview(logo)
-        
         NSLayoutConstraint.activate([
             logo.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60.0),
             logo.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20.0),
@@ -155,12 +149,10 @@ class LoginController: UIViewController {
         stackView.addArrangedSubview(errorEmail)
         stackView.addArrangedSubview(ticketTextField)
         stackView.addArrangedSubview(errorTicket)
-        
         stackView.setCustomSpacing(30.0, after: sectionTitle)
         stackView.setCustomSpacing(10.0, after: errorEmail)
         
         view.addSubview(stackView)
-        
         NSLayoutConstraint.activate([
             stackView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -35.0),
             stackView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
@@ -169,7 +161,6 @@ class LoginController: UIViewController {
         
         // Login button
         view.addSubview(loginButton)
-        
         NSLayoutConstraint.activate([
             loginButton.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 30.0),
             loginButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
@@ -177,11 +168,10 @@ class LoginController: UIViewController {
             loginButton.widthAnchor.constraint(equalToConstant: 220.0)
         ])
         
-        // Acitvity indicator in login button
+        // Activity indicator (in login button)
         
         loginButton.addSubview(activityIndicator)
         activityIndicator.isHidden = true
-        
         NSLayoutConstraint.activate([
             activityIndicator.centerXAnchor.constraint(equalTo: loginButton.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: loginButton.centerYAnchor),
@@ -189,7 +179,6 @@ class LoginController: UIViewController {
         
         // Support button
         view.addSubview(supportButton)
-        
         NSLayoutConstraint.activate([
             supportButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20.0),
             supportButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20.0),
@@ -201,27 +190,19 @@ class LoginController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         
+        // Email's bottom border
         borderEmail = CALayer()
         borderEmail.frame = CGRect(x: 0, y: emailTextField.frame.size.height - 2.0, width: emailTextField.frame.size.width, height: emailTextField.frame.size.height)
         borderEmail.borderWidth = 2.0
-        if errorEmail.text == "" {
-            borderEmail.borderColor = UIColor.white.cgColor
-        } else {
-            borderEmail.borderColor = UIColor.red.cgColor
-        }
-        
+        errorEmail.text!.isEmpty ? ( borderEmail.borderColor = UIColor.white.cgColor ) : ( borderEmail.borderColor = UIColor.red.cgColor )
         emailTextField.layer.addSublayer(borderEmail)
         emailTextField.layer.masksToBounds = true
         
+        // Ticket's bottom border
         borderTicket = CALayer()
         borderTicket.frame = CGRect(x: 0, y: ticketTextField.frame.size.height - 2.0, width: ticketTextField.frame.size.width, height: ticketTextField.frame.size.height)
         borderTicket.borderWidth = 2.0
-        if errorTicket.text == "" {
-            borderTicket.borderColor = UIColor.white.cgColor
-        } else {
-            borderTicket.borderColor = UIColor.red.cgColor
-        }
-        
+        errorTicket.text!.isEmpty ? ( borderTicket.borderColor = UIColor.white.cgColor ) : ( borderTicket.borderColor = UIColor.red.cgColor )
         ticketTextField.layer.addSublayer(borderTicket)
         ticketTextField.layer.masksToBounds = true
     }
@@ -230,6 +211,16 @@ class LoginController: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
+    // MARK: Layout
+    
+    // White status bar
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
+    // MARK: Custom functions
+    
+    // Send to messenger (support)
     @objc func sendToMessenger() {
         
         let url = URL(string: "https://www.messenger.com/t/tedxistalameda")!
@@ -240,12 +231,15 @@ class LoginController: UIViewController {
         }
     }
     
+    // Handles login, whether is a new user or an existing one
     @objc func handleLogin() {
         
-        guard let email = emailTextField.text, let password = ticketTextField.text else { return }
+        guard let email = emailTextField.text, let ticket = ticketTextField.text else { return }
+        self.errorTicket.text = ""
+        self.errorEmail.text = ""
+        self.showLoadingInButton() // Activity indicator shows up
         
-        self.showLoadingInButton()
-        
+        // Checks if the user is connected to internet
         if !Reachability.isConnectedToNetwork(){
             self.hideLoadingInButton()
             
@@ -257,76 +251,53 @@ class LoginController: UIViewController {
             return
         }
         
-        self.errorTicket.text = ""
-        self.errorEmail.text = ""
-        
-        Auth.auth().signIn(withEmail: email, password: password) { (existingUser, error) in
-            if error != nil, let errorCode = AuthErrorCode(rawValue: error!._code) {
+        // All authentificatin is handled by NetworkManager.
+        // createUser creates a new user, unless email is in incorrect format or ticket does not have 6 characters.
+        // login signs in the user, unless ticket reference doesn't match or email doesn't match
+        NetworkManager.shared.createUser(email: email, ticket: ticket, onFail: { (errCode) in
+            
+            switch errCode {
+            case .invalidEmail:
+                self.errorEmail.text = "Your email has an incorrect format. Try again?"
                 
-                switch errorCode {
-                case .userNotFound:
+            case .weakPassword:
+                self.errorTicket.text = "Ticket reference should have 6 characters. Try again?"
+                if email == "" {
+                    self.errorEmail.text = "Your email has an incorrect format. Try again?"
+                }
+                
+            case .emailAlreadyInUse:
+                
+                NetworkManager.shared.login(email: email, ticket: ticket, onFail: { (errorCode) in
                     
-                    Auth.auth().createUser(withEmail: email, password: password) { (newUser, err) in
-                        if err != nil, let errCode = AuthErrorCode(rawValue: err!._code) {
-                            
-                            self.hideLoadingInButton()
-                            
-                            switch errCode {
-                            case .invalidEmail:
-                                self.errorEmail.text = "Please confirm your email address"
-                                
-                            case .weakPassword:
-                                self.errorTicket.text = "Ticket reference should have 6 characters"
-                                
-                            default:
-                                print("Error: \(String(describing: err))")
-                            }
-                            return
-                        }
+                    switch errorCode {
+                    case .wrongPassword:
+                        self.errorTicket.text = "Your ticket reference doesn't match. Try again?"
                         
-                        guard let uid = newUser?.uid else { return }
+                    case .invalidEmail:
+                        self.errorEmail.text = "Your email doesn't match. Try again?"
                         
-                        // Successfully authenticated user
-                        let databaseReference = Database.database().reference()
-                        let usersReference = databaseReference.child("users").child(uid)
-                        usersReference.updateChildValues([
-                            "email" : email,
-                            "ticket" : password
-                            ], withCompletionBlock: { (erro, usersReference) in
-                                if erro != nil {
-                                    print(erro!.localizedDescription)
-                                    self.hideLoadingInButton()
-                                    return
-                                }
-                                                                
-                                self.errorEmail.text = ""
-                                self.errorTicket.text = ""
-                                self.pushTabBarController()
-                        })
+                    default:
+                        print("Error: \(String(describing: errorCode))")
                     }
                     
-                case .invalidEmail:
-                    self.hideLoadingInButton()
-                    self.errorEmail.text = "Please confirm your email address"
-                    
-                case .wrongPassword:
-                    self.hideLoadingInButton()
-                    self.errorTicket.text = "Please confirm your ticket reference"
-                    
-                default:
-                    self.hideLoadingInButton()
-                    print("Error: \(String(describing: error))")
-                }
-                return
+                }, onSuccess: {
+                    self.pushTabBarController() // If login is successful, sends user to TabBarController
+                })
+                
+            default:
+                print("Error: \(String(describing: errCode))")
             }
             
-            self.errorEmail.text = ""
-            self.errorTicket.text = ""
-            self.pushTabBarController()
+            self.hideLoadingInButton() // Activity indicator is hidden
+            
+        }) {
+            self.pushTabBarController() // If user creation is successful, sends user to TabBarController
         }
     }
-    
-   private func pushTabBarController() {
+
+    // Sends user to TabBarController with custom transition
+    private func pushTabBarController() {
         
         let transition = CATransition()
         transition.duration = 0.5
@@ -339,6 +310,7 @@ class LoginController: UIViewController {
         present(controller, animated: false, completion: nil)
     }
     
+    // Show activity indicator (spinner)
     private func showLoadingInButton() {
         
         loginButton.setTitle("", for: .normal)
@@ -347,6 +319,7 @@ class LoginController: UIViewController {
         activityIndicator.startAnimating()
     }
     
+    // Hides activity indicator (spinner)
     private func hideLoadingInButton() {
         
         loginButton.setTitle("Log into your account", for: .normal)

@@ -10,26 +10,26 @@ import Foundation
 
 // Settings Model
 struct Settings {
-    var structure = [TableRow]()
-    var about = [AboutPage]()
+    var structure = [SettingsRow]()
     
-    init?(data: [String: AnyObject]?) {
-        guard let body = data else { return }
-        
-        // Gets data and maps into the structure object
-        if let structure = body["structure"] as? [[String: Any]] {
-            self.structure = structure.map { TableRow(json: $0)}
-        }
-        
-        // Gets data and maps into the about object
-        if let about = body["about"] as? [[String: Any]] {
-            self.about = about.map { AboutPage(json: $0)}
+    init?(data: Data) {
+        do {
+            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                
+                // Gets table data from json
+                if let structure = json["structure"] as? [[String: Any]] {
+                    self.structure = structure.map { SettingsRow(json: $0) }
+                }
+            }
+        } catch {
+            print("Error deserializing JSON: \(error)")
+            return
         }
     }
 }
 
 // TableRow initialization
-struct TableRow {
+struct SettingsRow {
     var ofType: RowType
     var value: String?
     var iconUrl: String?
@@ -49,27 +49,4 @@ struct TableRow {
 enum RowType {
     case normal
     case section
-}
-
-// AboutSection initialization
-struct AboutPage {
-    var id: String?
-    var section: [AboutPageSection]?
-    
-    init(json: [String : Any]) {
-        self.id = json["id"] as? String
-        if let section = json["section"] as? [[String: Any]] {
-            self.section = section.map {AboutPageSection (json: $0)}
-        }
-    }
-}
-
-struct AboutPageSection {
-    var title: String?
-    var text: String?
-    
-    init(json: [String: Any]){
-        self.title = json["title"] as? String
-        self.text = json["text"] as? String
-    }
 }

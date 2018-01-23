@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import ReachabilitySwift
 
 // Bundle extension to extract release & build versions to use in Settings View Controller
 extension Bundle {

@@ -19,7 +19,7 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UIImagePick
     lazy var profileImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = #imageLiteral(resourceName: "profileImage").withRenderingMode(.alwaysOriginal)
-        imageView.layer.cornerRadius = 50.0
+        imageView.layer.cornerRadius = Const.profileImageHeight / 2
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -40,7 +40,7 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UIImagePick
         label.textAlignment = .center
         label.textColor = Color.background
         label.alpha = 0.0
-        label.font = UIFont.boldSystemFont(ofSize: 17)
+        label.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
         label.text = "You"
         return label
     }()
@@ -72,7 +72,7 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UIImagePick
     private let headerTitle: UILabel = {
         let view = UILabel()
         view.text = "You"
-        view.font = UIFont.boldSystemFont(ofSize: 26)
+        view.font = UIFont.boldSystemFont(ofSize: Const.largeTitleFontSize)
         view.textColor = Color.background
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -90,7 +90,7 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UIImagePick
         let view = LabelWithInsets()
         view.text = "Participant"
         view.textColor = Color.secondary
-        view.font = UIFont.systemFont(ofSize: 16)
+        view.font = UIFont.systemFont(ofSize: Const.calloutFontSize)
         view.layer.cornerRadius = 15.0
         view.layer.masksToBounds = true
         view.backgroundColor = Color.background
@@ -157,7 +157,7 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UIImagePick
             let settingsButton: UIButton = {
                 let button = UIButton(type: .system)
                 button.setImage(#imageLiteral(resourceName: "settings").withRenderingMode(.alwaysTemplate), for: .normal)
-                button.frame = CGRect(x: 0, y: 0, width: 38, height: 38)
+                button.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
                 button.tintColor = Color.background
                 button.addTarget(self, action: #selector(navigateToSettingsViewController), for: .touchUpInside)
                 return button
@@ -181,12 +181,12 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UIImagePick
             internalView.topAnchor.constraint(equalTo: internalStackView.topAnchor, constant: 132.0),
             header.heightAnchor.constraint(equalToConstant: 132.0),
             
-            headerTitle.topAnchor.constraint(equalTo: header.topAnchor, constant: 16.0),
-            headerTitle.leadingAnchor.constraint(equalTo: header.leadingAnchor, constant: 16.0),
+            headerTitle.topAnchor.constraint(equalTo: header.topAnchor, constant: Const.marginEight * 2),
+            headerTitle.leadingAnchor.constraint(equalTo: header.leadingAnchor, constant: Const.marginEight * 2),
             
             headerTitleBottomBorder.topAnchor.constraint(equalTo: headerTitle.bottomAnchor),
             headerTitleBottomBorder.leadingAnchor.constraint(equalTo: headerTitle.leadingAnchor),
-            headerTitleBottomBorder.widthAnchor.constraint(equalToConstant: 40.0),
+            headerTitleBottomBorder.widthAnchor.constraint(equalToConstant: Const.marginAnchorsToContent * 2),
             headerTitleBottomBorder.heightAnchor.constraint(equalToConstant: 2.0),
             
             participantTypeBox.topAnchor.constraint(equalTo: header.topAnchor, constant: 80.0),
@@ -194,24 +194,21 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UIImagePick
             participantTypeBox.widthAnchor.constraint(equalToConstant: 135.0),
             participantTypeBox.heightAnchor.constraint(equalToConstant: 30.0),
             
-            profileImage.rightAnchor.constraint(equalTo: header.rightAnchor, constant: -16.0),
-            profileImage.topAnchor.constraint(equalTo: header.topAnchor, constant: 16.0),
-            profileImage.heightAnchor.constraint(equalToConstant: 100),
+            profileImage.rightAnchor.constraint(equalTo: header.rightAnchor, constant: -Const.marginEight * 2),
+            profileImage.topAnchor.constraint(equalTo: header.topAnchor, constant: Const.marginEight * 2),
+            profileImage.heightAnchor.constraint(equalToConstant: Const.profileImageHeight),
             profileImage.widthAnchor.constraint(equalTo: profileImage.heightAnchor)
         ])
     }
     
     private func checkIfUserIsLoggedIn() {
         
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value) { (snapshot) in
-            if let dictionary = snapshot.value as? [String: AnyObject] {
-                
-                if let profileImageURL = dictionary["profileImageURL"] as? String {
-                    self.profileImage.loadImageUsingCacheWithUrlString(urlString: profileImageURL) }
-                else {
-                    self.profileImage.image = #imageLiteral(resourceName: "profileImage").withRenderingMode(.alwaysOriginal)
-                }
+        NetworkManager.shared.isUserLoggedIn { (dictionary) in
+            
+            if let profileImageURL = dictionary["profileImageURL"] as? String {
+                self.profileImage.loadImageUsingCacheWithUrlString(urlString: profileImageURL) }
+            else {
+                self.profileImage.image = #imageLiteral(resourceName: "profileImage").withRenderingMode(.alwaysOriginal)
             }
         }
     }
@@ -274,38 +271,12 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UIImagePick
         if let selectedImage = selectedImageFromPicker {
             self.profileImage.image = selectedImage
             
-            guard let uid = Auth.auth().currentUser?.uid else { return }
-
-            // Stores profileImage into Firebase Storage
-            let imageName = NSUUID().uuidString
-            let storageRef = Storage.storage().reference().child("profile_images").child("\(imageName).png")
-            
-            if let profileImage = self.profileImage.image, let uploadData = UIImageJPEGRepresentation(profileImage, 0.1) {
-                storageRef.putData(uploadData, metadata: nil, completion: { (metadata, error) in
-                    
-                    if error != nil {
-                        print(error!)
-                        return
-                    }
-                    
-                    if let profileImageURL = metadata?.downloadURL()?.absoluteString {
-                        let values = ["profileImageURL": profileImageURL]
-                        
-                        // Register profileImage's URL (from Firebase Storage) into database
-                        let databaseReference = Database.database().reference()
-                        let usersReference = databaseReference.child("users").child(uid)
-                        usersReference.updateChildValues(values, withCompletionBlock: { (error, usersReference) in
-                            if error != nil {
-                                print(error!.localizedDescription)
-                                return
-                            }
-                        })
-                    }
-                    
-                })
-            }
+            NetworkManager.shared.storesImageInDatabase(folder: "profile_images", image: selectedImage, onSuccess: { (imageURL) in
+                
+                NetworkManager.shared.registerData(name: "profileImageURL", value: imageURL)
+            })
         }
-
+        
         dismiss(animated: true, completion: nil)
     }
     

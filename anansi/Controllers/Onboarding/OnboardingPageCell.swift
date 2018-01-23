@@ -31,7 +31,7 @@ class OnboardingPageCell : UICollectionViewCell {
         title.textColor = Color.primary
         title.numberOfLines = 0
         title.lineBreakMode = NSLineBreakMode.byWordWrapping
-        title.font = UIFont.boldSystemFont(ofSize: 24.0)
+        title.font = UIFont.boldSystemFont(ofSize: Const.titleFontSize)
         return title
     }()
     
@@ -39,7 +39,7 @@ class OnboardingPageCell : UICollectionViewCell {
         let description = UILabel()
         description.numberOfLines = 0
         description.lineBreakMode = NSLineBreakMode.byWordWrapping
-        description.font = UIFont.systemFont(ofSize: 17.0)
+        description.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
         return description
     }()
     
@@ -69,7 +69,7 @@ class OnboardingPageCell : UICollectionViewCell {
         // Adds stackView to pagecell
         stackView.addArrangedSubview(cellTitle)
         stackView.addArrangedSubview(cellDescription)
-        stackView.setCustomSpacing(20.0, after: cellTitle)
+        stackView.setCustomSpacing(Const.marginAnchorsToContent, after: cellTitle)
         addSubview(stackView)
         
         // Sets up layout constraints
@@ -84,15 +84,17 @@ class OnboardingPageCell : UICollectionViewCell {
     
     private func setupLayoutConstraints() {
         
+        let topBorderHeight : CGFloat = 4.0
+        
         NSLayoutConstraint.activate([
             topBorder.topAnchor.constraint(equalTo: topAnchor),
             topBorder.leadingAnchor.constraint(equalTo: leadingAnchor),
             topBorder.trailingAnchor.constraint(equalTo: trailingAnchor),
-            topBorder.heightAnchor.constraint(equalToConstant: 4.0),
+            topBorder.heightAnchor.constraint(equalToConstant: topBorderHeight),
             
-            stackView.topAnchor.constraint(equalTo: topBorder.topAnchor, constant: 36.0),
-            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20.0),
-            stackView.widthAnchor.constraint(equalTo: widthAnchor, constant: -40.0)
+            stackView.topAnchor.constraint(equalTo: topBorder.topAnchor, constant: Const.marginAnchorsToContent * 2 - topBorderHeight),
+            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginAnchorsToContent),
+            stackView.widthAnchor.constraint(equalTo: widthAnchor, constant: -Const.marginAnchorsToContent * 2)
         ])
                 
     }

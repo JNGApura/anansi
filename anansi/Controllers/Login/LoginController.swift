@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ReachabilitySwift
 
 class LoginController: UIViewController {
     
@@ -41,14 +42,14 @@ class LoginController: UIViewController {
         let st = UILabel()
         st.textColor = Color.background
         st.text = "Log in"
-        st.font = UIFont.boldSystemFont(ofSize: 24.0)
+        st.font = UIFont.boldSystemFont(ofSize: Const.titleFontSize)
         return st
     }()
     
     let emailTextField: UITextField = {
         let tf = UITextField()
         tf.attributedPlaceholder = NSAttributedString(string: "Email address", attributes: [NSAttributedStringKey.foregroundColor: Color.background.withAlphaComponent(0.6)])
-        tf.font = UIFont.boldSystemFont(ofSize: 17)
+        tf.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
         tf.textColor = Color.background
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
@@ -61,7 +62,7 @@ class LoginController: UIViewController {
     let errorEmail: UILabel = {
         let tf = UILabel()
         tf.text = ""
-        tf.font = UIFont.boldSystemFont(ofSize: 13)
+        tf.font = UIFont.boldSystemFont(ofSize: Const.footnoteFontSize)
         tf.textColor = Color.primary
         return tf
     }()
@@ -69,7 +70,7 @@ class LoginController: UIViewController {
     let ticketTextField: UITextField = {
         let tf = UITextField()
         tf.attributedPlaceholder = NSAttributedString(string: "Ticket reference", attributes: [NSAttributedStringKey.foregroundColor: Color.background.withAlphaComponent(0.6)])
-        tf.font = UIFont.boldSystemFont(ofSize: 17)
+        tf.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
         tf.textColor = Color.background
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
@@ -81,7 +82,7 @@ class LoginController: UIViewController {
     let errorTicket: UILabel = {
         let tf = UILabel()
         tf.text = ""
-        tf.font = UIFont.boldSystemFont(ofSize: 13)
+        tf.font = UIFont.boldSystemFont(ofSize: Const.footnoteFontSize)
         tf.textColor = Color.primary
         return tf
     }()
@@ -139,8 +140,8 @@ class LoginController: UIViewController {
         // Logo
         view.addSubview(logo)
         NSLayoutConstraint.activate([
-            logo.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60.0),
-            logo.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20.0),
+            logo.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Const.marginAnchorsToContent * 3),
+            logo.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.marginAnchorsToContent),
         ])
         
         // Add email & ticket reference
@@ -149,22 +150,22 @@ class LoginController: UIViewController {
         stackView.addArrangedSubview(errorEmail)
         stackView.addArrangedSubview(ticketTextField)
         stackView.addArrangedSubview(errorTicket)
-        stackView.setCustomSpacing(30.0, after: sectionTitle)
-        stackView.setCustomSpacing(10.0, after: errorEmail)
+        stackView.setCustomSpacing(Const.marginAnchorsToContent * 1.5, after: sectionTitle)
+        stackView.setCustomSpacing(Const.marginAnchorsToContent * 0.5, after: errorEmail)
         
         view.addSubview(stackView)
         NSLayoutConstraint.activate([
-            stackView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -35.0),
+            stackView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -Const.marginAnchorsToContent * 2 - 5.0),
             stackView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            stackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -40.0)
+            stackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -Const.marginAnchorsToContent * 2)
         ])
         
         // Login button
         view.addSubview(loginButton)
         NSLayoutConstraint.activate([
-            loginButton.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 30.0),
+            loginButton.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: Const.marginAnchorsToContent * 1.5),
             loginButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            loginButton.heightAnchor.constraint(equalToConstant: 48.0),
+            loginButton.heightAnchor.constraint(equalToConstant: Const.buttonHeight),
             loginButton.widthAnchor.constraint(equalToConstant: 220.0)
         ])
         
@@ -180,8 +181,8 @@ class LoginController: UIViewController {
         // Support button
         view.addSubview(supportButton)
         NSLayoutConstraint.activate([
-            supportButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20.0),
-            supportButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20.0),
+            supportButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.marginAnchorsToContent),
+            supportButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent),
         ])
         
         // Sets "isOnboarded" to true in UserDefaults
@@ -205,6 +206,16 @@ class LoginController: UIViewController {
         errorTicket.text!.isEmpty ? ( borderTicket.borderColor = UIColor.white.cgColor ) : ( borderTicket.borderColor = UIColor.red.cgColor )
         ticketTextField.layer.addSublayer(borderTicket)
         ticketTextField.layer.masksToBounds = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        ReachabilityManager.shared.addListener(listener: self)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        ReachabilityManager.shared.removeListener(listener: self)
     }
 
     override func didReceiveMemoryWarning() {
@@ -239,8 +250,10 @@ class LoginController: UIViewController {
         self.errorEmail.text = ""
         self.showLoadingInButton() // Activity indicator shows up
         
-        // Checks if the user is connected to internet
-        if !Reachability.isConnectedToNetwork(){
+        
+        // Presents an alert to the user informing the network is unreachable
+        if !ReachabilityManager.shared.reachability.isReachable {
+            
             self.hideLoadingInButton()
             
             let alertController = UIAlertController(title: "No internet connection", message: "It seems you are not connected to the internet. Please enable Wifi or Cellular data, and try again.", preferredStyle: .alert)
@@ -325,5 +338,33 @@ class LoginController: UIViewController {
         loginButton.setTitle("Log into your account", for: .normal)
         loginButton.isEnabled = true
         activityIndicator.isHidden = true
+    }
+}
+
+// Making LoginController to conform to NetworkStatusListener protocol
+extension LoginController: NetworkStatusListener {
+    
+    public func networkStatusDidChange(status: Reachability.NetworkStatus) {
+        
+        if status == .notReachable {
+            
+            DispatchQueue.main.async {
+                self.loginButton.isEnabled = false
+                self.loginButton.alpha = 0.4
+            }
+            
+            // Presents an alert to the user informing the network is unreachable
+            let alertController = UIAlertController(title: "No internet connection", message: "It seems you are not connected to the internet. Please enable Wifi or Cellular data, and try again.", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "Got it!", style: .default, handler: nil)
+            alertController.addAction(ok)
+            present(alertController, animated: true, completion: nil)
+            
+        } else {
+            
+            DispatchQueue.main.async {
+                self.loginButton.isEnabled = true
+                self.loginButton.alpha = 1
+            }
+        }
     }
 }

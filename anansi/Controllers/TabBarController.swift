@@ -12,7 +12,7 @@ class TabBarController: UITabBarController {
 
     // Custom initializers
     
-    var itemList = ["Profile", "Event", "Explore"]
+    var itemList = ["Profile", "Event", "Explore", "Connect"]
     fileprivate var tabBarViewControllers = [UINavigationController]()
     
     // MARK: View Lifecycle

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import FirebaseDatabase
 
 class ExploreViewController: UITableViewController {
     
@@ -33,24 +32,22 @@ class ExploreViewController: UITableViewController {
     
     func fetchUsers() {
         
-        Database.database().reference().child("users").observe(.childAdded, with: { (snapshot) in
-            if !snapshot.exists() { return } // just to be safe
-            if let dictionary = snapshot.value as? [String: AnyObject] {
-                let user = User()
-                let email = dictionary["email"] as? String ?? ""
-                let ticketReference = dictionary["ticket"] as? String ?? ""
-                let profileImage = dictionary["profileImageURL"] as? String ?? ""
-                
-                user.email = email
-                user.ticketReference = ticketReference
-                user.profileImageURL = profileImage
-                self.users.append(user)
-                
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
+        NetworkManager.shared.fetchUserData { (dictionary) in
+            
+            let user = User()
+            let email = dictionary["email"] as? String ?? ""
+            let ticketReference = dictionary["ticket"] as? String ?? ""
+            let profileImage = dictionary["profileImageURL"] as? String ?? ""
+            
+            user.email = email
+            user.ticketReference = ticketReference
+            user.profileImageURL = profileImage
+            self.users.append(user)
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
             }
-        }, withCancel: nil)
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -87,14 +84,14 @@ class UserCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        textLabel?.frame = CGRect(x: 64, y: textLabel!.frame.origin.y - 2, width: textLabel!.frame.width, height: textLabel!.frame.height)
-        detailTextLabel?.frame = CGRect(x: 64, y: detailTextLabel!.frame.origin.y + 2, width: detailTextLabel!.frame.width, height: detailTextLabel!.frame.height)
+        textLabel?.frame = CGRect(x: Const.exploreImageHeight + 2 * Const.marginEight, y: textLabel!.frame.origin.y - 2, width: textLabel!.frame.width, height: textLabel!.frame.height)
+        detailTextLabel?.frame = CGRect(x: Const.exploreImageHeight + 2 * Const.marginEight, y: detailTextLabel!.frame.origin.y + 2, width: detailTextLabel!.frame.width, height: detailTextLabel!.frame.height)
     }
     
     let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.layer.cornerRadius = 24
+        imageView.layer.cornerRadius = Const.exploreImageHeight / 2
         imageView.layer.masksToBounds = true
         return imageView
     }()
@@ -104,10 +101,10 @@ class UserCell: UITableViewCell {
         
         addSubview(profileImageView)
         NSLayoutConstraint.activate([
-            profileImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            profileImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight),
             profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            profileImageView.widthAnchor.constraint(equalToConstant: 48.0),
-            profileImageView.heightAnchor.constraint(equalToConstant: 48.0)
+            profileImageView.widthAnchor.constraint(equalToConstant: Const.exploreImageHeight),
+            profileImageView.heightAnchor.constraint(equalToConstant: Const.exploreImageHeight)
         ])
     }
     

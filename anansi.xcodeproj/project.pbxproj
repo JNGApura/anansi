@@ -23,6 +23,7 @@
 		2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B60192004666100FF5488 /* EventViewController.swift */; };
 		2C7B601C2004666A00FF5488 /* ExploreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601B2004666A00FF5488 /* ExploreViewController.swift */; };
 		2C7B7E0A200B726A007CCE7C /* FeedbackModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B7E09200B726A007CCE7C /* FeedbackModel.swift */; };
+		2C7DE7DC2016D7AF00EEB1F4 /* ConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DE7DB2016D7AF00EEB1F4 /* ConnectViewController.swift */; };
 		2C87DACF200CA072004F8730 /* Classes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C87DACE200CA072004F8730 /* Classes.swift */; };
 		2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */; };
 		2CC3EF642015752000EBC7B2 /* settings.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CC3EF61201566A500EBC7B2 /* settings.json */; };
@@ -79,6 +80,7 @@
 		2C7B60192004666100FF5488 /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
 		2C7B601B2004666A00FF5488 /* ExploreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewController.swift; sourceTree = "<group>"; };
 		2C7B7E09200B726A007CCE7C /* FeedbackModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackModel.swift; sourceTree = "<group>"; };
+		2C7DE7DB2016D7AF00EEB1F4 /* ConnectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewController.swift; sourceTree = "<group>"; };
 		2C87DACE200CA072004F8730 /* Classes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Classes.swift; sourceTree = "<group>"; };
 		2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPagesViewController.swift; sourceTree = "<group>"; };
 		2CC3EF61201566A500EBC7B2 /* settings.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
@@ -165,6 +167,15 @@
 			path = anansi;
 			sourceTree = "<group>";
 		};
+		2C7DE7DA2016D78B00EEB1F4 /* Connect */ = {
+			isa = PBXGroup;
+			children = (
+				2C7DE7DB2016D7AF00EEB1F4 /* ConnectViewController.swift */,
+			);
+			name = Connect;
+			path = anansi/Controllers/Connect;
+			sourceTree = SOURCE_ROOT;
+		};
 		2C87DAD0200CA0BC004F8730 /* Network */ = {
 			isa = PBXGroup;
 			children = (
@@ -222,6 +233,7 @@
 			isa = PBXGroup;
 			children = (
 				2C7B601520044F4D00FF5488 /* TabBarController.swift */,
+				2C7DE7DA2016D78B00EEB1F4 /* Connect */,
 				2CCE52002006127300DFC9B1 /* Event */,
 				2CCE52042006127300DFC9B1 /* Explore */,
 				2CCE52032006127300DFC9B1 /* Onboarding */,
@@ -555,6 +567,7 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-anansi/Pods-anansi-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/ReachabilitySwift.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
@@ -562,6 +575,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReachabilitySwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
@@ -614,6 +628,7 @@
 				2C7B60182004665500FF5488 /* ProfileViewController.swift in Sources */,
 				2CC3EF6A201577DD00EBC7B2 /* AboutPageView.swift in Sources */,
 				2C7B7E0A200B726A007CCE7C /* FeedbackModel.swift in Sources */,
+				2C7DE7DC2016D7AF00EEB1F4 /* ConnectViewController.swift in Sources */,
 				2CEE5F7A2007619300E86365 /* NetworkManager.swift in Sources */,
 				2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */,
 				2C18A77C200F469700C03B20 /* OnboardingViewController.swift in Sources */,

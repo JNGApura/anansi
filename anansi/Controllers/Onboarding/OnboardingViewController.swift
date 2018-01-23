@@ -103,7 +103,7 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
             
             // Adds player to AVPlayerViewController
             let videoSafeWidth = view.safeAreaLayoutGuide.layoutFrame.width
-            let videoSafeHeight = view.safeAreaLayoutGuide.layoutFrame.size.height * (1 - multiplier) + 44.0
+            let videoSafeHeight = view.safeAreaLayoutGuide.layoutFrame.size.height * (1 - multiplier) + Const.marginAnchorsToContent + 4.0
             
             avPlayerController.player = AVPlayer(url: URL.init(fileURLWithPath: filepath))
             avPlayerController.view.frame = CGRect(x: 0.0, y: 0.0, width: videoSafeWidth, height: videoSafeHeight)
@@ -155,7 +155,7 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
         
         NSLayoutConstraint.activate([
             soundButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0.0),
-            soundButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16.0),
+            soundButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent + 4.0),
             
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
@@ -164,9 +164,9 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
             collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: multiplier),
             
             bottomControlStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            bottomControlStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20.0),
-            bottomControlStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20.0),
-            bottomControlStackView.heightAnchor.constraint(equalToConstant: 50.0)
+            bottomControlStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.marginAnchorsToContent),
+            bottomControlStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent),
+            bottomControlStackView.heightAnchor.constraint(equalToConstant: Const.marginAnchorsToContent * 2.5)
         ])
     }
     

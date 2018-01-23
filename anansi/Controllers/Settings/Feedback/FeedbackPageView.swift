@@ -11,9 +11,7 @@ import FirebaseDatabase
 
 class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelegate {
     
-    // Custom initializers
-    private let marginDist = 20.0
-    
+    // Custom initializers    
     private let pageIdentifier : Int
     
     private let page : FeedbackPage
@@ -32,7 +30,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         title.textColor = Color.primary
         title.numberOfLines = 0
         title.lineBreakMode = NSLineBreakMode.byWordWrapping
-        title.font = UIFont.boldSystemFont(ofSize: 24.0)
+        title.font = UIFont.boldSystemFont(ofSize: Const.titleFontSize)
         return title
     }()
     
@@ -40,13 +38,13 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         let description = UILabel()
         description.numberOfLines = 0
         description.lineBreakMode = NSLineBreakMode.byWordWrapping
-        description.font = UIFont.systemFont(ofSize: 17.0)
+        description.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
         return description
     }()
     
     private lazy var feedbackTextBox: UITextView = {
         let textBox = UITextView()
-        textBox.font = UIFont.systemFont(ofSize: 16.0)
+        textBox.font = UIFont.systemFont(ofSize: Const.bodyFontSize - 1.0) // 16.0
         textBox.backgroundColor = Color.tertiary.withAlphaComponent(0.4)
         textBox.textColor = Color.secondary.withAlphaComponent(0.8)
         textBox.isEditable = true
@@ -85,7 +83,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         let ssv = UIStackView()
         ssv.translatesAutoresizingMaskIntoConstraints = false
         ssv.distribution = .fillEqually
-        ssv.spacing = -80.0
+        ssv.spacing = -Const.marginAnchorsToContent*4
         return ssv
     }()
     
@@ -130,7 +128,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         pageDescription.text = page.description
         pageDescription.formatTextWithLineSpacing(lineSpacing: 10, lineHeightMultiple: 1.2, hyphenation: 0.5, alignment: .left)
         sectionStackView.addArrangedSubview(pageDescription)
-        sectionStackView.setCustomSpacing(20.0, after: pageTitle)
+        sectionStackView.setCustomSpacing(Const.marginAnchorsToContent, after: pageTitle)
         
         // Set feedback textbox
         if pageIdentifier == 2 {
@@ -138,7 +136,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
             feedbackTextBox.text = feedbackTextLabel
             feedbackTextBox.formatTextWithLineSpacing(lineSpacing: 8, lineHeightMultiple: 1.15, hyphenation: 0.5, alignment: .left)
             sectionStackView.addArrangedSubview(feedbackTextBox)
-            sectionStackView.setCustomSpacing(20.0, after: pageDescription)
+            sectionStackView.setCustomSpacing(Const.marginAnchorsToContent, after: pageDescription)
         }
         
         // Sets scrollview for entire view
@@ -240,21 +238,21 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
             sectionStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             sectionStackView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: CGFloat(view.frame.size.height / 4)),
             
-            pageTitle.widthAnchor.constraint(equalTo: sectionStackView.widthAnchor, constant: CGFloat(-marginDist*2)),
+            pageTitle.widthAnchor.constraint(equalTo: sectionStackView.widthAnchor, constant: -Const.marginAnchorsToContent * 2),
             pageTitle.topAnchor.constraint(equalTo: sectionStackView.topAnchor),
-            pageTitle.leadingAnchor.constraint(equalTo: sectionStackView.leadingAnchor, constant: CGFloat(marginDist)),
+            pageTitle.leadingAnchor.constraint(equalTo: sectionStackView.leadingAnchor, constant: Const.marginAnchorsToContent),
         ])
 
         // Activates contraints the feedbackTextBox, if exists
         if pageIdentifier == 2 {
-            NSLayoutConstraint.activate([feedbackTextBox.heightAnchor.constraint(equalToConstant: CGFloat(marginDist*9 - 4.0))])
+            NSLayoutConstraint.activate([feedbackTextBox.heightAnchor.constraint(equalToConstant: Const.marginAnchorsToContent * 9 - 4.0)])
         }
         
         // Activates contraints imageStackView
         if pageIdentifier == 0 {
             
             NSLayoutConstraint.activate([
-                iconStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: CGFloat(-marginDist*3)),
+                iconStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.marginAnchorsToContent * 3),
                 iconStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
                 iconStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
             ])
@@ -262,20 +260,20 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         // Activates contraints buttonStackView
         } else {
         
-            var buttonAreaHeight = marginDist*5
-            var distanceFromBottom = 0.0
+            var buttonAreaHeight = Const.marginAnchorsToContent * 5
+            var distanceFromBottom : CGFloat = 0.0
             
             // Changes buttonAreaHeight and distanceFromBottom because we now have only ONE button
             if pageIdentifier == 3 {
-                buttonAreaHeight = marginDist*2.5 - 2.0
-                distanceFromBottom = marginDist*1.25
+                buttonAreaHeight = Const.marginAnchorsToContent * 2.5 - 2.0
+                distanceFromBottom = Const.marginAnchorsToContent * 1.25
             }
             
             NSLayoutConstraint.activate([
-                buttonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: CGFloat(-distanceFromBottom)),
-                buttonStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: CGFloat(marginDist*4)),
-                buttonStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: CGFloat(-marginDist*4)),
-                buttonStackView.heightAnchor.constraint(equalToConstant: CGFloat(buttonAreaHeight))
+                buttonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -distanceFromBottom),
+                buttonStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.marginAnchorsToContent * 4),
+                buttonStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent * 4),
+                buttonStackView.heightAnchor.constraint(equalToConstant: buttonAreaHeight)
             ])
         }
     }

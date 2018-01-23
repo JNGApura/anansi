@@ -76,7 +76,7 @@ class AboutPageView: UIViewController, UIScrollViewDelegate {
             // Creates itemTitle for sectionStackView
             let itemTitle: UILabel = {
                 let title = UILabel()
-                title.font = UIFont.boldSystemFont(ofSize: 22)
+                title.font = UIFont.boldSystemFont(ofSize: Const.headlineFontSize)
                 title.textColor = Color.primary
                 title.text = item.title!
                 return title
@@ -102,9 +102,9 @@ class AboutPageView: UIViewController, UIScrollViewDelegate {
             
             // Adds constraints
             NSLayoutConstraint.activate([
-                itemTitle.widthAnchor.constraint(equalTo: sectionStackView.widthAnchor, constant: -40.0),
+                itemTitle.widthAnchor.constraint(equalTo: sectionStackView.widthAnchor, constant: -Const.marginAnchorsToContent * 2),
                 itemTitle.topAnchor.constraint(equalTo: sectionStackView.topAnchor, constant: 4.0),
-                itemTitle.leadingAnchor.constraint(equalTo: sectionStackView.leadingAnchor, constant: 20.0),
+                itemTitle.leadingAnchor.constraint(equalTo: sectionStackView.leadingAnchor, constant: Const.marginAnchorsToContent),
                 itemTitle.heightAnchor.constraint(equalToConstant: navigationBarHeight),
                 sectionStackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
                 sectionStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)

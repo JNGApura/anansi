@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import ReachabilitySwift
 //import SafariServices
 
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-
+    
     // Custom initializers
     private var tableView = UITableView()
     private var items = [SettingsRow]()
@@ -38,15 +39,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 items = settings.structure
             }
         }
-        
-        // Fetches data (JSON) from database, via Network Manager, to Model
-        /*NetworkManager.shared.loadSettingsData { [weak self] settings in
-            DispatchQueue.main.async {
-                self!.items = settings.structure
-                self!.about = settings.about
-                self!.tableView.reloadData()
-            }
-        }*/
     }
 
     override func didReceiveMemoryWarning() {
@@ -63,9 +55,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             navigationItem.title = title
             
             // Set custom font for title and right button label
-            navigationBar.titleTextAttributes = [NSAttributedStringKey.font : UIFont.boldSystemFont(ofSize: 17)]
-            navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedStringKey.font : UIFont.boldSystemFont(ofSize: 17)], for: .normal)}
-        
+            navigationBar.titleTextAttributes = [NSAttributedStringKey.font : UIFont.boldSystemFont(ofSize: Const.bodyFontSize)]
+            navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedStringKey.font : UIFont.boldSystemFont(ofSize: Const.bodyFontSize)], for: .normal)}
     }
     
     private func setupTableView() {
@@ -95,7 +86,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     // Set row height - all rows have 44.0, expect the last one
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return indexPath.row == (items.count - 1) ? 66.0 : 44.0
+        return indexPath.row == (items.count - 1) ? Const.settingsRowHeight*1.5 : Const.settingsRowHeight
     }
     
     // Customizes cell at specific index
@@ -107,7 +98,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         switch item.ofType {
         case .section:
             cell.textLabel?.text = item.value
-            cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 15)
+            cell.textLabel?.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
             cell.backgroundColor = Color.tertiary
             cell.accessoryView = .none
             cell.selectionStyle = .none
@@ -134,22 +125,22 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 cell.accessoryView = switchView
                 cell.selectionStyle = .none
                 cell.isMultipleTouchEnabled = false
-                cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
+                cell.textLabel?.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
                 //cell.isUserInteractionEnabled = false
                 
             case "popup"?:
                 cell.accessoryView = .none
-                cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 15)
+                cell.textLabel?.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
                 cell.textLabel?.textColor = Color.primary
 
             default:
                 cell.accessoryView = .none
-                cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
+                cell.textLabel?.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
             }
         }
         
         if indexPath.row == (items.count - 1) {
-            cell.textLabel?.font = UIFont.systemFont(ofSize: 11)
+            cell.textLabel?.font = UIFont.systemFont(ofSize: Const.captionFontSize)
             cell.textLabel?.text = "Made with ❤️ in Lisbon\n\(Bundle.main.releaseVersionBuildPretty)"
             cell.textLabel?.formatTextWithLineSpacing(lineSpacing: 8.0, alignment: .center)
             cell.textLabel?.numberOfLines = 0;
@@ -175,8 +166,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             handleLogout()
         }
         
-        // TO DO: add logout action (better UX)
-        
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -192,6 +181,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     // Open URL from a String
     private func openURLfromString(string : String) {
+        
         let url = URL(string: string)!
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
@@ -219,16 +209,19 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     // Handles logout
     private func handleLogout() {
         
-        // Alerts the user that the app is not conencted to internet
-        if !Reachability.isConnectedToNetwork(){
+        // Presents an alert to the user informing the network is unreachable
+        if !ReachabilityManager.shared.reachability.isReachable {
+            
             let alertController = UIAlertController(title: "No internet connection", message: "It seems you are not connected to the internet. Please enable Wifi or Cellular data, and try again.", preferredStyle: .alert)
             let ok = UIAlertAction(title: "Got it!", style: .default, handler: nil)
             alertController.addAction(ok)
             present(alertController, animated: true, completion: nil)
+            
             return
         }
         
         NetworkManager.shared.logout {
+            
             DispatchQueue.main.async {
                 // Sets transition animation
                 let transition = CATransition()

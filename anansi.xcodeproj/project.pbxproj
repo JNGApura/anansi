@@ -24,6 +24,7 @@
 		2C7B601C2004666A00FF5488 /* ExploreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601B2004666A00FF5488 /* ExploreViewController.swift */; };
 		2C7B7E0A200B726A007CCE7C /* FeedbackModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B7E09200B726A007CCE7C /* FeedbackModel.swift */; };
 		2C7DE7DC2016D7AF00EEB1F4 /* ConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DE7DB2016D7AF00EEB1F4 /* ConnectViewController.swift */; };
+		2C7DE7F1201740D700EEB1F4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C7DE7F0201740D700EEB1F4 /* LaunchScreen.storyboard */; };
 		2C87DACF200CA072004F8730 /* Classes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C87DACE200CA072004F8730 /* Classes.swift */; };
 		2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */; };
 		2CC3EF642015752000EBC7B2 /* settings.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CC3EF61201566A500EBC7B2 /* settings.json */; };
@@ -70,7 +71,6 @@
 		2C708BDB200C40A0006E5ABD /* FeedbackPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPageView.swift; sourceTree = "<group>"; };
 		2C70FBC420021793002E97E7 /* anansi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = anansi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C70FBC720021793002E97E7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		2C70FBD320021793002E97E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2C70FBD520021793002E97E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = anansi/SupportFiles/Info.plist; sourceTree = SOURCE_ROOT; };
 		2C70FBDA20021794002E97E7 /* anansiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = anansiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C70FBE520021794002E97E7 /* anansiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = anansiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -81,6 +81,7 @@
 		2C7B601B2004666A00FF5488 /* ExploreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewController.swift; sourceTree = "<group>"; };
 		2C7B7E09200B726A007CCE7C /* FeedbackModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackModel.swift; sourceTree = "<group>"; };
 		2C7DE7DB2016D7AF00EEB1F4 /* ConnectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewController.swift; sourceTree = "<group>"; };
+		2C7DE7F0201740D700EEB1F4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2C87DACE200CA072004F8730 /* Classes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Classes.swift; sourceTree = "<group>"; };
 		2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPagesViewController.swift; sourceTree = "<group>"; };
 		2CC3EF61201566A500EBC7B2 /* settings.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
@@ -221,7 +222,7 @@
 				2C87DAD1200CA0BC004F8730 /* Helpers */,
 				2C87DAD0200CA0BC004F8730 /* Network */,
 				2C70FBC720021793002E97E7 /* AppDelegate.swift */,
-				2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */,
+				2C7DE7F0201740D700EEB1F4 /* LaunchScreen.storyboard */,
 				2C70FBD520021793002E97E7 /* Info.plist */,
 				2CEE5F7520075C0F00E86365 /* GoogleService-Info.plist */,
 				2CEE5F7B20077C4100E86365 /* anansi.entitlements */,
@@ -441,6 +442,7 @@
 				2CC3EF642015752000EBC7B2 /* settings.json in Resources */,
 				2C18A776200F3F4900C03B20 /* intro-video.mp4 in Resources */,
 				2CEE5F7620075C0F00E86365 /* GoogleService-Info.plist in Resources */,
+				2C7DE7F1201740D700EEB1F4 /* LaunchScreen.storyboard in Resources */,
 				2C18A770200E98CC00C03B20 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -678,17 +680,6 @@
 			targetProxy = 2C70FBE620021794002E97E7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		2C70FBD220021793002E97E7 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				2C70FBD320021793002E97E7 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		2C70FBEC20021794002E97E7 /* Debug */ = {

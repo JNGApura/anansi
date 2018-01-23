@@ -19,11 +19,11 @@ class ExploreViewController: UITableViewController {
 
         // Update navigation bar
         
+        
         tableView.register(UserCell.self, forCellReuseIdentifier: cellIdentifier)
         
         // Fetch users
         fetchUsers()
-        
     }
 
     override func didReceiveMemoryWarning() {

@@ -17,8 +17,11 @@ class NetworkManager {
     // Singleton
     static let shared = NetworkManager()
     
-    // Database's child "settings"
-    private var userDatabase = Database.database().reference().child("users")
+    // Databases
+    private let userDatabase = Database.database().reference().child("users")
+    private let feedbackRef = Database.database().reference().child("feedback")
+    
+    // MARK: Sign-up / Log-in functions
     
     // Handles login communication with firebase, triggering an onFail or onSuccess action
     func login(email: String, ticket: String, onFail: @escaping (AuthErrorCode) -> Void, onSuccess: @escaping () -> Void) {
@@ -89,6 +92,8 @@ class NetworkManager {
         }
     }
     
+    // MARK: Fetch & post functions
+    
     // Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time the data (including any children) changes.
     func fetchUserData(onSuccess: @escaping ([String: Any]) -> Void){
         userDatabase.queryOrdered(byChild: "email").observe(.childAdded, with: { (snapshot) in
@@ -134,6 +139,25 @@ class NetworkManager {
                 }
             })
         }
+    }
+    
+    // Updates INT value of specific name/key in FeedbackDB
+    func updatesValue(name: String) {
+    
+        feedbackRef.child(name).runTransactionBlock { (currentData: MutableData) -> TransactionResult in
+            var value = currentData.value as? Int
+            if (value == nil) {
+                value = 0
+            }
+            currentData.value = value! + 1
+            return TransactionResult.success(withValue: currentData)
+        }
+    }
+    
+    // Sets value of specific name/key in FeedbackDB
+    func setValue(name: String, post: [String: Any]) {
+        
+        feedbackRef.child(name).childByAutoId().setValue(post)
     }
 }
 

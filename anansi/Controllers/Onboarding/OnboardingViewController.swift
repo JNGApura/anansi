@@ -103,7 +103,7 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
             
             // Adds player to AVPlayerViewController
             let videoSafeWidth = view.safeAreaLayoutGuide.layoutFrame.width
-            let videoSafeHeight = view.safeAreaLayoutGuide.layoutFrame.size.height * (1 - multiplier) + Const.marginAnchorsToContent + 4.0
+            let videoSafeHeight = view.safeAreaLayoutGuide.layoutFrame.size.height * (1 - multiplier) + Const.marginAnchorsToContent * 2 + 4.0
             
             avPlayerController.player = AVPlayer(url: URL.init(fileURLWithPath: filepath))
             avPlayerController.view.frame = CGRect(x: 0.0, y: 0.0, width: videoSafeWidth, height: videoSafeHeight)

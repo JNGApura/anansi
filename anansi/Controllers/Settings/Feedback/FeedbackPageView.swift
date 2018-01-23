@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import FirebaseDatabase
 
 class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelegate {
     
@@ -289,8 +288,8 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         // Posts notification to NotificationCenter, so pageViewController knows what page is next
         NotificationCenter.default.post(name: Notification.Name(rawValue: "happyFlow"), object: self)
         
-        // TO DO: Storing number of happyIconTaps?
-        //print("happy button clicked")
+        // Storing number of happyIconTaps
+        NetworkManager.shared.updatesValue(name: "happy")
     }
     
     @objc func unhappyIconTapped(_ sender: UIImageView) {
@@ -298,8 +297,8 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         // Posts notification to NotificationCenter, so pageViewController knows what page is next
         NotificationCenter.default.post(name: Notification.Name(rawValue: "unhappyFlow"), object: self)
         
-        // TO DO: Storing number of unhappyIconTaps?
-        //print("unhappy button clicked")
+        // Storing number of unhappyIconTaps
+        NetworkManager.shared.updatesValue(name: "unhappy")
     }
     
     @objc func leaveFlow(){
@@ -317,7 +316,8 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
             UIApplication.shared.openURL(url)
         }
         
-        // TO DO: add # taps in the back-end
+        // Add # taps in the back-end
+        NetworkManager.shared.updatesValue(name: "rated")
         
         let when = DispatchTime.now() + 0.4 // change 2 to desired number of seconds
         DispatchQueue.main.asyncAfter(deadline: when) {
@@ -328,15 +328,9 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
     @objc func submitFeedback(_ sender: UIButton){
         
         // Sends feedback to back-end
-        let feedbackMessage = feedbackTextBox.text!
-        let post : [String : Any] = ["message": feedbackMessage]
+        let message : [String : Any] = ["message": feedbackTextBox.text!]
+        NetworkManager.shared.setValue(name: "posts", post: message)
         
-        let databaseReference = Database.database().reference()
-        databaseReference.child("FeedbackPosts").childByAutoId().setValue(post)
-        
-        // TO DO: send feedback when authenticated to user's db
-        
-        //print(sender.params["text"] ?? "Nothing was sent.")
         NotificationCenter.default.post(name: Notification.Name(rawValue: "feedbackSubmitted"), object: self)
     }
     

@@ -19,11 +19,13 @@ class NetworkManager {
     
     // Databases
     private let userDatabase = Database.database().reference().child("users")
-    private let feedbackRef = Database.database().reference().child("feedback")
-    
+    private let messagesDatabase = Database.database().reference().child("messages")
+    private let userMessagesDatabase = Database.database().reference().child("user-messages")
+    private let feedbackDatabase = Database.database().reference().child("feedback")
+ 
     // MARK: Sign-up / Log-in functions
     
-    // Handles login communication with firebase, triggering an onFail or onSuccess action
+    /// Handles login communication with firebase, triggering an onFail or onSuccess action
     func login(email: String, ticket: String, onFail: @escaping (AuthErrorCode) -> Void, onSuccess: @escaping () -> Void) {
         
         Auth.auth().signIn(withEmail: email, password: ticket) { (user, error) in
@@ -35,7 +37,7 @@ class NetworkManager {
         }
     }
     
-    // Handles user creation communication with firebase, triggering an onFail or onSuccess action
+    /// Handles user creation communication with firebase, triggering an onFail or onSuccess action
     func createUser(email: String, ticket: String, onFail: @escaping (AuthErrorCode) -> Void, onSuccess: @escaping () -> Void) {
         
         Auth.auth().createUser(withEmail: email, password: ticket) { (newUser, error) in
@@ -62,7 +64,7 @@ class NetworkManager {
         }
     }
     
-    // Signs out user by request
+    /// Signs out user by request
     func logout(onSuccess: @escaping () -> Void) {
         do {
             try
@@ -79,47 +81,7 @@ class NetworkManager {
         }
     }
     
-    // Confirms if user is authenticated in
-    func isUserLoggedIn(onSuccess: @escaping ([String: Any]) -> Void) {
-        
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        userDatabase.child(uid).observeSingleEvent(of: .value) { (snapshot) in
-            
-            if !snapshot.exists() { return } // just to be safe
-            if let dictionary = snapshot.value as? [String: Any] {
-                onSuccess(dictionary)
-            }
-        }
-    }
-    
-    // MARK: Fetch & post functions
-    
-    // Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time the data (including any children) changes.
-    func fetchUserData(onSuccess: @escaping ([String: Any]) -> Void){
-        userDatabase.queryOrdered(byChild: "email").observe(.childAdded, with: { (snapshot) in
-            
-            if !snapshot.exists() { return } // just to be safe
-            if let dictionary = snapshot.value as? [String: Any] {
-                onSuccess(dictionary)
-            }
-        }, withCancel: nil)
-    }
-    
-    // Register dictionary into database
-    func registerData(name: String, value: Any) {
-        
-        let node = [name: value] // [String: Any]
-        
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        userDatabase.child(uid).updateChildValues(node) { (error, userDatabase) in
-            if error != nil {
-                print(error!.localizedDescription)
-                return
-            }
-        }
-    }
-        
-    // Stores image in Firebase storage
+    /// Stores image in Firebase storage
     func storesImageInDatabase(folder: String, image : UIImage, onSuccess: @escaping (String) -> Void) {
         
         let imageName = NSUUID().uuidString
@@ -141,10 +103,59 @@ class NetworkManager {
         }
     }
     
-    // Updates INT value of specific name/key in FeedbackDB
+    // MARK: USER DATABASE FUNCTIONS
+    
+    /// Gets user UID
+    func getUID() -> String? {
+    
+        return Auth.auth().currentUser?.uid
+    }
+    
+    /// Confirms if user exists in userDatabase
+    func isUserLoggedIn(onSuccess: @escaping ([String: Any]) -> Void) {
+        
+        if let uid = getUID() {
+            userDatabase.child(uid).observeSingleEvent(of: .value) { (snapshot) in
+            
+                if !snapshot.exists() { return } // just to be safe
+                if let dictionary = snapshot.value as? [String: Any] {
+                    onSuccess(dictionary)
+                }
+            }
+        }
+    }
+    
+    /// Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time the data (including any children) changes.
+    func fetchUserData(onSuccess: @escaping ([String: Any], String) -> Void){
+        userDatabase.queryOrdered(byChild: "email").observe(.childAdded, with: { (snapshot) in
+            
+            if !snapshot.exists() { return } // just to be safe
+            if let dictionary = snapshot.value as? [String: Any] {
+                onSuccess(dictionary, snapshot.key)
+            }
+        }, withCancel: nil)
+    }
+    
+    /// Register dictionary into database
+    func registerData(name: String, value: Any) {
+        
+        let node = [name: value] // [String: Any]
+        if let uid = getUID() {
+            userDatabase.child(uid).updateChildValues(node) { (error, userDatabase) in
+                if error != nil {
+                    print(error!.localizedDescription)
+                    return
+                }
+            }
+        }
+    }
+    
+    // MARK: FEEDBACK DATABASE FUNCTIONS
+    
+    /// Updates INT value of specific name/key in FeedbackDB
     func updatesValue(name: String) {
     
-        feedbackRef.child(name).runTransactionBlock { (currentData: MutableData) -> TransactionResult in
+        feedbackDatabase.child(name).runTransactionBlock { (currentData: MutableData) -> TransactionResult in
             var value = currentData.value as? Int
             if (value == nil) {
                 value = 0
@@ -154,10 +165,10 @@ class NetworkManager {
         }
     }
     
-    // Sets value of specific name/key in FeedbackDB
+    /// Sets value of specific name/key in FeedbackDB
     func setValue(name: String, post: [String: Any]) {
         
-        feedbackRef.child(name).childByAutoId().setValue(post)
+        feedbackDatabase.child(name).childByAutoId().setValue(post)
     }
 }
 

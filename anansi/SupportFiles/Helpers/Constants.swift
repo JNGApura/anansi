@@ -8,24 +8,15 @@
 
 import UIKit
 
-enum Color {
-
-    static let primary = UIColor.red //UIColor(red: 230/255.0, green: 43/255.0, blue: 30/255.0, alpha: 1.0)
-    static let secondary = UIColor.black
-    static let tertiary = UIColor(red: 235/255.0, green: 235/255.0, blue: 241/255.0, alpha: 1.0)
-    static let background = UIColor.white
-    
-}
-
 struct AppFontName {
     
     static let regular = "Avenir-Roman" // Cera-Regular
     static let bold = "Avenir-Heavy" // Cera-Bold
     static let italic = "Avenir-Oblique" // Cera-RegularItalic
-    
 }
 
 struct Const {
+    
     /// Large title text fontsize
     static let largeTitleFontSize: CGFloat = 26
     /// Title text fontsize
@@ -50,11 +41,14 @@ struct Const {
     /// Margin 8 pts
     static let marginEight: CGFloat = 8 // Change name, some day
     /// Explore profile picture height / width
-    static let exploreImageHeight: CGFloat = 48
+    static let exploreImageHeight: CGFloat = 72
     /// Profile picture height / width
     static let profileImageHeight: CGFloat = 100
     /// Button height
     static let buttonHeight: CGFloat = 48
     /// UINavigation button height
     static let navButtonHeight: CGFloat = 38
+    
+    /// This will change
+    static let timeDateHeightChatCells : CGFloat = 28.0
 }

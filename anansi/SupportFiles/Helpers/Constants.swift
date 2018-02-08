@@ -17,21 +17,21 @@ struct AppFontName {
 
 struct Const {
     
-    /// Large title text fontsize
+    /// Large title text fontsize: 26
     static let largeTitleFontSize: CGFloat = 26
-    /// Title text fontsize
+    /// Title text fontsize: 24
     static let titleFontSize: CGFloat = 24
-    /// Headline text fontsize
+    /// Headline text fontsize: 22
     static let headlineFontSize: CGFloat = 22
-    /// Body text fontsize
+    /// Body text fontsize: 17
     static let bodyFontSize: CGFloat = 17
-    /// Sublabel text fontsize
+    /// Callout text fontsize: 16
     static let calloutFontSize: CGFloat = 16
-    /// Sublabel text fontsize
+    /// Sublabel text fontsize: 15
     static let subheadFontSize: CGFloat = 15
-    /// Sublabel text fontsize
+    /// Sublabel text fontsize: 13
     static let footnoteFontSize: CGFloat = 13
-    /// Caption text fontsize
+    /// Caption text fontsize: 11
     static let captionFontSize: CGFloat = 11
     
     /// Settings row height

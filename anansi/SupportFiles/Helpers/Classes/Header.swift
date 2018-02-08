@@ -15,6 +15,7 @@ class Header : UIView {
         let view = UILabel()
         view.textColor = .secondary
         view.font = UIFont.boldSystemFont(ofSize: Const.largeTitleFontSize)
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
@@ -22,6 +23,7 @@ class Header : UIView {
         let view = UIView()
         view.isOpaque = true
         view.backgroundColor = .primary
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
@@ -41,7 +43,6 @@ class Header : UIView {
             headerBottomBorder.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight * 2.0 + 1.0),
             headerBottomBorder.widthAnchor.constraint(equalToConstant: Const.marginAnchorsToContent * 2.0),
             headerBottomBorder.heightAnchor.constraint(equalToConstant: 2.0)
-            
         ])
     }
     
@@ -68,7 +69,6 @@ class Header : UIView {
     func setBackgroundColor(color: UIColor) {
         self.backgroundColor = color
     }
-    
 }
 
 // HeaderWithProfileImage is a subclass of Header that allows adding participantTypeBox and profileImage
@@ -116,8 +116,7 @@ class HeaderWithProfileImage : Header {
             profileImage.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight * 2.0),
             profileImage.widthAnchor.constraint(equalToConstant: Const.profileImageHeight),
             profileImage.heightAnchor.constraint(equalToConstant: Const.profileImageHeight)
-            
-            ])
+        ])
     }
     
     required init?(coder aDecoder: NSCoder) {

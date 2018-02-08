@@ -8,19 +8,30 @@
 
 import UIKit
 
-class ChatAccessoryView: CustomViewCorrection {
+class ChatAccessoryView: UIView {
+    
+    // this is needed so that the inputAccesoryView is properly sized from the auto layout constraints
+    // actual value is not important
+    override var intrinsicContentSize: CGSize {
+        return CGSize.zero
+    }
     
     var chatLogController: ChatLogController? {
         didSet {
             sendButton.addTarget(chatLogController, action: #selector(ChatLogController.handleSend), for: .touchUpInside)
             uploadImageView.addGestureRecognizer(UITapGestureRecognizer(target: chatLogController, action: #selector(ChatLogController.handleUploadTap)))
+            
+            let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+            tap.cancelsTouchesInView = false
+            chatLogController?.collectionView?.addGestureRecognizer(tap)
         }
     }
     
     private let sendButton : UIButton = {
         let b = UIButton(type: .system)
-        b.titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
         b.setImage(#imageLiteral(resourceName: "send").withRenderingMode(.alwaysTemplate), for: .normal)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        b.isHidden = true
         return b
     }()
     var sendButtonTrailingAnchor: NSLayoutConstraint?
@@ -30,13 +41,9 @@ class ChatAccessoryView: CustomViewCorrection {
         i.isUserInteractionEnabled = true
         i.image = #imageLiteral(resourceName: "multimedia").withRenderingMode(.alwaysTemplate)
         i.tintColor = .primary
+        i.translatesAutoresizingMaskIntoConstraints = false
+        i.isHidden = false
         return i
-    }()
-    
-    private let separatorLineView : UIView = {
-        let v = UIView()
-        v.backgroundColor = .tertiary
-        return v
     }()
     
     lazy var inputTextView : UITextView = {
@@ -48,8 +55,9 @@ class ChatAccessoryView: CustomViewCorrection {
         tf.isScrollEnabled = false
         tf.layer.borderColor = UIColor.tertiary.cgColor
         tf.layer.borderWidth = 1
-        tf.layer.cornerRadius = 4
+        tf.layer.cornerRadius = 8
         tf.clipsToBounds = true
+        tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
     }()
     var inputTextViewHeightAnchor: NSLayoutConstraint?
@@ -61,6 +69,7 @@ class ChatAccessoryView: CustomViewCorrection {
         l.backgroundColor = .background
         l.font = UIFont.boldSystemFont(ofSize: Const.captionFontSize)
         l.isHidden = true
+        l.translatesAutoresizingMaskIntoConstraints = false
         return l
     }()
     
@@ -68,12 +77,18 @@ class ChatAccessoryView: CustomViewCorrection {
         super.init(frame: frame)
         
         // UI
-        backgroundColor = .background
+        isOpaque = false
         tintColor = .primary
         autoresizingMask = .flexibleHeight
         
+        // Blur effect
+        let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        visualEffectView.frame = self.frame
+        visualEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        visualEffectView.backgroundColor = UIColor(white: 1.0, alpha: 0.9)
+        
         // Add subviews
-        [uploadImageView, inputTextView, sendButton, separatorLineView, isTypingBox].forEach { addSubview($0)}
+        [visualEffectView, uploadImageView, inputTextView, sendButton, isTypingBox].forEach { addSubview($0)}
         
         // Add layout constraints
         setupLayoutConstraints()
@@ -86,46 +101,31 @@ class ChatAccessoryView: CustomViewCorrection {
     private func setupLayoutConstraints() {
         
         NSLayoutConstraint.activate([
-        
-            uploadImageView.topAnchor.constraint(equalTo: topAnchor, constant: 12.0),
-            uploadImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12.0),
-            uploadImageView.widthAnchor.constraint(equalToConstant: 30.0),
-            uploadImageView.heightAnchor.constraint(equalTo: uploadImageView.widthAnchor),
             
-            sendButton.topAnchor.constraint(equalTo: topAnchor, constant: 6.0),
+            sendButton.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor, constant: -6.0),
+            sendButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4.0),
             sendButton.widthAnchor.constraint(equalToConstant: 44.0),
             sendButton.heightAnchor.constraint(equalTo: sendButton.widthAnchor),
             
-            inputTextView.topAnchor.constraint(equalTo: topAnchor, constant: 8.0),
-            inputTextView.leadingAnchor.constraint(equalTo: uploadImageView.trailingAnchor, constant: 12.0),
-            inputTextView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor, constant: -8.0),
-            inputTextView.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -8.0),
+            uploadImageView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor, constant: -12.0),
+            uploadImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -11.0),
+            uploadImageView.widthAnchor.constraint(equalToConstant: 30.0),
+            uploadImageView.heightAnchor.constraint(equalTo: uploadImageView.widthAnchor),
             
-            separatorLineView.topAnchor.constraint(equalTo: topAnchor),
-            separatorLineView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            separatorLineView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            separatorLineView.heightAnchor.constraint(equalToConstant: 0.5),
+            inputTextView.topAnchor.constraint(equalTo: topAnchor, constant: 8.0),
+            inputTextView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8.0),
+            inputTextView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor, constant: -8.0),
+            inputTextView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -52.0),
             
             isTypingBox.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight * 2.0),
             isTypingBox.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight * 2.0),
-            isTypingBox.bottomAnchor.constraint(equalTo: inputTextView.topAnchor, constant: -Const.marginEight),
-            isTypingBox.heightAnchor.constraint(equalToConstant: 22.0)
+            isTypingBox.bottomAnchor.constraint(equalTo: inputTextView.topAnchor, constant: -2.0),
+            isTypingBox.heightAnchor.constraint(equalToConstant: 17.0)
         ])
-        
-        sendButtonTrailingAnchor = sendButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 44.0) // hidden
-        sendButtonTrailingAnchor?.isActive = true
     }
     
 }
 
-class CustomViewCorrection: UIView {
-    
-    // this is needed so that the inputAccesoryView is properly sized from the auto layout constraints
-    // actual value is not important
-    override var intrinsicContentSize: CGSize {
-        return CGSize.zero
-    }
-}
 // UITextViewDelegate functions
 extension ChatAccessoryView: UITextViewDelegate {
     
@@ -135,11 +135,13 @@ extension ChatAccessoryView: UITextViewDelegate {
         
         // If textView.text is empty, then hides sendButton
         if textView.text.isEmpty {
-            sendButtonTrailingAnchor?.constant = 44.0
+            uploadImageView.isHidden = false
+            sendButton.isHidden = true
             textView.placeholder = "Type a message"
             
         } else {
-            sendButtonTrailingAnchor?.constant = -8.0
+            uploadImageView.isHidden = true
+            sendButton.isHidden = false
             textView.placeholder = ""
         }
     }
@@ -152,7 +154,8 @@ extension ChatAccessoryView: UITextViewDelegate {
         
         // If textView.text finishes editing, then hides sendButton
         if textView.text.isEmpty {
-            sendButtonTrailingAnchor?.constant = 44.0
+            uploadImageView.isHidden = false
+            sendButton.isHidden = true
         }
         textView.resignFirstResponder()
     }
@@ -160,5 +163,9 @@ extension ChatAccessoryView: UITextViewDelegate {
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         chatLogController?.isTyping = false
         return true
+    }
+    
+    @objc func dismissKeyboard() {
+        inputTextView.resignFirstResponder()
     }
 }

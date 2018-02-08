@@ -1,26 +1,17 @@
 //
-//  LoginController.swift
+//  SignUpController.swift
 //  anansi
 //
-//  Created by João Nuno Gaspar Apura on 17/01/2018.
+//  Created by João Nuno Gaspar Apura on 06/02/2018.
 //  Copyright © 2018 João Apura. All rights reserved.
 //
 
 import UIKit
 import ReachabilitySwift
 
-class LoginController: UIViewController {
+class SignUpController: UIViewController {
     
     // Custom initializers
-    
-    let backgroundImage: UIImageView = {
-        let i = UIImageView(image: #imageLiteral(resourceName: "attendees-bw"))
-        i.translatesAutoresizingMaskIntoConstraints = false
-        i.contentMode = .scaleAspectFill
-        i.clipsToBounds = true
-        return i
-    }()
-    
     let logo: UIImageView = {
         let i = UIImageView(image: #imageLiteral(resourceName: "logo-white"))
         i.translatesAutoresizingMaskIntoConstraints = false
@@ -31,7 +22,7 @@ class LoginController: UIViewController {
     let supportButton: TertiaryButton = {
         let b = TertiaryButton()
         b.setTitle("Need help?", for: .normal)
-        b.setTitleColor(Color.background, for: .normal)
+        b.setTitleColor(.secondary, for: .normal)
         b.backgroundColor = .clear
         b.addTarget(self, action: #selector(sendToMessenger), for: .touchUpInside)
         b.translatesAutoresizingMaskIntoConstraints = false
@@ -40,17 +31,17 @@ class LoginController: UIViewController {
     
     let sectionTitle: UILabel = {
         let st = UILabel()
-        st.textColor = Color.background
-        st.text = "Log in"
+        st.textColor = .secondary
+        st.text = "Sign up"
         st.font = UIFont.boldSystemFont(ofSize: Const.titleFontSize)
         return st
     }()
     
     let emailTextField: UITextField = {
         let tf = UITextField()
-        tf.attributedPlaceholder = NSAttributedString(string: "Email address", attributes: [NSAttributedStringKey.foregroundColor: Color.background.withAlphaComponent(0.6)])
+        tf.attributedPlaceholder = NSAttributedString(string: "Email address", attributes: [NSAttributedStringKey.foregroundColor: UIColor.secondary.withAlphaComponent(0.6)])
         tf.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        tf.textColor = Color.background
+        tf.textColor = .secondary
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
         tf.keyboardType = .emailAddress
@@ -63,15 +54,15 @@ class LoginController: UIViewController {
         let tf = UILabel()
         tf.text = ""
         tf.font = UIFont.boldSystemFont(ofSize: Const.footnoteFontSize)
-        tf.textColor = Color.primary
+        tf.textColor = .primary
         return tf
     }()
     
     let ticketTextField: UITextField = {
         let tf = UITextField()
-        tf.attributedPlaceholder = NSAttributedString(string: "Ticket reference", attributes: [NSAttributedStringKey.foregroundColor: Color.background.withAlphaComponent(0.6)])
+        tf.attributedPlaceholder = NSAttributedString(string: "Ticket reference", attributes: [NSAttributedStringKey.foregroundColor: UIColor.secondary.withAlphaComponent(0.6)])
         tf.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        tf.textColor = Color.background
+        tf.textColor = .secondary
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
         return tf
@@ -83,7 +74,7 @@ class LoginController: UIViewController {
         let tf = UILabel()
         tf.text = ""
         tf.font = UIFont.boldSystemFont(ofSize: Const.footnoteFontSize)
-        tf.textColor = Color.primary
+        tf.textColor = .primary
         return tf
     }()
     
@@ -97,7 +88,7 @@ class LoginController: UIViewController {
     
     lazy var loginButton: PrimaryButton = {
         let b = PrimaryButton()
-        b.setTitle("Log into your account", for: .normal)
+        b.setTitle("Let's do this!", for: .normal)
         b.translatesAutoresizingMaskIntoConstraints = false
         b.alpha = 1
         b.isEnabled = true
@@ -108,34 +99,18 @@ class LoginController: UIViewController {
     let activityIndicator: UIActivityIndicatorView = {
         let ai = UIActivityIndicatorView()
         ai.hidesWhenStopped = true
-        ai.color = Color.background
+        ai.color = .background
         ai.translatesAutoresizingMaskIntoConstraints = false
         return ai
     }()
     
     // MARK: View Lifecycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTappedAround()
         
-        //view.backgroundColor = .white
-        
-        // Background image
-        view.addSubview(backgroundImage)
-        NSLayoutConstraint.activate([
-            backgroundImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            backgroundImage.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            backgroundImage.widthAnchor.constraint(equalTo: view.widthAnchor)
-        ])
-        
-        // Gradient
-        
-        let layer = CAGradientLayer()
-        layer.frame = view.layer.frame
-        layer.colors = [UIColor.black.withAlphaComponent(0.84).cgColor, UIColor.black.withAlphaComponent(0.54).cgColor]
-        layer.startPoint = CGPoint(x: 0.5, y: 1)
-        layer.endPoint = CGPoint(x: 0.5, y: 0)
-        view.layer.addSublayer(layer)
+        view.backgroundColor = .white
         
         // Logo
         view.addSubview(logo)
@@ -145,17 +120,13 @@ class LoginController: UIViewController {
         ])
         
         // Add email & ticket reference
-        stackView.addArrangedSubview(sectionTitle)
-        stackView.addArrangedSubview(emailTextField)
-        stackView.addArrangedSubview(errorEmail)
-        stackView.addArrangedSubview(ticketTextField)
-        stackView.addArrangedSubview(errorTicket)
+        [sectionTitle, emailTextField, errorEmail, ticketTextField, errorTicket].forEach( {stackView.addArrangedSubview($0)} )
         stackView.setCustomSpacing(Const.marginAnchorsToContent * 1.5, after: sectionTitle)
         stackView.setCustomSpacing(Const.marginAnchorsToContent * 0.5, after: errorEmail)
         
         view.addSubview(stackView)
         NSLayoutConstraint.activate([
-            stackView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -Const.marginAnchorsToContent * 2 - 5.0),
+            stackView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: Const.marginAnchorsToContent * 4),
             stackView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             stackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -Const.marginAnchorsToContent * 2)
         ])
@@ -166,7 +137,7 @@ class LoginController: UIViewController {
             loginButton.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: Const.marginAnchorsToContent * 1.5),
             loginButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             loginButton.heightAnchor.constraint(equalToConstant: Const.buttonHeight),
-            loginButton.widthAnchor.constraint(equalToConstant: 220.0)
+            loginButton.widthAnchor.constraint(equalToConstant: 150)
         ])
         
         // Activity indicator (in login button)
@@ -184,9 +155,6 @@ class LoginController: UIViewController {
             supportButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.marginAnchorsToContent),
             supportButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent),
         ])
-        
-        // Sets "isOnboarded" to true in UserDefaults
-        UserDefaults.standard.setIsOnboarded(value: true)
     }
     
     override func viewDidLayoutSubviews() {
@@ -195,7 +163,7 @@ class LoginController: UIViewController {
         borderEmail = CALayer()
         borderEmail.frame = CGRect(x: 0, y: emailTextField.frame.size.height - 2.0, width: emailTextField.frame.size.width, height: emailTextField.frame.size.height)
         borderEmail.borderWidth = 2.0
-        errorEmail.text!.isEmpty ? ( borderEmail.borderColor = UIColor.white.cgColor ) : ( borderEmail.borderColor = UIColor.red.cgColor )
+        errorEmail.text!.isEmpty ? ( borderEmail.borderColor = UIColor.black.cgColor ) : ( borderEmail.borderColor = UIColor.red.cgColor )
         emailTextField.layer.addSublayer(borderEmail)
         emailTextField.layer.masksToBounds = true
         
@@ -203,7 +171,7 @@ class LoginController: UIViewController {
         borderTicket = CALayer()
         borderTicket.frame = CGRect(x: 0, y: ticketTextField.frame.size.height - 2.0, width: ticketTextField.frame.size.width, height: ticketTextField.frame.size.height)
         borderTicket.borderWidth = 2.0
-        errorTicket.text!.isEmpty ? ( borderTicket.borderColor = UIColor.white.cgColor ) : ( borderTicket.borderColor = UIColor.red.cgColor )
+        errorTicket.text!.isEmpty ? ( borderTicket.borderColor = UIColor.black.cgColor ) : ( borderTicket.borderColor = UIColor.red.cgColor )
         ticketTextField.layer.addSublayer(borderTicket)
         ticketTextField.layer.masksToBounds = true
     }
@@ -217,16 +185,9 @@ class LoginController: UIViewController {
         super.viewDidDisappear(animated)
         ReachabilityManager.shared.removeListener(listener: self)
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-    }
-    
-    // MARK: Layout
-    
-    // White status bar
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
     }
     
     // MARK: Custom functions
@@ -274,7 +235,7 @@ class LoginController: UIViewController {
                 self.errorEmail.text = "Your email has an incorrect format. Try again?"
                 
             case .weakPassword:
-                self.errorTicket.text = "Ticket reference should have 6 characters. Try again?"
+                self.errorTicket.text = "Ticket reference has 6 characters. Try again?"
                 if email == "" {
                     self.errorEmail.text = "Your email has an incorrect format. Try again?"
                 }
@@ -295,7 +256,7 @@ class LoginController: UIViewController {
                     }
                     
                 }, onSuccess: {
-                    self.pushTabBarController() // If login is successful, sends user to TabBarController
+                    self.pushExistingUserToViewController() // If login is successful, sends user to ViewController, depending on isProfiled() boolean
                 })
                 
             default:
@@ -305,22 +266,38 @@ class LoginController: UIViewController {
             self.hideLoadingInButton() // Activity indicator is hidden
             
         }) {
-            self.pushTabBarController() // If user creation is successful, sends user to TabBarController
+            self.pushNewUserToProfilingController() // If user creation is successful, sends user to ProfilingController
         }
     }
-
-    // Sends user to TabBarController with custom transition
-    private func pushTabBarController() {
+    
+    // Sends user to the next ViewController with custom transition
+    private func pushExistingUserToViewController() {
         
-        let transition = CATransition()
-        transition.duration = 0.5
-        transition.type = kCATransitionPush
-        transition.subtype = kCATransitionFromRight
-        transition.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
-        self.view.window!.layer.add(transition, forKey: kCATransition)
+        let controller: UIViewController
         
-        let controller = TabBarController()
-        present(controller, animated: false, completion: nil)
+        if UserDefaults.standard.isProfiled() {
+            controller = TabBarController()
+            
+            let transition = CATransition()
+            transition.duration = 0.5
+            transition.type = kCATransitionPush
+            transition.subtype = kCATransitionFromRight
+            transition.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
+            self.view.window!.layer.add(transition, forKey: kCATransition)
+            
+            present(controller, animated: false, completion: nil)
+        } else {
+            
+            pushNewUserToProfilingController()
+        }
+    }
+    
+    private func pushNewUserToProfilingController() {
+        
+        let controller = ProfilingController()
+        controller.modalPresentationStyle = .overFullScreen
+        controller.modalTransitionStyle = .crossDissolve
+        present(controller, animated: true, completion: nil)
     }
     
     // Show activity indicator (spinner)
@@ -335,14 +312,14 @@ class LoginController: UIViewController {
     // Hides activity indicator (spinner)
     private func hideLoadingInButton() {
         
-        loginButton.setTitle("Log into your account", for: .normal)
+        loginButton.setTitle("Let's do this!", for: .normal)
         loginButton.isEnabled = true
         activityIndicator.isHidden = true
     }
 }
 
 // Making LoginController to conform to NetworkStatusListener protocol
-extension LoginController: NetworkStatusListener {
+extension SignUpController: NetworkStatusListener {
     
     public func networkStatusDidChange(status: Reachability.NetworkStatus) {
         

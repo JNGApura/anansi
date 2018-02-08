@@ -28,7 +28,7 @@ class OnboardingPageCell : UICollectionViewCell {
     
     private let cellTitle: UILabel = {
         let title = UILabel()
-        title.textColor = Color.primary
+        title.textColor = .primary
         title.numberOfLines = 0
         title.lineBreakMode = NSLineBreakMode.byWordWrapping
         title.font = UIFont.boldSystemFont(ofSize: Const.titleFontSize)
@@ -54,7 +54,7 @@ class OnboardingPageCell : UICollectionViewCell {
     private let topBorder: UIView = {
         let v = UIView()
         v.translatesAutoresizingMaskIntoConstraints = false
-        v.backgroundColor = Color.primary
+        v.backgroundColor = .primary
         return v
     }()
     
@@ -87,6 +87,7 @@ class OnboardingPageCell : UICollectionViewCell {
         let topBorderHeight : CGFloat = 4.0
         
         NSLayoutConstraint.activate([
+        
             topBorder.topAnchor.constraint(equalTo: topAnchor),
             topBorder.leadingAnchor.constraint(equalTo: leadingAnchor),
             topBorder.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -94,9 +95,8 @@ class OnboardingPageCell : UICollectionViewCell {
             
             stackView.topAnchor.constraint(equalTo: topBorder.topAnchor, constant: Const.marginAnchorsToContent * 2 - topBorderHeight),
             stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginAnchorsToContent),
-            stackView.widthAnchor.constraint(equalTo: widthAnchor, constant: -Const.marginAnchorsToContent * 2)
+            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginAnchorsToContent)
         ])
-                
     }
     
 }

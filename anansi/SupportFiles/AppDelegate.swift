@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import FirebaseDatabase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,31 +24,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Connect to Firebase
         FirebaseApp.configure()
-
+        Database.database().isPersistenceEnabled = true
+        
         // Initiate app with OnboardingViewController or, in case the user has completed onboarding, then initializes TabBarController
         let defaults = UserDefaults.standard
         window = UIWindow(frame: UIScreen.main.bounds)
         if !defaults.isOnboarded() {
             window?.rootViewController = OnboardingViewController()
         } else
-        if !defaults.isLoggedIn() {
-            window?.rootViewController = LoginController()
+            if !defaults.isLoggedIn() {
+            window?.rootViewController = LandingController()
+        } else
+            if !defaults.isProfiled() {
+            window?.rootViewController = ProfilingController()
         } else {
             window?.rootViewController = TabBarController()
         }
         window?.makeKeyAndVisible()
         
         // Add red (TED's) color as main color
-        UIApplication.shared.delegate?.window??.tintColor = Color.primary
+        UIApplication.shared.delegate?.window??.tintColor = .primary
         
         // Remove shadow below navigation bar
         UINavigationBar.appearance().shadowImage = UIImage()
         UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
         
         // Enable Keyboard accessory view
-        let accessoryView = KeyboardAccessoryToolbar()
-        UITextField.appearance().inputAccessoryView = accessoryView
-        UITextView.appearance().inputAccessoryView = accessoryView
+        //let accessoryView = KeyboardAccessoryToolbar()
+        //UITextField.appearance().inputAccessoryView = accessoryView
+        //UITextView.appearance().inputAccessoryView = accessoryView
         
         return true
     }

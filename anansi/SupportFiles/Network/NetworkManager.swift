@@ -107,7 +107,6 @@ class NetworkManager {
     
     /// Gets user UID
     func getUID() -> String? {
-    
         return Auth.auth().currentUser?.uid
     }
     
@@ -137,11 +136,11 @@ class NetworkManager {
     }
     
     /// Register dictionary into database
-    func registerData(name: String, value: Any) {
+    func registerData(_ dictionary: [String: Any]) {
         
-        let node = [name: value] // [String: Any]
+        //let node = [name: value] // [String: Any]
         if let uid = getUID() {
-            userDatabase.child(uid).updateChildValues(node) { (error, userDatabase) in
+            userDatabase.child(uid).updateChildValues(dictionary) { (error, userDatabase) in
                 if error != nil {
                     print(error!.localizedDescription)
                     return

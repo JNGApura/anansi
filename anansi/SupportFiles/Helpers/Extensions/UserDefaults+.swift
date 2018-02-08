@@ -21,11 +21,20 @@ extension UserDefaults {
         synchronize()
     }
     
+    func setIsProfiled(value: Bool) {
+        set(value, forKey: "isProfiled")
+        synchronize()
+    }
+    
     func isOnboarded() -> Bool {
         return bool(forKey: "isOnboarded")
     }
     
     func isLoggedIn() -> Bool {
         return bool(forKey: "isLoggedIn")
+    }
+    
+    func isProfiled() -> Bool {
+        return bool(forKey: "isProfiled")
     }
 }

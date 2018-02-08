@@ -10,8 +10,6 @@ import UIKit
 import AVFoundation
 import AVKit
 
-private let reuseIdentifier = "cellid"
-
 class OnboardingViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate {
     
     // Custom initializers
@@ -27,12 +25,12 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         let bv = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
-        bv.translatesAutoresizingMaskIntoConstraints = false
-        bv.register(OnboardingPageCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        bv.backgroundColor = Color.background
+        bv.register(OnboardingPageCell.self, forCellWithReuseIdentifier: "OnboardingCellID")
+        bv.backgroundColor = .background
         bv.isPagingEnabled = true
         bv.showsHorizontalScrollIndicator = false
         bv.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
+        bv.translatesAutoresizingMaskIntoConstraints = false
         return bv
     }()
     
@@ -47,7 +45,7 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
     private let nextButton : TertiaryButton = {
         let button = TertiaryButton()
         button.setTitle("Next", for: .normal)
-        button.tintColor = Color.secondary
+        button.tintColor = .secondary
         button.semanticContentAttribute = .forceRightToLeft
         button.addTarget(self, action: #selector(handleNext), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -58,23 +56,23 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
         let pc = UIPageControl()
         pc.currentPage = 0
         pc.numberOfPages = pages.count
-        pc.currentPageIndicatorTintColor = Color.primary
-        pc.pageIndicatorTintColor = Color.primary.withAlphaComponent(0.2)
+        pc.currentPageIndicatorTintColor = .primary
+        pc.pageIndicatorTintColor = UIColor.primary.withAlphaComponent(0.2)
         pc.translatesAutoresizingMaskIntoConstraints = false
         return pc
     }()
     
     private let bottomControlStackView : UIStackView = {
         let sv = UIStackView()
-        sv.translatesAutoresizingMaskIntoConstraints = false
         sv.distribution = .equalSpacing
+        sv.translatesAutoresizingMaskIntoConstraints = false
         return sv
     }()
     
     private let soundButton: UIButton = {
         let button = UIButton()
         button.setImage(#imageLiteral(resourceName: "muted").withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = Color.background
+        button.tintColor = .background
         button.addTarget(self, action: #selector(playsound), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -154,19 +152,22 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
     private func setupLayoutConstraints() {
         
         NSLayoutConstraint.activate([
-            soundButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0.0),
-            soundButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent + 4.0),
+        
+            soundButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8.0),
+            soundButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16.0),
+            soundButton.widthAnchor.constraint(equalToConstant: 36.0),
+            soundButton.heightAnchor.constraint(equalToConstant: 36.0),
             
+            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor),
             collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: multiplier),
             
-            bottomControlStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             bottomControlStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.marginAnchorsToContent),
+            bottomControlStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             bottomControlStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent),
-            bottomControlStackView.heightAnchor.constraint(equalToConstant: Const.marginAnchorsToContent * 2.5)
+            bottomControlStackView.heightAnchor.constraint(equalToConstant: Const.marginAnchorsToContent * 2.5),
         ])
     }
     
@@ -205,8 +206,8 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
         transition.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseInEaseOut)
         view.window!.layer.add(transition, forKey: kCATransition)
         
-        let controller = LoginController()//TabBarController()
-        present(controller, animated: false, completion: nil)
+        let controller = LandingController()//TabBarController()
+        present(controller, animated: true, completion: nil)
     }
     
     @objc private func playsound() {
@@ -226,29 +227,24 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
     // MARK: CollectionView delegate functions
     
     func collectionView(_ collectionView: UICollectionView, numberOfSections section: Int) -> Int {
-        
         return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
         return pages.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! OnboardingPageCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "OnboardingCellID", for: indexPath) as! OnboardingPageCell
         cell.page = pages[indexPath.item]
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
         return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        
         return 0
     }
     
@@ -266,6 +262,5 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
             nextButton.setImage(#imageLiteral(resourceName: "next").withRenderingMode(.alwaysTemplate), for: .normal)
             nextButton.addTarget(self, action: #selector(openTabViewController), for: .touchUpInside)
         }
-        
     }
 }

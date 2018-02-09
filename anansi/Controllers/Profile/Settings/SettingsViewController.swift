@@ -50,7 +50,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     private func setupNavigationBarItems(title: String) {
         
         if let navigationBar = navigationController?.navigationBar {
-            navigationBar.barTintColor = Color.background
+            navigationBar.barTintColor = .background
             navigationBar.isTranslucent = false
             navigationItem.title = title
             
@@ -67,8 +67,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         let statusBarHeight = UIApplication.shared.statusBarFrame.size.height
         let navigationBarHeight = (self.navigationController?.navigationBar.frame.size.height)!
         
-        tableView.separatorColor = Color.tertiary
-        tableView.backgroundColor = Color.tertiary
+        tableView.separatorColor = .tertiary
+        tableView.backgroundColor = .tertiary
         tableView.frame = CGRect(x: 0 ,y: 0 , width: screenWidth, height: screenHeight - statusBarHeight - navigationBarHeight);
     }
     
@@ -99,7 +99,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         case .section:
             cell.textLabel?.text = item.value
             cell.textLabel?.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
-            cell.backgroundColor = Color.tertiary
+            cell.backgroundColor = .tertiary
             cell.accessoryView = .none
             cell.selectionStyle = .none
             cell.isMultipleTouchEnabled = false
@@ -107,7 +107,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             
         case .normal:
             cell.textLabel?.text = item.value
-            cell.backgroundColor = Color.background
+            cell.backgroundColor = .background
             
             if !item.iconUrl!.isEmpty {
                 if let image = UIImage(named: item.iconUrl!) {
@@ -131,7 +131,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             case "popup"?:
                 cell.accessoryView = .none
                 cell.textLabel?.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
-                cell.textLabel?.textColor = Color.primary
+                cell.textLabel?.textColor = .primary
 
             default:
                 cell.accessoryView = .none
@@ -231,7 +231,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 transition.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
                 self.view.window!.layer.add(transition, forKey: kCATransition)
                 
-                let loginController = LoginController()
+                let loginController = SignUpController()
                 self.present(loginController, animated: false, completion: nil)
             }
         }

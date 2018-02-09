@@ -266,6 +266,8 @@ class SignUpController: UIViewController {
             self.hideLoadingInButton() // Activity indicator is hidden
             
         }) {
+            
+            UserDefaults.standard.setIsProfiled(value: false)
             self.pushNewUserToProfilingController() // If user creation is successful, sends user to ProfilingController
         }
     }

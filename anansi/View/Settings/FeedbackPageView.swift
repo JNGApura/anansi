@@ -17,7 +17,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
     
     private let scrollView: UIScrollView = {
         let sv = UIScrollView()
-        sv.backgroundColor = Color.background
+        sv.backgroundColor = .background
         sv.layoutIfNeeded()
         sv.isScrollEnabled = true
         sv.translatesAutoresizingMaskIntoConstraints = false
@@ -26,7 +26,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
     
     private let pageTitle: UILabel = {
         let title = UILabel()
-        title.textColor = Color.primary
+        title.textColor = .primary
         title.numberOfLines = 0
         title.lineBreakMode = NSLineBreakMode.byWordWrapping
         title.font = UIFont.boldSystemFont(ofSize: Const.titleFontSize)
@@ -44,8 +44,8 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
     private lazy var feedbackTextBox: UITextView = {
         let textBox = UITextView()
         textBox.font = UIFont.systemFont(ofSize: Const.bodyFontSize - 1.0) // 16.0
-        textBox.backgroundColor = Color.tertiary.withAlphaComponent(0.4)
-        textBox.textColor = Color.secondary.withAlphaComponent(0.8)
+        textBox.backgroundColor = UIColor.tertiary.withAlphaComponent(0.4)
+        textBox.textColor = UIColor.secondary.withAlphaComponent(0.8)
         textBox.isEditable = true
         textBox.isScrollEnabled = true
         textBox.autocorrectionType = .no
@@ -98,6 +98,18 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         ssv.spacing = 4.0
         return ssv
     }()
+    
+    //override var canBecomeFirstResponder: Bool { return true }
+    
+    /*lazy var keyboardAccessoryView: KeyboardAccessoryView = {
+        let kv = KeyboardAccessoryView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50.0))
+        kv.textview = feedbackTextBox
+        return kv
+    }()
+    
+    override var inputAccessoryView: UIView {
+        return keyboardAccessoryView
+    }*/
     
     // Class initializer
     
@@ -190,7 +202,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
                 // Changes secondButton UI to seem like a secondaryButton
                 secondButton.layer.cornerRadius = 24.0
                 secondButton.layer.borderWidth = 1.5
-                secondButton.layer.borderColor = Color.secondary.cgColor
+                secondButton.layer.borderColor = UIColor.secondary.cgColor
             }
             
             // Adds target to secondButton
@@ -307,7 +319,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
     
     @objc func rateApp(){
         
-        let appId = "id1209945212"
+        let appId = "id376183339"
         
         guard let url = URL(string : "itms-apps://itunes.apple.com/app/" + appId) else { return }
         if #available(iOS 10.0, *) {
@@ -351,25 +363,56 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
 
     // MARK: TextViewDelegate functions
     
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        setupTextFieldsAccessoryView()
+        return true
+    }
+    
     func textViewDidBeginEditing(_ textView: UITextView) {
         
         if (textView.text == feedbackTextLabel) {
             textView.text = ""
-            textView.textColor = Color.secondary
+            textView.textColor = .secondary
         }
         firstButton.isEnabled = true
         firstButton.alpha = 1
-        textView.becomeFirstResponder() //Optional
+        textView.becomeFirstResponder()
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         
         if (textView.text == "") {
             textView.text = feedbackTextLabel
-            textView.textColor = Color.secondary.withAlphaComponent(0.8)
+            textView.textColor = UIColor.secondary.withAlphaComponent(0.8)
             firstButton.isEnabled = false
             firstButton.alpha = 0.4
         }
         textView.resignFirstResponder()
+    }
+    
+    func setupTextFieldsAccessoryView() {
+        
+        guard feedbackTextBox.inputAccessoryView == nil else {
+            return
+        }
+        
+        // Create toolBar
+        let toolBar: UIToolbar = UIToolbar(frame:CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 44))
+        toolBar.barStyle = UIBarStyle.default
+        toolBar.isTranslucent = true
+        toolBar.tintColor = .primary
+        toolBar.backgroundColor = .background
+        toolBar.sizeToFit()
+        
+        let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let doneButton: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(didPressDoneButton))
+        toolBar.items = [flexibleSpace, doneButton]
+        
+        // Assing toolbar as inputAccessoryView
+        feedbackTextBox.inputAccessoryView = toolBar
+    }
+    
+    @objc func didPressDoneButton(button: UIButton) {
+        feedbackTextBox.resignFirstResponder()
     }
 }

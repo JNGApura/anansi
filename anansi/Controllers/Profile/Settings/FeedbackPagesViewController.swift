@@ -44,6 +44,7 @@ class FeedbackPagesViewController: UIPageViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTappedAround()
         
         // Sets up navigation bar
         setupNavigationBarItems()
@@ -71,7 +72,7 @@ class FeedbackPagesViewController: UIPageViewController {
     private func setupNavigationBarItems() {
         
         let navigationBar = navigationController?.navigationBar
-        navigationBar!.barTintColor = Color.background
+        navigationBar!.barTintColor = .background
         navigationBar!.isTranslucent = false
         
         // Adds custom leftBarButton

@@ -107,7 +107,7 @@ class ProfilingController: UIViewController, UIPageViewControllerDelegate, UITex
             pageController.view.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor),
             pageController.view.heightAnchor.constraint(equalToConstant: 212.0),
             
-            answerTextField.bottomAnchor.constraint(equalTo: pageController.view.bottomAnchor, constant: -26.0),
+            answerTextField.bottomAnchor.constraint(equalTo: pageController.view.bottomAnchor, constant: -2.0),
             answerTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.marginAnchorsToContent),
             answerTextField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent),
             

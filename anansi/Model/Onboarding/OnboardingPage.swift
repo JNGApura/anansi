@@ -6,11 +6,10 @@
 //  Copyright © 2018 João Apura. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 struct OnboardingPage {
     
     let title : String
     let description : String
-
 }

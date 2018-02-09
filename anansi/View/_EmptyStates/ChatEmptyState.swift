@@ -42,7 +42,7 @@ class ChatEmptyState: UIView {
     
     let userImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.backgroundColor = .red
+        imageView.backgroundColor = .background
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 80 / 2
         imageView.layer.masksToBounds = true
@@ -132,6 +132,8 @@ class ChatEmptyState: UIView {
         // Set user's profile image
         if let userImage = user!.profileImageURL {
             userImageView.loadImageUsingCacheWithUrlString(userImage)
+        } else {
+            userImageView.image = #imageLiteral(resourceName: "profileImageTemplate").withRenderingMode(.alwaysOriginal)
         }
         
         // Set user's name

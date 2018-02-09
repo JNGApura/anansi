@@ -13,7 +13,7 @@ class AboutPageView: UIViewController, UIScrollViewDelegate {
     // Custom initializers
     private let scrollView: UIScrollView = {
         let sv = UIScrollView()
-        sv.backgroundColor = Color.background
+        sv.backgroundColor = .background
         sv.layoutIfNeeded()
         sv.isScrollEnabled = true
         sv.translatesAutoresizingMaskIntoConstraints = false
@@ -77,7 +77,7 @@ class AboutPageView: UIViewController, UIScrollViewDelegate {
             let itemTitle: UILabel = {
                 let title = UILabel()
                 title.font = UIFont.boldSystemFont(ofSize: Const.headlineFontSize)
-                title.textColor = Color.primary
+                title.textColor = .primary
                 title.text = item.title!
                 return title
             }()
@@ -108,7 +108,7 @@ class AboutPageView: UIViewController, UIScrollViewDelegate {
                 itemTitle.heightAnchor.constraint(equalToConstant: navigationBarHeight),
                 sectionStackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
                 sectionStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
-                ])
+            ])
             
             // Sets contraints to sectionStackView to display the next one after the bottomAnchor of the previous one
             previousViewElement == nil ? NSLayoutConstraint.activate([sectionStackView.topAnchor.constraint(equalTo: scrollView.topAnchor)]) : NSLayoutConstraint.activate([sectionStackView.topAnchor.constraint(equalTo: previousViewElement.bottomAnchor, constant: -8.0)])
@@ -129,7 +129,7 @@ class AboutPageView: UIViewController, UIScrollViewDelegate {
     private func setupNavigationBarItems() {
         
         if let navigationBar = navigationController?.navigationBar {
-            navigationBar.barTintColor = Color.background
+            navigationBar.barTintColor = .background
             navigationBar.isTranslucent = false
             
             // Adds custom leftBarButton

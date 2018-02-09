@@ -126,7 +126,7 @@ class NetworkManager {
     
     /// Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time the data (including any children) changes.
     func fetchUserData(onSuccess: @escaping ([String: Any], String) -> Void){
-        userDatabase.queryOrdered(byChild: "email").observe(.childAdded, with: { (snapshot) in
+        userDatabase.queryOrdered(byChild: "name").observe(.childAdded, with: { (snapshot) in
             
             if !snapshot.exists() { return } // just to be safe
             if let dictionary = snapshot.value as? [String: Any] {

@@ -12,7 +12,7 @@ class TabBarController: UITabBarController {
 
     // Custom initializers
     
-    var itemList = ["Profile", "Event", "Explore", "Connect"]
+    var itemList = ["Community", "Connect", "Profile", "Event"]
     fileprivate var tabBarViewControllers = [UINavigationController]()
     
     // MARK: View Lifecycle
@@ -42,7 +42,7 @@ class TabBarController: UITabBarController {
             vc.title = value
             
             // Updates vc's background color
-            vc.view.backgroundColor = Color.background
+            vc.view.backgroundColor = .background
         }
         viewControllers = tabBarViewControllers
         
@@ -51,8 +51,8 @@ class TabBarController: UITabBarController {
         //tabBarItem.setTitleTextAttributes([NSAttributedStringKey.foregroundColor: .red], for: .selected)
         
         // Set the color of inactive tabs
-        tabBar.unselectedItemTintColor = Color.secondary
-        tabBarItem.setTitleTextAttributes([NSAttributedStringKey.foregroundColor: Color.secondary], for: .normal)
+        tabBar.unselectedItemTintColor = .secondary
+        tabBarItem.setTitleTextAttributes([NSAttributedStringKey.foregroundColor: UIColor.secondary], for: .normal)
         
         // Remove label to tab bar items
         removeTabBarItemText()
@@ -61,7 +61,19 @@ class TabBarController: UITabBarController {
         tabBar.isTranslucent = false
         
         // Sets "isLoggedIn" to UserDefaults
-        UserDefaults.standard.setIsLoggedIn(value: true)
+        NetworkManager.shared.isUserLoggedIn { (dictionary) in
+            UserDefaults.standard.setIsLoggedIn(value: true)
+        }
+        
+        // Sets "isProfiled" to true in UserDefaults
+        UserDefaults.standard.setIsProfiled(value: true)
+        
+        // Writes user's information in database
+        NetworkManager.shared.registerData([
+            "name": UserDefaults.standard.value(forKey: "userName") as! String,
+            "occupation": UserDefaults.standard.value(forKey: "userOccupation") as! String,
+            "location": UserDefaults.standard.value(forKey: "userLocation") as! String,
+        ])
     }
     
     override func didReceiveMemoryWarning() {

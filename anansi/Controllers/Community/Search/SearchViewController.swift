@@ -37,10 +37,6 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //view.backgroundColor = UI.black.withAlphaComponent(0.7)
-        //view.isOpaque = false
-        //view.alpha = 0.54
-        
         collectionView!.register(UserCollectionCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         
         collectionView!.delegate = self
@@ -56,7 +52,7 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
             searchView.leadingAnchor.constraint(equalTo: self.navigationController!.view.leadingAnchor),
             searchView.trailingAnchor.constraint(equalTo: self.navigationController!.view.trailingAnchor),
             searchView.topAnchor.constraint(equalTo: self.navigationController!.view.topAnchor)
-            ])
+        ])
         
         searchView.addSubview(searchBarView)
         NSLayoutConstraint.activate([
@@ -64,7 +60,7 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
             searchBarView.leadingAnchor.constraint(equalTo: searchView.leadingAnchor),
             searchBarView.trailingAnchor.constraint(equalTo: searchView.trailingAnchor),
             searchBarView.heightAnchor.constraint(equalToConstant: 44.0)
-            ])
+        ])
         
         
         //searchController.searchResultsUpdater = self
@@ -156,7 +152,7 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchWasCanceled = true
-        self.dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -254,20 +250,21 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
         
         searchController.searchBar.resignFirstResponder()
         
-        showChatLogController(user: user)
+        showProfileController(user: user)
         collectionView.deselectItem(at: indexPath, animated: true)
     }
     
-    @objc func showChatLogController(user: User) {
+    func showProfileController(user: User) {
         
-        let chatController = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
-        chatController.user = user
-        chatController.becomeFirstResponder()
-        navigationController?.pushViewController(chatController, animated: true)
+        let profileController = ProfileViewController()
+        profileController.user = user
+        profileController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.plain, target: navigationController, action: nil)
+        
+        navigationController?.pushViewController(profileController, animated: true)
     }
 }
 
-extension Search2ViewController: UISearchResultsUpdating {
+extension SearchViewController: UISearchResultsUpdating {
     
     // MARK: - UISearchResultsUpdating Delegate
     

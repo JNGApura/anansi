@@ -20,7 +20,7 @@ class ProfilingController: UIViewController, UIPageViewControllerDelegate, UITex
     private var currentPage = 0
     
     private let logo: UIImageView = {
-        let i = UIImageView(image: #imageLiteral(resourceName: "logo-white"))
+        let i = UIImageView(image: #imageLiteral(resourceName: "TEDxISTAlameda-black"))
         i.translatesAutoresizingMaskIntoConstraints = false
         i.contentMode = .scaleAspectFill
         return i

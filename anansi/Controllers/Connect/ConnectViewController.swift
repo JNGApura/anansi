@@ -223,11 +223,20 @@ class ConnectViewController: UIViewController, UIScrollViewDelegate, UITableView
                 b.setImage(#imageLiteral(resourceName: "new_message").withRenderingMode(.alwaysTemplate), for: .normal)
                 b.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
                 b.tintColor = .secondary
-                //button.addTarget(self, action: #selector(navigateToSettingsViewController), for: .touchUpInside)
+                b.addTarget(self, action: #selector(navigateToNewChatController), for: .touchUpInside)
                 return b
             }()
             navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
         }
+    }
+    
+    @objc func navigateToNewChatController() {
+        
+        let newChatController = NewChatController()
+        newChatController.connectViewController = self
+        
+        let navController = UINavigationController(rootViewController: newChatController)
+        present(navController, animated: true, completion: nil)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -247,7 +256,6 @@ class ConnectViewController: UIViewController, UIScrollViewDelegate, UITableView
             label?.alpha = 0.0
         }
     }
-    
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -299,15 +307,21 @@ class ConnectViewController: UIViewController, UIScrollViewDelegate, UITableView
         
         guard let chatParterID = message.messagePartnerID() else { return }
         
-        let ref = Database.database().reference().child("users").child(chatParterID)
+        NetworkManager.shared.fetchUser(userID: chatParterID) { (dictionary) in
+            
+            let user = User(dictionary: dictionary, id: chatParterID)
+            self.showChatLogController(user: user)
+        }
+        
+        /*let ref = Database.database().reference().child("users").child(chatParterID)
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
             
             guard let dictionary = snapshot.value as? [String: Any] else { return }
             
             let user = User(dictionary: dictionary, id: chatParterID) // snapshot.key
-            self.showChatLogController(user: user)
+            self.showProfileController(user: user)
             
-        }, withCancel: nil)
+        }, withCancel: nil)*/
         
         tableView.deselectRow(at: indexPath, animated: true)
     }

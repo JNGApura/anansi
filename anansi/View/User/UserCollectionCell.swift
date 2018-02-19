@@ -19,6 +19,7 @@ class UserCollectionCell: UICollectionViewCell {
             } else {
                 self.profileImageView.image = #imageLiteral(resourceName: "profileImageTemplate").withRenderingMode(.alwaysOriginal)
             }
+            
             self.name.text = user?.name
             self.occupation.text = user?.occupation
         }

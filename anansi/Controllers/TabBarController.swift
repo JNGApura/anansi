@@ -12,13 +12,37 @@ class TabBarController: UITabBarController {
 
     // Custom initializers
     
-    var itemList = ["Community", "Connect", "Profile", "Event"]
+    var itemList = ["Community", "Connect", "Event", "Profile"]
+    
     fileprivate var tabBarViewControllers = [UINavigationController]()
+    
+    var user: User?
     
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Writes user's information in database, if the user just signed up
+        if !UserDefaults.standard.isProfiled() {
+            
+            NetworkManager.shared.registerData([
+                "name": UserDefaults.standard.value(forKey: "userName") as! String,
+                "occupation": UserDefaults.standard.value(forKey: "userOccupation") as! String,
+                "location": UserDefaults.standard.value(forKey: "userLocation") as! String,
+                "gradientColor": 0,
+            ])
+            
+            UserDefaults.standard.setIsLoggedIn(value: true)
+            UserDefaults.standard.setIsProfiled(value: true)
+        }
+
+        // Now, let's confirm we were able to register user in DB
+        NetworkManager.shared.isUserLoggedIn { (dictionary, myID) in
+            
+            // Fetch myself from database
+            self.user = User(dictionary: dictionary, id: myID)
+        }
 
         // Add view controllers to tab bar
         for value in itemList {
@@ -59,21 +83,6 @@ class TabBarController: UITabBarController {
         
         // Remove translucence in tab bar
         tabBar.isTranslucent = false
-        
-        // Sets "isLoggedIn" to UserDefaults
-        NetworkManager.shared.isUserLoggedIn { (dictionary) in
-            UserDefaults.standard.setIsLoggedIn(value: true)
-        }
-        
-        // Sets "isProfiled" to true in UserDefaults
-        UserDefaults.standard.setIsProfiled(value: true)
-        
-        // Writes user's information in database
-        NetworkManager.shared.registerData([
-            "name": UserDefaults.standard.value(forKey: "userName") as! String,
-            "occupation": UserDefaults.standard.value(forKey: "userOccupation") as! String,
-            "location": UserDefaults.standard.value(forKey: "userLocation") as! String,
-        ])
     }
     
     override func didReceiveMemoryWarning() {

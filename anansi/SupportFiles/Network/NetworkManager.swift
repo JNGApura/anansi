@@ -111,21 +111,22 @@ class NetworkManager {
     }
     
     /// Confirms if user exists in userDatabase
-    func isUserLoggedIn(onSuccess: @escaping ([String: Any]) -> Void) {
+    func isUserLoggedIn(onSuccess: @escaping ([String: Any], String) -> Void) {
         
         if let uid = getUID() {
             userDatabase.child(uid).observeSingleEvent(of: .value) { (snapshot) in
             
                 if !snapshot.exists() { return } // just to be safe
                 if let dictionary = snapshot.value as? [String: Any] {
-                    onSuccess(dictionary)
+                    onSuccess(dictionary, snapshot.key)
                 }
             }
         }
     }
     
     /// Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time the data (including any children) changes.
-    func fetchUserData(onSuccess: @escaping ([String: Any], String) -> Void){
+    //  NOTE: query is ordered by name
+    func fetchUsers(onSuccess: @escaping ([String: Any], String) -> Void){
         userDatabase.queryOrdered(byChild: "name").observe(.childAdded, with: { (snapshot) in
             
             if !snapshot.exists() { return } // just to be safe
@@ -133,6 +134,17 @@ class NetworkManager {
                 onSuccess(dictionary, snapshot.key)
             }
         }, withCancel: nil)
+    }
+    
+    /// Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time the data (including any children) changes.
+    //  NOTE: query is ordered by name
+    func fetchUser(userID: String, onSuccess: @escaping ([String: Any]) -> Void){
+        userDatabase.child(userID).observeSingleEvent(of: .value) { (snapshot) in
+            if !snapshot.exists() { return }
+            if let dictionary = snapshot.value as? [String: Any] {
+                onSuccess(dictionary)
+            }
+        }
     }
     
     /// Register dictionary into database
@@ -146,6 +158,15 @@ class NetworkManager {
                     return
                 }
             }
+        }
+    }
+    
+    /// Remove dictionary from database
+    func removeData(_ key: String) {
+        
+        //let node = [name: value] // [String: Any]
+        if let uid = getUID() {
+            userDatabase.child(uid).child(key).removeValue()
         }
     }
     

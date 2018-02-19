@@ -43,7 +43,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
     
     private lazy var feedbackTextBox: UITextView = {
         let textBox = UITextView()
-        textBox.font = UIFont.systemFont(ofSize: Const.bodyFontSize - 1.0) // 16.0
+        textBox.font = UIFont.systemFont(ofSize: Const.calloutFontSize)
         textBox.backgroundColor = UIColor.tertiary.withAlphaComponent(0.4)
         textBox.textColor = UIColor.secondary.withAlphaComponent(0.8)
         textBox.isEditable = true

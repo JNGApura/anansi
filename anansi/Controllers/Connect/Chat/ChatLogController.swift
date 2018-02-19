@@ -14,9 +14,9 @@ import MobileCoreServices
 import AVFoundation
 import UIKit.UIGestureRecognizerSubclass
 
-let cellIdentifier = "cell"
-
 class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
+    
+    private let cellIdentifier = "cell"
     
     override var canBecomeFirstResponder: Bool { return true }
     
@@ -156,7 +156,11 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         didSet {
             observeMessages()
             
-            navigationItem.title = user!.name
+            let titleLabelView = UILabel()
+            titleLabelView.text = user!.name
+            titleLabelView.textColor = .secondary
+            titleLabelView.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
+            navigationItem.titleView = titleLabelView
         }
     }
     
@@ -202,62 +206,11 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         }, withCancel: nil)
     }
     
-    /*let titleView = UIView()
-    
-    func setupNavBarWithUser(user: User) {
-        
-        titleView.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
-        titleView.backgroundColor = .red
-        
-        let containerView = UIView()
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        titleView.addSubview(containerView)
-        
-        NSLayoutConstraint.activate([
-            containerView.centerYAnchor.constraint(equalTo: titleView.centerYAnchor),
-            containerView.centerXAnchor.constraint(equalTo: titleView.centerXAnchor), // leading
-        ])
-        
-        let profileImageView = UIImageView()
-        profileImageView.contentMode = .scaleAspectFill
-        profileImageView.layer.cornerRadius = 18
-        profileImageView.clipsToBounds = true
-        profileImageView.translatesAutoresizingMaskIntoConstraints = false
-        if let profileImageURL = user.profileImageURL {
-            profileImageView.loadImageUsingCacheWithUrlString(profileImageURL)
-        }
-        
-        containerView.addSubview(profileImageView)
-        NSLayoutConstraint.activate([
-            profileImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            profileImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            profileImageView.widthAnchor.constraint(equalToConstant: 36.0),
-            profileImageView.heightAnchor.constraint(equalToConstant: 36.0)
-        ])
-        
-        let nameLabel = UILabel()
-        nameLabel.text = user.ticketReference
-        nameLabel.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        nameLabel.textColor = .secondary
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        containerView.addSubview(nameLabel)
-        NSLayoutConstraint.activate([
-            nameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 8),
-            nameLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
-            nameLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            nameLabel.heightAnchor.constraint(equalTo: profileImageView.heightAnchor)
-        ])
-        
-        self.navigationItem.titleView = titleView
-    }*/
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupNavigationBarItems()
-        //setupNavBarWithUser(user: user!)
-        
+
         collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 24.0, right: 0) // 88
         collectionView?.alwaysBounceVertical = true
         collectionView?.backgroundColor = .white
@@ -290,6 +243,7 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         
         // Automatically hides keyboard
         chatAccessoryView.inputTextView.resignFirstResponder()
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -320,9 +274,8 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
     
     private func setupNavigationBarItems() {
         
-        let navigationBar = navigationController?.navigationBar
-        navigationBar!.barTintColor = .background
-        navigationBar!.isTranslucent = false
+        navigationController?.view.backgroundColor = .background
+        navigationController?.navigationBar.isTranslucent = false
         
         // Adds custom leftBarButton
         let leftButton: UIButton = {

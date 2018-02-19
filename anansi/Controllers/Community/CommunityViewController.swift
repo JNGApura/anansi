@@ -117,7 +117,7 @@ class CommunityViewController: UIViewController, UIScrollViewDelegate, UICollect
     
     private func fetchUsers() {
         
-        NetworkManager.shared.fetchUserData { (dictionary, userUID) in
+        NetworkManager.shared.fetchUsers { (dictionary, userUID) in
             
             if userUID != NetworkManager.shared.getUID() {
                 
@@ -137,24 +137,22 @@ class CommunityViewController: UIViewController, UIScrollViewDelegate, UICollect
     
     private func setupNavigationBarItems() {
         
-        if let navigationBar = navigationController?.navigationBar {
-            navigationBar.barTintColor = .background
-            navigationBar.isTranslucent = false
-            
-            // Sets title
-            navigationItem.titleView = titleLabelView
-            
-            // Sets rightButtonItem - change to "magnifying glass"
-            let settingsButton: UIButton = {
-                let button = UIButton(type: .system)
-                button.setImage(#imageLiteral(resourceName: "search").withRenderingMode(.alwaysTemplate), for: .normal)
-                button.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
-                button.tintColor = .secondary
-                button.addTarget(self, action: #selector(showSearchViewController), for: .touchUpInside)
-                return button
-            }()
-            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsButton)
-        }
+        navigationController?.view.backgroundColor = .background
+        navigationController?.navigationBar.isTranslucent = true
+        
+        // Sets title
+        navigationItem.titleView = titleLabelView
+        
+        // Sets rightButtonItem - change to "magnifying glass"
+        let settingsButton: UIButton = {
+            let button = UIButton(type: .system)
+            button.setImage(#imageLiteral(resourceName: "search").withRenderingMode(.alwaysTemplate), for: .normal)
+            button.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
+            button.tintColor = .secondary
+            button.addTarget(self, action: #selector(showSearchViewController), for: .touchUpInside)
+            return button
+        }()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsButton)
     }
     
     @objc func showSearchViewController() {
@@ -221,16 +219,17 @@ class CommunityViewController: UIViewController, UIScrollViewDelegate, UICollect
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         let user = users[indexPath.item]
-        showChatLogController(user: user)
+        showProfileController(user: user)
         
         collectionView.deselectItem(at: indexPath, animated: true)
     }
     
-    @objc func showChatLogController(user: User) {
+    func showProfileController(user: User) {
         
-        let chatController = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
-        chatController.user = user
-        chatController.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(chatController, animated: true)
+        let profileController = ProfileViewController()
+        profileController.user = user
+        profileController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.plain, target: navigationController, action: nil)
+        
+        navigationController?.pushViewController(profileController, animated: true)
     }
 }

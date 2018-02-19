@@ -51,4 +51,28 @@ struct Const {
     
     /// This will change
     static let timeDateHeightChatCells : CGFloat = 28.0
+    
+    /// Color gradient mapping structure
+    static let colorGradient : [Int:[UIColor]] = [0 : [.orange, .magenta],
+                                                  1 : [.magenta, .cyan],
+                                                  2 : [UIColor.init(red: 74/255.0, green: 144/255.0, blue: 226/255.0, alpha: 1.0), UIColor.init(red: 80/255.0, green: 227/255.0, blue: 194/255.0, alpha: 1.0)],
+                                                  3 : [.orange, .yellow]]
+    
+    // Bagdes and progress messages for the Profile's progress
+    static let badges = ["Beginner", "Intermediate", "Advanced", "Expert", "All-star", "Complete"]
+    static let progressMap : [Int : String] = [0 : "👋 Welcome! Add more to your profile so others can find you!",
+                                               1 : "Nice! Continue adding more so others can recognize you.",
+                                               2 : "You're doing great! Continue the streak so others can know you better.",
+                                               3 : "Congratulations! 👏 A bit is missing to unlock your profile's full potential!",
+                                               4 : "You've made it easier for others to find and recognize you. Awesome job! 👍",
+                                               5 : "You're in a league of your own! 🙌 Take a moment to enjoy your accomplishment!"]
+    static let progressColor : [Int : UIColor] = [0 : UIColor.init(red: 255/255.0, green: 150/255.0, blue: 20/255.0, alpha: 1.0), // orange
+                                                  1 : UIColor.init(red: 239/255.0, green: 201/255.0, blue: 32/255.0, alpha: 1.0), // dark yellow
+                                                  2 : UIColor.init(red: 113/255.0, green: 176/255.0, blue: 65/255.0, alpha: 1.0), // dark green
+                                                  3 : UIColor.init(red: 156/255.0, green: 113/255.0, blue: 194/255.0, alpha: 1.0), // purple
+                                                  4 : UIColor.init(red: 34/255.0, green: 122/255.0, blue: 186/255.0, alpha: 1.0), // dark blue
+                                                  5 : .primary]
+    
+    // Interests database
+    static let interests = ["3D Printing", "Acting", "Adventure", "Animal Rights", "Art", "Artificial Intelligence", "Astrology", "Astronomy", "Backpacking", "Big Data", "Biology", "Board Games", "Business Intelligence", "Business Strategy", "Camping", "Community Service", "Cooking", "DIY", "Dancing", "Data Analytics", "Design", "Economics", "Education", "Electronics", "Entrepreneurship", "Evolution", "Fashion", "Film", "Food tasting", "Gaming", "Gym", "Hiking", "History", "Human Rights", "Humanism", "Industrial Design", "Innovation", "Investing", "LGBTQIA", "Leadership", "Literature", "Machine Learning", "Marketing", "Meditation", "Mobile Development", "Music", "Neuroscience", "Painting", "Peace", "Philanthropy", "Philosophy", "Photography", "Physics", "Political Activism", "Product Design", "Psychology", "Public Speaking", "Reading", "Renewable Energy", "Robotics", "Running", "Sci-Fi/Fantasy", "Social Media", "Social Movements", "Space Exploration", "Sports", "Startup", "Sustainability", "Theater", "Travel", "UX/UI", "Urbanism", "Veganism", "Vegetarianism", "Volunteering", "Web Design", "Web Development", "Writing", "Yoga"].sorted()
 }

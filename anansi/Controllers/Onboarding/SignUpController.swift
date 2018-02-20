@@ -9,14 +9,114 @@
 import UIKit
 import ReachabilitySwift
 
-class SignUpController: UIViewController {
+class SignUpController: UIViewController, UIScrollViewDelegate, UITextFieldDelegate, UITextViewDelegate {
     
     // Custom initializers
+    lazy var scrollView: UIScrollView = {
+        let v = UIScrollView()
+        v.delegate = self
+        v.backgroundColor = .background
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
+    
     let logo: UIImageView = {
         let i = UIImageView(image: #imageLiteral(resourceName: "TEDxISTAlameda-black"))
         i.translatesAutoresizingMaskIntoConstraints = false
         i.contentMode = .scaleAspectFill
         return i
+    }()
+    
+    let typingView: UIView = {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
+    
+    let sectionTitle: UILabel = {
+        let st = UILabel()
+        st.textColor = .secondary
+        st.text = "Sign up"
+        st.font = UIFont.boldSystemFont(ofSize: Const.titleFontSize)
+        st.translatesAutoresizingMaskIntoConstraints = false
+        return st
+    }()
+    
+    lazy var emailText: UITextView = {
+        let tf = UITextView()
+        tf.text = "Email address"
+        tf.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
+        tf.textColor = .secondary
+        tf.backgroundColor = .clear
+        tf.textContainerInset = UIEdgeInsets(top: 2, left: -6, bottom: -2, right: 0)
+        tf.autocapitalizationType = .none
+        tf.keyboardType = .emailAddress
+        tf.translatesAutoresizingMaskIntoConstraints = false
+        tf.delegate = self
+        return tf
+    }()
+    
+    let borderEmail: UIView = {
+        let b = UIView()
+        b.backgroundColor = .secondary
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+    
+    let errorEmail: UILabel = {
+        let tf = UILabel()
+        tf.text = ""
+        tf.font = UIFont.boldSystemFont(ofSize: Const.footnoteFontSize)
+        tf.textColor = .primary
+        tf.translatesAutoresizingMaskIntoConstraints = false
+        return tf
+    }()
+    
+    lazy var ticketText: UITextView = {
+        let tf = UITextView()
+        tf.text = "Ticket reference"
+        tf.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
+        tf.textColor = .secondary
+        tf.backgroundColor = .clear
+        tf.textContainerInset = UIEdgeInsets(top: 2, left: -6, bottom: -2, right: 0)
+        tf.autocapitalizationType = .none
+        tf.translatesAutoresizingMaskIntoConstraints = false
+        tf.delegate = self
+        return tf
+    }()
+    
+    let borderTicket: UIView = {
+        let b = UIView()
+        b.backgroundColor = .secondary
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+    
+    let errorTicket: UILabel = {
+        let tf = UILabel()
+        tf.text = ""
+        tf.font = UIFont.boldSystemFont(ofSize: Const.footnoteFontSize)
+        tf.textColor = .primary
+        tf.translatesAutoresizingMaskIntoConstraints = false
+        return tf
+    }()
+    
+    lazy var loginButton: PrimaryButton = {
+        let b = PrimaryButton()
+        b.setTitle("Let's do this!", for: .normal)
+        b.alpha = 1
+        b.isEnabled = true
+        b.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+    
+    let activityIndicator: UIActivityIndicatorView = {
+        let ai = UIActivityIndicatorView()
+        ai.hidesWhenStopped = true
+        ai.color = .background
+        ai.translatesAutoresizingMaskIntoConstraints = false
+        return ai
     }()
     
     let supportButton: TertiaryButton = {
@@ -29,119 +129,82 @@ class SignUpController: UIViewController {
         return b
     }()
     
-    let sectionTitle: UILabel = {
-        let st = UILabel()
-        st.textColor = .secondary
-        st.text = "Sign up"
-        st.font = UIFont.boldSystemFont(ofSize: Const.titleFontSize)
-        return st
-    }()
-    
-    let emailTextField: UITextField = {
-        let tf = UITextField()
-        tf.attributedPlaceholder = NSAttributedString(string: "Email address", attributes: [NSAttributedStringKey.foregroundColor: UIColor.secondary.withAlphaComponent(0.6)])
-        tf.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        tf.textColor = .secondary
-        tf.autocapitalizationType = .none
-        tf.autocorrectionType = .no
-        tf.keyboardType = .emailAddress
-        return tf
-    }()
-    
-    var borderEmail: CALayer! = nil
-    
-    let errorEmail: UILabel = {
-        let tf = UILabel()
-        tf.text = ""
-        tf.font = UIFont.boldSystemFont(ofSize: Const.footnoteFontSize)
-        tf.textColor = .primary
-        return tf
-    }()
-    
-    let ticketTextField: UITextField = {
-        let tf = UITextField()
-        tf.attributedPlaceholder = NSAttributedString(string: "Ticket reference", attributes: [NSAttributedStringKey.foregroundColor: UIColor.secondary.withAlphaComponent(0.6)])
-        tf.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        tf.textColor = .secondary
-        tf.autocapitalizationType = .none
-        tf.autocorrectionType = .no
-        return tf
-    }()
-    
-    var borderTicket: CALayer! = nil
-    
-    let errorTicket: UILabel = {
-        let tf = UILabel()
-        tf.text = ""
-        tf.font = UIFont.boldSystemFont(ofSize: Const.footnoteFontSize)
-        tf.textColor = .primary
-        return tf
-    }()
-    
-    let stackView: UIStackView = {
-        let sv = UIStackView()
-        sv.axis = .vertical
-        sv.distribution = .fillEqually
-        sv.translatesAutoresizingMaskIntoConstraints = false
-        return sv
-    }()
-    
-    lazy var loginButton: PrimaryButton = {
-        let b = PrimaryButton()
-        b.setTitle("Let's do this!", for: .normal)
-        b.translatesAutoresizingMaskIntoConstraints = false
-        b.alpha = 1
-        b.isEnabled = true
-        b.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
-        return b
-    }()
-    
-    let activityIndicator: UIActivityIndicatorView = {
-        let ai = UIActivityIndicatorView()
-        ai.hidesWhenStopped = true
-        ai.color = .background
-        ai.translatesAutoresizingMaskIntoConstraints = false
-        return ai
-    }()
-    
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         
-        view.backgroundColor = .white
+        view.addSubview(scrollView)
+        NSLayoutConstraint.activate([
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
         
         // Logo
-        view.addSubview(logo)
+        scrollView.addSubview(logo)
         NSLayoutConstraint.activate([
-            logo.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Const.marginAnchorsToContent * 3),
-            logo.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.marginAnchorsToContent),
+            logo.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: Const.marginAnchorsToContent * 3),
+            logo.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: Const.marginAnchorsToContent),
         ])
         
         // Add email & ticket reference
-        [sectionTitle, emailTextField, errorEmail, ticketTextField, errorTicket].forEach( {stackView.addArrangedSubview($0)} )
-        stackView.setCustomSpacing(Const.marginAnchorsToContent * 1.5, after: sectionTitle)
-        stackView.setCustomSpacing(Const.marginAnchorsToContent * 0.5, after: errorEmail)
-        
-        view.addSubview(stackView)
+        scrollView.addSubview(typingView)
+        [sectionTitle, emailText, errorEmail, borderEmail, ticketText, errorTicket, borderTicket].forEach( {typingView.addSubview($0)} )
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: Const.marginAnchorsToContent * 4),
-            stackView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            stackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -Const.marginAnchorsToContent * 2)
+            typingView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: Const.marginAnchorsToContent * 3.5),
+            typingView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            typingView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -Const.marginAnchorsToContent * 2),
+            typingView.heightAnchor.constraint(equalToConstant: 172.0),
+            
+            sectionTitle.topAnchor.constraint(equalTo: typingView.topAnchor),
+            sectionTitle.leadingAnchor.constraint(equalTo: typingView.leadingAnchor),
+            sectionTitle.trailingAnchor.constraint(equalTo: typingView.trailingAnchor),
+            sectionTitle.heightAnchor.constraint(equalToConstant: 26.0),
+            
+            emailText.topAnchor.constraint(equalTo: sectionTitle.bottomAnchor, constant: 30.0),
+            emailText.leadingAnchor.constraint(equalTo: typingView.leadingAnchor),
+            emailText.trailingAnchor.constraint(equalTo: typingView.trailingAnchor),
+            emailText.heightAnchor.constraint(equalToConstant: 26.0),
+            
+            borderEmail.topAnchor.constraint(equalTo: emailText.bottomAnchor, constant: 2.0),
+            borderEmail.leadingAnchor.constraint(equalTo: typingView.leadingAnchor),
+            borderEmail.trailingAnchor.constraint(equalTo: typingView.trailingAnchor),
+            borderEmail.heightAnchor.constraint(equalToConstant: 2.0),
+            
+            errorEmail.topAnchor.constraint(equalTo: borderEmail.bottomAnchor, constant: 4.0),
+            errorEmail.leadingAnchor.constraint(equalTo: typingView.leadingAnchor),
+            errorEmail.trailingAnchor.constraint(equalTo: typingView.trailingAnchor),
+            errorEmail.heightAnchor.constraint(equalToConstant: 16.0),
+            
+            ticketText.topAnchor.constraint(equalTo: errorEmail.bottomAnchor, constant: 26.0),
+            ticketText.leadingAnchor.constraint(equalTo: typingView.leadingAnchor),
+            ticketText.trailingAnchor.constraint(equalTo: typingView.trailingAnchor),
+            ticketText.heightAnchor.constraint(equalToConstant: 26.0),
+            
+            borderTicket.topAnchor.constraint(equalTo: ticketText.bottomAnchor, constant: 2.0),
+            borderTicket.leadingAnchor.constraint(equalTo: typingView.leadingAnchor),
+            borderTicket.trailingAnchor.constraint(equalTo: typingView.trailingAnchor),
+            borderTicket.heightAnchor.constraint(equalToConstant: 2.0),
+            
+            errorTicket.topAnchor.constraint(equalTo: borderTicket.bottomAnchor, constant: 4.0),
+            errorTicket.leadingAnchor.constraint(equalTo: typingView.leadingAnchor),
+            errorTicket.trailingAnchor.constraint(equalTo: typingView.trailingAnchor),
+            errorTicket.heightAnchor.constraint(equalToConstant: 16.0),
         ])
         
         // Login button
-        view.addSubview(loginButton)
+        scrollView.addSubview(loginButton)
         NSLayoutConstraint.activate([
-            loginButton.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: Const.marginAnchorsToContent * 1.5),
-            loginButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            loginButton.topAnchor.constraint(equalTo: typingView.bottomAnchor, constant: Const.marginAnchorsToContent * 2.0),
+            loginButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             loginButton.heightAnchor.constraint(equalToConstant: Const.buttonHeight),
             loginButton.widthAnchor.constraint(equalToConstant: 150)
         ])
         
         // Activity indicator (in login button)
-        
         loginButton.addSubview(activityIndicator)
         activityIndicator.isHidden = true
         NSLayoutConstraint.activate([
@@ -150,30 +213,14 @@ class SignUpController: UIViewController {
         ])
         
         // Support button
-        view.addSubview(supportButton)
+        scrollView.addSubview(supportButton)
         NSLayoutConstraint.activate([
             supportButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.marginAnchorsToContent),
             supportButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent),
         ])
-    }
-    
-    override func viewDidLayoutSubviews() {
         
-        // Email's bottom border
-        borderEmail = CALayer()
-        borderEmail.frame = CGRect(x: 0, y: emailTextField.frame.size.height - 2.0, width: emailTextField.frame.size.width, height: emailTextField.frame.size.height)
-        borderEmail.borderWidth = 2.0
-        errorEmail.text!.isEmpty ? ( borderEmail.borderColor = UIColor.black.cgColor ) : ( borderEmail.borderColor = UIColor.red.cgColor )
-        emailTextField.layer.addSublayer(borderEmail)
-        emailTextField.layer.masksToBounds = true
-        
-        // Ticket's bottom border
-        borderTicket = CALayer()
-        borderTicket.frame = CGRect(x: 0, y: ticketTextField.frame.size.height - 2.0, width: ticketTextField.frame.size.width, height: ticketTextField.frame.size.height)
-        borderTicket.borderWidth = 2.0
-        errorTicket.text!.isEmpty ? ( borderTicket.borderColor = UIColor.black.cgColor ) : ( borderTicket.borderColor = UIColor.red.cgColor )
-        ticketTextField.layer.addSublayer(borderTicket)
-        ticketTextField.layer.masksToBounds = true
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -184,6 +231,7 @@ class SignUpController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         ReachabilityManager.shared.removeListener(listener: self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     override func didReceiveMemoryWarning() {
@@ -195,22 +243,107 @@ class SignUpController: UIViewController {
     // Send to messenger (support)
     @objc func sendToMessenger() {
         
-        let url = URL(string: "https://www.messenger.com/t/tedxistalameda")!
-        if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        } else {
-            UIApplication.shared.openURL(url)
+        let url = URL(string: "fb-messenger://user-thread/tedxistalameda")!
+        
+        UIApplication.shared.open(url, options: [:]) { (success) in
+            
+            if success == false {
+                
+                let url = URL(string: "https://m.me/tedxistalameda")
+                if UIApplication.shared.canOpenURL(url!) {
+                    UIApplication.shared.open(url!)
+                }
+            }
         }
     }
+    
+    var currentPos : CGFloat! = 0
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        
+        if let keyboardHeight = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
+            
+            if activeText != nil {
+                
+                let activeTextRelativeMaxY = (activeText.frame.maxY + typingView.frame.origin.y - scrollView.contentOffset.y)
+                let screenHeight = view.frame.height
+                
+                if (screenHeight - activeTextRelativeMaxY - 24) < keyboardHeight {
+                    
+                    scrollView.frame.origin.y -= keyboardHeight - (screenHeight - activeTextRelativeMaxY - 24)
+                    view.layoutIfNeeded()
+                }
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        
+        UIView.animate(withDuration: 0.2) {
+            self.scrollView.frame.origin.y = 0
+        }
+    }
+    
+    // MARK: UITextViewDelegate
+    
+    var activeText: UITextView!
+    
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        
+        activeText = textView
+        return true
+    }
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        
+        if textView == emailText {
+            
+            borderEmail.backgroundColor = .primary
+            
+            if textView.text == "Email address" {
+                textView.text = ""
+            }
+        }
+        
+        if textView == ticketText {
+            borderTicket.backgroundColor = .primary
+            
+            if textView.text == "Ticket reference" {
+                textView.text = ""
+            }
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        
+        activeText = nil
+        
+        if textView == emailText {
+            borderEmail.backgroundColor = .secondary
+            
+            if textView.text == "" {
+                textView.text = "Email address"
+            }
+        }
+        
+        if textView == ticketText {
+            borderTicket.backgroundColor = .secondary
+            
+            if textView.text == "" {
+                textView.text = "Ticket reference"
+            }
+        }
+    }
+    
+    // MARK: Network
     
     // Handles login, whether is a new user or an existing one
     @objc func handleLogin() {
         
-        guard let email = emailTextField.text, let ticket = ticketTextField.text else { return }
+        guard let email = emailText.text, let ticket = ticketText.text else { return }
         self.errorTicket.text = ""
         self.errorEmail.text = ""
         self.showLoadingInButton() // Activity indicator shows up
-        
         
         // Presents an alert to the user informing the network is unreachable
         if !ReachabilityManager.shared.reachability.isReachable {
@@ -233,11 +366,14 @@ class SignUpController: UIViewController {
             switch errCode {
             case .invalidEmail:
                 self.errorEmail.text = "Your email has an incorrect format. Try again?"
+                self.borderEmail.backgroundColor = .primary
                 
             case .weakPassword:
                 self.errorTicket.text = "Ticket reference has 6 characters. Try again?"
+                self.borderTicket.backgroundColor = .primary
                 if email == "" {
                     self.errorEmail.text = "Your email has an incorrect format. Try again?"
+                    self.borderEmail.backgroundColor = .primary
                 }
                 
             case .emailAlreadyInUse:
@@ -247,9 +383,11 @@ class SignUpController: UIViewController {
                     switch errorCode {
                     case .wrongPassword:
                         self.errorTicket.text = "Your ticket reference doesn't match. Try again?"
+                        self.borderTicket.backgroundColor = .primary
                         
                     case .invalidEmail:
                         self.errorEmail.text = "Your email doesn't match. Try again?"
+                        self.borderEmail.backgroundColor = .primary
                         
                     default:
                         print("Error: \(String(describing: errorCode))")
@@ -275,19 +413,16 @@ class SignUpController: UIViewController {
     // Sends user to the next ViewController with custom transition
     private func pushExistingUserToViewController() {
         
-        let controller: UIViewController
-        
         if UserDefaults.standard.isProfiled() {
-            controller = TabBarController()
             
-            let transition = CATransition()
-            transition.duration = 0.5
-            transition.type = kCATransitionPush
-            transition.subtype = kCATransitionFromRight
-            transition.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
-            self.view.window!.layer.add(transition, forKey: kCATransition)
-            
-            present(controller, animated: false, completion: nil)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                
+                let controller = TabBarController()
+                controller.modalPresentationStyle = .overFullScreen
+                controller.modalTransitionStyle = .crossDissolve
+                self.present(controller, animated: true, completion: nil)
+                
+            }
         } else {
             
             pushNewUserToProfilingController()
@@ -296,10 +431,14 @@ class SignUpController: UIViewController {
     
     private func pushNewUserToProfilingController() {
         
-        let controller = ProfilingController()
-        controller.modalPresentationStyle = .overFullScreen
-        controller.modalTransitionStyle = .crossDissolve
-        present(controller, animated: true, completion: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            
+            let controller = ProfilingController()
+            controller.modalPresentationStyle = .overFullScreen
+            controller.modalTransitionStyle = .crossDissolve
+            self.present(controller, animated: true, completion: nil)
+            
+        }
     }
     
     // Show activity indicator (spinner)

@@ -120,7 +120,6 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
     
     lazy var selectedCountLabel: UILabel = {
         let l = UILabel()
-        l.text = "\(user?.interests!.count ?? 0) interests selected"
         l.textColor = .primary
         l.font = UIFont.systemFont(ofSize: Const.footnoteFontSize)
         l.translatesAutoresizingMaskIntoConstraints = false
@@ -136,8 +135,7 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
         i.isUserInteractionEnabled = false // needed so tap gets to parent view
         return i
     }()
-    
-    lazy var interestList = user?.interests
+    var interestList = [String]()
     var interestListWasUpdated = false
     
     // Table with user's data
@@ -254,11 +252,18 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        // Updates interest list
+        if let myInterests = user?.interests {
+            interestList = myInterests
+        }
+        selectedCountLabel.text = "\(interestList.count) interests selected"
+        
+        // Keyboard notifications
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
+        // Reloads table to set constraints properly
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            
             self.tableView.reloadData()
             self.view.layoutIfNeeded()
         }
@@ -338,9 +343,9 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
         if interestListWasUpdated {
             
             let dictionary = ["interests" : interestList]
-            NetworkManager.shared.registerData(dictionary as! [String : [String]])
+            NetworkManager.shared.registerData(dictionary)
             
-            user?.updateInterestList(with: interestList!)
+            user?.updateInterestList(with: interestList)
         }
                 
         self.delegate?.userWasSaved(user: user!)

@@ -85,7 +85,7 @@ class ConnectEmptyState: UIView {
             stateDescription.topAnchor.constraint(equalTo: stateTitle.bottomAnchor, constant: 16.0),
             stateDescription.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stateDescription.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -132.0),
-            stateDescription.heightAnchor.constraint(equalToConstant: 48.0),
+            //stateDescription.heightAnchor.constraint(equalToConstant: 48.0),
         ])
     }
 }

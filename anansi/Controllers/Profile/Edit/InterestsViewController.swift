@@ -19,9 +19,9 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
     
     var delegate: InterestListDelegate?
     
-    var selectedInterests : [String]? {
+    var selectedInterests : [String]! {
         didSet {
-            countInterests = selectedInterests!.count
+            countInterests = selectedInterests.count
             selectedLabel.text = "\(countInterests) selected"
         }
     }
@@ -272,15 +272,15 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
             cell.unselect()
             
             countInterests -= 1
-            let ind = selectedInterests!.index(of: cell.titleLabel.text!)
-            selectedInterests!.remove(at: ind!)
+            let ind = selectedInterests.index(of: cell.titleLabel.text!)
+            selectedInterests.remove(at: ind!)
             
         } else {
             
             cell.select()
             
             countInterests += 1
-            selectedInterests!.append(cell.titleLabel.text!)
+            selectedInterests.append(cell.titleLabel.text!)
         }
         
         selectedLabel.text = "\(countInterests) selected"

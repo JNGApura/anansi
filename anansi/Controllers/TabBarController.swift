@@ -23,6 +23,8 @@ class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = .background
+        
         // Writes user's information in database, if the user just signed up
         if !UserDefaults.standard.isProfiled() {
             

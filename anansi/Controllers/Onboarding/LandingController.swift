@@ -136,11 +136,17 @@ class LandingController: UIViewController {
     // Send to messenger (support)
     @objc func sendToMessenger() {
         
-        let url = URL(string: "https://www.messenger.com/t/tedxistalameda")!
-        if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        } else {
-            UIApplication.shared.openURL(url)
+        let url = URL(string: "fb-messenger://user-thread/tedxistalameda")!
+        
+        UIApplication.shared.open(url, options: [:]) { (success) in
+            
+            if success == false {
+                
+                let url = URL(string: "https://m.me/tedxistalameda")
+                if UIApplication.shared.canOpenURL(url!) {
+                    UIApplication.shared.open(url!)
+                }
+            }
         }
     }
     
@@ -156,11 +162,17 @@ class LandingController: UIViewController {
     // Sends user to get a ticket (outside app) // TO DO!
     @objc func sendUserToGetTicket() {
         
-        let url = URL(string: "https://www.messenger.com/t/tedxistalameda")!
-        if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        } else {
-            UIApplication.shared.openURL(url)
+        let url = URL(string: "fb-messenger://user-thread/tedxistalameda")!
+        
+        UIApplication.shared.open(url, options: [:]) { (success) in
+            
+            if success == false {
+                
+                let url = URL(string: "https://m.me/tedxistalameda")
+                if UIApplication.shared.canOpenURL(url!) {
+                    UIApplication.shared.open(url!)
+                }
+            }
         }
     }
 

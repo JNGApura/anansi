@@ -226,8 +226,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         NotificationCenter.default.removeObserver(self)
         
         // Removes keyboard notification observers
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.removeObserver(self)
     }
     
     override func didReceiveMemoryWarning() {
@@ -256,7 +255,9 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
 
         // Activates contraints the feedbackTextBox, if exists
         if pageIdentifier == 2 {
-            NSLayoutConstraint.activate([feedbackTextBox.heightAnchor.constraint(equalToConstant: Const.marginAnchorsToContent * 9 - 4.0)])
+            NSLayoutConstraint.activate([
+                feedbackTextBox.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.215)
+            ])//Const.marginAnchorsToContent * 9 - 4.0)])
         }
         
         // Activates contraints imageStackView
@@ -282,8 +283,8 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
             
             NSLayoutConstraint.activate([
                 buttonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -distanceFromBottom),
-                buttonStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.marginAnchorsToContent * 4),
-                buttonStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent * 4),
+                buttonStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                buttonStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.675),
                 buttonStackView.heightAnchor.constraint(equalToConstant: buttonAreaHeight)
             ])
         }
@@ -314,7 +315,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
     }
     
     @objc func leaveFlow(){
-        _ = self.navigationController?.popViewController(animated: true)
+        navigationController?.popViewController(animated: true)
     }
     
     @objc func rateApp(){
@@ -333,7 +334,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         
         let when = DispatchTime.now() + 0.4 // change 2 to desired number of seconds
         DispatchQueue.main.asyncAfter(deadline: when) {
-            _ = self.navigationController?.popViewController(animated: true)
+            self.navigationController?.popViewController(animated: true)
         }
     }
     
@@ -349,24 +350,31 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
     // MARK: Keyboard-specific functions
     
     @objc func keyboardWillHide() {
-        self.view.frame.origin.y = 0
+        view.transform = CGAffineTransform.identity
     }
     
     @objc func keyboardWillChange(notification: NSNotification) {
         
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if feedbackTextBox.isFirstResponder {
-                self.view.frame.origin.y = feedbackTextBox.frame.maxY - keyboardSize.origin.y
+        if let keyboardHeight = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
+            
+            let textBoxRelativeMaxY = feedbackTextBox.frame.maxY + feedbackTextBox.frame.height
+            let screenHeight = view.frame.height
+            
+            let offsetY = (screenHeight - textBoxRelativeMaxY - 16)
+            
+            if offsetY < keyboardHeight {
+                view.transform = CGAffineTransform(translationX: 0, y: -(keyboardHeight - offsetY))
+                view.layoutIfNeeded()
             }
         }
     }
 
     // MARK: TextViewDelegate functions
     
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+    /*func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         setupTextFieldsAccessoryView()
         return true
-    }
+    }*/
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         

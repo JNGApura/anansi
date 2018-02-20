@@ -64,7 +64,7 @@ class CommunityViewController: UIViewController, UIScrollViewDelegate, UICollect
         setupNavigationBarItems()
         
         // Sets up UI
-        self.view.addSubview(scrollView)
+        view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(headerView)
         contentView.addSubview(collectionView)

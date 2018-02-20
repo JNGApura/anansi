@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ProfilingController: UIViewController, UIPageViewControllerDelegate, UITextFieldDelegate {
+class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewControllerDelegate, UITextViewDelegate {
     
     // Custom initializers
     private let profilingPages = [
@@ -18,6 +18,14 @@ class ProfilingController: UIViewController, UIPageViewControllerDelegate, UITex
     ]
     
     private var currentPage = 0
+    
+    lazy var scrollView: UIScrollView = {
+        let v = UIScrollView()
+        v.delegate = self
+        v.backgroundColor = .background
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
     
     private let logo: UIImageView = {
         let i = UIImageView(image: #imageLiteral(resourceName: "TEDxISTAlameda-black"))
@@ -48,14 +56,26 @@ class ProfilingController: UIViewController, UIPageViewControllerDelegate, UITex
         pc.translatesAutoresizingMaskIntoConstraints = false
         return pc
     }()
-    
-    private let answerTextField: UITextField = {
-        let tf = UITextField()
-        tf.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
+
+    lazy var answerText: UITextView = {
+        let tf = UITextView()
+        tf.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
         tf.textColor = .secondary
+        tf.backgroundColor = .clear
+        tf.textContainerInset = UIEdgeInsets(top: 2, left: -6, bottom: -2, right: 0)
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.autocorrectionType = .no
+        tf.delegate = self
         return tf
+    }()
+    
+    let labelPlaceholder: UILabel = {
+        let l = UILabel()
+        l.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
+        l.textColor = UIColor.secondary.withAlphaComponent(0.4)
+        l.backgroundColor = .clear
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
     }()
     
     private let bottomControlView: UIView = {
@@ -77,42 +97,50 @@ class ProfilingController: UIViewController, UIPageViewControllerDelegate, UITex
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //self.hideKeyboardWhenTappedAround()
         
-        view.backgroundColor = .white
-
         // Adds pageController to view as ChilViewController
         addChildViewController(pageController)
         
         // Add other subviews
+        [scrollView, bottomControlView].forEach { view.addSubview($0) }
+        [logo, pageController.view, answerText, labelPlaceholder].forEach { scrollView.addSubview($0) }
         [cellControl, nextButton].forEach { bottomControlView.addSubview($0) }
-        [logo, pageController.view, answerTextField, bottomControlView].forEach { view.addSubview($0) }
         pageController.didMove(toParentViewController: self)
         
-        
         // Setting up answerTextField to update every time we go to a new page
-        answerTextField.delegate = self
-        answerTextField.layer.zPosition = 1
-        answerTextField.attributedPlaceholder = NSAttributedString(string: profilingPages[currentPage].questionPlaceholder, attributes: [NSAttributedStringKey.foregroundColor: UIColor.secondary.withAlphaComponent(0.6)])
+        answerText.layer.zPosition = 1
+        labelPlaceholder.text = profilingPages[currentPage].questionPlaceholder
+        answerText.text = ""
         
         // Sets up the layout constraints
         NSLayoutConstraint.activate([
+            
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
-            logo.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Const.marginAnchorsToContent * 3),
-            logo.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.marginAnchorsToContent),
+            logo.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: Const.marginAnchorsToContent * 3),
+            logo.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: Const.marginAnchorsToContent),
 
             pageController.view.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: Const.marginAnchorsToContent * 4),
-            pageController.view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            pageController.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            pageController.view.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor),
+            pageController.view.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            pageController.view.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            pageController.view.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             pageController.view.heightAnchor.constraint(equalToConstant: 212.0),
             
-            answerTextField.bottomAnchor.constraint(equalTo: pageController.view.bottomAnchor, constant: -2.0),
-            answerTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.marginAnchorsToContent),
-            answerTextField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent),
+            answerText.bottomAnchor.constraint(equalTo: pageController.view.bottomAnchor, constant: -2.0),
+            answerText.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: Const.marginAnchorsToContent),
+            answerText.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -Const.marginAnchorsToContent),
+            answerText.heightAnchor.constraint(equalToConstant: 26.0),
             
-            bottomControlView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            bottomControlView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            labelPlaceholder.centerXAnchor.constraint(equalTo: answerText.centerXAnchor),
+            labelPlaceholder.widthAnchor.constraint(equalTo: answerText.widthAnchor),
+            labelPlaceholder.topAnchor.constraint(equalTo: answerText.topAnchor),
+            labelPlaceholder.heightAnchor.constraint(equalToConstant: 26.0),
+            
+            bottomControlView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bottomControlView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomControlView.heightAnchor.constraint(equalToConstant: Const.marginAnchorsToContent * 2.5),
             
             nextButton.centerYAnchor.constraint(equalTo: bottomControlView.centerYAnchor),
@@ -144,7 +172,7 @@ class ProfilingController: UIViewController, UIPageViewControllerDelegate, UITex
     
     // Presents keyboard for answerTextField
     @objc func handleFirstReponser() {
-        answerTextField.becomeFirstResponder()
+        answerText.becomeFirstResponder()
     }
     
     // Handles next page
@@ -179,19 +207,25 @@ class ProfilingController: UIViewController, UIPageViewControllerDelegate, UITex
             
             // Fades out answerTextField
             UIView.animate(withDuration: 0.3, animations: {
-                self.answerTextField.alpha = 0.0
+                
+                self.answerText.alpha = 0.0
+            }, completion: { (true) in
+                
+                // Updates answerTextField with new values (while faded out)
+                self.answerText.text = "" //self.profilingPages[nextPage].questionPlaceholder
+                self.labelPlaceholder.text = self.profilingPages[nextPage].questionPlaceholder
             })
-            
-            // Updates answerTextField with new values (while faded out)
-            answerTextField.text = ""
-            answerTextField.attributedPlaceholder = NSAttributedString(string: profilingPages[nextPage].questionPlaceholder, attributes: [NSAttributedStringKey.foregroundColor: UIColor.secondary.withAlphaComponent(0.6)])
             
             // Presents next view controller
             pageController.setViewControllers([ProfilingPageView(page: profilingPages[nextPage])], direction: .forward, animated: true, completion: nil)
             
             // Fades in answerTextField
-            UIView.animate(withDuration: 0.8, animations: {
-                self.answerTextField.alpha = 1.0
+            UIView.animate(withDuration: 0.3, animations: {
+                
+                self.answerText.alpha = 1.0
+            }, completion: { (true) in
+                
+                self.labelPlaceholder.isHidden = false
             })
             
             currentPage = nextPage
@@ -226,7 +260,7 @@ class ProfilingController: UIViewController, UIPageViewControllerDelegate, UITex
     func storeProfilingAnswer(_ currentPage: Int) {
 
         let standard = UserDefaults.standard
-        let answer = answerTextField.text
+        let answer = answerText.text
         
         switch currentPage {
         case 0:
@@ -247,15 +281,15 @@ class ProfilingController: UIViewController, UIPageViewControllerDelegate, UITex
     // Sends user to ProfilingController with custom transition
     @objc func pushTabBarController() {
         
-        let transition = CATransition()
-        transition.duration = 0.5
-        transition.type = kCATransitionPush
-        transition.subtype = kCATransitionFromRight
-        transition.timingFunction = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
-        self.view.window!.layer.add(transition, forKey: kCATransition)
+        self.answerText.resignFirstResponder()
         
-        let controller = TabBarController()
-        present(controller, animated: false, completion: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            
+            let controller = TabBarController()
+            controller.modalPresentationStyle = .overFullScreen
+            controller.modalTransitionStyle = .crossDissolve
+            self.present(controller, animated: true, completion: nil)
+        }
     }
     
     // MARK : KEYBOARD-related functions
@@ -263,23 +297,52 @@ class ProfilingController: UIViewController, UIPageViewControllerDelegate, UITex
     @objc func keyboardWillHide() {
         
         bottomControlBottomAnchor?.constant = 0
+        scrollView.transform = CGAffineTransform.identity
         view.layoutIfNeeded() // Forces the layout of the subtree animation block and then captures all of the frame changes
     }
     
     @objc func keyboardWillChange(notification: NSNotification) {
         
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            bottomControlBottomAnchor?.constant = -keyboardSize.height + 28
-            view.layoutIfNeeded() // Forces the layout of the subtree animation block and then captures all of the frame changes
+        if let keyboardHeight = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
+            
+            if Display.typeIsLike == .iphoneX {
+                 bottomControlBottomAnchor?.constant = -keyboardHeight + 28
+            } else {
+                bottomControlBottomAnchor?.constant = -keyboardHeight
+                view.layoutIfNeeded()
+            }
+            
+            let answerTextRelativeMaxY = answerText.frame.maxY
+            let bottomControlHeight = bottomControlView.frame.height
+            let screenHeight = view.frame.height
+            
+            let offsetY = (screenHeight - answerTextRelativeMaxY - bottomControlHeight - 12)
+            
+            if offsetY < keyboardHeight {
+                
+                scrollView.transform = CGAffineTransform(translationX: 0, y: -(keyboardHeight - offsetY))
+                view.layoutIfNeeded()
+            }
         }
     }
     
-    // MARK : UITextFieldDelegate functions
+    // MARK : UITextViewDelegate functions
     
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         
-        if (range.location - range.length) >= 2 { // Only solution I found, location of changed character minus #characters to change
-            
+        let prospectiveText = (textView.text as NSString).replacingCharacters(in: range, with: text)
+        let textLength = prospectiveText.count
+        
+        // Presents placeholder when length == 0
+        if textLength > 0 {
+            labelPlaceholder.isHidden = true
+        } else {
+            labelPlaceholder.isHidden = false
+        }
+        
+        // Enables button when length > 2
+        if textLength > 2 {
+        
             nextButton.isEnabled = true
             nextButton.alpha = 1
         } else {
@@ -287,6 +350,7 @@ class ProfilingController: UIViewController, UIPageViewControllerDelegate, UITex
             nextButton.isEnabled = false
             nextButton.alpha = 0.4
         }
+        
         return true
     }
 }

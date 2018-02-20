@@ -208,32 +208,36 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
     }()
     var callToActionViewHeightAnchor: NSLayoutConstraint?
     
-    let achievementsView: UIView = {
+    lazy var achievementsView: UIView = {
         let v = UIView()
         v.layer.borderWidth = 2
         v.layer.cornerRadius = Const.marginEight / 2.0
         v.layer.masksToBounds = true
+        v.layer.borderColor = Const.progressColor[progress]!.cgColor
         v.isHidden = true
         v.translatesAutoresizingMaskIntoConstraints = false
         return v
     }()
     
-    let ratingIcon: UIImageView = {
+    lazy var ratingIcon: UIImageView = {
         let i = UIImageView()
+        i.image = UIImage(named: Const.badges[progress].lowercased())?.withRenderingMode(.alwaysOriginal)
         i.translatesAutoresizingMaskIntoConstraints = false
         return i
     }()
     
-    let ratingLabel: UILabel = {
+    lazy var ratingLabel: UILabel = {
         let l = UILabel()
+        l.text = Const.badges[progress]
         l.textColor = .secondary
         l.font = UIFont.boldSystemFont(ofSize: Const.calloutFontSize)
         l.translatesAutoresizingMaskIntoConstraints = false
         return l
     }()
     
-    let descriptionLabel: UILabel = {
+    lazy var descriptionLabel: UILabel = {
         let l = UILabel()
+        l.text = Const.progressMap[progress]
         l.textColor = UIColor.secondary.withAlphaComponent(0.6)
         l.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
         l.numberOfLines = 0
@@ -267,22 +271,25 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
         return v
     }()
     
-    let progressBarView: GradientView = {
+    lazy var progressBarView: GradientView = {
         let v = GradientView()
         v.layer.borderWidth = 1.5
         v.layer.cornerRadius = 10
         v.layer.masksToBounds = true
+        v.layer.borderColor = Const.progressColor[progress]!.cgColor
         v.translatesAutoresizingMaskIntoConstraints = false
         return v
     }()
     
-    let checkIcon: UIImageView = {
+    lazy var checkIcon: UIImageView = {
         let i = UIImageView()
         i.image = #imageLiteral(resourceName: "check-progress").withRenderingMode(.alwaysTemplate)
         i.backgroundColor = .background
         i.layer.borderWidth = 2
         i.layer.cornerRadius = 16.0
         i.layer.masksToBounds = true
+        i.tintColor = Const.progressColor[progress]!
+        i.layer.borderColor = Const.progressColor[progress]!.cgColor
         i.translatesAutoresizingMaskIntoConstraints = false
         return i
     }()
@@ -756,7 +763,9 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
                 // If user is not me, then I need to fetch my interests to be able to compare them
                 if user?.id != myID {
                     NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
-                        self.myInterests = (dictionary["interests"] as! [String]).sorted()
+                        if let myInterests = dictionary["interests"] as! [String]! {
+                            self.myInterests = myInterests.sorted()
+                        }
                     }
                 }
                 

@@ -13,10 +13,10 @@ import AVKit
 class OnboardingViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate {
     
     // Custom initializers
-    private let multiplier : CGFloat = 0.4
+    private let multiplier : CGFloat = 0.3
     
     private let pages = [
-        OnboardingPage(title: "Welcome!", description: "Be a part of our chain(ge) (re)action and actively contribute to the dissemination of bold and disruptive ideas."),
+        OnboardingPage(title: "Welcome!", description: "Be a part of our chain(ge) (re)action. Actively contribute to the dissemination of bold ideas!"),
         OnboardingPage(title: "Connect", description: "Find your friends and get involved in authentic discussions with other attendees and partners."),
         OnboardingPage(title: "Keep up-to-date", description: "Check out what’s coming up next in our event schedule and speaker lineup."),
     ]
@@ -26,7 +26,7 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
         layout.scrollDirection = .horizontal
         let bv = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         bv.register(OnboardingPageCell.self, forCellWithReuseIdentifier: "OnboardingCellID")
-        bv.backgroundColor = .background
+        bv.backgroundColor = .clear
         bv.isPagingEnabled = true
         bv.showsHorizontalScrollIndicator = false
         bv.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
@@ -45,7 +45,9 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
     private let nextButton : TertiaryButton = {
         let button = TertiaryButton()
         button.setTitle("Next", for: .normal)
-        button.tintColor = .secondary
+        button.setTitleColor(.background, for: .normal)
+        button.backgroundColor = .clear
+        button.tintColor = .background
         button.semanticContentAttribute = .forceRightToLeft
         button.addTarget(self, action: #selector(handleNext), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -56,8 +58,8 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
         let pc = UIPageControl()
         pc.currentPage = 0
         pc.numberOfPages = pages.count
-        pc.currentPageIndicatorTintColor = .primary
-        pc.pageIndicatorTintColor = UIColor.primary.withAlphaComponent(0.2)
+        pc.currentPageIndicatorTintColor = .background
+        pc.pageIndicatorTintColor = UIColor.background.withAlphaComponent(0.4)
         pc.translatesAutoresizingMaskIntoConstraints = false
         return pc
     }()
@@ -88,11 +90,6 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
         super.viewDidLoad()
         
         view.backgroundColor = .white
-        
-        // Adds collectionView to view
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        view.addSubview(collectionView)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -100,11 +97,11 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
         if let filepath: String = Bundle.main.path(forResource: "intro-video", ofType: "mp4") {
             
             // Adds player to AVPlayerViewController
-            let videoSafeWidth = view.safeAreaLayoutGuide.layoutFrame.width
-            let videoSafeHeight = view.safeAreaLayoutGuide.layoutFrame.size.height * (1 - multiplier) + Const.marginAnchorsToContent * 2 + 4.0
+            let videoSafeWidth = view.frame.width //view.safeAreaLayoutGuide.layoutFrame.width
+            let videoSafeHeight = view.frame.height //view.safeAreaLayoutGuide.layoutFrame.size.height * (1 - multiplier) + Const.marginAnchorsToContent * 2 + 4.0
             
             avPlayerController.player = AVPlayer(url: URL.init(fileURLWithPath: filepath))
-            avPlayerController.view.frame = CGRect(x: 0.0, y: 0.0, width: videoSafeWidth, height: videoSafeHeight)
+            avPlayerController.view.frame = CGRect(x: -400.0, y: 0.0, width: videoSafeWidth + 400, height: videoSafeHeight)
             
             // Adds AVPlayerController to view
             self.addChildViewController(avPlayerController)
@@ -124,6 +121,11 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
             // perhaps add image instead - check later.
             return
         }
+        
+        // Adds collectionView to view
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        view.addSubview(collectionView)
         
         // Add bottomControlsStackView to view
         bottomControlStackView.addArrangedSubview(cellControl)
@@ -152,22 +154,20 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
     private func setupLayoutConstraints() {
         
         NSLayoutConstraint.activate([
-        
             soundButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8.0),
             soundButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16.0),
             soundButton.widthAnchor.constraint(equalToConstant: 36.0),
             soundButton.heightAnchor.constraint(equalToConstant: 36.0),
             
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            collectionView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor),
-            collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: multiplier),
+            collectionView.bottomAnchor.constraint(equalTo: bottomControlStackView.topAnchor),
+            collectionView.heightAnchor.constraint(equalToConstant: 144.0),
             
             bottomControlStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.marginAnchorsToContent),
             bottomControlStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             bottomControlStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent),
-            bottomControlStackView.heightAnchor.constraint(equalToConstant: Const.marginAnchorsToContent * 2.5),
+            bottomControlStackView.heightAnchor.constraint(equalToConstant: 50.0),
         ])
     }
     

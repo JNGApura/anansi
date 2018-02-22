@@ -25,16 +25,28 @@ class TabBarController: UITabBarController {
         
         view.backgroundColor = .background
         
-        // Writes user's information in database, if the user just signed up
+        // Writes user's information in database
         if !UserDefaults.standard.isProfiled() {
             
-            NetworkManager.shared.registerData([
-                "name": UserDefaults.standard.value(forKey: "userName") as! String,
-                "occupation": UserDefaults.standard.value(forKey: "userOccupation") as! String,
-                "location": UserDefaults.standard.value(forKey: "userLocation") as! String,
-                "gradientColor": 0,
-            ])
+            let myID = NetworkManager.shared.getUID()
             
+            // Checks if user already exists in DB (use case: changed phone)
+            NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
+                
+                let email = dictionary["email"] as? String
+                
+                // If doesn't exist in DB, then registers data
+                if email == nil {
+                    
+                    NetworkManager.shared.registerData([
+                        "name": UserDefaults.standard.value(forKey: "userName") as! String,
+                        "occupation": UserDefaults.standard.value(forKey: "userOccupation") as! String,
+                        "location": UserDefaults.standard.value(forKey: "userLocation") as! String,
+                        "gradientColor": 0,
+                    ])
+                }
+            }
+
             UserDefaults.standard.setIsLoggedIn(value: true)
             UserDefaults.standard.setIsProfiled(value: true)
         }

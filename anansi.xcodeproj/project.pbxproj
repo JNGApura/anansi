@@ -59,6 +59,7 @@
 		2CC3EF642015752000EBC7B2 /* settings.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CC3EF61201566A500EBC7B2 /* settings.json */; };
 		2CC3EF68201577B900EBC7B2 /* AboutPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC3EF67201577B900EBC7B2 /* AboutPage.swift */; };
 		2CC3EF6A201577DD00EBC7B2 /* AboutPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC3EF69201577DD00EBC7B2 /* AboutPageView.swift */; };
+		2CC6D825203D815000CD5459 /* SearchBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC6D824203D815000CD5459 /* SearchBarViewController.swift */; };
 		2CCE51FD20060E4A00DFC9B1 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE51FC20060E4A00DFC9B1 /* Constants.swift */; };
 		2CCE520B20061CB300DFC9B1 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */; };
 		2CD55AD62033EFA100299926 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD55AD52033EFA100299926 /* ProfileViewController.swift */; };
@@ -152,6 +153,7 @@
 		2CC3EF61201566A500EBC7B2 /* settings.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
 		2CC3EF67201577B900EBC7B2 /* AboutPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPage.swift; sourceTree = "<group>"; };
 		2CC3EF69201577DD00EBC7B2 /* AboutPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPageView.swift; sourceTree = "<group>"; };
+		2CC6D824203D815000CD5459 /* SearchBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarViewController.swift; sourceTree = "<group>"; };
 		2CCE51FC20060E4A00DFC9B1 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		2CD55AD52033EFA100299926 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
@@ -281,6 +283,7 @@
 			isa = PBXGroup;
 			children = (
 				2C7E9547202D8D380020B7A4 /* SearchViewController.swift */,
+				2CC6D824203D815000CD5459 /* SearchBarViewController.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -871,6 +874,7 @@
 				2C18A77C200F469700C03B20 /* OnboardingViewController.swift in Sources */,
 				2C87DACF200CA072004F8730 /* Classes.swift in Sources */,
 				2C7F6F1A2025D902008AB0CD /* ChatAccessoryView.swift in Sources */,
+				2CC6D825203D815000CD5459 /* SearchBarViewController.swift in Sources */,
 				2C698900202ADDEA00F6B4A8 /* LandingController.swift in Sources */,
 				2C698902202ADDF200F6B4A8 /* SignUpController.swift in Sources */,
 				2C6988FE202A89A700F6B4A8 /* ConnectEmptyState.swift in Sources */,

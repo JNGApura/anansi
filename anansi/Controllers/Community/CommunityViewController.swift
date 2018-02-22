@@ -154,10 +154,10 @@ class CommunityViewController: UIViewController, UIScrollViewDelegate, UICollect
         }()
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsButton)
     }
-    
+
     @objc func showSearchViewController() {
         
-        let searchController = SearchViewController(collectionViewLayout: UICollectionViewFlowLayout())
+        let searchController = SearchBarViewController(collectionViewLayout: UICollectionViewFlowLayout())
         searchController.users = users
         searchController.hidesBottomBarWhenPushed = true
         

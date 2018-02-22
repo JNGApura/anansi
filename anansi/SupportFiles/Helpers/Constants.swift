@@ -60,9 +60,9 @@ struct Const {
     
     // Bagdes and progress messages for the Profile's progress
     static let badges = ["Beginner", "Intermediate", "Advanced", "Expert", "All-star", "Complete"]
-    static let progressMap : [Int : String] = [0 : "👋 Welcome! Add more to your profile so others can find you!",
-                                               1 : "Nice! Continue adding more so others can recognize you.",
-                                               2 : "You're doing great! Continue the streak so others can know you better.",
+    static let progressMap : [Int : String] = [0 : "👋 Welcome! Add more to your profile so other attendees can find you!",
+                                               1 : "Nice! Continue adding more so other attendees can recognize you.",
+                                               2 : "Good job! Continue the streak so other attendees can know you better.",
                                                3 : "Congratulations! 👏 A bit is missing to unlock your profile's full potential!",
                                                4 : "You've made it easier for others to find and recognize you. Awesome job! 👍",
                                                5 : "You're in a league of your own! 🙌 Take a moment to enjoy your accomplishment!"]
@@ -74,5 +74,5 @@ struct Const {
                                                   5 : .primary]
     
     // Interests database
-    static let interests = ["3D Printing", "Acting", "Adventure", "Animal Rights", "Art", "Artificial Intelligence", "Astrology", "Astronomy", "Backpacking", "Big Data", "Biology", "Board Games", "Business Intelligence", "Business Strategy", "Camping", "Community Service", "Cooking", "DIY", "Dancing", "Data Analytics", "Design", "Economics", "Education", "Electronics", "Entrepreneurship", "Evolution", "Fashion", "Film", "Food tasting", "Gaming", "Gym", "Hiking", "History", "Human Rights", "Humanism", "Industrial Design", "Innovation", "Investing", "LGBTQIA", "Leadership", "Literature", "Machine Learning", "Marketing", "Meditation", "Mobile Development", "Music", "Neuroscience", "Painting", "Peace", "Philanthropy", "Philosophy", "Photography", "Physics", "Political Activism", "Product Design", "Psychology", "Public Speaking", "Reading", "Renewable Energy", "Robotics", "Running", "Sci-Fi/Fantasy", "Social Media", "Social Movements", "Space Exploration", "Sports", "Startup", "Sustainability", "Theater", "Travel", "UX/UI", "Urbanism", "Veganism", "Vegetarianism", "Volunteering", "Web Design", "Web Development", "Writing", "Yoga"].sorted()
+        static let interests = ["3D Printing", "Art", "Adventure", "Animal Rights", "Artificial Intelligence", "Astrology", "Astronomy", "Backpacking", "Big Data", "Biology", "Board Games", "Business", "Community Service", "Comics", "Cooking", "Creativity", "Cryptocurrency", "Culture", "Cybersecurity", "DIY", "Data Science", "Design", "Digital Design", "Economics", "Education", "Engineering", "Electronics", "Entrepreneurship", "Equality", "Evolution", "Fashion", "Film", "Food", "Freelancing", "Gaming", "Gym", "History", "Human Rights", "Humanism", "Humor", "Industrial Design", "Innovation", "Investing", "LGBTQIA", "Leadership", "Literature", "Machine Learning", "Marketing", "Math", "Meditation", "Mobile Development", "Music", "Neuroscience", "Painting", "Peace", "Philanthropy", "Philosophy", "Photography", "Physics", "Politics", "Product Design", "Programming", "Psychology", "Public Speaking", "Reading", "Renewable Energy", "Robotics", "Running", "Sci-Fi/Fantasy", "Science", "Social Media", "Social Movements", "Space Exploration", "Spirituality", "Sports", "Startup", "Sustainability", "Technology", "Theater", "Travel", "UX/UI", "Urbanism", "Veganism", "Vegetarianism", "Volunteering", "Web Design", "Web Development", "Wellness", "Writing", "Yoga"].sorted()
 }

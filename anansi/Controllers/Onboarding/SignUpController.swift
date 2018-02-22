@@ -394,7 +394,7 @@ class SignUpController: UIViewController, UIScrollViewDelegate, UITextFieldDeleg
                     }
                     
                 }, onSuccess: {
-                    self.pushExistingUserToViewController() // If login is successful, sends user to ViewController, depending on isProfiled() boolean
+                    self.pushExistingUserToViewController() // If login is successful, sends user to ViewController, depending on if data is already on DB
                 })
                 
             default:
@@ -413,19 +413,25 @@ class SignUpController: UIViewController, UIScrollViewDelegate, UITextFieldDeleg
     // Sends user to the next ViewController with custom transition
     private func pushExistingUserToViewController() {
         
-        if UserDefaults.standard.isProfiled() {
+        let myID = NetworkManager.shared.getUID()
+        
+        NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
+            let email = dictionary["email"] as? String
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            if email != nil {
                 
-                let controller = TabBarController()
-                controller.modalPresentationStyle = .overFullScreen
-                controller.modalTransitionStyle = .crossDissolve
-                self.present(controller, animated: true, completion: nil)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    
+                    let controller = TabBarController()
+                    controller.modalPresentationStyle = .overFullScreen
+                    controller.modalTransitionStyle = .crossDissolve
+                    self.present(controller, animated: true, completion: nil)
+                }
                 
+            } else {
+                
+                self.pushNewUserToProfilingController()
             }
-        } else {
-            
-            pushNewUserToProfilingController()
         }
     }
     

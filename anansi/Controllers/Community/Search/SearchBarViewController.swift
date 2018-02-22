@@ -1,14 +1,14 @@
 //
-//  SearchViewController.swift
+//  SearchBarViewController.swift
 //  anansi
 //
-//  Created by João Nuno Gaspar Apura on 09/02/2018.
+//  Created by João Nuno Gaspar Apura on 21/02/2018.
 //  Copyright © 2018 João Apura. All rights reserved.
 //
 
 import UIKit
 
-class SearchViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchBarDelegate {
+class SearchBarViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchBarDelegate {
     
     private let reuseIdentifier = "Cell"
     
@@ -16,9 +16,10 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
     var users: [User] = []
     
     let searchController = UISearchController(searchResultsController: nil)
-    var searchWasCanceled = false
     
+    var searchWasCanceled = false
     var searchString: String!
+    
     
     let searchView : UIView = {
         let v = UIView()
@@ -48,7 +49,7 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
         collectionView!.contentInset = UIEdgeInsets(top: 20.0, left: 0, bottom: 0, right: 0)
         
         // Create searchView
-        navigationController?.view.addSubview(searchView)
+        /*navigationController?.view.addSubview(searchView)
         NSLayoutConstraint.activate([
             searchView.bottomAnchor.constraint(equalTo: navigationController!.navigationBar.bottomAnchor),
             searchView.leadingAnchor.constraint(equalTo: navigationController!.view.leadingAnchor),
@@ -62,7 +63,7 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
             searchBarView.leadingAnchor.constraint(equalTo: searchView.leadingAnchor),
             searchBarView.trailingAnchor.constraint(equalTo: searchView.trailingAnchor),
             searchBarView.heightAnchor.constraint(equalToConstant: 44.0)
-        ])
+        ])*/
         
         //searchController.searchResultsUpdater = self
         searchController.delegate = self
@@ -88,14 +89,14 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes(attributes, for: .normal)
         
         searchController.definesPresentationContext = true
+        navigationController?.navigationBar.barTintColor = .primary
+        navigationController?.navigationBar.isTranslucent = false
+        navigationItem.titleView = searchController.searchBar
         
-        let navigationBar = navigationController?.navigationBar
-        navigationBar!.barTintColor = .background
-        navigationBar!.isTranslucent = false
-        //self.navigationItem.titleView = searchController.searchBar
+        //searchBarView.addSubview(searchController.searchBar)
+        //searchView.transform = CGAffineTransform(translationX: 0, y: -50)
         
-        searchBarView.addSubview(searchController.searchBar)
-        searchView.transform = CGAffineTransform(translationX: 0, y: -50)
+        searchController.isActive = true
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
@@ -105,44 +106,34 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
         
-        searchController.isActive = false
+        // Stores searchString before de-activating SearchController
+        searchString = searchController.searchBar.text
         
-        UIView.animate(withDuration: 0.15, delay: 0, options: UIViewAnimationOptions.curveEaseIn, animations: {
-            
-            self.searchController.searchBar.alpha = 0.0
-            
-            if !self.searchWasCanceled {
-                
-                self.searchController.searchBar.transform = CGAffineTransform(translationX: -self.view.frame.width, y: 0)
-                self.searchView.transform = CGAffineTransform(translationX: -self.view.frame.width, y: 0)
-            } else {
-                
-                self.searchView.transform = CGAffineTransform(translationX: 0, y: -50)
-            }
-        })
+        searchController.isActive = false
+
+        // Reverts to white
+        navigationController?.navigationBar.barTintColor = .background
+        navigationController?.navigationBar.isTranslucent = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        searchController.searchBar.becomeFirstResponder()
+        DispatchQueue.main.async {
+            self.searchController.searchBar.becomeFirstResponder()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        searchController.searchBar.alpha = 1.0
+        // Becomes red
+        navigationController?.navigationBar.barTintColor = .primary
+        navigationController?.navigationBar.isTranslucent = false
         
-        //searchController.isActive = true
         if searchString != nil {
             searchController.searchBar.text = searchString
         }
-        
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIViewAnimationOptions.curveEaseOut, animations: {
-            
-            self.searchController.searchBar.transform = CGAffineTransform.identity
-            self.searchView.transform = CGAffineTransform.identity
-        })
     }
     
     override func didReceiveMemoryWarning() {
@@ -157,24 +148,28 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        
         searchString = nil
         searchWasCanceled = true
+        
         searchController.searchBar.resignFirstResponder()
+        
         dismiss(animated: true, completion: nil)
     }
     
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+    /*func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         
         guard let firstSubview = searchBar.subviews.first else { return }
         
         firstSubview.subviews.forEach {
             ($0 as? UITextField)?.clearButtonMode = .never
         }
-    }
+    }*/
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
         searchController.searchBar.resignFirstResponder()
+        
         filterContentForSearchText(searchBar.text!)
     }
     
@@ -186,9 +181,6 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
         
         // Attemps to sort alphabetically (there's a bug here, somewhere)
         filteredUsers = filteredUsers.sorted(by: { ($0).name!.localizedCaseInsensitiveCompare(($1).name!) == ComparisonResult.orderedAscending } )
-        
-        
-        searchString = searchText.lowercased()
         
         collectionView!.reloadData()
     }
@@ -276,7 +268,7 @@ class SearchViewController: UICollectionViewController, UICollectionViewDelegate
     }
 }
 
-extension SearchViewController: UISearchResultsUpdating {
+extension SearchBarViewController: UISearchResultsUpdating {
     
     // MARK: - UISearchResultsUpdating Delegate
     

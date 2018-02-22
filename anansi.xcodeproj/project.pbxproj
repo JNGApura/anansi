@@ -56,6 +56,7 @@
 		2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */; };
 		2CBE2EC120351967009E5268 /* UIView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBE2EC020351967009E5268 /* UIView+.swift */; };
 		2CBE2EC3203525C2009E5268 /* GradientCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBE2EC2203525C2009E5268 /* GradientCell.swift */; };
+		2CC3C8FA203E608900D70190 /* BottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC3C8F9203E608900D70190 /* BottomSheetView.swift */; };
 		2CC3EF642015752000EBC7B2 /* settings.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CC3EF61201566A500EBC7B2 /* settings.json */; };
 		2CC3EF68201577B900EBC7B2 /* AboutPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC3EF67201577B900EBC7B2 /* AboutPage.swift */; };
 		2CC3EF6A201577DD00EBC7B2 /* AboutPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC3EF69201577DD00EBC7B2 /* AboutPageView.swift */; };
@@ -150,6 +151,7 @@
 		2CA3E0D120098276005617A9 /* FeedbackPagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPagesViewController.swift; sourceTree = "<group>"; };
 		2CBE2EC020351967009E5268 /* UIView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+.swift"; sourceTree = "<group>"; };
 		2CBE2EC2203525C2009E5268 /* GradientCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientCell.swift; sourceTree = "<group>"; };
+		2CC3C8F9203E608900D70190 /* BottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
 		2CC3EF61201566A500EBC7B2 /* settings.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
 		2CC3EF67201577B900EBC7B2 /* AboutPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPage.swift; sourceTree = "<group>"; };
 		2CC3EF69201577DD00EBC7B2 /* AboutPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPageView.swift; sourceTree = "<group>"; };
@@ -345,6 +347,7 @@
 		2C2841D5202D1C1600F8EA00 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				2CC3C8F9203E608900D70190 /* BottomSheetView.swift */,
 				2C82C59B202C4BC9004A2CBE /* ProfilingPageView.swift */,
 				2C4F5F1B200DFE270028B712 /* OnboardingPageCell.swift */,
 			);
@@ -488,8 +491,8 @@
 			isa = PBXGroup;
 			children = (
 				2C7B601520044F4D00FF5488 /* TabBarController.swift */,
-				2C2841CF202D1B8200F8EA00 /* Connect */,
 				2C2841D0202D1B8C00F8EA00 /* Community */,
+				2C2841CF202D1B8200F8EA00 /* Connect */,
 				2C2841D1202D1B9100F8EA00 /* Event */,
 				2C2841D2202D1BB500F8EA00 /* Profile */,
 				2C2841CB202D1B0000F8EA00 /* Onboarding */,
@@ -886,6 +889,7 @@
 				2C79C8FB20383AEB00FFCF70 /* InterestCell.swift in Sources */,
 				2CC3EF68201577B900EBC7B2 /* AboutPage.swift in Sources */,
 				2C4F5F1C200DFE270028B712 /* OnboardingPageCell.swift in Sources */,
+				2CC3C8FA203E608900D70190 /* BottomSheetView.swift in Sources */,
 				2CF739A22030EC8900CBA07B /* QuestionCell.swift in Sources */,
 				2C7F6F0C2025959F008AB0CD /* UILabel+.swift in Sources */,
 				2C584C1D2018714500E17FD3 /* Header.swift in Sources */,

@@ -405,7 +405,6 @@ class SignUpController: UIViewController, UIScrollViewDelegate, UITextFieldDeleg
             
         }) {
             
-            UserDefaults.standard.setIsProfiled(value: false)
             self.pushNewUserToProfilingController() // If user creation is successful, sends user to ProfilingController
         }
     }
@@ -419,6 +418,9 @@ class SignUpController: UIViewController, UIScrollViewDelegate, UITextFieldDeleg
             let email = dictionary["email"] as? String
             
             if email != nil {
+                
+                UserDefaults.standard.setLoggedIn(value: true)
+                UserDefaults.standard.setProfiled(value: true)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     
@@ -436,6 +438,9 @@ class SignUpController: UIViewController, UIScrollViewDelegate, UITextFieldDeleg
     }
     
     private func pushNewUserToProfilingController() {
+        
+        UserDefaults.standard.setLoggedIn(value: true)
+        UserDefaults.standard.setProfiled(value: false)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             

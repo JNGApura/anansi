@@ -124,7 +124,7 @@ class LandingController: UIViewController {
         ])
         
         // Sets "isOnboarded" to true in UserDefaults
-        UserDefaults.standard.setIsOnboarded(value: true)
+        UserDefaults.standard.setOnboarded(value: true)
     }
     
     override func didReceiveMemoryWarning() {

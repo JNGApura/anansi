@@ -259,30 +259,41 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
     // Stores answers in UserDefaults
     func storeProfilingAnswer(_ currentPage: Int) {
 
-        let standard = UserDefaults.standard
+        let defaults = UserDefaults.standard
         let answer = answerText.text
         
         switch currentPage {
         case 0:
             // Sets "userName" in UserDefaults
-            standard.set(answer, forKey: "userName")
+            defaults.set(answer, forKey: "userName")
         case 1:
             // Sets "userOccupation" in UserDefaults
-            standard.set(answer, forKey: "userOccupation")
+            defaults.set(answer, forKey: "userOccupation")
         case 2:
             // Sets "userLocation" in UserDefaults
-            standard.set(answer, forKey: "userLocation")
+            defaults.set(answer, forKey: "userLocation")
         default:
             print("Ups, something went wrong here!")
         }
-        standard.synchronize()
+        defaults.synchronize()
     }
     
     // Sends user to ProfilingController with custom transition
     @objc func pushTabBarController() {
         
+        // Hides keyboard
         self.answerText.resignFirstResponder()
         
+        // Stores default booleans for the walkthrough / onboarding
+        let defaults = UserDefaults.standard
+        defaults.setProfiled(value: true)
+        
+        defaults.setCommunityOnboarded(value: false)
+        defaults.setConnectOnboarded(value: false)
+        defaults.setEventOnboarded(value: false)
+        defaults.setProfileOnboarded(value: false)
+        
+        // Sends user to TabBarController
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             
             let controller = TabBarController()

@@ -72,7 +72,7 @@ class NetworkManager {
             Auth.auth().signOut()
             
             // Sets "isLoggedIn" to false in UserDefaults
-            UserDefaults.standard.setIsLoggedIn(value: false)
+            UserDefaults.standard.setLoggedIn(value: false)
             
             onSuccess()
             

@@ -18,6 +18,8 @@ class TabBarController: UITabBarController {
     
     var user: User?
     
+    let defaults = UserDefaults.standard
+    
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
@@ -26,7 +28,7 @@ class TabBarController: UITabBarController {
         view.backgroundColor = .background
         
         // Writes user's information in database
-        if !UserDefaults.standard.isProfiled() {
+        if !defaults.isProfiled() {
             
             let myID = NetworkManager.shared.getUID()
             
@@ -39,23 +41,21 @@ class TabBarController: UITabBarController {
                 if email == nil {
                     
                     NetworkManager.shared.registerData([
-                        "name": UserDefaults.standard.value(forKey: "userName") as! String,
-                        "occupation": UserDefaults.standard.value(forKey: "userOccupation") as! String,
-                        "location": UserDefaults.standard.value(forKey: "userLocation") as! String,
+                        "name": self.defaults.value(forKey: "userName") as! String,
+                        "occupation": self.defaults.value(forKey: "userOccupation") as! String,
+                        "location": self.defaults.value(forKey: "userLocation") as! String,
                         "gradientColor": 0,
                     ])
                 }
             }
-
-            UserDefaults.standard.setIsLoggedIn(value: true)
-            UserDefaults.standard.setIsProfiled(value: true)
-        }
-
-        // Now, let's confirm we were able to register user in DB
-        NetworkManager.shared.isUserLoggedIn { (dictionary, myID) in
-            
-            // Fetch myself from database
-            self.user = User(dictionary: dictionary, id: myID)
+        } else {
+                
+            // Now, let's confirm we were able to register user in DB
+            NetworkManager.shared.isUserLoggedIn { (dictionary, myID) in
+                
+                // Fetch myself from database
+                self.user = User(dictionary: dictionary, id: myID)
+            }
         }
 
         // Add view controllers to tab bar

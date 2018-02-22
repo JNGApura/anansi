@@ -104,6 +104,21 @@ class CommunityViewController: UIViewController, UIScrollViewDelegate, UICollect
         super.viewDidAppear(animated)
         navigationItem.titleView?.isHidden = false
         navigationItem.titleView?.alpha = 0.0
+        
+        if !UserDefaults.standard.isCommunityOnboarded() {
+        
+            // Presents bottom sheet
+            let controller = BottomSheetView()
+            controller.setContent(title: "Community",
+                                  description: "Discover your friends and other attendees here. Check their profile and find out what they’re into.")
+            controller.setIcon(image: #imageLiteral(resourceName: "Community_filled").withRenderingMode(.alwaysTemplate))
+            controller.modalPresentationStyle = .overFullScreen
+            controller.modalTransitionStyle = .crossDissolve
+            present(controller, animated: true, completion: nil)
+            
+            // Sets CommunityOnboarded to true
+            UserDefaults.standard.setCommunityOnboarded(value: true)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {

@@ -11,17 +11,19 @@ import UIKit
 // Adds fours methods to UserDefatuls, to check whether the user has been onboarded and has logged in
 extension UserDefaults {
     
-    func setIsOnboarded(value: Bool) {
+    // General app
+    
+    func setOnboarded(value: Bool) {
         set(value, forKey: "isOnboarded")
         synchronize()
     }
     
-    func setIsLoggedIn(value: Bool) {
+    func setLoggedIn(value: Bool) {
         set(value, forKey: "isLoggedIn")
         synchronize()
     }
     
-    func setIsProfiled(value: Bool) {
+    func setProfiled(value: Bool) {
         set(value, forKey: "isProfiled")
         synchronize()
     }
@@ -36,5 +38,43 @@ extension UserDefaults {
     
     func isProfiled() -> Bool {
         return bool(forKey: "isProfiled")
+    }
+    
+    // Specific screens
+    
+    func setCommunityOnboarded(value: Bool) {
+        set(value, forKey: "isCommunityOnboarded")
+        synchronize()
+    }
+    
+    func setConnectOnboarded(value: Bool) {
+        set(value, forKey: "isConnectOnboarded")
+        synchronize()
+    }
+    
+    func setEventOnboarded(value: Bool) {
+        set(value, forKey: "isEventOnboarded")
+        synchronize()
+    }
+    
+    func setProfileOnboarded(value: Bool) {
+        set(value, forKey: "isProfileOnboarded")
+        synchronize()
+    }
+    
+    func isCommunityOnboarded() -> Bool {
+        return bool(forKey: "isCommunityOnboarded")
+    }
+    
+    func isConnectOnboarded() -> Bool {
+        return bool(forKey: "isConnectOnboarded")
+    }
+    
+    func isEventOnboarded() -> Bool {
+        return bool(forKey: "isEventOnboarded")
+    }
+    
+    func isProfileOnboarded() -> Bool {
+        return bool(forKey: "isProfileOnboarded")
     }
 }

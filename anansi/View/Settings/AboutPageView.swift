@@ -89,7 +89,7 @@ class AboutPageView: UIViewController, UIScrollViewDelegate {
                 text.translatesAutoresizingMaskIntoConstraints = false
                 text.isScrollEnabled = false
                 text.isEditable = false
-                text.formatHTMLText(htmlText: item.text!, lineSpacing: 10, lineHeightMultiple: 1.2, hyphenation: 0, alignment: .left)
+                text.formatHTMLText(htmlText: item.text!, lineSpacing: 6, lineHeightMultiple: 1.05, hyphenation: 0, alignment: .left)
                 return text
             }()
             

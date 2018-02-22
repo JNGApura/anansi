@@ -135,6 +135,21 @@ class ConnectViewController: UIViewController, UIScrollViewDelegate, UITableView
         super.viewDidAppear(animated)
         navigationItem.titleView?.isHidden = false
         navigationItem.titleView?.alpha = 0.0
+        
+        if !UserDefaults.standard.isConnectOnboarded() {
+            
+            // Presents bottom sheet
+            let controller = BottomSheetView()
+            controller.setContent(title: "Connect",
+                                  description: "Get into authentic discussions and contribute to the dissemination of bold ideas here.")
+            controller.setIcon(image: #imageLiteral(resourceName: "Connect_filled").withRenderingMode(.alwaysTemplate))
+            controller.modalPresentationStyle = .overFullScreen
+            controller.modalTransitionStyle = .crossDissolve
+            present(controller, animated: true, completion: nil)
+            
+            // Sets CommunityOnboarded to true
+            UserDefaults.standard.setConnectOnboarded(value: true)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {

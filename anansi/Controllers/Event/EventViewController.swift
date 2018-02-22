@@ -92,6 +92,25 @@ class EventViewController: UIViewController,
         setupLayoutConstraints()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if !UserDefaults.standard.isEventOnboarded() {
+            
+            // Presents bottom sheet
+            let controller = BottomSheetView()
+            controller.setContent(title: "Event",
+                                  description: "Check this page regularly for updates on our event schedule and speaker lineup.")
+            controller.setIcon(image: #imageLiteral(resourceName: "Event_filled").withRenderingMode(.alwaysTemplate))
+            controller.modalPresentationStyle = .overFullScreen
+            controller.modalTransitionStyle = .crossDissolve
+            present(controller, animated: true, completion: nil)
+            
+            // Sets CommunityOnboarded to true
+            UserDefaults.standard.setEventOnboarded(value: true)
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

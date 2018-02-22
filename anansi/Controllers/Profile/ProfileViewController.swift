@@ -472,6 +472,21 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
         
         navigationItem.titleView?.isHidden = false
         navigationItem.titleView?.alpha = 0.0
+        
+        if !UserDefaults.standard.isProfileOnboarded() {
+            
+            // Presents bottom sheet
+            let controller = BottomSheetView()
+            controller.setContent(title: "Your Profile",
+                                  description: "This is were your profile lives. Add info about yourself so other attendees can easily find and recognize you.")
+            controller.setIcon(image: #imageLiteral(resourceName: "Profile_filled").withRenderingMode(.alwaysTemplate))
+            controller.modalPresentationStyle = .overFullScreen
+            controller.modalTransitionStyle = .crossDissolve
+            present(controller, animated: true, completion: nil)
+            
+            // Sets CommunityOnboarded to true
+            UserDefaults.standard.setProfileOnboarded(value: true)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {

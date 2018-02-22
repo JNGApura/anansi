@@ -157,14 +157,15 @@ class SearchBarViewController: UICollectionViewController, UICollectionViewDeleg
         dismiss(animated: true, completion: nil)
     }
     
-    /*func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         
         guard let firstSubview = searchBar.subviews.first else { return }
         
+        // Removes clear Button
         firstSubview.subviews.forEach {
             ($0 as? UITextField)?.clearButtonMode = .never
         }
-    }*/
+    }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         

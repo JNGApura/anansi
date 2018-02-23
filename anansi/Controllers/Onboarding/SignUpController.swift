@@ -419,6 +419,7 @@ class SignUpController: UIViewController, UIScrollViewDelegate, UITextFieldDeleg
             
             if email != nil {
                 
+                // Recurring users might have changed phone, so UserDefaults (LoggedIn & Profiled) need ot be updated to true
                 UserDefaults.standard.setLoggedIn(value: true)
                 UserDefaults.standard.setProfiled(value: true)
                 

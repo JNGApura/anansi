@@ -16,7 +16,7 @@ class TabBarController: UITabBarController {
     
     fileprivate var tabBarViewControllers = [UINavigationController]()
     
-    var user: User?
+    //var user: User?
     
     let defaults = UserDefaults.standard
     
@@ -26,35 +26,23 @@ class TabBarController: UITabBarController {
         super.viewDidLoad()
         
         view.backgroundColor = .background
-        
-        // Writes user's information in database
-        if !defaults.isProfiled() {
+
+        // Checks if user already exists in DB
+        let myID = NetworkManager.shared.getUID()
+        NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
             
-            let myID = NetworkManager.shared.getUID()
+            let name = dictionary["name"] as? String
             
-            // Checks if user already exists in DB (use case: changed phone)
-            NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
+            // If doesn't exist in DB, then registers data
+            if name == nil {
                 
-                let email = dictionary["email"] as? String
-                
-                // If doesn't exist in DB, then registers data
-                if email == nil {
-                    
-                    NetworkManager.shared.registerData([
-                        "name": self.defaults.value(forKey: "userName") as! String,
-                        "occupation": self.defaults.value(forKey: "userOccupation") as! String,
-                        "location": self.defaults.value(forKey: "userLocation") as! String,
-                        "gradientColor": 0,
-                    ])
-                }
-            }
-        } else {
-                
-            // Now, let's confirm we were able to register user in DB
-            NetworkManager.shared.isUserLoggedIn { (dictionary, myID) in
-                
-                // Fetch myself from database
-                self.user = User(dictionary: dictionary, id: myID)
+                // Writes user's information in database
+                NetworkManager.shared.registerData([
+                    "name": self.defaults.value(forKey: "userName") as! String,
+                    "occupation": self.defaults.value(forKey: "userOccupation") as! String,
+                    "location": self.defaults.value(forKey: "userLocation") as! String,
+                    "gradientColor": 0,
+                ])
             }
         }
 

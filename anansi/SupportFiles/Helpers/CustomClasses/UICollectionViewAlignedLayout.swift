@@ -48,7 +48,7 @@ open class UICollectionViewAlignedLayout: UICollectionViewFlowLayout {
     open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         return super.layoutAttributesForElements(in: rect)?
             .filter({ $0.representedElementKind == nil })
-            .flatMap({ layoutAttributesForItem(at: $0.indexPath) })
+            .compactMap({ layoutAttributesForItem(at: $0.indexPath) })
     }
     
     /// The attributes for a given item

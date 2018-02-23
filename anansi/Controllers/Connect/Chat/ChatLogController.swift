@@ -16,6 +16,8 @@ import UIKit.UIGestureRecognizerSubclass
 
 class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
     
+    var cameFromProfile: Bool = false
+    
     private let cellIdentifier = "cell"
     
     override var canBecomeFirstResponder: Bool { return true }
@@ -307,7 +309,17 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         alertController.view.tintColor = UIColor.init(red: 0/255.0, green: 122/255.0, blue: 255/255.0, alpha: 1.0) // Apple's blue?
         
         let contactDetails = UIAlertAction(title: "Contact details", style: .default, handler: { (action) -> Void in
-            print("Open contact details -- TO DO! ")
+        
+            if self.cameFromProfile {
+                
+                self.navigationController?.popViewController(animated: true)
+            } else {
+                
+                let controller = ProfileViewController()
+                controller.user = self.user
+                controller.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.plain, target: self.navigationController, action: nil)
+                self.navigationController?.pushViewController(controller, animated: true)
+            }
         })
         alertController.addAction(contactDetails)
         

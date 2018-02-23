@@ -23,9 +23,10 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
     let sectionDataToDisplay: [Int : [String]] = [0 : ["First and last name", "Occupation", "Location", "Short biography"], 1 : ["Title", "Speaker"], 2 : ["Email", "Website", "LinkedIn"]]
     
     var user : User?
-    var delegate: UserSaveDelegate?
+    var tempUser : User?
+    //var delegate: UserSaveDelegate?
     
-    // These three b-thingy variables help keep track of requisits for the questionCell input textfields - handled by QuestionCell.swift
+    // These three b-thingy variables help keep track of requisits for the questionCell input textfields
     var bName = true        // "name" textfield should not be empty
     var bOccupation = true  // "occupation" textfield should not be empty
     var bLocation = true    // "location" textfield should not be empty
@@ -237,11 +238,15 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
             tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Const.marginEight),
         ])
         
+        // Caches profile picture, if exists
         if let profileImageURL = user?.profileImageURL {
             profileImage.loadImageUsingCacheWithUrlString(profileImageURL)
         } else {
             profileImage.image = #imageLiteral(resourceName: "profileImageTemplate").withRenderingMode(.alwaysOriginal)
         }
+        
+        // Creates temporary user, vessel to store temporary changes to current user (me)
+        tempUser = user
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -253,8 +258,8 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
         super.viewWillAppear(animated)
         
         // Updates interest list
-        if let myInterests = user?.interests {
-            interestList = myInterests
+        if  !interestListWasUpdated, let userInterests = user?.interests {
+            interestList = userInterests
         }
         selectedCountLabel.text = "\(interestList.count) interests selected"
         
@@ -313,43 +318,21 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
     
     @objc func saveNewData(){
         
-        let cells = tableView.visibleCells as! [QuestionCell]
-        
-        for cell in cells {
-
-            if cell.questionLabel.text != cell.textView.text {
-                
-                let dictionary = [cell.mappedProperty! as String : cell.textView.text]
-                NetworkManager.shared.registerData(dictionary as! [String : String])
-                
-                user?.set(value: cell.textView.text, forKey: cell.mappedProperty!)
-                
-            } else {
-             
-                NetworkManager.shared.removeData(cell.mappedProperty!)
-                
-                user?.remove(value: cell.textView.text, forKey: cell.mappedProperty!)
-            }
-        }
+        user = tempUser
+        NetworkManager.shared.registerData((tempUser?.dictionary)!)
         
         if currentGradient != user?.gradientColor {
             
-            let dictionary = ["gradientColor" : currentGradient]
-            NetworkManager.shared.registerData(dictionary as! [String : Int])
-            
+            NetworkManager.shared.registerData(["gradientColor" : currentGradient] as! [String : Int])
             user?.setGradientColor(with: currentGradient!)
         }
         
         if interestListWasUpdated {
             
-            let dictionary = ["interests" : interestList]
-            NetworkManager.shared.registerData(dictionary)
-            
+            NetworkManager.shared.registerData(["interests" : interestList])
             user?.updateInterestList(with: interestList)
         }
-                
-        self.delegate?.userWasSaved(user: user!)
-        
+                        
         dismiss(animated: true, completion: nil)
     }
     
@@ -369,6 +352,10 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
         navigationController?.pushViewController(interestController, animated: true)
     }
     
+    // MARK: - Handle keyboard
+    
+    var layoutBool = true
+    
     @objc func keyboardWillShow(notification: NSNotification) {
         
         if let keyboardHeight = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
@@ -383,10 +370,18 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
                 
                 let activeTextRelativeMaxY = cell!.frame.maxY + tableView.frame.origin.y - scrollView.contentOffset.y
                 let screenHeight = view.frame.height
+                var offset: CGFloat = 0
                 
                 if (screenHeight - activeTextRelativeMaxY) < keyboardHeight {
                     
-                    scrollView.frame.origin.y -= keyboardHeight - (screenHeight - activeTextRelativeMaxY)
+                    // Quick fix of something I don't understand.
+                    if section == 2 && layoutBool && Display.typeIsLike == .iphoneX {
+                        offset = 32
+                        layoutBool = false
+                    }
+                    
+                    scrollView.frame.origin.y -= keyboardHeight - (screenHeight - activeTextRelativeMaxY - offset)
+                    view.layoutIfNeeded()
                 }
             }
         }
@@ -396,6 +391,7 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
         
         UIView.animate(withDuration: 0.2) {
             self.scrollView.frame.origin.y = 0
+            self.view.layoutIfNeeded()
         }
     }
     
@@ -443,13 +439,12 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
         cell.questionLabel.text = questionToDisplay
         cell.mappedProperty = questionToQuery
         
-        if let dictionary = user?.dictionary {
+        if let dictionary = tempUser?.dictionary { // uses tempUser
             
             if let answer = dictionary[questionToQuery!] as? String {
                 
                 cell.textView.text = answer
                 cell.questionLabel.alpha = 1.0
-                
             } else {
                 
                 cell.textView.text = questionToDisplay
@@ -458,8 +453,10 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
             if questionToQuery == "bio" {
                 
                 if cell.textView.text == questionToDisplay {
+                    
                     characterCountForBio = 0
                 } else {
+                    
                     characterCountForBio = cell.textView.text!.count
                 }
                 
@@ -477,24 +474,18 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
     
     // MARK: UITextViewDelegate
     var activeText: UITextView!
-    var currentIndexPath : IndexPath?
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        
-        let tag = textView.tag
-        let section = Int(tag / 4)
-        let row = tag % 4
-        
-        currentIndexPath = IndexPath(row: row, section: section)
+
         activeText = textView
-        
         return true
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        print("editing: on")
         
-        let cell = tableView.cellForRow(at: currentIndexPath!) as! QuestionCell
+        let section = Int(textView.tag / 4)
+        let row = textView.tag % 4
+        let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! QuestionCell
         
         if cell.textView.text == cell.questionLabel.text {
             
@@ -509,45 +500,45 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
         }
         
         cell.borderLine.backgroundColor = .primary
-
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        print("editing: off")
         
-        activeText = nil
-        
-        let cell = tableView.cellForRow(at: currentIndexPath!) as! QuestionCell
+        let section = Int(textView.tag / 4)
+        let row = textView.tag % 4
+        let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! QuestionCell
         
         cell.borderLine.backgroundColor = .secondary
         
         if textView.text == "" {
+            
+            tempUser?.remove(value: cell.textView.text, forKey: cell.mappedProperty!)
             
             cell.questionLabel.alpha = 0.0
             textView.transform = CGAffineTransform(translationX: 0, y: -26.0)
             textView.text = cell.questionLabel.text
             
             if cell.questionLabel.text == "First and last name" {
+                
                 cell.errorLabel.isHidden = false
                 cell.errorLabel.text = "Please enter your name."
                 cell.borderLine.backgroundColor = .primary
-                
                 bName = false
             }
             
             if cell.questionLabel.text == "Occupation" {
+                
                 cell.errorLabel.isHidden = false
                 cell.errorLabel.text = "Please enter your occupation."
                 cell.borderLine.backgroundColor = .primary
-                
                 bOccupation = false
             }
             
             if cell.questionLabel.text == "Location" {
+                
                 cell.errorLabel.isHidden = false
                 cell.errorLabel.text = "Please enter your location."
                 cell.borderLine.backgroundColor = .primary
-                
                 bLocation = false
             }
             
@@ -557,43 +548,29 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
             
         } else {
             
-            if cell.questionLabel.text == "First and last name" { bName = true }
+            if cell.questionLabel.text ==  "First and last name" { bName = true }
             if cell.questionLabel.text == "Occupation" { bOccupation = true }
             if cell.questionLabel.text == "Location" { bLocation = true }
             
             cell.errorLabel.isHidden = true
-            
             cell.questionLabel.alpha = 1.0
+            
+            // Stores text in temporary user
+            tempUser?.set(value: cell.textView.text, forKey: cell.mappedProperty!)
         }
         
         navigationItem.rightBarButtonItem?.isEnabled = bName && bOccupation && bLocation
-    
-        // BEWARE - HUGE HACK AHEAD!
-        // Updates dictionary (temporarily, because it's only effective if the user taps "save") so that the constraints might be calculated when I reload data
-        if cell.mappedProperty == "bio" {
-            
-            // Saves previous bio in a temporary variable
-            let previousBio = user?.dictionary?["bio"]
-            
-            // Updates layout with what the user just typed
-            user?.dictionary?.updateValue(textView.text, forKey: "bio")
-            tableView.reloadData()
-            view.layoutIfNeeded()
-            
-            // Resumes previous bio, to avoid saving something wrong
-            if previousBio == nil {
-                user?.dictionary?.removeValue(forKey: "bio")
-            } else {
-                user?.dictionary?.updateValue(previousBio as! String, forKey: "bio")
-            }
-        }
+        
+        activeText = nil
     }
     
     var bioTextHeight : CGFloat!
     
     func textViewDidChange(_ textView: UITextView) {
         
-        let cell = tableView.cellForRow(at: currentIndexPath!) as! QuestionCell
+        let section = Int(textView.tag / 4)
+        let row = textView.tag % 4
+        let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! QuestionCell
         
         if cell.mappedProperty == "bio", let text = cell.textView.text {
     
@@ -618,7 +595,10 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         
-        let cell = tableView.cellForRow(at: currentIndexPath!) as! QuestionCell
+        let section = Int(textView.tag / 4)
+        let row = textView.tag % 4
+        let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! QuestionCell
+        
         let prospectiveText = (textView.text as NSString).replacingCharacters(in: range, with: text)
         let textLength = prospectiveText.count
         

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource, UserSaveDelegate {
+class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource {
     
     // Custom initializers
 
@@ -473,7 +473,7 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
         navigationItem.titleView?.isHidden = false
         navigationItem.titleView?.alpha = 0.0
         
-        if !UserDefaults.standard.isProfileOnboarded() {
+        if user?.id == myID && !UserDefaults.standard.isProfileOnboarded() {
             
             // Presents bottom sheet
             let controller = BottomSheetView()
@@ -587,15 +587,9 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
             
         } else {
             
-            if user == nil {
-                
-                print("id == myID & user is nil, so it's ME time!")
-                NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
-                    self.user = User(dictionary: dictionary, id: self.myID!)
-                }
-            } else {
-                
-                print("id == myID, but I've came from the editViewController yey!")
+            print("id == myID, so it's ME time!")
+            NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
+                self.user = User(dictionary: dictionary, id: self.myID!)
             }
         }
         
@@ -638,11 +632,6 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
         descriptionLabel.text = Const.progressMap[progress]
     }
     
-    func userWasSaved(user: User) {
-        
-        self.user = user
-    }
-    
     func estimateFrameForText(text: String, lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, hyphenation: Float = 1.0, alignment: NSTextAlignment = .natural) -> CGRect {
         
         let size = CGSize(width: view.frame.width - Const.marginEight * 4.0, height: 1000) // height arbitrarily high
@@ -680,7 +669,6 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
         
         let editProfileController = EditProfileTableViewController()
         editProfileController.user = user
-        editProfileController.delegate = self
         
         let navController = UINavigationController(rootViewController: editProfileController)
         present(navController, animated: true, completion: nil)
@@ -698,6 +686,7 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
         
         let chatController = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
         chatController.user = user
+        chatController.cameFromProfile = true
         chatController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(chatController, animated: true)
     }
@@ -778,7 +767,7 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
                 // If user is not me, then I need to fetch my interests to be able to compare them
                 if user?.id != myID {
                     NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
-                        if let myInterests = dictionary["interests"] as! [String]! {
+                        if let myInterests = dictionary["interests"] as! [String]? {
                             self.myInterests = myInterests.sorted()
                         }
                     }

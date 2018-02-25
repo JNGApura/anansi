@@ -52,6 +52,9 @@ struct Const {
     /// This will change
     static let timeDateHeightChatCells : CGFloat = 28.0
     
+    // List of tabs in Community
+    static let listTabs = ["Attendees", "Partners"]
+    
     /// Color gradient mapping structure
     static let colorGradient : [Int:[UIColor]] = [0 : [.orange, .magenta],
                                                   1 : [.magenta, .cyan],

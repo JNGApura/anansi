@@ -25,8 +25,11 @@ extension Bundle {
 // NOTE: does not handle when NSClassFromString returns nil
 extension NSObject {
     class func fromClassName(name : String) -> NSObject {
+        
         let className = Bundle.main.infoDictionary!["CFBundleName"] as! String + "." + name
-        let aClass = NSClassFromString(className) as! UIViewController.Type
+        
+        let aClass = NSClassFromString(className) as! UIViewController.Type 
+        
         return aClass.init()
     }
 }

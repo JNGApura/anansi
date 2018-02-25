@@ -37,7 +37,7 @@ class TabBarController: UITabBarController {
             if name == nil {
                 
                 // Writes user's information in database
-                NetworkManager.shared.registerData([
+                NetworkManager.shared.registerUserData([
                     "name": self.defaults.value(forKey: "userName") as! String,
                     "occupation": self.defaults.value(forKey: "userOccupation") as! String,
                     "location": self.defaults.value(forKey: "userLocation") as! String,
@@ -54,21 +54,25 @@ class TabBarController: UITabBarController {
             let itemSelected = UIImage(named: value + "_filled")?.withRenderingMode(.alwaysTemplate)
             
             // Gets view controller from string and adds to the array of viewcontrollers
-            let vc = NSObject.fromClassName(name: value + "ViewController") as! UIViewController
+            var nc : UINavigationController
             
+            if value == "Community" {
+                
+                let vc = CommunityViewController(collectionViewLayout: UICollectionViewFlowLayout())
+                nc = UINavigationController(rootViewController: vc)
+                vc.tabBarItem = UITabBarItem(title: value, image: itemNormal, selectedImage: itemSelected)
+                vc.title = value
+            } else {
+                
+                let vc = NSObject.fromClassName(name: value + "ViewController") as! UIViewController
+                nc = UINavigationController(rootViewController: vc)
+                vc.tabBarItem = UITabBarItem(title: value, image: itemNormal, selectedImage: itemSelected)
+                vc.title = value
+            }
+                        
             // Inserts the view controller inside a UINavigationController stack object, so each item can have their own navigation stack
-            let nc = UINavigationController()
-            nc.viewControllers = [vc]
             tabBarViewControllers.append(nc)
-            
-            // Creates tabBarItem with title and previous images
-            vc.tabBarItem = UITabBarItem(title: value, image: itemNormal, selectedImage: itemSelected)
-            
-            // Updates vc's title
-            vc.title = value
-            
-            // Updates vc's background color
-            vc.view.backgroundColor = .background
+
         }
         viewControllers = tabBarViewControllers
         
@@ -85,6 +89,24 @@ class TabBarController: UITabBarController {
         
         // Remove translucence in tab bar
         tabBar.isTranslucent = false
+        
+        // This should be removed
+        /*NetworkManager.shared.registerPartnerData(["name": "Santander Universidades",
+                                                   "field": "Finance",
+                                                   "location": "Lisboa"])
+
+        NetworkManager.shared.registerPartnerData(["name": "Técnico Lisboa",
+                                                   "field": "Education",
+                                                   "location": "Lisboa"])
+        
+        NetworkManager.shared.registerPartnerData(["name": "IEEE-IST Student Branch",
+                                                   "field": "Education",
+                                                   "location": "Lisboa"])
+        
+        NetworkManager.shared.registerPartnerData(["name": "Findmore Consulting",
+                                                   "field": "IT/Consulting",
+                                                   "location": "Lisboa"])*/
+        
     }
     
     override func didReceiveMemoryWarning() {

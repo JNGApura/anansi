@@ -19,6 +19,7 @@ class NetworkManager {
     
     // Databases
     private let userDatabase = Database.database().reference().child("users")
+    private let partnerDatabase = Database.database().reference().child("partners")
     private let messagesDatabase = Database.database().reference().child("messages")
     private let userMessagesDatabase = Database.database().reference().child("user-messages")
     private let feedbackDatabase = Database.database().reference().child("feedback")
@@ -125,7 +126,7 @@ class NetworkManager {
     }
     
     /// Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time the data (including any children) changes.
-    //  NOTE: query is ordered by name
+    //  NOTE: query is ordered by "name"
     func fetchUsers(onSuccess: @escaping ([String: Any], String) -> Void){
         userDatabase.queryOrdered(byChild: "name").observe(.childAdded, with: { (snapshot) in
             
@@ -136,8 +137,7 @@ class NetworkManager {
         }, withCancel: nil)
     }
     
-    /// Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time the data (including any children) changes.
-    //  NOTE: query is ordered by name
+    /// Observes single event of user from userDatabase
     func fetchUser(userID: String, onSuccess: @escaping ([String: Any]) -> Void){
         userDatabase.child(userID).observeSingleEvent(of: .value) { (snapshot) in
             if !snapshot.exists() { return }
@@ -147,8 +147,20 @@ class NetworkManager {
         }
     }
     
-    /// Register dictionary into database
-    func registerData(_ dictionary: [String: Any]) {
+    /// Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time the data (including any children) changes.
+    //  NOTE: query is ordered by "order"
+    func fetchPartners(onSuccess: @escaping ([String: Any]) -> Void){
+        partnerDatabase.queryOrdered(byChild: "order").observe(.childAdded, with: { (snapshot) in
+                        
+            if !snapshot.exists() { return } // just to be safe
+            if let dictionary = snapshot.value as? [String: Any] {
+                onSuccess(dictionary)
+            }
+        }, withCancel: nil)
+    }
+    
+    /// Register user dictionary into database
+    func registerUserData(_ dictionary: [String: Any]) {
         
         //let node = [name: value] // [String: Any]
         if let uid = getUID() {
@@ -157,6 +169,18 @@ class NetworkManager {
                     print(error!.localizedDescription)
                     return
                 }
+            }
+        }
+    }
+    
+    /// Register partner dictionary into database
+    func registerPartnerData(_ dictionary: [String: Any]) {
+
+        partnerDatabase.childByAutoId().updateChildValues(dictionary) { (error, partnerDatabase) in
+            
+            if error != nil {
+                print(error!.localizedDescription)
+                return
             }
         }
     }

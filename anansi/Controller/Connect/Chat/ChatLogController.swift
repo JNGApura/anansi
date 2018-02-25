@@ -545,10 +545,10 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         
         let properties = ["text": "👋"]
         sendMessageWithProperties(properties: properties)
-
     }
     
     private func sendMessageWithImageURL(imageURL: String, image: UIImage) {
+        
         let properties : [String: Any] = ["imageURL": imageURL, "imageWidth": image.size.width, "imageHeight": image.size.height]
         sendMessageWithProperties(properties: properties)
     }

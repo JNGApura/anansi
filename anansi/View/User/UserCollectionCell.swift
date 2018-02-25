@@ -87,7 +87,7 @@ class UserCollectionCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        print("it was clever put this here. prepareForReuse @ community was just used")
+        print("it was clever to put this here. prepareForReuse @ community was just used")
         
         if let profileImageURL = user?.profileImageURL {
             

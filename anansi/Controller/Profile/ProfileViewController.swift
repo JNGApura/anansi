@@ -487,6 +487,12 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
             // Sets CommunityOnboarded to true
             UserDefaults.standard.setProfileOnboarded(value: true)
         }
+        
+        if let id = user?.id, id != myID {
+            
+            // Send +1 to User's rank
+            NetworkManager.shared.updatesUserRanking(userID: id, property: "visualizations")
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {

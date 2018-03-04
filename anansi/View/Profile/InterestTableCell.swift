@@ -29,15 +29,6 @@ class InterestTableCell: UITableViewCell, UICollectionViewDataSource, UICollecti
     }()
     var interestCollectionViewHeightAnchor: NSLayoutConstraint?
     
-    lazy var questionLabel: UILabel = {
-        let l = UILabel()
-        l.textColor = UIColor.secondary.withAlphaComponent(0.6)
-        l.font = UIFont.systemFont(ofSize: Const.footnoteFontSize)
-        l.alpha = 1.0
-        l.translatesAutoresizingMaskIntoConstraints = false
-        return l
-    }()
-    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none

@@ -65,9 +65,8 @@ class PartnerCommunityCollectionViewController: UICollectionViewCell, UITableVie
     
     func fetchPartners() {
         
-        NetworkManager.shared.fetchPartners { (dictionary) in
-            
-            let partner = Partner(dictionary: dictionary)
+        NetworkManager.shared.fetchPartners { (dictionary, partnerID) in
+            let partner = Partner(dictionary: dictionary, id: partnerID)
             self.partners.append(partner)
         }
     }
@@ -83,8 +82,10 @@ class PartnerCommunityCollectionViewController: UICollectionViewCell, UITableVie
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! CommunityTableCell
         
         let partner = partners[indexPath.row]
-        cell.dictionary = ["name": partner.name as Any,
-                           "field": partner.field as Any]
+        cell.dictionary = ["profileImageURL": partner.profileImageURL as Any,
+                           "name": partner.name as Any,
+                           "field": partner.field as Any,
+                           "location": partner.location as Any]
         return cell
     }
     

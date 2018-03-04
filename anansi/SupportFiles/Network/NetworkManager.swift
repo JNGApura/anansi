@@ -149,20 +149,19 @@ class NetworkManager {
     
     /// Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time the data (including any children) changes.
     //  NOTE: query is ordered by "order"
-    func fetchPartners(onSuccess: @escaping ([String: Any]) -> Void){
+    func fetchPartners(onSuccess: @escaping ([String: Any], String) -> Void){
         partnerDatabase.queryOrdered(byChild: "order").observe(.childAdded, with: { (snapshot) in
                         
             if !snapshot.exists() { return } // just to be safe
             if let dictionary = snapshot.value as? [String: Any] {
-                onSuccess(dictionary)
+                onSuccess(dictionary, snapshot.key)
             }
         }, withCancel: nil)
     }
     
-    /// Register user dictionary into database
-    func registerUserData(_ dictionary: [String: Any]) {
+    /// Register dictionary into DB database (user or partner)
+    func registerUserInDB(dictionary: [String: Any]) {
         
-        //let node = [name: value] // [String: Any]
         if let uid = getUID() {
             userDatabase.child(uid).updateChildValues(dictionary) { (error, userDatabase) in
                 if error != nil {
@@ -173,11 +172,10 @@ class NetworkManager {
         }
     }
     
-    /// Register partner dictionary into database
-    func registerPartnerData(_ dictionary: [String: Any]) {
+    // FUNCTION TO BE REMOVED!
+    func registerPartnerInDB(dictionary: [String: Any]) {
 
         partnerDatabase.childByAutoId().updateChildValues(dictionary) { (error, partnerDatabase) in
-            
             if error != nil {
                 print(error!.localizedDescription)
                 return
@@ -194,10 +192,37 @@ class NetworkManager {
         }
     }
     
+    /// Updates User's ranking (Int) in DB database
+    func updatesUserRanking(userID: String, property: String) {
+        
+        userDatabase.child(userID).child(property).runTransactionBlock { (currentData: MutableData) -> TransactionResult in
+            var value = currentData.value as? Int
+            if (value == nil) {
+                value = 0
+            }
+            currentData.value = value! + 1
+            return TransactionResult.success(withValue: currentData)
+        }
+    }
+    
+    /// Updates Partner's ranking (Int) in DB database
+    func updatesPartnerRanking(partnerID: String, property: String) {
+        
+        partnerDatabase.child(partnerID).child(property).runTransactionBlock { (currentData: MutableData) -> TransactionResult in
+            var value = currentData.value as? Int
+            if (value == nil) {
+                value = 0
+            }
+            currentData.value = value! + 1
+            return TransactionResult.success(withValue: currentData)
+        }
+    }
+    
+    
     // MARK: FEEDBACK DATABASE FUNCTIONS
     
-    /// Updates INT value of specific name/key in FeedbackDB
-    func updatesValue(name: String) {
+    /// Updates Int of specific name/key in FeedbackDB
+    func updatesFeedbackValue(name: String) {
     
         feedbackDatabase.child(name).runTransactionBlock { (currentData: MutableData) -> TransactionResult in
             var value = currentData.value as? Int
@@ -210,7 +235,7 @@ class NetworkManager {
     }
     
     /// Sets value of specific name/key in FeedbackDB
-    func setValue(name: String, post: [String: Any]) {
+    func setFeedbackValue(name: String, post: [String: Any]) {
         
         feedbackDatabase.child(name).childByAutoId().setValue(post)
     }

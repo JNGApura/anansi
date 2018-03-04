@@ -38,6 +38,7 @@ class ChatMessageCell: UICollectionViewCell {
     
     let timeDate : UILabel = {
         let l = UILabel()
+        l.text = "time"
         l.textColor = UIColor.secondary.withAlphaComponent(0.6)
         l.textAlignment = .center
         l.backgroundColor = .background
@@ -49,6 +50,7 @@ class ChatMessageCell: UICollectionViewCell {
     
     let textView : UITextView = {
         let tv = UITextView()
+        tv.text = "message"
         tv.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
         tv.translatesAutoresizingMaskIntoConstraints = false
         tv.backgroundColor = .clear

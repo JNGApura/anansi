@@ -148,11 +148,11 @@ class CommunityViewController: UICollectionViewController, UICollectionViewDeleg
     
     func showPartnerPageController(partner: Partner) {
         
-        /*let profileController = ProfileViewController()
-         profileController.user = user
-         profileController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.plain, target: navigationController, action: nil)
-         
-         navigationController?.pushViewController(profileController, animated: true)*/
+        let partnerPageController = PartnerPageViewController()
+        partnerPageController.partner = partner
+        partnerPageController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.plain, target: navigationController, action: nil)
+        
+        navigationController?.pushViewController(partnerPageController, animated: true)
     }
     
     // MARK: - UIScrollViewDelegate

@@ -22,7 +22,6 @@ class UserTableCell: UITableViewCell {
             }
             
             self.name.text = user?.name
-            
             self.occupation.text = user?.occupation
         }
     }
@@ -76,6 +75,20 @@ class UserTableCell: UITableViewCell {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // Makes sure the cell is re-used and properly initialized
+    override func prepareForReuse() {
+        super.prepareForReuse()
+                
+        if let profileImageURL = user?.profileImageURL {
+            self.profileImageView.loadImageUsingCacheWithUrlString(profileImageURL)
+        } else {
+            self.profileImageView.image = #imageLiteral(resourceName: "profileImageTemplate").withRenderingMode(.alwaysOriginal)
+        }
+        
+        self.name.text = user?.name
+        self.occupation.text = user?.occupation
     }
 
 }

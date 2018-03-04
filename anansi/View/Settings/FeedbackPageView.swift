@@ -302,7 +302,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         NotificationCenter.default.post(name: Notification.Name(rawValue: "happyFlow"), object: self)
         
         // Storing number of happyIconTaps
-        NetworkManager.shared.updatesValue(name: "happy")
+        NetworkManager.shared.updatesFeedbackValue(name: "happy")
     }
     
     @objc func unhappyIconTapped(_ sender: UIImageView) {
@@ -311,7 +311,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         NotificationCenter.default.post(name: Notification.Name(rawValue: "unhappyFlow"), object: self)
         
         // Storing number of unhappyIconTaps
-        NetworkManager.shared.updatesValue(name: "unhappy")
+        NetworkManager.shared.updatesFeedbackValue(name: "unhappy")
     }
     
     @objc func leaveFlow(){
@@ -330,7 +330,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         }
         
         // Add # taps in the back-end
-        NetworkManager.shared.updatesValue(name: "rated")
+        NetworkManager.shared.updatesFeedbackValue(name: "rated")
         
         let when = DispatchTime.now() + 0.4 // change 2 to desired number of seconds
         DispatchQueue.main.asyncAfter(deadline: when) {
@@ -342,7 +342,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         
         // Sends feedback to back-end
         let message : [String : Any] = ["message": feedbackTextBox.text!]
-        NetworkManager.shared.setValue(name: "posts", post: message)
+        NetworkManager.shared.setFeedbackValue(name: "posts", post: message)
         
         NotificationCenter.default.post(name: Notification.Name(rawValue: "feedbackSubmitted"), object: self)
     }

@@ -11,6 +11,7 @@ import UIKit
 class Partner: NSObject {
     
     // Basic
+    var id: String?
     var type: String?
     var name: String?
     var location: String?
@@ -25,7 +26,7 @@ class Partner: NSObject {
     var linkedin: String?
     
     // Contacts
-    var personOfInterest: [User]?
+    var employees: [String]?
 
     // App color
     var gradientColor: Int?
@@ -33,8 +34,9 @@ class Partner: NSObject {
     // Store dictionary - for future reference, if needed
     var dictionary: [String: Any]?
     
-    init(dictionary: [String: Any]) {
+    init(dictionary: [String: Any], id: String) {
         
+        self.id = id
         self.name = dictionary["name"] as? String
         self.field = dictionary["field"] as? String
         self.location = dictionary["location"] as? String
@@ -46,7 +48,7 @@ class Partner: NSObject {
         self.website = dictionary["website"] as? String
         self.linkedin = dictionary["linkedin"] as? String
         
-        self.personOfInterest = dictionary["personOfInterest"] as? [User]
+        self.employees = dictionary["employees"] as? [String]
         
         self.gradientColor = dictionary["gradientColor"] as? Int
         

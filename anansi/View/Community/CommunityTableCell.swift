@@ -15,6 +15,7 @@ class CommunityTableCell: UITableViewCell {
         didSet {
             self.name.text = dictionary["name"] as? String
             self.field.text = dictionary["field"] as? String
+            self.location.text = dictionary["location"] as? String
             
             if let profileImageURL = dictionary["profileImageURL"] as? String {
                 self.profileImageView.loadImageUsingCacheWithUrlString(profileImageURL)
@@ -29,7 +30,7 @@ class CommunityTableCell: UITableViewCell {
         i.image = #imageLiteral(resourceName: "profileImageTemplate").withRenderingMode(.alwaysOriginal)
         i.contentMode = .scaleAspectFill
         i.translatesAutoresizingMaskIntoConstraints = false
-        i.layer.cornerRadius = 80 / 2 //28.0
+        i.layer.cornerRadius = 80 / 2
         i.layer.masksToBounds = true
         return i
     }()
@@ -37,7 +38,7 @@ class CommunityTableCell: UITableViewCell {
     let name: UILabel = {
         let tl = UILabel()
         tl.text = "name"
-        tl.font = UIFont.boldSystemFont(ofSize: Const.calloutFontSize)
+        tl.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
         tl.textColor = .secondary
         tl.translatesAutoresizingMaskIntoConstraints = false
         return tl
@@ -46,7 +47,16 @@ class CommunityTableCell: UITableViewCell {
     let field: UILabel = {
         let tl = UILabel()
         tl.text = "field or occupation"
-        tl.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
+        tl.font = UIFont.systemFont(ofSize: Const.subheadFontSize - 1.0)
+        tl.textColor = .secondary
+        tl.translatesAutoresizingMaskIntoConstraints = false
+        return tl
+    }()
+    
+    let location: UILabel = {
+        let tl = UILabel()
+        tl.text = "location"
+        tl.font = UIFont.systemFont(ofSize: Const.subheadFontSize - 1.0)
         tl.textColor = .secondary
         tl.translatesAutoresizingMaskIntoConstraints = false
         return tl
@@ -57,7 +67,7 @@ class CommunityTableCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         
-        [profileImageView, name, field].forEach { addSubview($0) }
+        [profileImageView, name, field, location].forEach { addSubview($0) }
         
         NSLayoutConstraint.activate([
             
@@ -73,6 +83,10 @@ class CommunityTableCell: UITableViewCell {
             field.topAnchor.constraint(equalTo: name.bottomAnchor, constant: Const.marginEight / 2.0),
             field.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Const.marginEight * 2.0),
             field.trailingAnchor.constraint(equalTo: trailingAnchor),
+            
+            location.topAnchor.constraint(equalTo: field.bottomAnchor, constant: Const.marginEight / 2.0),
+            location.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Const.marginEight * 2.0),
+            location.trailingAnchor.constraint(equalTo: trailingAnchor),
         ])
     }
     
@@ -82,11 +96,10 @@ class CommunityTableCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
-        print("it was clever to put this here. prepareForReuse @ community was just used")
-        
+                
         self.name.text = dictionary["name"] as? String
         self.field.text = dictionary["field"] as? String
+        self.location.text = dictionary["location"] as? String
         
         if let profileImageURL = dictionary["profileImageURL"] as? String {
             self.profileImageView.loadImageUsingCacheWithUrlString(profileImageURL)

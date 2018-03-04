@@ -66,7 +66,6 @@ class UserCommunityCollectionViewCell: UICollectionViewCell, UITableViewDelegate
     func fetchUsers() {
         
         NetworkManager.shared.fetchUsers { (dictionary, userUID) in
-            
             if userUID != NetworkManager.shared.getUID() {
                 let user = User(dictionary: dictionary, id: userUID)
                 self.users.append(user)
@@ -87,7 +86,8 @@ class UserCommunityCollectionViewCell: UICollectionViewCell, UITableViewDelegate
         let user = users[indexPath.row]
         cell.dictionary = ["profileImageURL": user.profileImageURL as Any,
                            "name": user.name as Any,
-                           "field": user.occupation as Any]
+                           "field": user.occupation as Any,
+                           "location": "From \(user.location!)" as Any]
         return cell
     }
     

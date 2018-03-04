@@ -16,15 +16,12 @@ class UserCollectionCell: UICollectionViewCell {
         didSet {
             
             if let profileImageURL = user?.profileImageURL {
-                
                 self.profileImageView.loadImageUsingCacheWithUrlString(profileImageURL)
             } else {
-                
                 self.profileImageView.image = #imageLiteral(resourceName: "profileImageTemplate").withRenderingMode(.alwaysOriginal)
             }
             
             self.name.text = user?.name
-            
             self.occupation.text = user?.occupation
         }
     }
@@ -84,16 +81,13 @@ class UserCollectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // Makes sure the cell is re-used and properly initialized
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        print("it was clever to put this here. prepareForReuse @ community was just used")
-        
         if let profileImageURL = user?.profileImageURL {
-            
             self.profileImageView.loadImageUsingCacheWithUrlString(profileImageURL)
         } else {
-            
             self.profileImageView.image = #imageLiteral(resourceName: "profileImageTemplate").withRenderingMode(.alwaysOriginal)
         }
         

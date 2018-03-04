@@ -12,7 +12,7 @@ import FirebaseAuth
 
 class MessageCell: UITableViewCell {
     
-    // REFACTOR MESSAGE:
+    // REFACTOR MESSAGE: - prepare for reuse
     var message : Message? {
         didSet {
             
@@ -96,12 +96,12 @@ class MessageCell: UITableViewCell {
     ////
     
     let profileImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.layer.cornerRadius = Const.exploreImageHeight / 2
-        imageView.layer.masksToBounds = true
-        return imageView
+        let i = UIImageView()
+        i.contentMode = .scaleAspectFill
+        i.translatesAutoresizingMaskIntoConstraints = false
+        i.layer.cornerRadius = Const.exploreImageHeight / 2
+        i.layer.masksToBounds = true
+        return i
     }()
     
     let badgeRadius : CGFloat = 9.0
@@ -130,11 +130,11 @@ class MessageCell: UITableViewCell {
     }()
     
     let timeLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: Const.footnoteFontSize)
-        label.textColor = .secondary
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+        let l = UILabel()
+        l.font = UIFont.systemFont(ofSize: Const.footnoteFontSize)
+        l.textColor = .secondary
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
     }()
     
     let separator: UIView = {
@@ -147,12 +147,7 @@ class MessageCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         
-        addSubview(profileImageView)
-        addSubview(badge)
-        addSubview(name)
-        addSubview(lastMessage)
-        addSubview(timeLabel)
-        addSubview(separator)
+        [profileImageView, badge, name, lastMessage, timeLabel, separator].forEach { addSubview($0) }
         
         NSLayoutConstraint.activate([
             profileImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight*2),

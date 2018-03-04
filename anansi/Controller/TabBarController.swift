@@ -37,7 +37,7 @@ class TabBarController: UITabBarController {
             if name == nil {
                 
                 // Writes user's information in database
-                NetworkManager.shared.registerUserData([
+                NetworkManager.shared.registerUserInDB(dictionary: [
                     "name": self.defaults.value(forKey: "userName") as! String,
                     "occupation": self.defaults.value(forKey: "userOccupation") as! String,
                     "location": self.defaults.value(forKey: "userLocation") as! String,

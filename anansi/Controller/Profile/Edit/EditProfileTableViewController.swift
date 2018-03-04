@@ -319,17 +319,17 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
     @objc func saveNewData(){
         
         user = tempUser
-        NetworkManager.shared.registerUserData((tempUser?.dictionary)!)
+        NetworkManager.shared.registerUserInDB(dictionary: (tempUser?.dictionary)!)
         
         if currentGradient != user?.gradientColor {
             
-            NetworkManager.shared.registerUserData(["gradientColor" : currentGradient] as! [String : Int])
+            NetworkManager.shared.registerUserInDB(dictionary: ["gradientColor" : currentGradient] as! [String : Int])
             user?.setGradientColor(with: currentGradient!)
         }
         
         if interestListWasUpdated {
             
-            NetworkManager.shared.registerUserData(["interests" : interestList])
+            NetworkManager.shared.registerUserInDB(dictionary: ["interests" : interestList])
             user?.updateInterestList(with: interestList)
         }
                         
@@ -692,7 +692,7 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
             
             NetworkManager.shared.storesImageInDatabase(folder: "profile_images", image: selectedImage, onSuccess: { (imageURL) in
                 
-                NetworkManager.shared.registerUserData(["profileImageURL": imageURL])
+                NetworkManager.shared.registerUserInDB(dictionary: ["profileImageURL": imageURL])
                 
                 self.user?.setProfileImageURL(with: imageURL)
             })

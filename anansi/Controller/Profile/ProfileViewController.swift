@@ -62,7 +62,7 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
             
             if let location = user?.location {
                 
-                headerView.setLocation(location)
+                headerView.setLocation("From " + location)
             }
             
             if let option = user?.gradientColor {

@@ -301,7 +301,7 @@ class ProfileHeader : UIView {
     
     // Sets location, default: N/A
     func setLocation(_ text: String) {
-        self.location.text = "From " + text
+        self.location.text = text
     }
     
     // Sets profile image, default: profileImageTemplate

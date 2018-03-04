@@ -43,11 +43,6 @@ class PartnerPageViewController: UIViewController, UIScrollViewDelegate, UITable
                 headerView.setLocation(location)
             }
             
-            if let option = partner?.gradientColor {
-                gradientColors = Const.colorGradient[option]!
-                backgroundImage.gradient.colors = [gradientColors[0].cgColor, gradientColors[1].cgColor]
-            }
-            
             if let about = partner?.about {
                 sections.append("About:")
                 let index = sections.count - 1
@@ -91,6 +86,36 @@ class PartnerPageViewController: UIViewController, UIScrollViewDelegate, UITable
                 
                 iconForContactSection.append("linkedin-black")
             }
+            
+            if let type = partner?.type {
+                
+                typeLabel.text = (type + " Partner").uppercased()
+                
+                var color = UIColor()
+                
+                switch type {
+                case "Institutional":
+                    color = UIColor.init(red: 0/255.0, green: 161/255.0, blue: 224/255.0, alpha: 1.0)
+                case "Main":
+                    color = .primary
+                case "Strategy":
+                    color = .secondary //UIColor.init(red: 156/255.0, green: 113/255.0, blue: 194/255.0, alpha: 1.0)
+                case "Gold":
+                    color = UIColor.init(red: 245/255.0, green: 220/255.0, blue: 55/255.0, alpha: 1.0)
+                case "Silver":
+                    color = UIColor.init(red: 211/255.0, green: 215/255.0, blue: 222/255.0, alpha: 1.0)
+                case "Bronze":
+                    color = UIColor.init(red: 137/255.0, green: 56/255.0, blue: 19/255.0, alpha: 1.0)
+                case "Food & Beverage":
+                    color = UIColor.init(red: 113/255.0, green: 176/255.0, blue: 65/255.0, alpha: 1.0)
+                default:
+                    color = .secondary
+                }
+                
+                partnerTypeView.layer.borderColor = color.cgColor
+                typeLabel.textColor = color
+                bannerIcon.tintColor = color
+            }
         }
         
     }
@@ -110,7 +135,7 @@ class PartnerPageViewController: UIViewController, UIScrollViewDelegate, UITable
     }()
     
     // Cover
-    let mask = UIImageView(image: #imageLiteral(resourceName: "Mesh").withRenderingMode(.alwaysTemplate))
+    let mask = UIImageView(image: #imageLiteral(resourceName: "Mesh-partners").withRenderingMode(.alwaysTemplate))
     
     lazy var backgroundImage: GradientView = {
         let v = GradientView()
@@ -126,6 +151,36 @@ class PartnerPageViewController: UIViewController, UIScrollViewDelegate, UITable
         hv.setBottomBorderColor(lineColor: .primary)
         hv.translatesAutoresizingMaskIntoConstraints = false
         return hv
+    }()
+    
+    // Partner type
+    let partnerTypeView: UIView = {
+        let v = UIView()
+        v.layer.borderWidth = 2
+        v.layer.cornerRadius = Const.marginEight / 2.0
+        v.layer.masksToBounds = true
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
+    
+    let centerView : UIView = {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
+    
+    lazy var bannerIcon: UIImageView = {
+        let i = UIImageView()
+        i.image = #imageLiteral(resourceName: "banner").withRenderingMode(.alwaysTemplate)
+        i.translatesAutoresizingMaskIntoConstraints = false
+        return i
+    }()
+    
+    lazy var typeLabel: UILabel = {
+        let l = UILabel()
+        l.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
     }()
     
     // Table with profile data
@@ -158,7 +213,10 @@ class PartnerPageViewController: UIViewController, UIScrollViewDelegate, UITable
         
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-        [backgroundImage, headerView, tableView].forEach { contentView.addSubview($0)}
+        [backgroundImage, headerView, partnerTypeView, tableView].forEach { contentView.addSubview($0)}
+        
+        partnerTypeView.addSubview(centerView)
+        [bannerIcon, typeLabel].forEach { centerView.addSubview($0) }
         
         NSLayoutConstraint.activate([
             
@@ -182,12 +240,30 @@ class PartnerPageViewController: UIViewController, UIScrollViewDelegate, UITable
             headerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 234.0),
             
-            tableView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            partnerTypeView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: Const.marginEight),
+            partnerTypeView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Const.marginEight * 2.0),
+            partnerTypeView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Const.marginEight * 2.0),
+            partnerTypeView.heightAnchor.constraint(equalToConstant: 44.0),
+            
+            centerView.centerYAnchor.constraint(equalTo: partnerTypeView.centerYAnchor),
+            centerView.centerXAnchor.constraint(equalTo: partnerTypeView.centerXAnchor),
+            centerView.heightAnchor.constraint(equalTo: partnerTypeView.heightAnchor),
+            
+            bannerIcon.centerYAnchor.constraint(equalTo: centerView.centerYAnchor),
+            bannerIcon.leadingAnchor.constraint(equalTo: centerView.leadingAnchor),
+            bannerIcon.widthAnchor.constraint(equalToConstant: 20.0),
+            bannerIcon.heightAnchor.constraint(equalToConstant: 20.0),
+            
+            typeLabel.centerYAnchor.constraint(equalTo: centerView.centerYAnchor),
+            typeLabel.leadingAnchor.constraint(equalTo: bannerIcon.trailingAnchor, constant: Const.marginEight * 1.5),
+            typeLabel.trailingAnchor.constraint(equalTo: centerView.trailingAnchor),
+            typeLabel.heightAnchor.constraint(equalToConstant: 20.0),
+            
+            tableView.topAnchor.constraint(equalTo: partnerTypeView.bottomAnchor, constant: Const.marginEight),
             tableView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             tableView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0.0)
+            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16.0)
         ])
-        
     }
     
     override func viewDidLayoutSubviews() {
@@ -197,9 +273,7 @@ class PartnerPageViewController: UIViewController, UIScrollViewDelegate, UITable
         DispatchQueue.main.async {
             
             // Sets gradients for backgroundImage and progressBarView
-            if !self.gradientColors.isEmpty {
-                self.backgroundImage.applyGradient(withColours: [self.gradientColors[0], self.gradientColors[1]], gradientOrientation: .topLeftBottomRight)
-            }
+            self.backgroundImage.applyGradient(withColours: [.primary, .primary], gradientOrientation: .topLeftBottomRight)
         }
     }
     
@@ -220,12 +294,6 @@ class PartnerPageViewController: UIViewController, UIScrollViewDelegate, UITable
 
         // Send +1 to Partner's rank
         NetworkManager.shared.updatesPartnerRanking(partnerID: (self.partner?.id)!, property: "visualizations")
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        viewDidDisappear(animated)
-        
-        
     }
     
     override func didReceiveMemoryWarning() {

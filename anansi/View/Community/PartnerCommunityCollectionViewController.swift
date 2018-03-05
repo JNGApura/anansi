@@ -20,14 +20,12 @@ class PartnerCommunityCollectionViewController: UICollectionViewCell, UITableVie
     
     var delegate: ShowPartnerPageDelegate?
     
-    var partners : [Partner] = [] {
+    var sections = [String]()
+    var partnersInEachSection = [Int : [Partner]]() {
         didSet {
             tableView.reloadData()
         }
     }
-    
-    var sections = [String]()
-    var partnersInEachSection = [Int : [Partner]]()
     
     lazy var tableView: UITableView = {
         let tv = UITableView(frame: .zero, style: .grouped)
@@ -85,8 +83,6 @@ class PartnerCommunityCollectionViewController: UICollectionViewCell, UITableVie
                     self.partnersInEachSection[self.sections.count - 1]?.append(partner)
                 }
             }
-            
-            self.partners.append(partner)
         }
     }
     
@@ -119,48 +115,16 @@ class PartnerCommunityCollectionViewController: UICollectionViewCell, UITableVie
         v.backgroundColor = .clear
         
         let i = UIImageView(image: #imageLiteral(resourceName: "banner").withRenderingMode(.alwaysTemplate))
+        i.tintColor = Const.typeColor[sections[section]]
         i.frame = CGRect(x: 16.0, y: 16.0, width: 20.0, height: 20.0)
         
         let l = UILabel()
         l.text = sections[section].uppercased()
+        l.textColor = Const.typeColor[sections[section]]
         l.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
         l.frame = CGRect(x: 16.0 + i.frame.width + 8.0, y: 16.0, width: 276.0, height: 20.0)
         
         [i, l].forEach { v.addSubview($0) }
-        
-        switch sections[section] {
-        case "Institutional":
-            l.textColor = UIColor.init(red: 0/255.0, green: 161/255.0, blue: 224/255.0, alpha: 1.0)
-            i.tintColor = UIColor.init(red: 0/255.0, green: 161/255.0, blue: 224/255.0, alpha: 1.0)
-        
-        case "Main":
-            l.textColor = .primary
-            i.tintColor = .primary
-        
-        case "Strategy":
-            l.textColor = .secondary //UIColor.init(red: 156/255.0, green: 113/255.0, blue: 194/255.0, alpha: 1.0)
-            i.tintColor = .secondary //UIColor.init(red: 156/255.0, green: 113/255.0, blue: 194/255.0, alpha: 1.0)
-        
-        case "Gold":
-            l.textColor = UIColor.init(red: 245/255.0, green: 220/255.0, blue: 55/255.0, alpha: 1.0)
-            i.tintColor = UIColor.init(red: 245/255.0, green: 220/255.0, blue: 55/255.0, alpha: 1.0)
-        
-        case "Silver":
-            l.textColor = UIColor.init(red: 211/255.0, green: 215/255.0, blue: 222/255.0, alpha: 1.0)
-            i.tintColor = UIColor.init(red: 211/255.0, green: 215/255.0, blue: 222/255.0, alpha: 1.0)
-        
-        case "Bronze":
-            l.textColor = UIColor.init(red: 137/255.0, green: 56/255.0, blue: 19/255.0, alpha: 1.0)
-            i.tintColor = UIColor.init(red: 137/255.0, green: 56/255.0, blue: 19/255.0, alpha: 1.0)
-            
-        case "Food & Beverage":
-            l.textColor = UIColor.init(red: 113/255.0, green: 176/255.0, blue: 65/255.0, alpha: 1.0)
-            i.tintColor = UIColor.init(red: 113/255.0, green: 176/255.0, blue: 65/255.0, alpha: 1.0)
-            
-        default:
-            l.textColor = .secondary
-            i.tintColor = .secondary
-        }
         
         return v
     }

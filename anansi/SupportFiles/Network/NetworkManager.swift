@@ -19,10 +19,11 @@ class NetworkManager {
     
     // Databases
     private let userDatabase = Database.database().reference().child("users")
-    private let partnerDatabase = Database.database().reference().child("partners")
     private let messagesDatabase = Database.database().reference().child("messages")
     private let userMessagesDatabase = Database.database().reference().child("user-messages")
+    private let partnerDatabase = Database.database().reference().child("partners")
     private let feedbackDatabase = Database.database().reference().child("feedback")
+    private let statsDatabase = Database.database().reference().child("stats")
  
     // MARK: Sign-up / Log-in functions
     
@@ -172,7 +173,7 @@ class NetworkManager {
         }
     }
     
-    // FUNCTION TO BE REMOVED!
+    // FUNCTION TO BE REMOVED! --------------------------------------------------------------------
     func registerPartnerInDB(dictionary: [String: Any]) {
 
         partnerDatabase.childByAutoId().updateChildValues(dictionary) { (error, partnerDatabase) in
@@ -182,6 +183,7 @@ class NetworkManager {
             }
         }
     }
+    // --------------------------------------------------------------------------------------------
     
     /// Remove dictionary from database
     func removeData(_ key: String) {
@@ -192,23 +194,12 @@ class NetworkManager {
         }
     }
     
-    /// Updates User's ranking (Int) in DB database
-    func updatesUserRanking(userID: String, property: String) {
-        
-        userDatabase.child(userID).child(property).runTransactionBlock { (currentData: MutableData) -> TransactionResult in
-            var value = currentData.value as? Int
-            if (value == nil) {
-                value = 0
-            }
-            currentData.value = value! + 1
-            return TransactionResult.success(withValue: currentData)
-        }
-    }
+    // MARK: - STATS DATABASE
     
-    /// Updates Partner's ranking (Int) in DB database
-    func updatesPartnerRanking(partnerID: String, property: String) {
+    /// Updates id's # visualizations (Int) in stats database
+    func updatesVisualization(id: String, node: String) {
         
-        partnerDatabase.child(partnerID).child(property).runTransactionBlock { (currentData: MutableData) -> TransactionResult in
+        statsDatabase.child(node).child(id).child("visualizations").runTransactionBlock { (currentData: MutableData) -> TransactionResult in
             var value = currentData.value as? Int
             if (value == nil) {
                 value = 0
@@ -219,7 +210,7 @@ class NetworkManager {
     }
     
     
-    // MARK: FEEDBACK DATABASE FUNCTIONS
+    // MARK: - FEEDBACK DATABASE
     
     /// Updates Int of specific name/key in FeedbackDB
     func updatesFeedbackValue(name: String) {

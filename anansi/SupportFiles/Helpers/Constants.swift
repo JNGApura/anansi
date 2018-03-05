@@ -78,4 +78,15 @@ struct Const {
     
     // Interests database
         static let interests = ["3D Printing", "Art", "Adventure", "Animal Rights", "Artificial Intelligence", "Astrology", "Astronomy", "Backpacking", "Big Data", "Biology", "Board Games", "Business", "Community Service", "Comics", "Cooking", "Creativity", "Cryptocurrency", "Culture", "Cybersecurity", "DIY", "Data Science", "Design", "Digital Design", "Economics", "Education", "Engineering", "Electronics", "Entrepreneurship", "Equality", "Evolution", "Fashion", "Film", "Food", "Freelancing", "Gaming", "Gym", "History", "Human Rights", "Humanism", "Humor", "Industrial Design", "Innovation", "Investing", "LGBTQIA", "Leadership", "Literature", "Machine Learning", "Marketing", "Math", "Meditation", "Mobile Development", "Music", "Neuroscience", "Painting", "Peace", "Philanthropy", "Philosophy", "Photography", "Physics", "Politics", "Product Design", "Programming", "Psychology", "Public Speaking", "Reading", "Renewable Energy", "Robotics", "Running", "Sci-Fi/Fantasy", "Science", "Social Media", "Social Movements", "Space Exploration", "Spirituality", "Sports", "Startup", "Sustainability", "Technology", "Theater", "Travel", "UX/UI", "Urbanism", "Veganism", "Vegetarianism", "Volunteering", "Web Design", "Web Development", "Wellness", "Writing", "Yoga"].sorted()
+    
+    // Partners type colors
+    static let typeColor : [String : UIColor] = ["Main" : .primary, // red
+                                                 "Institutional" : UIColor.init(red: 0/255.0, green: 161/255.0, blue: 224/255.0, alpha: 1.0), // light blue
+                                                 "Logistics & Operations" : .secondary, //UIColor.init(red: 156/255.0, green: 113/255.0, blue: 194/255.0, alpha: 1.0)
+                                                 "Gold" : UIColor.init(red: 245/255.0, green: 220/255.0, blue: 55/255.0, alpha: 1.0), // gold
+                                                 "Silver" : UIColor.init(red: 211/255.0, green: 215/255.0, blue: 222/255.0, alpha: 1.0), // silver
+                                                 "Bronze" : UIColor.init(red: 137/255.0, green: 56/255.0, blue: 19/255.0, alpha: 1.0), // bronze
+                                                 "Social Media & Marketing" : UIColor.init(red: 156/255.0, green: 113/255.0, blue: 194/255.0, alpha: 1.0), // purple
+                                                 "Food & Beverage" : UIColor.init(red: 113/255.0, green: 176/255.0, blue: 65/255.0, alpha: 1.0)] // green
+    
 }

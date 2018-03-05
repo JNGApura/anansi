@@ -24,9 +24,7 @@ class CommunityViewController: UICollectionViewController, UICollectionViewDeleg
         tb.translatesAutoresizingMaskIntoConstraints = false
         return tb
     }()
-    
-    var users: [User] = []
-    
+        
     // MARK: - View lifecycle
     
     override func viewDidLoad() {
@@ -55,15 +53,6 @@ class CommunityViewController: UICollectionViewController, UICollectionViewDeleg
             flowLayout.scrollDirection = .horizontal
             collectionView!.isPagingEnabled = true
             collectionView!.showsHorizontalScrollIndicator = false
-        }
-        
-        // Need this for search (I need to find a more effective way of doing this)
-        NetworkManager.shared.fetchUsers { (dictionary, userUID) in
-            
-            if userUID != NetworkManager.shared.getUID() {
-                let user = User(dictionary: dictionary, id: userUID)
-                self.users.append(user)
-            }
         }
     }
     
@@ -107,7 +96,7 @@ class CommunityViewController: UICollectionViewController, UICollectionViewDeleg
         
         navigationController?.view.backgroundColor = .background
         navigationController?.navigationBar.isTranslucent = false
-        //navigationController?.hidesBarsOnSwipe = true
+        navigationController?.hidesBarsOnSwipe = true
         
         navigationItem.title = ""
         
@@ -127,8 +116,7 @@ class CommunityViewController: UICollectionViewController, UICollectionViewDeleg
     
     @objc func showSearchViewController() {
         
-        let searchController = SearchBarViewController(collectionViewLayout: UICollectionViewFlowLayout())
-        searchController.users = users
+        let searchController = SearchTableViewController(style: .grouped) //collectionViewLayout: UICollectionViewFlowLayout()
         searchController.hidesBottomBarWhenPushed = true
         
         let navController = UINavigationController(rootViewController: searchController)

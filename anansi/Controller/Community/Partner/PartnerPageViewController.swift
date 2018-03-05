@@ -91,30 +91,9 @@ class PartnerPageViewController: UIViewController, UIScrollViewDelegate, UITable
                 
                 typeLabel.text = (type + " Partner").uppercased()
                 
-                var color = UIColor()
-                
-                switch type {
-                case "Institutional":
-                    color = UIColor.init(red: 0/255.0, green: 161/255.0, blue: 224/255.0, alpha: 1.0)
-                case "Main":
-                    color = .primary
-                case "Strategy":
-                    color = .secondary //UIColor.init(red: 156/255.0, green: 113/255.0, blue: 194/255.0, alpha: 1.0)
-                case "Gold":
-                    color = UIColor.init(red: 245/255.0, green: 220/255.0, blue: 55/255.0, alpha: 1.0)
-                case "Silver":
-                    color = UIColor.init(red: 211/255.0, green: 215/255.0, blue: 222/255.0, alpha: 1.0)
-                case "Bronze":
-                    color = UIColor.init(red: 137/255.0, green: 56/255.0, blue: 19/255.0, alpha: 1.0)
-                case "Food & Beverage":
-                    color = UIColor.init(red: 113/255.0, green: 176/255.0, blue: 65/255.0, alpha: 1.0)
-                default:
-                    color = .secondary
-                }
-                
-                partnerTypeView.layer.borderColor = color.cgColor
-                typeLabel.textColor = color
-                bannerIcon.tintColor = color
+                partnerTypeView.layer.borderColor = Const.typeColor[type]!.cgColor
+                typeLabel.textColor = Const.typeColor[type]
+                bannerIcon.tintColor = Const.typeColor[type]
             }
         }
         
@@ -292,8 +271,8 @@ class PartnerPageViewController: UIViewController, UIScrollViewDelegate, UITable
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        // Send +1 to Partner's rank
-        NetworkManager.shared.updatesPartnerRanking(partnerID: (self.partner?.id)!, property: "visualizations")
+        // Send +1 to Partner's # visualizations
+        NetworkManager.shared.updatesVisualization(id: (self.partner?.id)!, node: "partners")
     }
     
     override func didReceiveMemoryWarning() {

@@ -285,6 +285,7 @@ class PartnerPageViewController: UIViewController, UIScrollViewDelegate, UITable
         
         navigationController?.navigationBar.isTranslucent = true
         navigationController?.view.backgroundColor = .background
+        navigationController?.hidesBarsOnSwipe = false
         
         navigationItem.title = ""
         

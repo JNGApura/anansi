@@ -35,6 +35,7 @@ class QuestionCell: UITableViewCell { //}, UITextViewDelegate {
     // Create textfield
     lazy var textView: UITextView = {
         let tf = UITextView()
+        tf.textContainer.maximumNumberOfLines = 1
         tf.backgroundColor = .clear
         tf.textColor = .secondary
         tf.font = UIFont.systemFont(ofSize: Const.calloutFontSize)

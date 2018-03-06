@@ -196,7 +196,7 @@ class NetworkManager {
     
     // MARK: - STATS DATABASE
     
-    /// Updates id's # visualizations (Int) in stats database
+    /// Updates id's # visualizations (Int) in stats DB
     func updatesVisualization(id: String, node: String) {
         
         statsDatabase.child(node).child(id).child("visualizations").runTransactionBlock { (currentData: MutableData) -> TransactionResult in
@@ -209,6 +209,24 @@ class NetworkManager {
         }
     }
     
+    /// Reports user for specific behavior, and stores in stats DB
+    func reportsUser(id: String, reason: String) {
+        
+        statsDatabase.child("users").child(id).child("reported").child(reason).runTransactionBlock { (currentData: MutableData) -> TransactionResult in
+            var value = currentData.value as? Int
+            if (value == nil) {
+                value = 0
+            }
+            currentData.value = value! + 1
+            return TransactionResult.success(withValue: currentData)
+        }
+    }
+    
+    /// Reports user for "other" with message, and stores in stats DB with reporter ID
+    func reportsUserWithMessage(id: String, reporter: String, message: String) {
+        
+        statsDatabase.child("users").child(id).child("reported").child("Other").child(reporter).setValue(["Message": message])
+    }
     
     // MARK: - FEEDBACK DATABASE
     

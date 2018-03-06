@@ -14,7 +14,7 @@ import MobileCoreServices
 import AVFoundation
 import UIKit.UIGestureRecognizerSubclass
 
-class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
+class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, UserWasReported {
     
     var cameFromProfile: Bool = false
     
@@ -218,8 +218,12 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         collectionView?.backgroundColor = .white
         collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellIdentifier)
         collectionView?.keyboardDismissMode = .interactive
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
-        setupKeyboardObservers()
+        setupNavigationBarItems()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -238,6 +242,8 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
             let indexPath = IndexPath(item: messages.count - 1, section: 0)
             collectionView?.scrollToItem(at: indexPath, at: .top, animated: true)
         }
+        
+        setupKeyboardObservers()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -323,10 +329,14 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         })
         alertController.addAction(contactDetails)
         
-        /*let reportUser = UIAlertAction(title: "Report user", style: .destructive, handler: { (action) -> Void in
-            print("Report user")
+        let reportUser = UIAlertAction(title: "Report abuse", style: .destructive, handler: { (action) -> Void in
+            
+            let controller = ReportAbuseViewController()
+            controller.delegate = self
+            controller.user = self.user
+            self.navigationController?.pushViewController(controller, animated: true)
         })
-        alertController.addAction(reportUser)*/
+        alertController.addAction(reportUser)
         
         let deleteChat = UIAlertAction(title: "Delete conversation", style: .destructive, handler: { (action) -> Void in
             
@@ -353,6 +363,16 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         alertController.addAction(cancelButton)
         
         present(alertController, animated: true, completion: nil)
+    }
+    
+    func userWasReported(user: User) {
+        
+        let controller = ReportConfirmationView()
+        controller.user = user
+        controller.modalPresentationStyle = .overFullScreen
+        controller.modalTransitionStyle = .crossDissolve
+        
+        present(controller, animated: true, completion: nil)
     }
     
     // MARK: User Interaction

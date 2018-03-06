@@ -29,6 +29,8 @@
 		2C5A54F8204A9B5A006DB37A /* EmployeeTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54F7204A9B59006DB37A /* EmployeeTableCell.swift */; };
 		2C5A54FA204BAA26006DB37A /* PartnerAboutController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54F9204BAA26006DB37A /* PartnerAboutController.swift */; };
 		2C5A54FC204CC019006DB37A /* SearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54FB204CC019006DB37A /* SearchTableViewController.swift */; };
+		2C5A54FE204D138F006DB37A /* ReportAbuseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54FD204D138F006DB37A /* ReportAbuseController.swift */; };
+		2C5A5500204D207C006DB37A /* ReportConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54FF204D207C006DB37A /* ReportConfirmationView.swift */; };
 		2C6988FC202A83C600F6B4A8 /* ChatEmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6988FB202A83C600F6B4A8 /* ChatEmptyState.swift */; };
 		2C6988FE202A89A700F6B4A8 /* ConnectEmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6988FD202A89A700F6B4A8 /* ConnectEmptyState.swift */; };
 		2C698900202ADDEA00F6B4A8 /* LandingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6988FF202ADDEA00F6B4A8 /* LandingController.swift */; };
@@ -127,6 +129,8 @@
 		2C5A54F7204A9B59006DB37A /* EmployeeTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeTableCell.swift; sourceTree = "<group>"; };
 		2C5A54F9204BAA26006DB37A /* PartnerAboutController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartnerAboutController.swift; sourceTree = "<group>"; };
 		2C5A54FB204CC019006DB37A /* SearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewController.swift; sourceTree = "<group>"; };
+		2C5A54FD204D138F006DB37A /* ReportAbuseController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportAbuseController.swift; sourceTree = "<group>"; };
+		2C5A54FF204D207C006DB37A /* ReportConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportConfirmationView.swift; sourceTree = "<group>"; };
 		2C66D1BA200C946900146296 /* IQKeyboardManagerSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = IQKeyboardManagerSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C6988FB202A83C600F6B4A8 /* ChatEmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmptyState.swift; sourceTree = "<group>"; };
 		2C6988FD202A89A700F6B4A8 /* ConnectEmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectEmptyState.swift; sourceTree = "<group>"; };
@@ -242,6 +246,7 @@
 				2C5A54F42042C9D6006DB37A /* Community */,
 				2CADB19C203A801B00A8CA96 /* Profile */,
 				2C2841D5202D1C1600F8EA00 /* Onboarding */,
+				2C8AE56A204E5E6800DF8587 /* ReportAbuse */,
 				2C2841D6202D1C4000F8EA00 /* Settings */,
 			);
 			path = View;
@@ -499,6 +504,15 @@
 				2C7F6EFD202578A7008AB0CD /* Extensions */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		2C8AE56A204E5E6800DF8587 /* ReportAbuse */ = {
+			isa = PBXGroup;
+			children = (
+				2C5A54FD204D138F006DB37A /* ReportAbuseController.swift */,
+				2C5A54FF204D207C006DB37A /* ReportConfirmationView.swift */,
+			);
+			path = ReportAbuse;
 			sourceTree = "<group>";
 		};
 		2CADB19C203A801B00A8CA96 /* Profile */ = {
@@ -919,6 +933,7 @@
 				2C79C8F920382A5B00FFCF70 /* InterestsViewController.swift in Sources */,
 				2C7F6F1420259604008AB0CD /* UIFont+.swift in Sources */,
 				2C42950120269C1900724385 /* UIViewController+.swift in Sources */,
+				2C5A5500204D207C006DB37A /* ReportConfirmationView.swift in Sources */,
 				2C18A77C200F469700C03B20 /* OnboardingViewController.swift in Sources */,
 				2C87DACF200CA072004F8730 /* Classes.swift in Sources */,
 				2C7F6F1A2025D902008AB0CD /* ChatAccessoryView.swift in Sources */,
@@ -929,6 +944,7 @@
 				2C198AAB2040111000CFC705 /* TopTabBar.swift in Sources */,
 				2C79C8F72036293900FFCF70 /* UICollectionViewAlignedLayout.swift in Sources */,
 				2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */,
+				2C5A54FE204D138F006DB37A /* ReportAbuseController.swift in Sources */,
 				2CD55AD62033EFA100299926 /* ProfileViewController.swift in Sources */,
 				2C79C8FB20383AEB00FFCF70 /* InterestCell.swift in Sources */,
 				2CC3EF68201577B900EBC7B2 /* AboutPage.swift in Sources */,

@@ -223,7 +223,6 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        NotificationCenter.default.removeObserver(self)
         
         // Removes keyboard notification observers
         NotificationCenter.default.removeObserver(self)

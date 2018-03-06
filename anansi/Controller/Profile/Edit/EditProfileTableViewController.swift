@@ -24,7 +24,6 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
     
     var user : User?
     var tempUser : User?
-    //var delegate: UserSaveDelegate?
     
     // These three b-thingy variables help keep track of requisits for the questionCell input textfields
     var bName = true        // "name" textfield should not be empty

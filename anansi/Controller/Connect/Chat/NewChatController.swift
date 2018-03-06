@@ -16,7 +16,6 @@ class NewChatController: UITableViewController {
     
     var users = [User]()
     
-    
     // MARK: View Lifecycle
 
     override func viewDidLoad() {

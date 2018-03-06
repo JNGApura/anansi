@@ -532,6 +532,7 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate, UITableView
         
         navigationController?.navigationBar.isTranslucent = true
         navigationController?.view.backgroundColor = .background
+        navigationController?.hidesBarsOnSwipe = false
         
         navigationItem.title = ""
 

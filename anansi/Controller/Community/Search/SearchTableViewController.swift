@@ -230,7 +230,7 @@ class SearchTableViewController: UITableViewController {
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        
+
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             emptyState.viewCenterYAnchor?.constant = -keyboardSize.height/2
             view.layoutIfNeeded() // Forces the layout of the subtree animation block and then captures all of the frame changes

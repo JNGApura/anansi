@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : " Explore.pdf",
+      "filename" : "TEDxULisboa@1x.pdf",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : " Explore@2x.pdf",
+      "filename" : "TEDxULisboa@2x.pdf",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : " Explore@3x.pdf",
+      "filename" : "TEDxULisboa@3x.pdf",
       "scale" : "3x"
     }
   ],

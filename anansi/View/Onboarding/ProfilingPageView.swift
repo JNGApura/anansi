@@ -63,16 +63,16 @@ class ProfilingPageView: UIViewController, UITextFieldDelegate {
         NSLayoutConstraint.activate([
             
             pageDescription.topAnchor.constraint(equalTo: view.topAnchor),
-            pageDescription.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Const.marginAnchorsToContent),
-            pageDescription.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Const.marginAnchorsToContent),
+            pageDescription.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Const.marginSafeArea),
+            pageDescription.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Const.marginSafeArea),
             
             pageQuestionTitle.topAnchor.constraint(equalTo: pageDescription.bottomAnchor, constant: 36.0),
-            pageQuestionTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Const.marginAnchorsToContent),
-            pageQuestionTitle.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Const.marginAnchorsToContent),
+            pageQuestionTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Const.marginSafeArea),
+            pageQuestionTitle.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Const.marginSafeArea),
             
             bottomBorderAnswer.topAnchor.constraint(equalTo: view.bottomAnchor, constant: -2.0),
-            bottomBorderAnswer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Const.marginAnchorsToContent),
-            bottomBorderAnswer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Const.marginAnchorsToContent),
+            bottomBorderAnswer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Const.marginSafeArea),
+            bottomBorderAnswer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Const.marginSafeArea),
             bottomBorderAnswer.heightAnchor.constraint(equalToConstant: 2.0),
             
         ])

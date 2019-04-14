@@ -95,8 +95,8 @@ class OnboardingPageCell : UICollectionViewCell {
             //topBorder.heightAnchor.constraint(equalToConstant: topBorderHeight),
             
             stackView.topAnchor.constraint(equalTo: topAnchor), // Const.marginAnchorsToContent * 2 - topBorderHeight
-            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginAnchorsToContent),
-            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginAnchorsToContent)
+            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea),
+            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea)
         ])
     }
     

@@ -21,7 +21,7 @@ class SignUpController: UIViewController, UIScrollViewDelegate, UITextFieldDeleg
     }()
     
     let logo: UIImageView = {
-        let i = UIImageView(image: #imageLiteral(resourceName: "TEDxISTAlameda-black"))
+        let i = UIImageView(image: UIImage(named: "TEDxULisboa-black"))
         i.translatesAutoresizingMaskIntoConstraints = false
         i.contentMode = .scaleAspectFill
         return i
@@ -146,17 +146,17 @@ class SignUpController: UIViewController, UIScrollViewDelegate, UITextFieldDeleg
         // Logo
         scrollView.addSubview(logo)
         NSLayoutConstraint.activate([
-            logo.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: Const.marginAnchorsToContent * 3),
-            logo.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: Const.marginAnchorsToContent),
+            logo.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: Const.marginSafeArea * 3),
+            logo.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: Const.marginSafeArea),
         ])
         
         // Add email & ticket reference
         scrollView.addSubview(typingView)
         [sectionTitle, emailText, errorEmail, borderEmail, ticketText, errorTicket, borderTicket].forEach( {typingView.addSubview($0)} )
         NSLayoutConstraint.activate([
-            typingView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: Const.marginAnchorsToContent * 3.5),
+            typingView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: Const.marginSafeArea * 3.5),
             typingView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            typingView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -Const.marginAnchorsToContent * 2),
+            typingView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -Const.marginSafeArea * 2),
             typingView.heightAnchor.constraint(equalToConstant: 172.0),
             
             sectionTitle.topAnchor.constraint(equalTo: typingView.topAnchor),
@@ -198,7 +198,7 @@ class SignUpController: UIViewController, UIScrollViewDelegate, UITextFieldDeleg
         // Login button
         scrollView.addSubview(loginButton)
         NSLayoutConstraint.activate([
-            loginButton.topAnchor.constraint(equalTo: typingView.bottomAnchor, constant: Const.marginAnchorsToContent * 2.0),
+            loginButton.topAnchor.constraint(equalTo: typingView.bottomAnchor, constant: Const.marginSafeArea * 2.0),
             loginButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             loginButton.heightAnchor.constraint(equalToConstant: Const.buttonHeight),
             loginButton.widthAnchor.constraint(equalToConstant: 150)
@@ -215,8 +215,8 @@ class SignUpController: UIViewController, UIScrollViewDelegate, UITextFieldDeleg
         // Support button
         scrollView.addSubview(supportButton)
         NSLayoutConstraint.activate([
-            supportButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.marginAnchorsToContent),
-            supportButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent),
+            supportButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.marginSafeArea),
+            supportButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginSafeArea),
         ])
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)

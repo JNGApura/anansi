@@ -152,13 +152,13 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
             groupedView.heightAnchor.constraint(equalToConstant: 300.0),
             
             pageTitle.topAnchor.constraint(equalTo: groupedView.topAnchor),
-            pageTitle.leadingAnchor.constraint(equalTo: groupedView.leadingAnchor, constant: Const.marginAnchorsToContent),
-            pageTitle.widthAnchor.constraint(equalTo: groupedView.widthAnchor, constant: -Const.marginAnchorsToContent * 2.0),
+            pageTitle.leadingAnchor.constraint(equalTo: groupedView.leadingAnchor, constant: Const.marginSafeArea),
+            pageTitle.widthAnchor.constraint(equalTo: groupedView.widthAnchor, constant: -Const.marginSafeArea * 2.0),
             pageTitle.heightAnchor.constraint(equalToConstant: 28.0),
             
             pageDescription.topAnchor.constraint(equalTo: pageTitle.bottomAnchor, constant: 36.0),
-            pageDescription.leadingAnchor.constraint(equalTo: groupedView.leadingAnchor, constant: Const.marginAnchorsToContent),
-            pageDescription.widthAnchor.constraint(equalTo: groupedView.widthAnchor, constant: -Const.marginAnchorsToContent * 2.0),
+            pageDescription.leadingAnchor.constraint(equalTo: groupedView.leadingAnchor, constant: Const.marginSafeArea),
+            pageDescription.widthAnchor.constraint(equalTo: groupedView.widthAnchor, constant: -Const.marginSafeArea * 2.0),
             pageDescription.heightAnchor.constraint(equalToConstant: 28.0),
             
             abuseOptionsTable.topAnchor.constraint(equalTo: pageDescription.bottomAnchor, constant: 16.0),
@@ -171,7 +171,7 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
             feedbackTextView.widthAnchor.constraint(equalTo: groupedView.widthAnchor, constant: -16.0),
             feedbackTextView.heightAnchor.constraint(equalToConstant: 72.0),
             
-            buttonGroupView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.marginAnchorsToContent * 1.25),
+            buttonGroupView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.marginSafeArea * 1.25),
             buttonGroupView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             buttonGroupView.widthAnchor.constraint(equalToConstant: 172.0),
             buttonGroupView.heightAnchor.constraint(equalToConstant: 100.0),

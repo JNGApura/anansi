@@ -164,9 +164,9 @@ class OnboardingViewController: UIViewController, UICollectionViewDataSource, UI
             collectionView.bottomAnchor.constraint(equalTo: bottomControlStackView.topAnchor),
             collectionView.heightAnchor.constraint(equalToConstant: 144.0),
             
-            bottomControlStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.marginAnchorsToContent),
+            bottomControlStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.marginSafeArea),
             bottomControlStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            bottomControlStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginAnchorsToContent),
+            bottomControlStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.marginSafeArea),
             bottomControlStackView.heightAnchor.constraint(equalToConstant: 50.0),
         ])
     }

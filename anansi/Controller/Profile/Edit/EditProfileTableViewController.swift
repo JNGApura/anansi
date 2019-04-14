@@ -185,7 +185,7 @@ class EditProfileTableViewController: UIViewController, UIScrollViewDelegate, UI
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             
             profileImage.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            profileImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Const.marginAnchorsToContent),
+            profileImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Const.marginSafeArea),
             profileImage.widthAnchor.constraint(equalToConstant: Const.profileImageHeight),
             profileImage.heightAnchor.constraint(equalToConstant: Const.profileImageHeight),
             

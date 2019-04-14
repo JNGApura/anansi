@@ -93,7 +93,7 @@ class ReportConfirmationView: UIViewController, UIGestureRecognizerDelegate {
             
             reportedGroup.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
             reportedGroup.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor, constant: -108.0),
-            reportedGroup.widthAnchor.constraint(equalTo: backgroundView.widthAnchor, constant: Const.marginAnchorsToContent * 2.0),
+            reportedGroup.widthAnchor.constraint(equalTo: backgroundView.widthAnchor, constant: Const.marginSafeArea * 2.0),
             
             userProfileImage.topAnchor.constraint(equalTo: reportedGroup.topAnchor),
             userProfileImage.centerXAnchor.constraint(equalTo: reportedGroup.centerXAnchor),

@@ -120,18 +120,18 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
-            logo.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: Const.marginAnchorsToContent * 3),
-            logo.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: Const.marginAnchorsToContent),
+            logo.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: Const.marginSafeArea * 3),
+            logo.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: Const.marginSafeArea),
 
-            pageController.view.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: Const.marginAnchorsToContent * 4),
+            pageController.view.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: Const.marginSafeArea * 4),
             pageController.view.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             pageController.view.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             pageController.view.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             pageController.view.heightAnchor.constraint(equalToConstant: 212.0),
             
             answerText.bottomAnchor.constraint(equalTo: pageController.view.bottomAnchor, constant: -2.0),
-            answerText.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: Const.marginAnchorsToContent),
-            answerText.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -Const.marginAnchorsToContent),
+            answerText.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: Const.marginSafeArea),
+            answerText.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -Const.marginSafeArea),
             answerText.heightAnchor.constraint(equalToConstant: 26.0),
             
             labelPlaceholder.centerXAnchor.constraint(equalTo: answerText.centerXAnchor),
@@ -141,10 +141,10 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
             
             bottomControlView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomControlView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomControlView.heightAnchor.constraint(equalToConstant: Const.marginAnchorsToContent * 2.5),
+            bottomControlView.heightAnchor.constraint(equalToConstant: Const.marginSafeArea * 2.5),
             
             nextButton.centerYAnchor.constraint(equalTo: bottomControlView.centerYAnchor),
-            nextButton.trailingAnchor.constraint(equalTo: bottomControlView.trailingAnchor, constant: -Const.marginAnchorsToContent),
+            nextButton.trailingAnchor.constraint(equalTo: bottomControlView.trailingAnchor, constant: -Const.marginSafeArea),
             nextButton.heightAnchor.constraint(equalTo: bottomControlView.heightAnchor),
             
             cellControl.centerYAnchor.constraint(equalTo: bottomControlView.centerYAnchor),

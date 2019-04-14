@@ -7,8 +7,10 @@
 //
 
 import UIKit
+import CoreLocation
 
-// Adds fours methods to UserDefatuls, to check whether the user has been onboarded and has logged in
+
+// Adds four methods to UserDefatuls, to check whether the user has been onboarded and has logged in
 extension UserDefaults {
     
     // General app
@@ -77,4 +79,5 @@ extension UserDefaults {
     func isProfileOnboarded() -> Bool {
         return bool(forKey: "isProfileOnboarded")
     }
+    
 }

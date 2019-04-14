@@ -82,7 +82,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         let ssv = UIStackView()
         ssv.translatesAutoresizingMaskIntoConstraints = false
         ssv.distribution = .fillEqually
-        ssv.spacing = -Const.marginAnchorsToContent*4
+        ssv.spacing = -Const.marginSafeArea*4
         return ssv
     }()
     
@@ -139,7 +139,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         pageDescription.text = page.description
         pageDescription.formatTextWithLineSpacing(lineSpacing: 10, lineHeightMultiple: 1.2, hyphenation: 0.5, alignment: .left)
         sectionStackView.addArrangedSubview(pageDescription)
-        sectionStackView.setCustomSpacing(Const.marginAnchorsToContent, after: pageTitle)
+        sectionStackView.setCustomSpacing(Const.marginSafeArea, after: pageTitle)
         
         // Set feedback textbox
         if pageIdentifier == 2 {
@@ -147,7 +147,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
             feedbackTextBox.text = feedbackTextLabel
             feedbackTextBox.formatTextWithLineSpacing(lineSpacing: 8, lineHeightMultiple: 1.15, hyphenation: 0.5, alignment: .left)
             sectionStackView.addArrangedSubview(feedbackTextBox)
-            sectionStackView.setCustomSpacing(Const.marginAnchorsToContent, after: pageDescription)
+            sectionStackView.setCustomSpacing(Const.marginSafeArea, after: pageDescription)
         }
         
         // Sets scrollview for entire view
@@ -247,9 +247,9 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
             sectionStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             sectionStackView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: CGFloat(view.frame.size.height / 4)),
             
-            pageTitle.widthAnchor.constraint(equalTo: sectionStackView.widthAnchor, constant: -Const.marginAnchorsToContent * 2),
+            pageTitle.widthAnchor.constraint(equalTo: sectionStackView.widthAnchor, constant: -Const.marginSafeArea * 2),
             pageTitle.topAnchor.constraint(equalTo: sectionStackView.topAnchor),
-            pageTitle.leadingAnchor.constraint(equalTo: sectionStackView.leadingAnchor, constant: Const.marginAnchorsToContent),
+            pageTitle.leadingAnchor.constraint(equalTo: sectionStackView.leadingAnchor, constant: Const.marginSafeArea),
         ])
 
         // Activates contraints the feedbackTextBox, if exists
@@ -263,7 +263,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         if pageIdentifier == 0 {
             
             NSLayoutConstraint.activate([
-                iconStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.marginAnchorsToContent * 3),
+                iconStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.marginSafeArea * 3),
                 iconStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
                 iconStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
             ])
@@ -271,13 +271,13 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         // Activates contraints buttonStackView
         } else {
         
-            var buttonAreaHeight = Const.marginAnchorsToContent * 5
+            var buttonAreaHeight = Const.marginSafeArea * 5
             var distanceFromBottom : CGFloat = 0.0
             
             // Changes buttonAreaHeight and distanceFromBottom because we now have only ONE button
             if pageIdentifier == 3 {
-                buttonAreaHeight = Const.marginAnchorsToContent * 2.5 - 2.0
-                distanceFromBottom = Const.marginAnchorsToContent * 1.25
+                buttonAreaHeight = Const.marginSafeArea * 2.5 - 2.0
+                distanceFromBottom = Const.marginSafeArea * 1.25
             }
             
             NSLayoutConstraint.activate([

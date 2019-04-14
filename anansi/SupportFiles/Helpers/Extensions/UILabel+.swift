@@ -31,7 +31,6 @@ extension UILabel {
         text.addAttribute(NSAttributedStringKey.paragraphStyle, value:style, range: NSMakeRange(0, text.length))
         self.attributedText = text
     }
-    
-    
+
 }
 

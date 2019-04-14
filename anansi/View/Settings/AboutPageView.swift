@@ -102,9 +102,9 @@ class AboutPageView: UIViewController, UIScrollViewDelegate {
             
             // Adds constraints
             NSLayoutConstraint.activate([
-                itemTitle.widthAnchor.constraint(equalTo: sectionStackView.widthAnchor, constant: -Const.marginAnchorsToContent * 2),
+                itemTitle.widthAnchor.constraint(equalTo: sectionStackView.widthAnchor, constant: -Const.marginSafeArea * 2),
                 itemTitle.topAnchor.constraint(equalTo: sectionStackView.topAnchor, constant: 4.0),
-                itemTitle.leadingAnchor.constraint(equalTo: sectionStackView.leadingAnchor, constant: Const.marginAnchorsToContent),
+                itemTitle.leadingAnchor.constraint(equalTo: sectionStackView.leadingAnchor, constant: Const.marginSafeArea),
                 itemTitle.heightAnchor.constraint(equalToConstant: navigationBarHeight),
                 sectionStackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
                 sectionStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)

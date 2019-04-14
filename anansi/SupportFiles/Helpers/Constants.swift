@@ -10,9 +10,9 @@ import UIKit
 
 struct AppFontName {
     
-    static let regular = "Avenir-Roman" // Cera-Regular
-    static let bold = "Avenir-Heavy" // Cera-Bold
-    static let italic = "Avenir-Oblique" // Cera-RegularItalic
+    static let regular = "Avenir-Roman"
+    static let bold = "Avenir-Heavy"
+    static let italic = "Avenir-Oblique"
 }
 
 struct Const {
@@ -37,7 +37,7 @@ struct Const {
     /// Settings row height
     static let settingsRowHeight: CGFloat = 44
     /// Margin from leading/trailing anchors to content ("safe area")
-    static let marginAnchorsToContent: CGFloat = 20
+    static let marginSafeArea: CGFloat = 24
     /// Margin 8 pts
     static let marginEight: CGFloat = 8 // Change name, some day
     /// Explore profile picture height / width
@@ -54,6 +54,19 @@ struct Const {
     
     // List of tabs in Community
     static let listTabs = ["Attendees", "Partners"]
+    
+    // List of tabs in Event
+    static let eventTabs = ["Schedule", "xChallenge", "Location"]
+    
+    // Formal address
+    static let addressULisboa = "Aula Magna, Edifício da Reitoria, Alameda da Universidade, Lisboa"
+    
+    // GPS coordinates of the location of the event (informal address)
+    static let addressLatitude = 38.7527769
+    static let addressLongitude = -9.1579087
+    
+    // Kapter Promocode
+    static let kaptenPromoCode = "TEDX19"
     
     /// Color gradient mapping structure
     static let colorGradient : [Int:[UIColor]] = [0 : [.orange, .magenta],
@@ -77,7 +90,7 @@ struct Const {
                                                   5 : .primary]
     
     // Interests database
-        static let interests = ["3D Printing", "Art", "Adventure", "Animal Rights", "Artificial Intelligence", "Astrology", "Astronomy", "Backpacking", "Big Data", "Biology", "Board Games", "Business", "Community Service", "Comics", "Cooking", "Creativity", "Cryptocurrency", "Culture", "Cybersecurity", "DIY", "Data Science", "Design", "Digital Design", "Economics", "Education", "Engineering", "Electronics", "Entrepreneurship", "Equality", "Evolution", "Fashion", "Film", "Food", "Freelancing", "Gaming", "Gym", "History", "Human Rights", "Humanism", "Humor", "Industrial Design", "Innovation", "Investing", "LGBTQIA", "Leadership", "Literature", "Machine Learning", "Marketing", "Math", "Meditation", "Mobile Development", "Music", "Neuroscience", "Painting", "Peace", "Philanthropy", "Philosophy", "Photography", "Physics", "Politics", "Product Design", "Programming", "Psychology", "Public Speaking", "Reading", "Renewable Energy", "Robotics", "Running", "Sci-Fi/Fantasy", "Science", "Social Media", "Social Movements", "Space Exploration", "Spirituality", "Sports", "Startup", "Sustainability", "Technology", "Theater", "Travel", "UX/UI", "Urbanism", "Veganism", "Vegetarianism", "Volunteering", "Web Design", "Web Development", "Wellness", "Writing", "Yoga"].sorted()
+    static let interests = ["3D Printing", "Art", "Adventure", "Animal Rights", "Artificial Intelligence", "Astrology", "Astronomy", "Backpacking", "Big Data", "Biology", "Board Games", "Business", "Community Service", "Comics", "Cooking", "Creativity", "Cryptocurrency", "Culture", "Cybersecurity", "DIY", "Data Science", "Design", "Digital Design", "Economics", "Education", "Engineering", "Electronics", "Entrepreneurship", "Equality", "Evolution", "Fashion", "Film", "Food", "Freelancing", "Gaming", "Gym", "History", "Human Rights", "Humanism", "Humor", "Industrial Design", "Innovation", "Investing", "LGBTQIA", "Leadership", "Literature", "Machine Learning", "Marketing", "Math", "Meditation", "Mobile Development", "Music", "Neuroscience", "Painting", "Peace", "Philanthropy", "Philosophy", "Photography", "Physics", "Politics", "Product Design", "Programming", "Psychology", "Public Speaking", "Reading", "Renewable Energy", "Robotics", "Running", "Sci-Fi/Fantasy", "Science", "Social Media", "Social Movements", "Space Exploration", "Spirituality", "Sports", "Startup", "Sustainability", "Technology", "Theater", "Travel", "UX/UI", "Urbanism", "Veganism", "Vegetarianism", "Volunteering", "Web Design", "Web Development", "Wellness", "Writing", "Yoga"].sorted()
     
     // Partners type colors
     static let typeColor : [String : UIColor] = ["Main" : .primary, // red

@@ -258,7 +258,7 @@ class ConnectViewController: UIViewController, UIScrollViewDelegate, UITableView
         
         let offsetY : CGFloat = scrollView.contentOffset.y
         let titleOriginY : CGFloat = headerView.headerTitle.frame.origin.y
-        let lineMaxY : CGFloat = headerView.headerBottomBorder.frame.maxY
+        let lineMaxY : CGFloat = headerView.bottomLine.frame.maxY
         let label = navigationItem.titleView as? UILabel
         
         if offsetY >= titleOriginY {

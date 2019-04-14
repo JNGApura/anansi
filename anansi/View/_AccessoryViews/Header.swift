@@ -12,37 +12,54 @@ import UIKit
 class Header : UIView {
     
     let headerTitle: UILabel = {
-        let view = UILabel()
-        view.textColor = .secondary
-        view.font = UIFont.boldSystemFont(ofSize: Const.largeTitleFontSize)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
+        let t = UILabel()
+        t.textColor = .secondary
+        t.font = UIFont.boldSystemFont(ofSize: Const.largeTitleFontSize)
+        t.translatesAutoresizingMaskIntoConstraints = false
+        return t
     }()
     
-    let headerBottomBorder: UIView = {
-        let view = UIView()
-        view.isOpaque = true
-        view.backgroundColor = .primary
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
+    let bottomLine: UIView = {
+        let l = UIView()
+        l.isOpaque = true
+        l.backgroundColor = .primary
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
+    }()
+    
+    let profileButton: UIButton = {
+        let b = UIButton()
+        b.setImage(UIImage(named: "Profile")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        b.tintColor = .secondary
+        b.backgroundColor = .background
+        b.layer.cornerRadius = 16.0
+        b.layer.masksToBounds = true
+        //b.addTarget(self, action: #selector(navigateToSettingsViewController), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         // Add headerTitle and headerBottomBorder subviews
-        [headerTitle, headerBottomBorder].forEach { addSubview($0) }
+        [headerTitle, bottomLine, profileButton].forEach { addSubview($0) }
         
         // Adds layout constraints
         NSLayoutConstraint.activate([
-        
-            headerTitle.topAnchor.constraint(equalTo: topAnchor, constant: Const.marginEight * 1.5),
-            headerTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight * 2.0),
 
-            headerBottomBorder.topAnchor.constraint(equalTo: headerTitle.bottomAnchor, constant: Const.marginEight - 2.0),
-            headerBottomBorder.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight * 2.0 + 1.0),
-            headerBottomBorder.widthAnchor.constraint(equalToConstant: Const.marginAnchorsToContent * 2.0),
-            headerBottomBorder.heightAnchor.constraint(equalToConstant: 2.0)
+            bottomLine.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Const.marginEight * 2.0),
+            bottomLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea + 1.0),
+            bottomLine.widthAnchor.constraint(equalToConstant: Const.marginSafeArea * 2.0),
+            bottomLine.heightAnchor.constraint(equalToConstant: 2.0),
+            
+            headerTitle.bottomAnchor.constraint(equalTo: bottomLine.topAnchor, constant: -4.0),
+            headerTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea),
+            
+            profileButton.centerYAnchor.constraint(equalTo: headerTitle.centerYAnchor),
+            profileButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
+            profileButton.widthAnchor.constraint(equalToConstant: 32.0),
+            profileButton.heightAnchor.constraint(equalToConstant: 32.0)
         ])
     }
     
@@ -62,7 +79,7 @@ class Header : UIView {
     
     // Sets bottomBorderColor, default: Color.primary
     func setBottomBorderColor(lineColor: UIColor) {
-        self.headerBottomBorder.backgroundColor = lineColor
+        self.bottomLine.backgroundColor = lineColor
     }
     
     // Sets background color, default: Color.background
@@ -260,7 +277,7 @@ class ProfileHeader : UIView {
             
             headerBottomBorder.topAnchor.constraint(equalTo: headerTitle.bottomAnchor, constant: Const.marginEight / 2.0),
             headerBottomBorder.centerXAnchor.constraint(equalTo: centerXAnchor),
-            headerBottomBorder.widthAnchor.constraint(equalToConstant: Const.marginAnchorsToContent * 2.0),
+            headerBottomBorder.widthAnchor.constraint(equalToConstant: Const.marginSafeArea * 2.0),
             headerBottomBorder.heightAnchor.constraint(equalToConstant: 2.0),
             
             occupation.topAnchor.constraint(equalTo: headerBottomBorder.bottomAnchor, constant: Const.marginEight * 1.5),

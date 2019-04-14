@@ -16,7 +16,7 @@
 		2C18A77C200F469700C03B20 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C18A77B200F469700C03B20 /* OnboardingViewController.swift */; };
 		2C18A7812011A36700C03B20 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C18A7802011A36700C03B20 /* Reachability.swift */; };
 		2C198AAB2040111000CFC705 /* TopTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C198AAA2040110F00CFC705 /* TopTabBar.swift */; };
-		2C198AAD204015F300CFC705 /* TopTabCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C198AAC204015F300CFC705 /* TopTabCell.swift */; };
+		2C198AAD204015F300CFC705 /* TabSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C198AAC204015F300CFC705 /* TabSelector.swift */; };
 		2C2841C6202D137100F8EA00 /* SearchEmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2841C5202D137100F8EA00 /* SearchEmptyState.swift */; };
 		2C2841DE202D1E3500F8EA00 /* UserTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2841DD202D1E3500F8EA00 /* UserTableCell.swift */; };
 		2C42950120269C1900724385 /* UIViewController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C42950020269C1900724385 /* UIViewController+.swift */; };
@@ -44,7 +44,6 @@
 		2C79C8F920382A5B00FFCF70 /* InterestsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C79C8F820382A5A00FFCF70 /* InterestsViewController.swift */; };
 		2C79C8FB20383AEB00FFCF70 /* InterestCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C79C8FA20383AEB00FFCF70 /* InterestCell.swift */; };
 		2C7B601620044F4D00FF5488 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B601520044F4D00FF5488 /* TabBarController.swift */; };
-		2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B60192004666100FF5488 /* EventViewController.swift */; };
 		2C7B7E0A200B726A007CCE7C /* FeedbackModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7B7E09200B726A007CCE7C /* FeedbackModel.swift */; };
 		2C7DE7DC2016D7AF00EEB1F4 /* ConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DE7DB2016D7AF00EEB1F4 /* ConnectViewController.swift */; };
 		2C7DE7F1201740D700EEB1F4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C7DE7F0201740D700EEB1F4 /* LaunchScreen.storyboard */; };
@@ -78,6 +77,14 @@
 		2CDD28572019C77900AB1F32 /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDD28562019C77900AB1F32 /* ChatMessageCell.swift */; };
 		2CDD2859201AB27300AB1F32 /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDD2858201AB27200AB1F32 /* MessageCell.swift */; };
 		2CDF6B072042422200CC3B92 /* CommunityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF6B062042422200CC3B92 /* CommunityViewController.swift */; };
+		2CEBB14922601A3400821896 /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEBB14822601A3400821896 /* EventViewController.swift */; };
+		2CEBB14B22601A8B00821896 /* PageSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEBB14A22601A8B00821896 /* PageSelector.swift */; };
+		2CEBB14F22615B9A00821896 /* EventChallengeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEBB14E22615B9A00821896 /* EventChallengeCollectionViewCell.swift */; };
+		2CEBB15122616B9600821896 /* EventLocationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEBB15022616B9600821896 /* EventLocationCollectionViewCell.swift */; };
+		2CEBB155226244D700821896 /* LocationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEBB154226244D700821896 /* LocationTableViewCell.swift */; };
+		2CEBB15722627F9800821896 /* CLLocation+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEBB15622627F9800821896 /* CLLocation+.swift */; };
+		2CEBB1592262B24900821896 /* EventScheduleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEBB1582262B24900821896 /* EventScheduleCollectionViewCell.swift */; };
+		2CEBB15B2262C21F00821896 /* ScheduleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEBB15A2262C21F00821896 /* ScheduleTableViewCell.swift */; };
 		2CEE5F6E2006F3C100E86365 /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEE5F6D2006F3C100E86365 /* SettingsModel.swift */; };
 		2CEE5F7620075C0F00E86365 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2CEE5F7520075C0F00E86365 /* GoogleService-Info.plist */; };
 		2CEE5F7A2007619300E86365 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEE5F792007619300E86365 /* NetworkManager.swift */; };
@@ -116,7 +123,7 @@
 		2C18A77B200F469700C03B20 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		2C18A7802011A36700C03B20 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		2C198AAA2040110F00CFC705 /* TopTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopTabBar.swift; sourceTree = "<group>"; };
-		2C198AAC204015F300CFC705 /* TopTabCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopTabCell.swift; sourceTree = "<group>"; };
+		2C198AAC204015F300CFC705 /* TabSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSelector.swift; sourceTree = "<group>"; };
 		2C2841C5202D137100F8EA00 /* SearchEmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEmptyState.swift; sourceTree = "<group>"; };
 		2C2841DD202D1E3500F8EA00 /* UserTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTableCell.swift; sourceTree = "<group>"; };
 		2C42950020269C1900724385 /* UIViewController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+.swift"; sourceTree = "<group>"; };
@@ -149,7 +156,6 @@
 		2C79C8F820382A5A00FFCF70 /* InterestsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestsViewController.swift; sourceTree = "<group>"; };
 		2C79C8FA20383AEB00FFCF70 /* InterestCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestCell.swift; sourceTree = "<group>"; };
 		2C7B601520044F4D00FF5488 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
-		2C7B60192004666100FF5488 /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
 		2C7B7E09200B726A007CCE7C /* FeedbackModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackModel.swift; sourceTree = "<group>"; };
 		2C7DE7DB2016D7AF00EEB1F4 /* ConnectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewController.swift; sourceTree = "<group>"; };
 		2C7DE7F0201740D700EEB1F4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -183,6 +189,14 @@
 		2CDD28562019C77900AB1F32 /* ChatMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
 		2CDD2858201AB27200AB1F32 /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
 		2CDF6B062042422200CC3B92 /* CommunityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityViewController.swift; sourceTree = "<group>"; };
+		2CEBB14822601A3400821896 /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
+		2CEBB14A22601A8B00821896 /* PageSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageSelector.swift; sourceTree = "<group>"; };
+		2CEBB14E22615B9A00821896 /* EventChallengeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventChallengeCollectionViewCell.swift; sourceTree = "<group>"; };
+		2CEBB15022616B9600821896 /* EventLocationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLocationCollectionViewCell.swift; sourceTree = "<group>"; };
+		2CEBB154226244D700821896 /* LocationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTableViewCell.swift; sourceTree = "<group>"; };
+		2CEBB15622627F9800821896 /* CLLocation+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocation+.swift"; sourceTree = "<group>"; };
+		2CEBB1582262B24900821896 /* EventScheduleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventScheduleCollectionViewCell.swift; sourceTree = "<group>"; };
+		2CEBB15A2262C21F00821896 /* ScheduleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTableViewCell.swift; sourceTree = "<group>"; };
 		2CEE5F6D2006F3C100E86365 /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModel.swift; sourceTree = "<group>"; };
 		2CEE5F7520075C0F00E86365 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2CEE5F792007619300E86365 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
@@ -239,6 +253,13 @@
 		2C2841C7202D183D00F8EA00 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				2C198AAC204015F300CFC705 /* TabSelector.swift */,
+				2CEBB14A22601A8B00821896 /* PageSelector.swift */,
+				2CEBB14E22615B9A00821896 /* EventChallengeCollectionViewCell.swift */,
+				2CEBB1582262B24900821896 /* EventScheduleCollectionViewCell.swift */,
+				2CEBB15022616B9600821896 /* EventLocationCollectionViewCell.swift */,
+				2CEBB154226244D700821896 /* LocationTableViewCell.swift */,
+				2CEBB15A2262C21F00821896 /* ScheduleTableViewCell.swift */,
 				2C2841C9202D192500F8EA00 /* _EmptyStates */,
 				2C2841CA202D1AAB00F8EA00 /* _AccessoryViews */,
 				2C2841D3202D1BE900F8EA00 /* User */,
@@ -279,7 +300,6 @@
 			children = (
 				2C7F6F192025D902008AB0CD /* ChatAccessoryView.swift */,
 				2C198AAA2040110F00CFC705 /* TopTabBar.swift */,
-				2C198AAC204015F300CFC705 /* TopTabCell.swift */,
 				2C584C1C2018714500E17FD3 /* Header.swift */,
 				2C7F6F1520259622008AB0CD /* Badge.swift */,
 			);
@@ -345,7 +365,7 @@
 		2C2841D1202D1B9100F8EA00 /* Event */ = {
 			isa = PBXGroup;
 			children = (
-				2C7B60192004666100FF5488 /* EventViewController.swift */,
+				2CEBB14822601A3400821896 /* EventViewController.swift */,
 			);
 			path = Event;
 			sourceTree = "<group>";
@@ -463,6 +483,7 @@
 			isa = PBXGroup;
 			children = (
 				2C7F6F0720259522008AB0CD /* Bundle+.swift */,
+				2CEBB15622627F9800821896 /* CLLocation+.swift */,
 				2C7F6F01202594AC008AB0CD /* UICollectionView+.swift */,
 				2C7F6F03202594B6008AB0CD /* UIColor+.swift */,
 				2C7F6F1320259604008AB0CD /* UIFont+.swift */,
@@ -608,7 +629,6 @@
 				2C70FBC120021793002E97E7 /* Frameworks */,
 				2C70FBC220021793002E97E7 /* Resources */,
 				912D9175C29F5525A3B88903 /* [CP] Embed Pods Frameworks */,
-				23F002BEBBB80D07D80E2321 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -627,8 +647,6 @@
 				2C70FBD620021794002E97E7 /* Sources */,
 				2C70FBD720021794002E97E7 /* Frameworks */,
 				2C70FBD820021794002E97E7 /* Resources */,
-				2361B73DB98A5A7837DFE93D /* [CP] Embed Pods Frameworks */,
-				11FB469AD5950E4255025723 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -648,8 +666,6 @@
 				2C70FBE120021794002E97E7 /* Sources */,
 				2C70FBE220021794002E97E7 /* Frameworks */,
 				2C70FBE320021794002E97E7 /* Resources */,
-				8BBD646F5C43BC185E888012 /* [CP] Embed Pods Frameworks */,
-				C87CEF14AFC5CFFAB4B03F34 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -761,21 +777,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		11FB469AD5950E4255025723 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-anansiTests/Pods-anansiTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		1F01E07B78417AE78C5AEFEE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -794,58 +795,13 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2361B73DB98A5A7837DFE93D /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-anansiTests/Pods-anansiTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		23F002BEBBB80D07D80E2321 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-anansi/Pods-anansi-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		8BBD646F5C43BC185E888012 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-anansiUITests/Pods-anansiUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		912D9175C29F5525A3B88903 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-anansi/Pods-anansi-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-anansi/Pods-anansi-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/ReachabilitySwift/ReachabilitySwift.framework",
@@ -862,7 +818,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-anansi/Pods-anansi-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-anansi/Pods-anansi-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		BC572EFEA3C6781C0F4A1FE0 /* [CP] Check Pods Manifest.lock */ = {
@@ -883,21 +839,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C87CEF14AFC5CFFAB4B03F34 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-anansiUITests/Pods-anansiUITests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -910,6 +851,7 @@
 				2C7F6F12202595E9008AB0CD /* UIImageView+.swift in Sources */,
 				2C82C59C202C4BCA004A2CBE /* ProfilingPageView.swift in Sources */,
 				2CEE5F6E2006F3C100E86365 /* SettingsModel.swift in Sources */,
+				2CEBB14922601A3400821896 /* EventViewController.swift in Sources */,
 				2C6988FC202A83C600F6B4A8 /* ChatEmptyState.swift in Sources */,
 				2C5A54F62043593A006DB37A /* PartnerPageViewController.swift in Sources */,
 				2C7F6F0E202595C1008AB0CD /* UserDefaults+.swift in Sources */,
@@ -918,6 +860,7 @@
 				2C5A54F8204A9B5A006DB37A /* EmployeeTableCell.swift in Sources */,
 				2CBE2EC3203525C2009E5268 /* GradientCell.swift in Sources */,
 				2C5A54FA204BAA26006DB37A /* PartnerAboutController.swift in Sources */,
+				2CEBB15B2262C21F00821896 /* ScheduleTableViewCell.swift in Sources */,
 				2C2841DE202D1E3500F8EA00 /* UserTableCell.swift in Sources */,
 				2CDF6B072042422200CC3B92 /* CommunityViewController.swift in Sources */,
 				2C7B7E0A200B726A007CCE7C /* FeedbackModel.swift in Sources */,
@@ -928,7 +871,6 @@
 				2CEE5F7A2007619300E86365 /* NetworkManager.swift in Sources */,
 				2CF739A02030EA1200CBA07B /* EditProfileTableViewController.swift in Sources */,
 				2C5A54F32042C8F9006DB37A /* UserCollectionCell.swift in Sources */,
-				2C7B601A2004666100FF5488 /* EventViewController.swift in Sources */,
 				2CBE2EC120351967009E5268 /* UIView+.swift in Sources */,
 				2C79C8F920382A5B00FFCF70 /* InterestsViewController.swift in Sources */,
 				2C7F6F1420259604008AB0CD /* UIFont+.swift in Sources */,
@@ -954,9 +896,10 @@
 				2C7F6F0C2025959F008AB0CD /* UILabel+.swift in Sources */,
 				2C584C1D2018714500E17FD3 /* Header.swift in Sources */,
 				2C7B601620044F4D00FF5488 /* TabBarController.swift in Sources */,
-				2C198AAD204015F300CFC705 /* TopTabCell.swift in Sources */,
+				2C198AAD204015F300CFC705 /* TabSelector.swift in Sources */,
 				2C5A54EF2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift in Sources */,
 				2CDD2859201AB27300AB1F32 /* MessageCell.swift in Sources */,
+				2CEBB14F22615B9A00821896 /* EventChallengeCollectionViewCell.swift in Sources */,
 				2C2841C6202D137100F8EA00 /* SearchEmptyState.swift in Sources */,
 				2C18A7812011A36700C03B20 /* Reachability.swift in Sources */,
 				2C0ADB4B2042B3F700520F87 /* CommunityTableCell.swift in Sources */,
@@ -964,6 +907,7 @@
 				2C698906202AEFC500F6B4A8 /* Display.swift in Sources */,
 				2C0F1AC1204160C800E8B4F3 /* Partner.swift in Sources */,
 				2C79C8F52036148600FFCF70 /* InterestTableCell.swift in Sources */,
+				2CEBB15122616B9600821896 /* EventLocationCollectionViewCell.swift in Sources */,
 				2CCE51FD20060E4A00DFC9B1 /* Constants.swift in Sources */,
 				2C82C59A202AF567004A2CBE /* ProfilingPage.swift in Sources */,
 				2CCE520B20061CB300DFC9B1 /* SettingsViewController.swift in Sources */,
@@ -972,10 +916,14 @@
 				2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */,
 				2C708BDC200C40A0006E5ABD /* FeedbackPageView.swift in Sources */,
 				2C18A774200EFB0600C03B20 /* OnboardingPage.swift in Sources */,
+				2CEBB155226244D700821896 /* LocationTableViewCell.swift in Sources */,
 				2CDD28532018981400AB1F32 /* ChatLogController.swift in Sources */,
+				2CEBB15722627F9800821896 /* CLLocation+.swift in Sources */,
+				2CEBB14B22601A8B00821896 /* PageSelector.swift in Sources */,
 				2C7F6F06202594F4008AB0CD /* UITextView+.swift in Sources */,
 				2C7F6F1620259622008AB0CD /* Badge.swift in Sources */,
 				2C1668DE2012B0BD007C9B38 /* User.swift in Sources */,
+				2CEBB1592262B24900821896 /* EventScheduleCollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

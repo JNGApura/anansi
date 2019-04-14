@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Initiate app with OnboardingViewController or, in case the user has completed onboarding, then initializes TabBarController
         let defaults = UserDefaults.standard
         window = UIWindow(frame: UIScreen.main.bounds)
-        if !defaults.isOnboarded() {
+        /*if !defaults.isOnboarded() {
             window?.rootViewController = OnboardingViewController()
         } else
             if !defaults.isLoggedIn() {
@@ -39,7 +39,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController = ProfilingController()
         } else {
             window?.rootViewController = TabBarController()
-        }
+        }*/
+        
+        let controller = EventViewController() //collectionViewLayout: UICollectionViewFlowLayout()
+        controller.modalPresentationStyle = .overFullScreen
+        controller.modalTransitionStyle = .crossDissolve
+        
+        let navController = UINavigationController(rootViewController: controller)
+        navController.setNavigationBarHidden(true, animated: false)
+        //self.present(navController, animated: true, completion: nil)
+        
+        window?.rootViewController = navController
         window?.makeKeyAndVisible()
         
         // Add red (TED's) color as main color

@@ -12,7 +12,7 @@ class TabBarController: UITabBarController {
 
     // Custom initializers
     
-    var itemList = ["Community", "Connect", "Event", "Profile"]
+    var tabList = ["Community", "Connect", "Event"]
     
     fileprivate var tabBarViewControllers = [UINavigationController]()
     
@@ -27,6 +27,7 @@ class TabBarController: UITabBarController {
         
         view.backgroundColor = .background
 
+        /*
         // Checks if user already exists in DB
         let myID = NetworkManager.shared.getUID()
         NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
@@ -44,10 +45,10 @@ class TabBarController: UITabBarController {
                     "gradientColor": 0,
                 ])
             }
-        }
+        }*/
 
         // Add view controllers to tab bar
-        for value in itemList {
+        for value in tabList {
             
             // Get normal & selected images
             let itemNormal = UIImage(named: value)?.withRenderingMode(.alwaysTemplate)

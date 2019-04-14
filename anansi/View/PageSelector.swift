@@ -1,38 +1,42 @@
 //
-//  TopTabBar.swift
+//  PageSelector.swift
 //  anansi
 //
-//  Created by João Nuno Gaspar Apura on 23/02/2018.
-//  Copyright © 2018 João Apura. All rights reserved.
+//  Created by João Nuno Gaspar Apura on 12/04/2019.
+//  Copyright © 2019 João Apura. All rights reserved.
 //
 
 import UIKit
 
-class TopTabBar: UIView, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
+protocol PageSelectorDelegate {
+    func pageSelectorDidSelectItemAt(selector: PageSelector, index: Int)
+}
+
+class PageSelector: UIView, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
     
-    var communityController: CommunityViewController?
-    var listTabs = Const.listTabs
+    var tabList : [String] = [] {
+        didSet {
+            self.collectionView.reloadData()
+            self.collectionView.selectItem(at: IndexPath(row: 0, section: 0), animated: false, scrollPosition: .bottom)
+        }
+    }
     
-    let identifier = "TabCell"
+    var selectorDelegate: PageSelectorDelegate?
+    
+    let identifier = "selectorCell"
     
     lazy var collectionView : UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.register(TabSelector.self, forCellWithReuseIdentifier: identifier)
+        layout.scrollDirection = .horizontal
+        cv.showsHorizontalScrollIndicator = false
         cv.delegate = self
         cv.dataSource = self
         cv.backgroundColor = .background
         cv.translatesAutoresizingMaskIntoConstraints = false
         return cv
     }()
-    
-    let horizontalBar: UIView = {
-        let u = UIView()
-        u.backgroundColor = .primary
-        u.translatesAutoresizingMaskIntoConstraints = false
-        return u
-    }()
-    var horizontalBarLeftAnchor: NSLayoutConstraint?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -44,19 +48,6 @@ class TopTabBar: UIView, UICollectionViewDelegateFlowLayout, UICollectionViewDel
             collectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
-        
-        let selectedIndexPath = IndexPath(row: 0, section: 0)
-        collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: .bottom)
-        
-        addSubview(horizontalBar)
-        NSLayoutConstraint.activate([
-            horizontalBar.bottomAnchor.constraint(equalTo: bottomAnchor),
-            horizontalBar.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1 / CGFloat(listTabs.count)),
-            horizontalBar.heightAnchor.constraint(equalToConstant: 3.0)
-        ])
-
-        horizontalBarLeftAnchor = horizontalBar.leadingAnchor.constraint(equalTo: leadingAnchor)
-        horizontalBarLeftAnchor?.isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -64,35 +55,47 @@ class TopTabBar: UIView, UICollectionViewDelegateFlowLayout, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return listTabs.count
+        return tabList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! TabSelector
         
-        cell.tabTitle.text = listTabs[indexPath.item]
+        cell.tabIcon.image = UIImage(named: tabList[indexPath.item])?.withRenderingMode(.alwaysTemplate)
+        cell.tabTitle.text = tabList[indexPath.item]
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        communityController?.scrollToTabIndex(tabIndex: indexPath.item)
+        
+        let index = Int(indexPath.item)        
+        selectorDelegate?.pageSelectorDidSelectItemAt(selector: self, index: index)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.bounds.width / CGFloat(listTabs.count), height: collectionView.bounds.height)
+        
+        let hypotheticalSize = CGSize.init(width: 500.0, height: collectionView.bounds.height)
+        let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
+        
+        let str = tabList[indexPath.item]
+        
+        let estimatedRect = NSString.init(string: str).boundingRect(with: hypotheticalSize, options: options, attributes: [NSAttributedStringKey.font : UIFont.boldSystemFont(ofSize: Const.bodyFontSize)], context: nil)
+        
+        return CGSize(width: estimatedRect.size.width + 12.0 + 42.0, height: collectionView.bounds.height - 12.0)
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets.zero
+        return UIEdgeInsetsMake(0, 24.0, 0, 24.0)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 0.0
+        return 12.0
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 1.0
+        return 0
     }
 }

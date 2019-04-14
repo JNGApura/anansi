@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "Profile@1x.pdf",
+      "filename" : "P3dra@1x.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Profile@2x.pdf",
+      "filename" : "P3dra@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Profile@3x.pdf",
+      "filename" : "P3dra@3x.png",
       "scale" : "3x"
     }
   ],

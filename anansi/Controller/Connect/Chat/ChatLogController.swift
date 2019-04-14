@@ -64,7 +64,7 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
                     print("Failed upload of video:", error!)
                     return
                 }
-                
+                /*
                 if let storageURL = metadata?.downloadURL()?.absoluteString {
                     //print(storageURL)
                     
@@ -77,7 +77,7 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
                             self.sendMessageWithProperties(properties: properties)
                         })
                     }
-                }
+                }*/
             })
             
             uploadTask.observe(.progress, handler: { (snapshot) in
@@ -139,9 +139,9 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
                     return
                 }
                 
-                if let imageURL = metadata?.downloadURL()?.absoluteString {
-                    completion(imageURL)
-                }
+                //if let imageURL = metadata?.downloadURL()?.absoluteString {
+                //    completion(imageURL)
+                //}
                 
             })
         }        

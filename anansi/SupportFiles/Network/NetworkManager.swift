@@ -49,9 +49,10 @@ class NetworkManager {
             }
             
             // Gets newUser UID
-            guard let uid = newUser?.uid else { return }
+            //guard let uid = newUser?.uid else { return }
             
             // Saves newUser successfully in the database node
+            let uid = "emptyString"
             let userReference = self.userDatabase.child(uid)
             userReference.updateChildValues([
                 "email": email,
@@ -98,9 +99,9 @@ class NetworkManager {
                 }
                 
                 // Fetches the absolute URL string
-                if let imageURL = metadata?.downloadURL()?.absoluteString {
-                    onSuccess(imageURL)
-                }
+                //if let imageURL = metadata?.downloadURL()?.absoluteString {
+                //    onSuccess(imageURL)
+                //}
             })
         }
     }

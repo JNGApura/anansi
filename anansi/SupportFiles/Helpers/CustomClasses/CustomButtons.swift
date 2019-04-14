@@ -14,7 +14,7 @@ class PrimaryButton : UIButton {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+        titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
         backgroundColor = .primary
         setTitleColor(.background, for: .normal)
         layer.cornerRadius = 24.0
@@ -35,7 +35,7 @@ class SecondaryButton : UIButton {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+        titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
         backgroundColor = .background
         setTitleColor(.secondary, for: .normal)
         layer.cornerRadius = 24.0
@@ -56,9 +56,28 @@ class TertiaryButton : UIButton {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+        titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
         backgroundColor = .background
         setTitleColor(.secondary, for: .normal)
+        translatesAutoresizingMaskIntoConstraints = false
+        clipsToBounds = true
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// Special button, subclassed from UIButton
+class SpecialButton : UIButton {
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.titleFontSize)
+        backgroundColor = .tertiary
+        setTitleColor(.secondary, for: .normal)
+        layer.cornerRadius = 25.0
         translatesAutoresizingMaskIntoConstraints = false
         clipsToBounds = true
     }

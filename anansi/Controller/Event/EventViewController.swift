@@ -2,25 +2,33 @@
 //  EventViewController.swift
 //  anansi
 //
-//  Created by João Nuno Gaspar Apura on 08/01/2018.
-//  Copyright © 2018 João Apura. All rights reserved.
+//  Created by João Nuno Gaspar Apura on 12/04/2019.
+//  Copyright © 2019 João Apura. All rights reserved.
 //
 
 import UIKit
 
-class EventViewController: UIViewController,
-    UIScrollViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        
+class EventViewController: UIViewController, UIScrollViewDelegate, UINavigationControllerDelegate {
+    
     // Custom initializers
+    
+    let tabList : [String] = Const.eventTabs
+    
+    private let scheduleIdentifier : String = "scheduleCell"
+    private let challengeIdentifier : String = "challengeCell"
+    private let locationIdentifier : String = "locationCell"
+    
+    var currentIndex: Int = 0
     
     let customPhrases = ["Stay tuned.",
                          "I said: \"Stay tuned.\"",
                          "Please, stop tapping me.",
                          "I'm serious.",
                          "Well, that's all I can say.",
-                         "I could actually tell you one thing.",
-                         "Wait for it.",
+                         "Actually, I could tell you one thing.",
+                         "Wait for it...",
                          "Yap, you got it:"]
+    
     var currentPhrase = 0
     
     private let titleLabelView: UILabel = {
@@ -37,6 +45,9 @@ class EventViewController: UIViewController,
     lazy var scrollView : UIScrollView = {
         let sv = UIScrollView()
         sv.delegate = self
+        //sv.showsVerticalScrollIndicator = false
+        sv.showsHorizontalScrollIndicator = false
+        sv.backgroundColor = .background
         sv.translatesAutoresizingMaskIntoConstraints = false
         return sv
     }()
@@ -50,52 +61,99 @@ class EventViewController: UIViewController,
     lazy var headerView : Header = {
         let hv = Header()
         hv.setTitleName(name: "Event")
+        hv.backgroundColor = .background
         hv.translatesAutoresizingMaskIntoConstraints = false
         return hv
     }()
     
-    let insideView : UIView = {
-        let v = UIView()
-        v.backgroundColor = .background
-        v.translatesAutoresizingMaskIntoConstraints = false
-        return v
+    private lazy var pageSelector: PageSelector = {
+        let tb = PageSelector()
+        tb.tabList = tabList
+        tb.selectorDelegate = self
+        tb.translatesAutoresizingMaskIntoConstraints = false
+        return tb
     }()
     
-    let textLabel : UIButton = {
-        let tl = UIButton()
-        tl.setTitle("Stay tuned.", for: .normal)
-        tl.setTitleColor(.secondary, for: .normal)
-        tl.titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        tl.titleLabel?.textAlignment = .center
-        tl.backgroundColor = .background
-        tl.addTarget(self, action: #selector(handlePhrases), for: .touchUpInside)
-        tl.translatesAutoresizingMaskIntoConstraints = false
-        return tl
+    lazy var collectionView : UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.register(EventScheduleCollectionViewCell.self, forCellWithReuseIdentifier: scheduleIdentifier)
+        cv.register(EventChallengeCollectionViewCell.self, forCellWithReuseIdentifier: challengeIdentifier)
+        cv.register(EventLocationCollectionViewCell.self, forCellWithReuseIdentifier: locationIdentifier)
+        cv.isPagingEnabled = true
+        cv.showsHorizontalScrollIndicator = false
+        cv.delegate = self
+        cv.dataSource = self
+        cv.backgroundColor = .background
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.allowsSelection = false;
+        return cv
     }()
-
-    // MARK: View Lifecycle
+    
+    // MARK: - View lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Sets up navigation bar
-        setupNavigationBarItems()
-        
-        // Sets up UI
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(headerView)
-        contentView.addSubview(insideView)
-        insideView.addSubview(textLabel)
+        contentView.addSubview(pageSelector)
+        contentView.addSubview(collectionView)
         
-        // Sets layout constraints
-        setupLayoutConstraints()
+        //view.addSubview(topTabBar)
+        NSLayoutConstraint.activate([
+            
+            // Activates scrollView constraints
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            // Activates contentView constraints
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            contentView.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor),
+            
+            // Activates headerView constraints
+            headerView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            headerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            headerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: 80.0),
+            
+            // Activates pageSelector constraints
+            pageSelector.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            pageSelector.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+            pageSelector.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            pageSelector.heightAnchor.constraint(equalToConstant: 50.0),
+            
+            // Activates insideView constraints
+            collectionView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            collectionView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+            collectionView.topAnchor.constraint(equalTo: pageSelector.bottomAnchor),
+            //collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+        ])
+        
+        currentIndex = 0
+        let indexPath = IndexPath.init(item: currentIndex, section: 0)
+        collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        setupNavigationBarItems()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if !UserDefaults.standard.isEventOnboarded() {
+        if !UserDefaults.standard.isCommunityOnboarded() {
             
             // Presents bottom sheet
             let controller = BottomSheetView()
@@ -107,89 +165,187 @@ class EventViewController: UIViewController,
             present(controller, animated: true, completion: nil)
             
             // Sets CommunityOnboarded to true
-            UserDefaults.standard.setEventOnboarded(value: true)
+            UserDefaults.standard.setCommunityOnboarded(value: true)
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        viewDidDisappear(animated)
+        navigationItem.titleView?.isHidden = true
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
-    // MARK: Layout
+    // MARK: - Layout
     
     private func setupNavigationBarItems() {
         
-        if let navigationBar = navigationController?.navigationBar {
-            navigationBar.barTintColor = .background
-            navigationBar.isTranslucent = false
-            navigationItem.titleView = titleLabelView
+        navigationController?.view.backgroundColor = .background
+        navigationController?.navigationBar.isTranslucent = false
+        navigationItem.titleView = titleLabelView
+    }
+    
+    // MARK: - UISCrollViewDelegate
+    
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        
+        let index = Int(targetContentOffset.pointee.x / view.frame.width)
+        
+        if index != currentIndex {
+            currentIndex = index
+            
+            let indexPath = IndexPath(item: currentIndex, section: 0)
+            
+            pageSelector.collectionView.selectItem(at: indexPath, animated: true, scrollPosition:.centeredHorizontally)
+            pageSelector.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        }
+    }
+}
+
+// MARK: ScrollViewDidScroll function
+/*
+ override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+ 
+ let offsetY : CGFloat = scrollView.contentOffset.y
+ let titleOriginY : CGFloat = headerView.headerTitle.frame.origin.y
+ let lineMaxY : CGFloat = headerView.bottomLine.frame.maxY
+ let label = navigationItem.titleView as! UILabel
+ 
+ if offsetY >= titleOriginY {
+ if (offsetY - lineMaxY) < 0 {
+ label.alpha = (offsetY - titleOriginY) / (lineMaxY - titleOriginY)
+ } else {
+ label.alpha = 1.0
+ }
+ } else {
+ label.alpha = 0.0
+ }
+ }*/
+
+// MARK: - UICollectionView
+
+extension EventViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return tabList.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        switch indexPath.item {
+        case 1:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: challengeIdentifier, for: indexPath) as! EventChallengeCollectionViewCell
+            return cell
+            
+        case 2:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: locationIdentifier, for: indexPath) as! EventLocationCollectionViewCell
+            cell.delegate = self
+            return cell
+            
+        default:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: scheduleIdentifier, for: indexPath) as! EventScheduleCollectionViewCell
+            return cell
         }
     }
     
-    private func setupLayoutConstraints() {
-        
-        NSLayoutConstraint.activate([
-            
-            // Activates scrollView constraints
-            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            // Activates contentView constraints
-            contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            
-            // Activates headerView constraints
-            headerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0.0),
-            headerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            headerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 58.0),
-            
-            // Activates insideView constraints
-            insideView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            insideView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            insideView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
-            insideView.heightAnchor.constraint(equalTo: view.heightAnchor, constant: -58.0),
-            insideView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            
-            textLabel.centerXAnchor.constraint(equalTo: insideView.centerXAnchor),
-            textLabel.widthAnchor.constraint(equalTo: insideView.widthAnchor),
-            textLabel.centerYAnchor.constraint(equalTo: insideView.centerYAnchor),
-        ])
-        
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.width, height: collectionView.bounds.height)
     }
     
-    // MARK: Custom functions
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets.zero
+    }
     
-    @objc func handlePhrases() {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0.0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0.0
+    }
+    
+}
+
+// MARK: - PageSelectorDelegate
+
+extension EventViewController: PageSelectorDelegate {
+    
+    func pageSelectorDidSelectItemAt(selector: PageSelector, index: Int) {
         
-        currentPhrase += 1
-        if currentPhrase > customPhrases.count - 1 {
-            currentPhrase = 0
+        if index != currentIndex {
+            
+            currentIndex = index
+            
+            let indexPath = IndexPath(item: currentIndex, section: 0)
+            
+            selector.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+            selector.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+            
+            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+            collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         }
-        textLabel.setTitle(customPhrases[currentPhrase], for: .normal)
+        
     }
+}
+
+// MARK: - LocationButtonDelegate
+
+extension EventViewController: DirectionsButtonDelegate {
     
-    // MARK: ScrollViewDidScroll function
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    func didTapForDirections(bool: Bool) {
         
-        let offsetY : CGFloat = scrollView.contentOffset.y
-        let titleOriginY : CGFloat = headerView.headerTitle.frame.origin.y
-        let lineMaxY : CGFloat = headerView.headerBottomBorder.frame.maxY
-        let label = navigationItem.titleView as! UILabel
+        let alert = UIAlertController(title: "Address", message: "Please choose an option below:", preferredStyle: .actionSheet)
         
-        if offsetY >= titleOriginY {
-            if (offsetY - lineMaxY) < 0 {
-                label.alpha = (offsetY - titleOriginY) / (lineMaxY - titleOriginY)
+        // Open Apple Maps
+        alert.addAction(UIAlertAction(title: "Open in Apple Maps", style: .default , handler:{ (UIAlertAction)in
+            
+            if let url = URL(string: "http://maps.apple.com/maps?saddr=&daddr=\(Const.addressLatitude),\(Const.addressLongitude)") {
+                UIApplication.shared.open(url, options: [:])
             } else {
-                label.alpha = 1.0
+                NSLog("Can't use maps://");
             }
-        } else {
-            label.alpha = 0.0
-        }
+            
+        }))
+        
+        // Open Google Maps
+        alert.addAction(UIAlertAction(title: "Open in Google Maps", style: .default , handler:{ (UIAlertAction)in
+            
+            if let url = URL(string: "comgooglemaps://?saddr=&daddr=\(Const.addressLatitude),\(Const.addressLongitude)") {
+                UIApplication.shared.open(url, options: [:])
+                
+            } else {
+                if let url = URL(string: "https://maps.google.com/?q=@\(Const.addressLatitude),\(Const.addressLongitude)"){
+                    UIApplication.shared.open(url, options: [:])
+                    
+                } else {
+                    NSLog("Can't use Google Maps");
+                }
+            }
+        }))
+        
+        // Copy address
+        alert.addAction(UIAlertAction(title: "Copy address", style: .default , handler:{ (UIAlertAction) in
+            
+            let pasteboard = UIPasteboard.general
+            pasteboard.string = Const.addressULisboa
+            
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        present(alert, animated: true, completion: nil)
     }
+    
+    
+    func didCopyPromoCode(with promoCode: String) {
+    
+        let alert = UIAlertController(title: "Let's get you movin' 🚗", message: "You've successfuly copied \(Const.kaptenPromoCode). Open Kapten's app and apply the promocode to enjoy 5€ off your first ride.", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Got it!", style: .default , handler: nil))
+        
+        present(alert, animated: true, completion: nil)
+    }
+
 }

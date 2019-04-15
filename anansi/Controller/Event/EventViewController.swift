@@ -20,17 +20,6 @@ class EventViewController: UIViewController, UINavigationControllerDelegate {
     
     var currentIndex: Int = 0
     
-    let customPhrases = ["Stay tuned.",
-                         "I said: \"Stay tuned.\"",
-                         "Please, stop tapping me.",
-                         "I'm serious.",
-                         "Well, that's all I can say.",
-                         "Actually, I could tell you one thing.",
-                         "Wait for it...",
-                         "Yap, you got it:"]
-    
-    var currentPhrase = 0
-    
     private let titleLabelView: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
@@ -110,7 +99,7 @@ class EventViewController: UIViewController, UINavigationControllerDelegate {
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             // Activates contentView constraints
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
@@ -172,7 +161,6 @@ class EventViewController: UIViewController, UINavigationControllerDelegate {
     
     override func viewWillDisappear(_ animated: Bool) {
         viewDidDisappear(animated)
-        navigationItem.titleView?.isHidden = true
     }
     
     override func didReceiveMemoryWarning() {
@@ -193,8 +181,8 @@ class EventViewController: UIViewController, UINavigationControllerDelegate {
     @objc func navigateToSettingsViewController() {
         
         let controller = SettingsViewController()
-        navigationController?.pushViewController(controller, animated: true)
-        
+        let navController = UINavigationController(rootViewController: controller)
+        self.present(navController, animated: true, completion: nil)
     }
     
 }
@@ -216,7 +204,6 @@ extension EventViewController: UIScrollViewDelegate {
             pageSelector.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         }
     }
-    
 }
 
 // MARK: ScrollViewDidScroll function

@@ -18,15 +18,15 @@ class FeedbackPagesViewController: UIPageViewController {
                          buttonLabelFirst: "Lovin' it!",
                          buttonLabelSecond: "Uh, take me back"),
             FeedbackPage(title: "Glad to hear it!",
-                         description: "Could you rate us? It helps us do more of what you love, and we would really appreciate it.",
-                         buttonLabelFirst: "Rate TEDxISTAlameda",
+                         description: "Could you rate us? It helps us do more of what you love, and we'd really appreciate it.",
+                         buttonLabelFirst: "Rate TEDxULisboa",
                          buttonLabelSecond: "No, thanks"),
             FeedbackPage(title: "We're sorry to hear that!",
                          description: "Could you let us know why you aren't satisfied with the app?",
                          buttonLabelFirst: "Submit feedback",
                          buttonLabelSecond: "No, thanks"),
             FeedbackPage(title: "You got it!",
-                         description: "Thank you for letting us know! Your feedback is important to us, and it will help us improve this app for you. In the meanwhile, continue to spread ideas!",
+                         description: "Thank you for letting us know! Your feedback is important to us, and it'll help us improve this app for you. Meanwhile, please continue spreading ideas!",
                          buttonLabelSecond: "Take me back")
         ]
     }()

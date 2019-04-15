@@ -271,12 +271,12 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         // Activates contraints buttonStackView
         } else {
         
-            var buttonAreaHeight = Const.marginSafeArea * 5
+            var buttonAreaHeight : CGFloat = 96.0
             var distanceFromBottom : CGFloat = 0.0
             
             // Changes buttonAreaHeight and distanceFromBottom because we now have only ONE button
             if pageIdentifier == 3 {
-                buttonAreaHeight = Const.marginSafeArea * 2.5 - 2.0
+                buttonAreaHeight = 48.0
                 distanceFromBottom = Const.marginSafeArea * 1.25
             }
             

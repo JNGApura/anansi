@@ -29,12 +29,11 @@ class Header : UIView {
     
     let profileButton: UIButton = {
         let b = UIButton()
-        b.setImage(UIImage(named: "Profile")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        b.setImage(UIImage(named: "settings")?.withRenderingMode(.alwaysTemplate), for: .normal)
         b.tintColor = .secondary
         b.backgroundColor = .background
         b.layer.cornerRadius = 16.0
         b.layer.masksToBounds = true
-        //b.addTarget(self, action: #selector(navigateToSettingsViewController), for: .touchUpInside)
         b.translatesAutoresizingMaskIntoConstraints = false
         return b
     }()

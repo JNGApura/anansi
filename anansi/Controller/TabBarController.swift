@@ -12,7 +12,7 @@ class TabBarController: UITabBarController {
 
     // Custom initializers
     
-    var tabList = ["Community", "Connect", "Event"]
+    var tabList = ["Community", "Event"]
     
     fileprivate var tabBarViewControllers = [UINavigationController]()
     
@@ -55,26 +55,17 @@ class TabBarController: UITabBarController {
             let itemSelected = UIImage(named: value + "_filled")?.withRenderingMode(.alwaysTemplate)
             
             // Gets view controller from string and adds to the array of viewcontrollers
-            var nc : UINavigationController
+            let vc = NSObject.fromClassName(name: value + "ViewController") as! UIViewController
+            vc.tabBarItem = UITabBarItem(title: value, image: itemNormal, selectedImage: itemSelected)
+            vc.title = value
             
-            if value == "Community" {
-                
-                let vc = CommunityViewController(collectionViewLayout: UICollectionViewFlowLayout())
-                nc = UINavigationController(rootViewController: vc)
-                vc.tabBarItem = UITabBarItem(title: value, image: itemNormal, selectedImage: itemSelected)
-                vc.title = value
-            } else {
-                
-                let vc = NSObject.fromClassName(name: value + "ViewController") as! UIViewController
-                nc = UINavigationController(rootViewController: vc)
-                vc.tabBarItem = UITabBarItem(title: value, image: itemNormal, selectedImage: itemSelected)
-                vc.title = value
-            }
+            let nc = UINavigationController(rootViewController: vc)
+            nc.setNavigationBarHidden(true, animated: false) // this hides the navigation bar!
                         
             // Inserts the view controller inside a UINavigationController stack object, so each item can have their own navigation stack
             tabBarViewControllers.append(nc)
-
         }
+        
         viewControllers = tabBarViewControllers
         
         // Set the color of active tabs

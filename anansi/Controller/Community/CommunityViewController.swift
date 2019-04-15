@@ -8,21 +8,58 @@
 
 import UIKit
 
-class CommunityViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, ShowProfileDelegate, ShowPartnerPageDelegate {
+class CommunityViewController: UIViewController, UINavigationControllerDelegate, ShowProfileDelegate, ShowPartnerPageDelegate {
 
     // Custom initializers
     
-    private let userIdentifier = "UserCollectionViewCell"
-    private let partnerIdentifier = "PartnerCollectionViewCell"
+    private let userIdentifier : String = "UserCell"
+    private let partnerIdentifier : String = "PartnerCell"
     
-    let listTabs = Const.listTabs
+    var currentIndex: Int = 0
     
-    private lazy var topTabBar: TopTabBar = {
-        let tb = TopTabBar()
-        tb.listTabs = listTabs
-        tb.communityController = self
+    let tabList = Const.communityTabs
+    
+    private let titleLabelView: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.textColor = .secondary
+        label.alpha = 0.0
+        label.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
+        label.text = "Community"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    lazy var headerView : Header = {
+        let hv = Header()
+        hv.setTitleName(name: "Community")
+        hv.profileButton.addTarget(self, action: #selector(navigateToSettingsViewController), for: .touchUpInside)
+        hv.backgroundColor = .background
+        hv.translatesAutoresizingMaskIntoConstraints = false
+        return hv
+    }()
+    
+    private lazy var pageSelector: PageSelector = {
+        let tb = PageSelector()
+        tb.tabList = tabList
+        tb.selectorDelegate = self
         tb.translatesAutoresizingMaskIntoConstraints = false
         return tb
+    }()
+    
+    lazy var collectionView : UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.register(UserCommunityCollectionViewCell.self, forCellWithReuseIdentifier: userIdentifier)
+        cv.register(PartnerCommunityCollectionViewController.self, forCellWithReuseIdentifier: partnerIdentifier)
+        cv.isPagingEnabled = true
+        cv.delegate = self
+        cv.dataSource = self
+        cv.backgroundColor = .background
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.showsVerticalScrollIndicator = false
+        return cv
     }()
         
     // MARK: - View lifecycle
@@ -30,30 +67,36 @@ class CommunityViewController: UICollectionViewController, UICollectionViewDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupNavigationBarItems()
+        view.addSubview(headerView)
+        view.addSubview(pageSelector)
+        view.addSubview(collectionView)
         
-        view.addSubview(topTabBar)
+        //view.addSubview(topTabBar)
         NSLayoutConstraint.activate([
-            topTabBar.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            topTabBar.widthAnchor.constraint(equalTo: view.widthAnchor),
-            topTabBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            topTabBar.heightAnchor.constraint(equalToConstant: 50.0),
+            
+            // Activates headerView constraints
+            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            headerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            headerView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: 80.0),
+            
+            // Activates pageSelector constraints
+            pageSelector.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pageSelector.widthAnchor.constraint(equalTo: view.widthAnchor),
+            pageSelector.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            pageSelector.heightAnchor.constraint(equalToConstant: 50.0),
+            
+            // Activates insideView constraints
+            collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            collectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            collectionView.topAnchor.constraint(equalTo: pageSelector.bottomAnchor),
+            //collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
-
-        collectionView!.register(UserCommunityCollectionViewCell.self, forCellWithReuseIdentifier: userIdentifier)
-        collectionView!.register(PartnerCommunityCollectionViewController.self, forCellWithReuseIdentifier: partnerIdentifier)
-        collectionView!.delegate = self
-        collectionView!.dataSource = self
-        collectionView!.backgroundColor = .background
         
-        collectionView!.contentInset = UIEdgeInsets(top: 50.0, left: 0.0, bottom: 0.0, right: 0.0)
-        //collectionView!.scrollIndicatorInsets = UIEdgeInsets(top: 50.0, left: 0.0, bottom: 0.0, right: 0.0)
-        
-        if let flowLayout = collectionView!.collectionViewLayout as? UICollectionViewFlowLayout {
-            flowLayout.scrollDirection = .horizontal
-            collectionView!.isPagingEnabled = true
-            collectionView!.showsHorizontalScrollIndicator = false
-        }
+        currentIndex = 0
+        let indexPath = IndexPath.init(item: currentIndex, section: 0)
+        collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -83,7 +126,6 @@ class CommunityViewController: UICollectionViewController, UICollectionViewDeleg
     
     override func viewWillDisappear(_ animated: Bool) {
         viewDidDisappear(animated)
-        navigationItem.titleView?.isHidden = true
     }
     
     override func didReceiveMemoryWarning() {
@@ -96,23 +138,17 @@ class CommunityViewController: UICollectionViewController, UICollectionViewDeleg
         
         navigationController?.view.backgroundColor = .background
         navigationController?.navigationBar.isTranslucent = false
-        navigationController?.hidesBarsOnSwipe = true
-        
-        navigationItem.title = ""
-        
-        // Sets rightButtonItem - change to "magnifying glass"
-        let settingsButton: UIButton = {
-            let button = UIButton(type: .system)
-            button.setImage(#imageLiteral(resourceName: "search").withRenderingMode(.alwaysTemplate), for: .normal)
-            button.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
-            button.tintColor = .secondary
-            button.addTarget(self, action: #selector(showSearchViewController), for: .touchUpInside)
-            return button
-        }()
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsButton)
+        navigationItem.titleView = titleLabelView
     }
-
+    
     // MARK: - Custom functions
+    
+    @objc func navigateToSettingsViewController() {
+        
+        let controller = SettingsViewController()
+        let navController = UINavigationController(rootViewController: controller)
+        self.present(navController, animated: true, completion: nil)
+    }
     
     @objc func showSearchViewController() {
         
@@ -142,34 +178,17 @@ class CommunityViewController: UICollectionViewController, UICollectionViewDeleg
         
         navigationController?.pushViewController(partnerPageController, animated: true)
     }
+}
+
+// MARK: - UICollectionView
     
-    // MARK: - UIScrollViewDelegate
+extension CommunityViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
-        topTabBar.horizontalBarLeftAnchor?.constant = scrollView.contentOffset.x / CGFloat(listTabs.count)
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return tabList.count
     }
     
-    override func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        
-        let index = targetContentOffset.pointee.x / view.frame.width
-        let indexPath = IndexPath(item: Int(index), section: 0)
-        topTabBar.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
-    }
-    
-    func scrollToTabIndex(tabIndex: Int) {
-        
-        let indexPath = IndexPath(item: tabIndex, section: 0)
-        collectionView!.scrollToItem(at: indexPath, at: [], animated: true)
-    }
-    
-    // MARK: - UICollectionViewDataSource
-    
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return listTabs.count
-    }
-    
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         if indexPath.item == 0 {
             
@@ -185,7 +204,7 @@ class CommunityViewController: UICollectionViewController, UICollectionViewDeleg
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width, height: collectionView.bounds.height - 50)
+        return CGSize(width: view.frame.width, height: collectionView.bounds.height)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -199,5 +218,45 @@ class CommunityViewController: UICollectionViewController, UICollectionViewDeleg
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0.0
     }
+}
 
+// MARK: - UISCrollViewDelegate
+
+extension CommunityViewController: UIScrollViewDelegate {
+    
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        
+        let index = Int(targetContentOffset.pointee.x / view.frame.width)
+        
+        if index != currentIndex {
+            currentIndex = index
+            
+            let indexPath = IndexPath(item: currentIndex, section: 0)
+            
+            pageSelector.collectionView.selectItem(at: indexPath, animated: true, scrollPosition:.centeredHorizontally)
+            pageSelector.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        }
+    }
+}
+
+// MARK: - PageSelectorDelegate
+
+extension CommunityViewController: PageSelectorDelegate {
+    
+    func pageSelectorDidSelectItemAt(selector: PageSelector, index: Int) {
+        
+        if index != currentIndex {
+            
+            currentIndex = index
+            
+            let indexPath = IndexPath(item: currentIndex, section: 0)
+            
+            selector.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+            selector.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+            
+            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+            collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        }
+        
+    }
 }

@@ -53,7 +53,7 @@ struct Const {
     static let timeDateHeightChatCells : CGFloat = 28.0
     
     // List of tabs in Community
-    static let listTabs = ["Attendees", "Partners"]
+    static let communityTabs = ["Attendees", "Partners"]
     
     // List of tabs in Event
     static let eventTabs = ["Schedule", "xChallenge", "Location"]

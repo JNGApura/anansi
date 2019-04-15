@@ -1,15 +1,15 @@
 //
-//  ScheduleTableViewCell.swift
+//  ScheduleInfoTableViewCell.swift
 //  anansi
 //
-//  Created by João Nuno Gaspar Apura on 14/04/2019.
+//  Created by João Nuno Gaspar Apura on 15/04/2019.
 //  Copyright © 2019 João Apura. All rights reserved.
 //
 
 import UIKit
 
-class ScheduleTableViewCell: UITableViewCell {
-    
+class ScheduleInfoTableViewCell: UITableViewCell {
+
     let card : UIView = {
         let v = UIView()
         v.backgroundColor = .tertiary
@@ -55,21 +55,12 @@ class ScheduleTableViewCell: UITableViewCell {
         return l
     }()
     
-    let speakerPic : UIImageView = {
-        let i = UIImageView()
-        i.contentMode = .scaleAspectFill
-        i.isHidden = true
-        i.backgroundColor = .clear
-        i.translatesAutoresizingMaskIntoConstraints = false
-        return i
-    }()
-    
     // MARK: - Init
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         
-        [card, cardTitle, cardDescription, cardLocation, speakerPic].forEach { addSubview($0) }
+        [card, cardTitle, cardDescription, cardLocation].forEach { addSubview($0) }
         
         NSLayoutConstraint.activate([
             
@@ -80,22 +71,17 @@ class ScheduleTableViewCell: UITableViewCell {
             
             cardTitle.topAnchor.constraint(equalTo: card.topAnchor, constant: Const.marginEight * 2.0),
             cardTitle.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: Const.marginEight * 2.0),
-            cardTitle.trailingAnchor.constraint(equalTo: speakerPic.leadingAnchor, constant: -Const.marginEight * 2.0),
+            cardTitle.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
             
             cardDescription.topAnchor.constraint(equalTo: cardTitle.bottomAnchor, constant: Const.marginEight),
             cardDescription.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: Const.marginEight * 2.0),
-            cardDescription.trailingAnchor.constraint(equalTo: speakerPic.leadingAnchor, constant: -Const.marginEight * 2.0),
+            cardDescription.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
             
             cardLocation.topAnchor.constraint(equalTo: cardDescription.bottomAnchor, constant: Const.marginEight * 2.0),
             cardLocation.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: Const.marginEight * 2.0),
             cardLocation.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -Const.marginEight * 2.0),
             cardLocation.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -Const.marginEight * 2.0),
-            
-            speakerPic.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: 0.0),
-            speakerPic.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: 0.0),
-            speakerPic.heightAnchor.constraint(equalToConstant: 128.0),
-            speakerPic.widthAnchor.constraint(equalToConstant: 128.0),
-            speakerPic.widthAnchor.constraint(lessThanOrEqualTo: card.heightAnchor, constant: 1.0)
+
         ])
     }
     
@@ -111,11 +97,7 @@ class ScheduleTableViewCell: UITableViewCell {
         
         cardLocation.text = "Location"
         
-        speakerPic.isHidden = true
-        
         card.backgroundColor = .tertiary
     }
     
-        // MARK: Custom functions
-
 }

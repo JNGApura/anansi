@@ -8,7 +8,7 @@
 
 import UIKit
 
-class EventViewController: UIViewController, UIScrollViewDelegate, UINavigationControllerDelegate {
+class EventViewController: UIViewController, UINavigationControllerDelegate {
     
     // Custom initializers
     
@@ -61,6 +61,7 @@ class EventViewController: UIViewController, UIScrollViewDelegate, UINavigationC
     lazy var headerView : Header = {
         let hv = Header()
         hv.setTitleName(name: "Event")
+        hv.profileButton.addTarget(self, action: #selector(navigateToSettingsViewController), for: .touchUpInside)
         hv.backgroundColor = .background
         hv.translatesAutoresizingMaskIntoConstraints = false
         return hv
@@ -187,7 +188,20 @@ class EventViewController: UIViewController, UIScrollViewDelegate, UINavigationC
         navigationItem.titleView = titleLabelView
     }
     
-    // MARK: - UISCrollViewDelegate
+    // MARK: - Custom functions
+    
+    @objc func navigateToSettingsViewController() {
+        
+        let controller = SettingsViewController()
+        navigationController?.pushViewController(controller, animated: true)
+        
+    }
+    
+}
+
+// MARK: - UISCrollViewDelegate
+
+extension EventViewController: UIScrollViewDelegate {
     
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         
@@ -202,6 +216,7 @@ class EventViewController: UIViewController, UIScrollViewDelegate, UINavigationC
             pageSelector.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         }
     }
+    
 }
 
 // MARK: ScrollViewDidScroll function

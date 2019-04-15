@@ -121,9 +121,18 @@ class LandingController: UIViewController {
     // Sends user to SignUpController with custom transition
     @objc func toSignUp() {
         
+        let controller = EventViewController()
+        controller.modalPresentationStyle = .overFullScreen
+        controller.modalTransitionStyle = .crossDissolve
+        
+        let navController = UINavigationController(rootViewController: controller)
+        navController.setNavigationBarHidden(false, animated: false)
+        self.present(navController, animated: true, completion: nil)
+        
+        /*
         let controller = SignUpController()
         controller.modalPresentationStyle = .overFullScreen
         controller.modalTransitionStyle = .crossDissolve
-        present(controller, animated: true, completion: nil)
+        present(controller, animated: true, completion: nil)*/
     }
 }

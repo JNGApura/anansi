@@ -14,7 +14,7 @@ class EventScheduleCollectionViewCell: UICollectionViewCell {
     
     let sectionTitle : [String] = ["09:00 Check-in", "10:00 Session 1: South", "12:00 Lunch break", "13:30 Session 2: East", "15:00 Coffee-break", "16:30 Session 3: West", "18:00 Closing remarks"]
     
-    let data : [Int : [[String]]] = [0 : [["info", "Check-in", "Acreditation and reception", "Edifício da Reitoria", ""],
+    let data : [Int : [[String]]] = [0 : [["info", "Check-in", "Get your badge and goodie bag.", "Edifício da Reitoria", ""],
                                           ["info", "xChallenge kick-off!", "Can you find your north?", "Edifício da Reitoria", ""],
                                           ["info", "(nome artista)", "Live performance", "Salão Nobre", ""]],
                                      1 : [["talk", "Bia Berry", "TBD (PT)", "Aula Magna", "speaker-bia"],
@@ -36,11 +36,13 @@ class EventScheduleCollectionViewCell: UICollectionViewCell {
                                           ["talk", "Catarina Holstein,", "Master in Life Adventures – using the World as a Classroom", "Aula Magna", "speaker-catarina"]],
                                      6 : [["info", "Closing remarks", "Farewell and xChallenge winners", "Aula Magna", ""]]]
     
-    let identifier = "ScheduleTableCell"
+    let info = "ScheduleInfoTableCell"
+    let talk = "ScheduleTalkTableCell"
     
     lazy var tableView: UITableView = {
         let tv = UITableView()
-        tv.register(ScheduleTableViewCell.self, forCellReuseIdentifier: identifier)
+        tv.register(ScheduleInfoTableViewCell.self, forCellReuseIdentifier: info)
+        tv.register(ScheduleTalkTableViewCell.self, forCellReuseIdentifier: talk)
         tv.delegate = self
         tv.dataSource = self
         tv.backgroundColor = .background
@@ -128,30 +130,36 @@ extension EventScheduleCollectionViewCell: UITableViewDelegate, UITableViewDataS
         let section = indexPath.section
         let row = indexPath.row
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! ScheduleTableViewCell
-        
         // [1] - title [2] - description [3] - location [4] - picture
         
-        cell.cardTitle.text = data[section]![row][1]
-        
-        cell.cardDescription.text = data[section]![row][2]
-        
-        cell.cardLocation.text = data[section]![row][3]
-        
-        let imagePath = data[section]![row][4]
-        if imagePath != "" {
-            cell.speakerPic.image = UIImage(named: imagePath)?.withRenderingMode(.alwaysOriginal)
-            cell.speakerPic.isHidden = false
-        }
-        
-        if data[section]![row][0] == "talk" {
+        if data[section]![row][0] == "info" {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: info, for: indexPath) as! ScheduleInfoTableViewCell
+            
+            cell.cardTitle.text = data[section]![row][1]
+            cell.cardDescription.text = data[section]![row][2]
+            cell.cardLocation.text = data[section]![row][3]
+            cell.card.backgroundColor = UIColor.tertiary.withAlphaComponent(0.5)
+            
+            return cell
+            
+        } else {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: talk, for: indexPath) as! ScheduleTalkTableViewCell
+            
+            cell.cardTitle.text = data[section]![row][1]
+            cell.cardDescription.text = data[section]![row][2]
+            cell.cardLocation.text = data[section]![row][3]
             cell.card.backgroundColor = UIColor.primary.withAlphaComponent(0.1)
             
-        } else if data[section]![row][0] == "info" {
-            cell.card.backgroundColor = UIColor.tertiary.withAlphaComponent(0.5)
+            let imagePath = data[section]![row][4]
+            if imagePath != "" {
+                cell.speakerPic.image = UIImage(named: imagePath)?.withRenderingMode(.alwaysOriginal)
+                cell.speakerPic.isHidden = false
+            }
+            
+            return cell
         }
-        
-        return cell
     }
     
 }

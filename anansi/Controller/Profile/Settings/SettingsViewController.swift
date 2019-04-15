@@ -25,6 +25,16 @@ class SettingsViewController: UIViewController {
         return l
     }()
     
+    lazy var dismissButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setTitle("Dismiss", for: .normal)
+        b.setTitleColor(.primary, for: .normal)
+        b.titleLabel?.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
+        b.backgroundColor = .background
+        b.addTarget(self, action: #selector(dismissAction), for: .touchUpInside)
+        return b
+    }()
+    
     lazy var tableView : UITableView = {
         let t = UITableView()
         t.register(SettingsTableViewCell.self, forCellReuseIdentifier: identifier)
@@ -79,6 +89,8 @@ class SettingsViewController: UIViewController {
             navigationBar.isTranslucent = false
             
             navigationItem.titleView = titleLabel
+            
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dismissButton)
         }
     }
     
@@ -106,8 +118,14 @@ class SettingsViewController: UIViewController {
         self.navigationController?.pushViewController(controller, animated: true)
     }
     
+    @objc func dismissAction() {
+        
+        self.navigationController?.popViewController(animated: true)
+        self.dismiss(animated: true, completion: nil)
+    }
     
-    // Handles logout
+    // MARK: - Logout
+    
     private func handleLogout() {
         
         // When network is unreachable

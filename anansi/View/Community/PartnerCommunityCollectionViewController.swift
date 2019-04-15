@@ -148,5 +148,17 @@ class PartnerCommunityCollectionViewController: UICollectionViewCell, UITableVie
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
+        
+        let cell  = tableView.cellForRow(at: indexPath)
+        cell!.contentView.backgroundColor = .tertiary
+    }
+    
+    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+        
+        let cell  = tableView.cellForRow(at: indexPath)
+        cell!.contentView.backgroundColor = .clear
+    }
 
 }

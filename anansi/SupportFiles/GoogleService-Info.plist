@@ -2,14 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
-	<string>ca-app-pub-3940256099942544/2934735716</string>
-	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
-	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
 	<string>579124924581-093rkfc7pe20dmqd91kojbsqfaghmmne.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
 	<string>com.googleusercontent.apps.579124924581-093rkfc7pe20dmqd91kojbsqfaghmmne</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>579124924581-bduv4hdsqa0m5hqkkd3t13mmc26kpp5n.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyBu0tPesIwA54GNgeXFK4jNVhZIksGLOtY</string>
 	<key>GCM_SENDER_ID</key>
@@ -23,11 +21,11 @@
 	<key>STORAGE_BUCKET</key>
 	<string>anansi-ios.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<true></true>
+	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
 	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<false></false>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
 	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>

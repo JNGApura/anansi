@@ -30,23 +30,18 @@ struct Settings {
 
 // TableRow initialization
 struct SettingsRow {
-    var ofType: RowType
-    var value: String?
-    var iconUrl: String?
+    
     var action: String?
+    var icon: String?
+    var title: String?
     var url: String?
     
     init(json: [String: Any]) {
-        self.ofType = (json["ofType"] as? String == "normal") ? .normal : .section
-        self.value = json["value"] as? String
-        self.iconUrl = json["iconUrl"] as? String
         self.action = json["action"] as? String
+        self.icon = json["icon"] as? String
+        self.title = json["title"] as? String
         if let url = json["url"] as? String { // to be safe
             self.url = url
         }
     }
-}
-enum RowType {
-    case normal
-    case section
 }

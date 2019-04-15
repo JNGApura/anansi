@@ -25,82 +25,42 @@
     } ]
   } ],
   "structure" : [ {
-    "iconUrl" : "",
-    "ofType" : "section",
-    "value" : "Notifications"
-  }, {
-    "action" : "toggle",
-    "iconUrl" : "",
-    "ofType" : "normal",
-    "value" : "Allow notifications"
-  }, {
-    "iconUrl" : "",
-    "ofType" : "section",
-    "value" : "Follow us on social media"
+    "action" : "view",
+    "icon" : "basicInfo",
+    "title" : "Edit your basic information",
+    "url" : "feedback"
   }, {
     "action" : "link",
-    "iconUrl" : "facebook",
-    "ofType" : "normal",
-    "url" : "https://www.facebook.com/tedxistalameda",
-    "value" : "Facebook"
-  }, {
-    "action" : "link",
-    "iconUrl" : "instagram",
-    "ofType" : "normal",
-    "url" : "https://www.instagram.com/tedxistalameda",
-    "value" : "Instagram"
-  }, {
-    "action" : "link",
-    "iconUrl" : "twitter",
-    "ofType" : "normal",
-    "url" : "https://twitter.com/tedxistalameda",
-    "value" : "Twitter"
-  }, {
-    "action" : "link",
-    "iconUrl" : "linkedin",
-    "ofType" : "normal",
-    "url" : "https://www.linkedin.com/company/10585070/",
-    "value" : "LinkedIn"
-  }, {
-    "iconUrl" : "",
-    "ofType" : "section",
-    "value" : "About"
+    "icon" : "instagram",
+    "title" : "Follow us on Instagram",
+    "url" : "https://www.instagram.com/tedxulisboa"
   }, {
     "action" : "view",
-    "iconUrl" : "",
-    "ofType" : "normal",
-    "url" : "feedback",
-    "value" : "Give us feedback"
+    "icon" : "feedback",
+    "title" : "Give us feedback",
+    "url" : "feedback"
   }, {
     "action" : "view",
-    "iconUrl" : "",
-    "ofType" : "normal",
-    "url" : "event",
-    "value" : "TEDxISTAlameda"
+    "icon" : "terms",
+    "title" : "Terms & Conditions",
+    "url" : "terms"
   }, {
     "action" : "view",
-    "iconUrl" : "",
-    "ofType" : "normal",
-    "url" : "privacy",
-    "value" : "Privacy Policy"
+    "icon" : "terms",
+    "title" : "Privacy Policy",
+    "url" : "privacy"
   }, {
     "action" : "view",
-    "iconUrl" : "",
-    "ofType" : "normal",
-    "url" : "terms",
-    "value" : "Terms & Conditions"
+    "icon" : "about",
+    "title" : "TEDxULisboa",
+    "url" : "event"
   }, {
-    "iconUrl" : "",
-    "ofType" : "section",
-    "value" : ""
+      "action" : "",
+      "icon" : "",
+      "title" : "Version"
   }, {
-    "action" : "popup",
-    "iconUrl" : "",
-    "ofType" : "normal",
-    "value" : "Log out"
-  }, {
-    "iconUrl" : "",
-    "ofType" : "section",
-    "value" : ""
+    "action" : "logout",
+    "icon" : "logout",
+    "title" : "Log out"
   } ]
 }

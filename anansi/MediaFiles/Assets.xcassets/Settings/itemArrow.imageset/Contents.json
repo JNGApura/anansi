@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : " Twitter.pdf",
+      "filename" : "itemArrow.pdf",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : " Twitter@2x.pdf",
+      "filename" : "itemArrow@2x.pdf",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : " Twitter@3x.pdf",
+      "filename" : "itemArrow@3x.pdf",
       "scale" : "3x"
     }
   ],

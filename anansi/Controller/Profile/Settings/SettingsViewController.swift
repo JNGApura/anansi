@@ -8,30 +8,55 @@
 
 import UIKit
 import ReachabilitySwift
-//import SafariServices
+import SafariServices
 
-class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class SettingsViewController: UIViewController {
     
     // Custom initializers
-    private var tableView = UITableView()
+    private let identifier = "SettingsCell"
+    
     private var items = [SettingsRow]()
+    
+    let titleLabel : UILabel = {
+        let l = UILabel()
+        l.text = "Settings"
+        l.textColor = .secondary
+        l.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
+        return l
+    }()
+    
+    lazy var tableView : UITableView = {
+        let t = UITableView()
+        t.register(SettingsTableViewCell.self, forCellReuseIdentifier: identifier)
+        t.delegate = self
+        t.dataSource = self
+        t.alwaysBounceVertical = true
+        t.separatorColor = .clear
+        t.backgroundColor = .background
+        t.translatesAutoresizingMaskIntoConstraints = false
+        t.estimatedRowHeight = 72.0
+        t.rowHeight = UITableViewAutomaticDimension
+        t.showsVerticalScrollIndicator = false
+        return t
+    }()
+
     
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Sets up navigation bar
         setupNavigationBarItems(title: "Settings")
         
-        // Initialize tableView
-        setupTableView()
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        
-        // Adds table to view
         view.addSubview(tableView)
+        
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        
         
         // Fetches data from settings.JSON
         if let data = dataFromFile("settings") {
@@ -53,173 +78,45 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             navigationBar.barTintColor = .background
             navigationBar.isTranslucent = false
             
-            let titleLabelView = UILabel()
-            titleLabelView.text = "Settings"
-            titleLabelView.textColor = .secondary
-            titleLabelView.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-            navigationItem.titleView = titleLabelView
-            
-            // Set custom font for right button label
-            navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedStringKey.font : UIFont.systemFont(ofSize: Const.bodyFontSize)], for: .normal)
+            navigationItem.titleView = titleLabel
         }
-    }
-    
-    private func setupTableView() {
-        
-        // Constants
-        let screenWidth = self.view.frame.width
-        let screenHeight = self.view.frame.height
-        let statusBarHeight = UIApplication.shared.statusBarFrame.size.height
-        let navigationBarHeight = (self.navigationController?.navigationBar.frame.size.height)!
-        
-        tableView.separatorColor = .tertiary
-        tableView.backgroundColor = .tertiary
-        tableView.frame = CGRect(x: 0 ,y: 0 , width: screenWidth, height: screenHeight - statusBarHeight - navigationBarHeight);
-    }
-    
-    // MARK: TableViewDataSource
-    
-    // Table only has one section
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    // Sets number of rows in section
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
-    }
-    
-    // Set row height - all rows have 44.0, expect the last one
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return indexPath.row == (items.count - 1) ? Const.settingsRowHeight*1.5 : Const.settingsRowHeight
-    }
-    
-    // Customizes cell at specific index
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let item = items[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath as IndexPath)
-        
-        switch item.ofType {
-        case .section:
-            cell.textLabel?.text = item.value
-            cell.textLabel?.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
-            cell.backgroundColor = .tertiary
-            cell.accessoryView = .none
-            cell.selectionStyle = .none
-            cell.isMultipleTouchEnabled = false
-            cell.isUserInteractionEnabled = false
-            
-        case .normal:
-            cell.textLabel?.text = item.value
-            cell.backgroundColor = .background
-            
-            if !item.iconUrl!.isEmpty {
-                if let image = UIImage(named: item.iconUrl!) {
-                    cell.imageView!.image = image
-                }
-            } else {
-                cell.imageView!.image = nil
-            }
-            
-            switch item.action {
-            case "toggle"?:
-                let switchView = UISwitch(frame: .zero)
-                switchView.setOn(false, animated: true)
-                switchView.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
-                cell.accessoryView = switchView
-                cell.selectionStyle = .none
-                cell.isMultipleTouchEnabled = false
-                cell.textLabel?.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
-                //cell.isUserInteractionEnabled = false
-                
-            case "popup"?:
-                cell.accessoryView = .none
-                cell.textLabel?.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
-                cell.textLabel?.textColor = .primary
-
-            default:
-                cell.accessoryView = .none
-                cell.textLabel?.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
-            }
-        }
-        
-        if indexPath.row == (items.count - 1) {
-            cell.textLabel?.font = UIFont.systemFont(ofSize: Const.captionFontSize)
-            cell.textLabel?.text = "Made with ❤️ in Lisbon\n\(Bundle.main.releaseVersionBuildPretty)"
-            cell.textLabel?.formatTextWithLineSpacing(lineSpacing: 8.0, alignment: .center)
-            cell.textLabel?.numberOfLines = 0;
-            cell.textLabel?.lineBreakMode = .byWordWrapping;
-        }
-        return cell
-    }
-    
-    // Sets action for row at specific index
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        let item = items[indexPath.row]
-        
-        // Action is "link", then the URL should be opened
-        if item.action == "link" {
-            openURLfromString(string: item.url!)
-        
-        // Action is "view", then view controller should be pushed
-        } else if item.action == "view" {
-            let url = item.url
-            presentController(identifier: url!)
-        } else if item.action == "popup" {
-            handleLogout()
-        }
-        
-        tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
-    // MARK: User Interaction
-    
-    // Switch action
-    @objc func switchChanged(_ sender : UISwitch!){
-        print("The switch is \(sender.isOn ? "ON" : "OFF")")
-        // TO DO: add notification enable/disable mode
     }
     
     // MARK: Custom functions
     
-    // Open URL from a String
-    private func openURLfromString(string : String) {
+    private func openURLfromStringInWebViewer(string : String) {
         
         let url = URL(string: string)!
-        if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        } else {
-            UIApplication.shared.openURL(url)
-        }
         
         // Open link inside the app, instead of leaving the app. Needs import SafariServices
-        /*let vc = SFSafariViewController(url: url)
-         present(vc, animated: true, completion: nil)*/
+        let vc = SFSafariViewController(url: url)
+        present(vc, animated: true, completion: nil)
     }
     
-    // Presents view controller from string (did a few tweaks here and there)
     private func presentController(identifier: String){
         let controller : UIViewController
         
         if identifier == "feedback" {
             controller = FeedbackPagesViewController() // PageViewController for "Give us feedback"
+            
         } else {
             controller = AboutPageView(id: identifier) // About Pages
         }
+        
         self.navigationController?.pushViewController(controller, animated: true)
     }
+    
     
     // Handles logout
     private func handleLogout() {
         
-        // Presents an alert to the user informing the network is unreachable
+        // When network is unreachable
         if !ReachabilityManager.shared.reachability.isReachable {
             
             let alertController = UIAlertController(title: "No internet connection", message: "It seems you are not connected to the internet. Please enable Wifi or Cellular data, and try again.", preferredStyle: .alert)
-            let ok = UIAlertAction(title: "Got it!", style: .default, handler: nil)
-            alertController.addAction(ok)
+            
+            alertController.addAction(UIAlertAction(title: "Got it!", style: .default, handler: nil))
+            
             present(alertController, animated: true, completion: nil)
             
             return
@@ -240,5 +137,90 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.present(loginController, animated: false, completion: nil)
             }
         }
+    }
+}
+
+// MARK: TableViewDataSource
+
+extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return items.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let item = items[indexPath.row]
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath as IndexPath) as! SettingsTableViewCell
+        cell.selectionStyle = .none
+        
+        // Title
+        cell.itemTitle.text = item.title
+        
+        // Icon
+        if !(item.icon!.isEmpty) {
+            if let image = UIImage(named: item.icon!) {
+                cell.itemIcon.image = image
+            }
+        } else {
+            cell.itemIcon.image = nil
+        }
+        
+        // Made with love
+        if indexPath.row == (items.count - 2) {
+            cell.itemTitle.font = UIFont.systemFont(ofSize: Const.captionFontSize)
+            cell.itemTitle.text = "Made with ❤️ in Lisbon\n\(Bundle.main.releaseVersionBuildPretty)"
+            cell.itemTitle.textAlignment = .center
+            
+            cell.itemIcon.isHidden = true
+            cell.itemArrow.isHidden = true
+        }
+        
+        // Logout
+        if item.action == "logout" {
+            cell.itemTitle.textColor = .primary
+            cell.itemIcon.tintColor = .primary
+            cell.itemSubtitle.text = "Signed in as X"
+            cell.itemSubtitle.isHidden = false
+            cell.itemArrow.isHidden = true
+        }
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let item = items[indexPath.row]
+        
+        if item.action == "link" {
+            openURLfromStringInWebViewer(string: item.url!)
+        
+        } else if item.action == "view" {
+            let url = item.url
+            presentController(identifier: url!)
+            
+        } else if item.action == "logout" {
+            handleLogout()
+        }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
+        
+        let cell  = tableView.cellForRow(at: indexPath)
+        cell!.contentView.backgroundColor = .tertiary
+    }
+    
+    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+        
+        let cell  = tableView.cellForRow(at: indexPath)
+        cell!.contentView.backgroundColor = .clear
     }
 }

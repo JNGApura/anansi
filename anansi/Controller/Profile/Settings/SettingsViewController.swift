@@ -46,7 +46,7 @@ class SettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupNavigationBarItems(title: "Settings")
+        setupNavigationBarItems()
         
         view.addSubview(tableView)
         
@@ -72,7 +72,7 @@ class SettingsViewController: UIViewController {
     
     // MARK: Layout
     
-    private func setupNavigationBarItems(title: String) {
+    private func setupNavigationBarItems() {
         
         if let navigationBar = navigationController?.navigationBar {
             navigationBar.barTintColor = .background
@@ -175,7 +175,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
         if indexPath.row == (items.count - 2) {
             cell.itemTitle.font = UIFont.systemFont(ofSize: Const.captionFontSize)
             cell.itemTitle.text = "Made with ❤️ in Lisbon\n\(Bundle.main.releaseVersionBuildPretty)"
-            cell.itemTitle.textAlignment = .center
+            //cell.itemTitle.textAlignment = .center
             
             cell.itemIcon.isHidden = true
             cell.itemArrow.isHidden = true
@@ -206,6 +206,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
             
         } else if item.action == "logout" {
             handleLogout()
+            
         }
         
         tableView.deselectRow(at: indexPath, animated: true)
@@ -215,7 +216,10 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
         
         let cell  = tableView.cellForRow(at: indexPath)
-        cell!.contentView.backgroundColor = .tertiary
+        
+        if indexPath.row != (items.count - 2) {
+            cell!.contentView.backgroundColor = .tertiary
+        }
     }
     
     func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {

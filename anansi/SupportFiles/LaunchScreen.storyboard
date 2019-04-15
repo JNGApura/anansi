@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina4_7" orientation="portrait">
+    <device id="retina6_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -15,19 +15,26 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TEDxULisboa" translatesAutoresizingMaskIntoConstraints="NO" id="V55-fa-P4t">
-                                <rect key="frame" x="97.5" y="140" width="180" height="180"/>
+                                <rect key="frame" x="117" y="92" width="180" height="180"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="180" id="Nn5-GJ-a95"/>
-                                    <constraint firstAttribute="height" constant="180" id="zWg-4d-frR"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="122" id="HAd-sy-kKW"/>
+                                    <constraint firstAttribute="height" constant="180" id="rG3-w6-vXm"/>
                                 </constraints>
                                 <viewLayoutGuide key="safeArea" id="Gpv-LC-QNu"/>
                             </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Compass-Full" highlightedImage="Compass-Full" translatesAutoresizingMaskIntoConstraints="NO" id="s8d-AI-KUB">
+                                <rect key="frame" x="107" y="565" width="200" height="197"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="200" id="Mpu-04-Adj"/>
+                                    <constraint firstAttribute="height" constant="196.99999999999989" id="yTK-ND-3xy"/>
+                                </constraints>
+                            </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Compass" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j1Z-tX-Fp6">
-                                <rect key="frame" x="145.5" y="587" width="84.5" height="28"/>
+                                <rect key="frame" x="164.66666666666663" y="802" width="85" height="28"/>
                                 <fontDescription key="fontDescription" name="Avenir-Heavy" family="Avenir" pointSize="20"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -35,10 +42,12 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="V55-fa-P4t" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="X4K-PW-opT"/>
-                            <constraint firstItem="j1Z-tX-Fp6" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="lxa-17-RVr"/>
-                            <constraint firstItem="V55-fa-P4t" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="120" id="nnI-e9-ULK"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="j1Z-tX-Fp6" secondAttribute="bottom" constant="52" id="wd9-t7-yIB"/>
+                            <constraint firstItem="j1Z-tX-Fp6" firstAttribute="top" secondItem="s8d-AI-KUB" secondAttribute="bottom" constant="40" id="HKN-g2-VUt"/>
+                            <constraint firstItem="j1Z-tX-Fp6" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="J9m-pl-mjK"/>
+                            <constraint firstItem="V55-fa-P4t" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" constant="92" id="Kja-ZW-9KQ"/>
+                            <constraint firstItem="V55-fa-P4t" firstAttribute="centerX" secondItem="s8d-AI-KUB" secondAttribute="centerX" id="Tzf-OW-DIg"/>
+                            <constraint firstAttribute="bottomMargin" secondItem="j1Z-tX-Fp6" secondAttribute="bottom" constant="32" id="hRg-RM-sCo"/>
+                            <constraint firstItem="s8d-AI-KUB" firstAttribute="centerX" secondItem="j1Z-tX-Fp6" secondAttribute="centerX" id="oDi-Tk-gha"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -49,6 +58,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="Compass-Full" width="600" height="591"/>
         <image name="TEDxULisboa" width="180" height="121"/>
     </resources>
 </document>

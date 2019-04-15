@@ -31,6 +31,14 @@ class FeedbackPagesViewController: UIPageViewController {
         ]
     }()
     
+    let titleLabel : UILabel = {
+        let l = UILabel()
+        l.text = "Feedback"
+        l.textColor = .secondary
+        l.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
+        return l
+    }()
+    
     // Initialization (to programatically change transition style to .scroll)
     
     override init(transitionStyle style: UIPageViewControllerTransitionStyle, navigationOrientation: UIPageViewControllerNavigationOrientation, options: [String : Any]? = nil) {
@@ -74,6 +82,8 @@ class FeedbackPagesViewController: UIPageViewController {
         let navigationBar = navigationController?.navigationBar
         navigationBar!.barTintColor = .background
         navigationBar!.isTranslucent = false
+        
+        navigationItem.titleView = titleLabel
         
         // Adds custom leftBarButton
         let backButton = UIBarButtonItem(image: UIImage(named:"back")?.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action:#selector(backAction(_:)))

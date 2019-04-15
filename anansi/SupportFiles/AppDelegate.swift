@@ -8,7 +8,7 @@
 
 import UIKit
 import Firebase
-import FirebaseDatabase
+//import FirebaseDatabase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -41,15 +41,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController = TabBarController()
         }*/
         
-        let controller = EventViewController() //collectionViewLayout: UICollectionViewFlowLayout()
-        controller.modalPresentationStyle = .overFullScreen
-        controller.modalTransitionStyle = .crossDissolve
+        //let controller = CommunityViewController()
+        //controller.modalPresentationStyle = .overFullScreen
+        //controller.modalTransitionStyle = .crossDissolve
         
-        let navController = UINavigationController(rootViewController: controller)
-        navController.setNavigationBarHidden(true, animated: false)
+        //let navController = UINavigationController(rootViewController: controller)
+        //navController.setNavigationBarHidden(true, animated: false)
         //self.present(navController, animated: true, completion: nil)
         
-        window?.rootViewController = navController
+        window?.rootViewController = TabBarController()
         window?.makeKeyAndVisible()
         
         // Add red (TED's) color as main color

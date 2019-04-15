@@ -15,7 +15,6 @@
 		2C18A776200F3F4900C03B20 /* intro-video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 2C18A775200F3F4300C03B20 /* intro-video.mp4 */; };
 		2C18A77C200F469700C03B20 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C18A77B200F469700C03B20 /* OnboardingViewController.swift */; };
 		2C18A7812011A36700C03B20 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C18A7802011A36700C03B20 /* Reachability.swift */; };
-		2C198AAB2040111000CFC705 /* TopTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C198AAA2040110F00CFC705 /* TopTabBar.swift */; };
 		2C198AAD204015F300CFC705 /* TabSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C198AAC204015F300CFC705 /* TabSelector.swift */; };
 		2C2841C6202D137100F8EA00 /* SearchEmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2841C5202D137100F8EA00 /* SearchEmptyState.swift */; };
 		2C2841DE202D1E3500F8EA00 /* UserTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2841DD202D1E3500F8EA00 /* UserTableCell.swift */; };
@@ -124,7 +123,6 @@
 		2C18A775200F3F4300C03B20 /* intro-video.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "intro-video.mp4"; sourceTree = "<group>"; };
 		2C18A77B200F469700C03B20 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		2C18A7802011A36700C03B20 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
-		2C198AAA2040110F00CFC705 /* TopTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopTabBar.swift; sourceTree = "<group>"; };
 		2C198AAC204015F300CFC705 /* TabSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSelector.swift; sourceTree = "<group>"; };
 		2C2841C5202D137100F8EA00 /* SearchEmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEmptyState.swift; sourceTree = "<group>"; };
 		2C2841DD202D1E3500F8EA00 /* UserTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTableCell.swift; sourceTree = "<group>"; };
@@ -305,7 +303,6 @@
 			isa = PBXGroup;
 			children = (
 				2C7F6F192025D902008AB0CD /* ChatAccessoryView.swift */,
-				2C198AAA2040110F00CFC705 /* TopTabBar.swift */,
 				2C584C1C2018714500E17FD3 /* Header.swift */,
 				2C7F6F1520259622008AB0CD /* Badge.swift */,
 			);
@@ -890,7 +887,6 @@
 				2C5A54F12042C73B006DB37A /* PartnerCommunityCollectionViewController.swift in Sources */,
 				2C698902202ADDF200F6B4A8 /* SignUpController.swift in Sources */,
 				2C6988FE202A89A700F6B4A8 /* ConnectEmptyState.swift in Sources */,
-				2C198AAB2040111000CFC705 /* TopTabBar.swift in Sources */,
 				2C79C8F72036293900FFCF70 /* UICollectionViewAlignedLayout.swift in Sources */,
 				2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */,
 				2C5A54FE204D138F006DB37A /* ReportAbuseController.swift in Sources */,

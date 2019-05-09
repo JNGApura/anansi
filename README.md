@@ -1,3 +1,3 @@
 # anansi
-Xcode 10 project (swift 4.)
-2
+Xcode 10 project (swift 4.2)
+

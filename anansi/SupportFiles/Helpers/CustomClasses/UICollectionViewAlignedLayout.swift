@@ -71,7 +71,7 @@ open class UICollectionViewAlignedLayout: UICollectionViewFlowLayout {
         case .left:
             if indexPath.item > 0, let previousFrame = layoutAttributesForItem(at: previousIndex)?.frame,
                 currentFrame.intersects(CGRect(x: sectionInset.left, y: previousFrame.origin.y, width: layoutWidth, height: previousFrame.size.height)) {
-                currentAttributes.frame.origin.x = previousFrame.origin.x + previousFrame.size.width + minimumInteritemSpacing
+                currentAttributes.frame.origin.x = previousFrame.origin.x + previousFrame.size.width + minimumInteritemSpacing - 2.0
             } else {
                 currentAttributes.frame.origin.x = sectionInset.left
             }

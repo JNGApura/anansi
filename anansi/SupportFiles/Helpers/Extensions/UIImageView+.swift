@@ -38,3 +38,19 @@ extension UIImageView {
         }).resume()
     }
 }
+
+import Kingfisher
+
+extension UIImageView {
+    
+    func setImage(with urlString: String){
+        guard let url = URL.init(string: urlString) else {
+            return
+        }
+        let resource = ImageResource(downloadURL: url, cacheKey: urlString)
+        var kf = self.kf
+        kf.indicatorType = .activity
+        (kf.indicator?.view as? UIActivityIndicatorView)?.color = .primary
+        self.kf.setImage(with: resource, options: [.transition(.fade(0.2))])
+    }
+}

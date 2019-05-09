@@ -8,11 +8,96 @@
 
 import UIKit
 
-// UILabel subclass to add custom UIEdgeInsets as property to UILabel
-class LabelWithInsets : UILabel {
-    
-    override func drawText(in rect: CGRect) {
-        let insets = UIEdgeInsets.init(top: 7.0, left: 16.0 + 15.0, bottom: 7.0, right: 16.0)
-        super.drawText(in: UIEdgeInsetsInsetRect(rect, insets))
+// To iterate enums (for partner and user models)
+func iterateEnum<T: Hashable>(_: T.Type) -> AnyIterator<T> {
+    var i = 0
+    return AnyIterator {
+        let next = withUnsafeBytes(of: &i) { $0.load(as: T.self) }
+        if next.hashValue != i { return nil }
+        i += 1
+        return next
     }
+}
+
+// Create time strings for messages
+func createTimeString(date: NSDate) -> String {
+    
+    let formatter = DateFormatter()
+    var calendar = NSCalendar.current
+    calendar.timeZone = NSTimeZone.local
+    
+    let components = calendar.dateComponents([.month, .day], from: calendar.startOfDay(for: date as Date), to: Date())
+    
+    if components.day! == 1 {
+        return "yesterday"
+        
+    } else if components.day! < 1 {
+        formatter.dateFormat = "HH:mm"
+        
+    } else if components.day! > 1 && components.month! < 1 {
+        formatter.dateFormat = "EEE, HH:mm"
+        
+    } else if components.month! >= 1 {
+        formatter.dateFormat = "dd/MMM/yy"
+    }
+    
+    return formatter.string(from: date as Date)
+}
+
+func createTimeString(dateA: Date, dateB: Date) -> String {
+    
+    let formatter = DateFormatter()
+    var calendar = NSCalendar.current
+    calendar.timeZone = NSTimeZone.local
+    
+    //let dateMessageB = calendar.dateComponents([.month, .day, .hour], from: dateFromMessageB, to: now)
+    let AtoB = calendar.dateComponents([.day], from: dateA, to: dateB)
+    let AtoNow = calendar.dateComponents([.day], from: calendar.startOfDay(for: dateA), to: Date())
+    let BtoNow = calendar.dateComponents([.day], from: calendar.startOfDay(for: dateB), to: Date())
+    
+    if AtoB.day! >= 1 {
+        
+        if AtoNow.day! > 7 {
+            formatter.dateFormat = "dd/MMM/yy, HH:mm"
+            
+        } else if BtoNow.day! == 1 {
+            formatter.dateFormat = "'yesterday', HH:mm"
+            
+        } else {
+            formatter.dateFormat = "EEE, HH:mm"
+        }
+        
+    } else if AtoB.day! < 1 {
+        
+        if BtoNow.day! < 1 && AtoNow.day! >= 1{
+            formatter.dateFormat = "'today', HH:mm"
+            
+        } else {
+            formatter.dateFormat = ""
+        }
+    }
+
+    return formatter.string(from: dateB as Date)
+    
+    /*
+    if BtoA.month! < 0 {
+        formatter.dateFormat = "dd/MMM/yy, HH:mm"
+        
+    } else if BtoA.day! <= 0 {
+        
+        if BtoNow.day! > 1 { //dateMessageB.day! >= 1 &&
+            formatter.dateFormat = "E, HH:mm"
+            
+        } else if BtoNow.day! == 1 { //dateMessageB.day! <= 1 &&
+            formatter.dateFormat = "'yesterday', HH:mm"
+            
+        } else if BtoNow.day! < 1 { //dateMessageB.day! < 1 {
+            formatter.dateFormat = "'today', HH:mm"
+        }
+        
+    } else {
+        formatter.dateFormat = ""
+    }
+    
+    return formatter.string(from: dateB as Date)*/
 }

@@ -8,10 +8,11 @@
 
 import UIKit
 import Firebase
-//import FirebaseDatabase
+import FirebaseMessaging
+import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
     
@@ -20,7 +21,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UIFont.overrideInitialize()
     }
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        // Initialize settings for notifications
+        //PushNotificationManager.shared.registerForPushNotifications {
+        //    PushNotificationManager.shared.updateFirestorePushTokenIfNeeded()
+        //}
+        //UIApplication.shared.registerForRemoteNotifications()
         
         // Connect to Firebase
         FirebaseApp.configure()
@@ -29,27 +36,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Initiate app with OnboardingViewController or, in case the user has completed onboarding, then initializes TabBarController
         let defaults = UserDefaults.standard
         window = UIWindow(frame: UIScreen.main.bounds)
-        /*if !defaults.isOnboarded() {
-            window?.rootViewController = OnboardingViewController()
-        } else
-            if !defaults.isLoggedIn() {
+        
+        if !defaults.isLoggedIn() {
             window?.rootViewController = LandingController()
         } else
             if !defaults.isProfiled() {
             window?.rootViewController = ProfilingController()
         } else {
             window?.rootViewController = TabBarController()
-        }*/
+        }
         
-        //let controller = CommunityViewController()
-        //controller.modalPresentationStyle = .overFullScreen
-        //controller.modalTransitionStyle = .crossDissolve
-        
-        //let navController = UINavigationController(rootViewController: controller)
-        //navController.setNavigationBarHidden(true, animated: false)
-        //self.present(navController, animated: true, completion: nil)
-        
-        window?.rootViewController = TabBarController()
         window?.makeKeyAndVisible()
         
         // Add red (TED's) color as main color
@@ -58,11 +54,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Remove shadow below navigation bar
         UINavigationBar.appearance().shadowImage = UIImage()
         UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
-        
-        // Enable Keyboard accessory view
-        //let accessoryView = KeyboardAccessoryToolbar()
-        //UITextField.appearance().inputAccessoryView = accessoryView
-        //UITextView.appearance().inputAccessoryView = accessoryView
         
         return true
     }
@@ -94,7 +85,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-
+    
+    // START receive message
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        
+        print(userInfo)
+        completionHandler(UIBackgroundFetchResult.newData)
+    }
+    
 }
 

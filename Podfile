@@ -8,9 +8,11 @@ target 'anansi' do
   # Pods for anansi
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
+  pod 'Firebase/Messaging'
   pod 'Firebase/Storage'
   pod 'Firebase/Database'
   pod 'ReachabilitySwift', '~>3'
+  pod 'Kingfisher', '~> 5.0'
 
   target 'anansiTests' do
     inherit! :search_paths

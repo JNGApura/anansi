@@ -16,27 +16,22 @@
     "action" : "view",
     "icon" : "basicInfo",
     "title" : "Edit your basic information",
-    "url" : "feedback"
+    "url" : "basicInfo"
+  }, {
+      "action" : "view",
+      "icon" : "feedback",
+      "title" : "Give us feedback",
+      "url" : "feedback"
   }, {
     "action" : "link",
     "icon" : "instagram",
     "title" : "Follow us on Instagram",
     "url" : "https://www.instagram.com/tedxulisboa"
   }, {
-    "action" : "view",
-    "icon" : "feedback",
-    "title" : "Give us feedback",
-    "url" : "feedback"
-  }, {
-    "action" : "view",
-    "icon" : "terms",
-    "title" : "Terms & Conditions",
-    "url" : "terms"
-  }, {
-    "action" : "view",
+    "action" : "link",
     "icon" : "terms",
     "title" : "Privacy Policy",
-    "url" : "privacy"
+    "url" : "https://tedxulisboa.com/privacy-policy.html"
   }, {
     "action" : "link",
     "icon" : "about",

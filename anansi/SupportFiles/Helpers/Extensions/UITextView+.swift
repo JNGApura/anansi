@@ -22,8 +22,8 @@ extension UITextView {
         
         // att is a tentative NSMutableAttributeString which converts htmlText (string) to .utf8 (special characters) with DocumentType HTML and Encoding UTF8 (as attributes), adds black color for text
         let att = try! NSMutableAttributedString(data: htmlText.data(using: .utf8)!, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
-        att.addAttributes([NSAttributedStringKey.paragraphStyle: style,
-                           NSAttributedStringKey.foregroundColor: UIColor.secondary], range: NSMakeRange(0, att.length))
+        att.addAttributes([NSAttributedString.Key.paragraphStyle: style,
+                           NSAttributedString.Key.foregroundColor: UIColor.secondary], range: NSMakeRange(0, att.length))
         
         // NSMutableAttributedString is attributed to text
         self.attributedText = NSMutableAttributedString(attributedString: att)
@@ -46,7 +46,7 @@ extension UITextView {
             text = NSMutableAttributedString(string: labelText)
         }
         
-        text.addAttribute(NSAttributedStringKey.paragraphStyle, value:style, range: NSMakeRange(0, text.length))
+        text.addAttribute(NSAttributedString.Key.paragraphStyle, value:style, range: NSMakeRange(0, text.length))
         self.attributedText = text
     }
 }

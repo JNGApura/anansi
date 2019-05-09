@@ -63,3 +63,32 @@ class GradientView: UIView {
         self.layer.insertSublayer(gradient, at: 0)
     }
 }
+
+extension UIView {
+    
+    func createViewWithBackgroundColor(_ color: UIColor) -> UIView {
+        
+        let v = UIView()
+        v.backgroundColor = color
+        return v
+    }
+    
+    func createSpecialViewWithBackgroundColor(_ color: UIColor) -> UIView {
+        
+        let v = UIView()
+        v.backgroundColor = color
+        v.layer.cornerRadius = 8.0
+        v.clipsToBounds = true
+        return v
+    }
+}
+
+extension UIViewController {
+    
+    func createViewWithBackgroundColor(_ color: UIColor) -> UIView {
+        
+        let v = UIView()
+        v.backgroundColor = color
+        return v
+    }
+}

@@ -94,6 +94,7 @@
 		2CEE5F7A2007619300E86365 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEE5F792007619300E86365 /* NetworkManager.swift */; };
 		2CF6CB252284AB6F0050A053 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2CF6CB242284AB6F0050A053 /* GoogleService-Info.plist */; };
 		2CF6CB28228503B30050A053 /* TrendingCommunityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF6CB27228503B30050A053 /* TrendingCommunityCollectionViewCell.swift */; };
+		2CF6CB2C2285D1F10050A053 /* TextViewTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF6CB2B2285D1F10050A053 /* TextViewTableCell.swift */; };
 		B95FFD08759527F425F650B5 /* Pods_anansiUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D18096C91B3B26560BA2F602 /* Pods_anansiUITests.framework */; };
 		BA1C59036402AFD5F13C45F0 /* Pods_anansi.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37FD1B723E6AE023E8F8018A /* Pods_anansi.framework */; };
 		D63D6345772DACAD67134DD7 /* Pods_anansiTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E29D30928CE4C329A504D4F0 /* Pods_anansiTests.framework */; };
@@ -211,6 +212,7 @@
 		2CEE5F7B20077C4100E86365 /* anansi.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = anansi.entitlements; sourceTree = "<group>"; };
 		2CF6CB242284AB6F0050A053 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2CF6CB27228503B30050A053 /* TrendingCommunityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingCommunityCollectionViewCell.swift; sourceTree = "<group>"; };
+		2CF6CB2B2285D1F10050A053 /* TextViewTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewTableCell.swift; sourceTree = "<group>"; };
 		37FD1B723E6AE023E8F8018A /* Pods_anansi.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_anansi.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		48FF4370CB871AA571BDAE75 /* Pods-anansi.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-anansi.debug.xcconfig"; path = "Pods/Target Support Files/Pods-anansi/Pods-anansi.debug.xcconfig"; sourceTree = "<group>"; };
 		4BFD344C501825741D0C54FE /* Pods-anansiTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-anansiTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-anansiTests/Pods-anansiTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -591,6 +593,7 @@
 				2C79C8F42036148600FFCF70 /* InterestProfileTableCell.swift */,
 				2C6924FB226DEB590007496A /* InterestProfileEmptyTableCell.swift */,
 				2C0941DD226C7B6400A295C1 /* TextFieldTableCell.swift */,
+				2CF6CB2B2285D1F10050A053 /* TextViewTableCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1013,6 +1016,7 @@
 				2C7F6F12202595E9008AB0CD /* UIImageView+.swift in Sources */,
 				2C82C59C202C4BCA004A2CBE /* ProfilingPageView.swift in Sources */,
 				2CEE5F6E2006F3C100E86365 /* SettingsModel.swift in Sources */,
+				2CF6CB2C2285D1F10050A053 /* TextViewTableCell.swift in Sources */,
 				2C0941DE226C7B6400A295C1 /* TextFieldTableCell.swift in Sources */,
 				2CEBB14922601A3400821896 /* EventViewController.swift in Sources */,
 				2CB6AFE8226481EC00E1702E /* ScheduleInfoTableViewCell.swift in Sources */,

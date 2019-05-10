@@ -27,7 +27,7 @@ class InterestProfileTableCell: UITableViewCell {
             if myInterests!.count < 7 {
                 manageLabel.text = "Tap to pick more ➡️"
             } else {
-                manageLabel.text = "7 interests picked ✅"
+                manageLabel.text = "Tap to change ➡️"
             }
         }
     }
@@ -51,6 +51,14 @@ class InterestProfileTableCell: UITableViewCell {
         l.textAlignment = .right
         l.translatesAutoresizingMaskIntoConstraints = false
         return l
+    }()
+    
+    lazy var openInterestsPageButton : UIButton = {
+        let b = UIButton()
+        b.backgroundColor = .clear
+        b.translatesAutoresizingMaskIntoConstraints = false
+        b.addTarget(self, action: #selector(tapForInterestSelector), for: .touchUpInside)
+        return b
     }()
     
     lazy var interestCollectionView : UICollectionView = {
@@ -77,16 +85,24 @@ class InterestProfileTableCell: UITableViewCell {
         
         addSubview(myInterestsLabel)
         addSubview(manageLabel)
+        addSubview(openInterestsPageButton)
         addSubview(interestCollectionView)
         
         NSLayoutConstraint.activate([
             myInterestsLabel.topAnchor.constraint(equalTo: topAnchor, constant: Const.marginEight),
+            myInterestsLabel.heightAnchor.constraint(equalToConstant: 24.0),
             myInterestsLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea),
             myInterestsLabel.widthAnchor.constraint(equalToConstant: 76.0),
             
             manageLabel.leadingAnchor.constraint(equalTo: myInterestsLabel.trailingAnchor),
+            manageLabel.heightAnchor.constraint(equalToConstant: 24.0),
             manageLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
             manageLabel.centerYAnchor.constraint(equalTo: myInterestsLabel.centerYAnchor, constant: 1.0),
+            
+            openInterestsPageButton.leadingAnchor.constraint(equalTo: manageLabel.leadingAnchor),
+            openInterestsPageButton.heightAnchor.constraint(equalTo: manageLabel.heightAnchor),
+            openInterestsPageButton.trailingAnchor.constraint(equalTo: manageLabel.trailingAnchor),
+            openInterestsPageButton.centerYAnchor.constraint(equalTo: manageLabel.centerYAnchor),
             
             interestCollectionView.topAnchor.constraint(equalTo: myInterestsLabel.bottomAnchor, constant: Const.marginEight / 2.0),
             interestCollectionView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea),
@@ -97,8 +113,8 @@ class InterestProfileTableCell: UITableViewCell {
         interestCollectionViewHeightAnchor = interestCollectionView.heightAnchor.constraint(equalToConstant: 0.0)
         interestCollectionViewHeightAnchor?.isActive = true
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapForInterestSelector))
-        addGestureRecognizer(tapGesture)
+        //let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapForInterestSelector))
+        //addGestureRecognizer(tapGesture)
     }
     
     required init?(coder aDecoder: NSCoder) {

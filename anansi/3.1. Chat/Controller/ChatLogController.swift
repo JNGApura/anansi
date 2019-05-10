@@ -89,16 +89,13 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTappedAround()
         
         collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 24.0, right: 0) // 88
         collectionView?.alwaysBounceVertical = true
         collectionView?.backgroundColor = .white
         collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: "cell")
         collectionView?.keyboardDismissMode = .interactive
-        
-        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tap.cancelsTouchesInView = false
-        collectionView?.addGestureRecognizer(tap)
     }
     
     override func viewWillAppear(_ animated: Bool) {

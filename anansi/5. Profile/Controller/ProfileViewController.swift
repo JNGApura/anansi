@@ -164,6 +164,7 @@ class ProfileViewController: UIViewController {
     // Table with profile data
     lazy var tableView : UIDynamicTableView = {
         let tv = UIDynamicTableView()
+        tv.register(TextViewTableCell.self, forCellReuseIdentifier: "TextViewCell")
         tv.register(TextFieldTableCell.self, forCellReuseIdentifier: "TextFieldCell")
         tv.register(InterestProfileTableCell.self, forCellReuseIdentifier: "InterestTableCell")
         tv.register(InterestProfileEmptyTableCell.self, forCellReuseIdentifier: "InterestEmptyTableCell")
@@ -187,6 +188,7 @@ class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTappedAround()
         
         // Fetches meeee!
         fetchMe()
@@ -274,7 +276,6 @@ class ProfileViewController: UIViewController {
         
         checkIconLeadingAnchor = checkIcon.leadingAnchor.constraint(equalTo: progressBarView.leadingAnchor)
         checkIconLeadingAnchor?.isActive = true
-        
     }
     
     override func viewDidLayoutSubviews() {
@@ -346,10 +347,8 @@ class ProfileViewController: UIViewController {
             me.set(dictionary: dictionary, id: self.myID!)
             self.user = me
             
-            // Reloads data
             self.tableView.reloadData()
             
-            // Updates progress
             self.updateProgress(with: self.progressFields.count)
         }
     }
@@ -433,6 +432,8 @@ class ProfileViewController: UIViewController {
         let screenHeight = view.frame.height
         let offset : CGFloat = 24.0
         
+        print(activeField)
+        
         if activeField != nil {
             
             var section : Int = 0, row : Int = 0
@@ -443,8 +444,17 @@ class ProfileViewController: UIViewController {
                 }
             }
             
-            let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! TextFieldTableCell
-            let distanceToBottom = screenHeight - (cell.frame.maxY + tableView.frame.origin.y - scrollView.contentOffset.y - statusBarHeight - offset)
+            var cellMaxY : CGFloat
+            if activeField == .bio {
+                let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! TextViewTableCell
+                cellMaxY = cell.frame.maxY
+                
+            } else {
+                let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! TextFieldTableCell
+                cellMaxY = cell.frame.maxY
+            }
+
+            let distanceToBottom = screenHeight - (cellMaxY + tableView.frame.origin.y - scrollView.contentOffset.y - statusBarHeight - offset)
             let collapseSpace = keyboardHeight - distanceToBottom
             
             if collapseSpace < 0 { return }
@@ -518,10 +528,6 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
             let labelForField = User().label(forField: field) // Access label before user is set
             let placeholderForField = User().placeholder(forField: field) // Access placeholder before user is set
             
-            let cell = tableView.dequeueReusableCell(withIdentifier: "TextFieldCell", for: indexPath) as! TextFieldTableCell
-            cell.delegate = self
-            cell.configureWithField(field: field, andValue: valueForField, withLabel: labelForField, withPlaceholder: placeholderForField)
-            
             if !valueForField.isEmpty {
                 if !progressFields.contains(field) {
                     progressFields.append(field)
@@ -529,7 +535,20 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             }
             
-            return cell
+            if field == .bio {
+                
+                let cell = tableView.dequeueReusableCell(withIdentifier: "TextViewCell", for: indexPath) as! TextViewTableCell
+                cell.delegate = self
+                cell.configureWithField(field: field, andValue: valueForField, withLabel: labelForField, withPlaceholder: placeholderForField)
+                return cell
+                
+            } else {
+        
+                let cell = tableView.dequeueReusableCell(withIdentifier: "TextFieldCell", for: indexPath) as! TextFieldTableCell
+                cell.delegate = self
+                cell.configureWithField(field: field, andValue: valueForField, withLabel: labelForField, withPlaceholder: placeholderForField)
+                return cell
+            }
             
         } else {
             
@@ -546,7 +565,6 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
                         updateProgress(with: progressFields.count)
                     }
                 }
-                
                 return cell
                 
             } else {
@@ -560,13 +578,13 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        /*
         let sectionType = sections[indexPath.section]
         let field = (fields[sectionType]?[indexPath.row])!
         
         if field == .interests {
-            
             navigateToInterestsViewController()
-        }
+        }*/
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -617,6 +635,43 @@ extension ProfileViewController:  TextFieldTableCellDelegate {
     }
 }
 
+// MARK: TextViewTableCellDelegate
+
+extension ProfileViewController: TextViewTableCellDelegate {
+    
+    func didBeginEditingTextView(field: userInfoType) {
+        activeField = field
+    }
+    
+    func didChangeValueIn(field: userInfoType, to value: String) {
+        
+        let uid = user?.getValue(forField: .id) as! String
+        
+        if !value.isEmpty {
+            user?.setValue(value: value, for: field)
+            NetworkManager.shared.register(value: value, for: field.rawValue, in: uid)
+            
+            if !progressFields.contains(field) {
+                progressFields.append(field)
+                updateProgress(with: progressFields.count)
+            }
+            
+        } else {
+            user?.removeValue(for: field)
+            NetworkManager.shared.removeData(field.rawValue)
+            
+            if let removeFieldAtIndex = progressFields.index(of: field) {
+                progressFields.remove(at: removeFieldAtIndex)
+            }
+            updateProgress(with: progressFields.count)
+        }
+        
+        activeField = nil
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+}
+
 // MARK: InterestListDelegate
 
 extension ProfileViewController: InterestListDelegate {
@@ -651,7 +706,6 @@ extension ProfileViewController: InterestListDelegate {
 extension ProfileViewController: ShowsInterestSelectorDelegate {
     
     func didTapToShowInterestSelector() {
-        
         navigateToInterestsViewController()
     }
 }

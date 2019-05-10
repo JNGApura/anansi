@@ -44,13 +44,43 @@ import Kingfisher
 extension UIImageView {
     
     func setImage(with urlString: String){
+        
         guard let url = URL.init(string: urlString) else {
+            self.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
             return
         }
+        
         let resource = ImageResource(downloadURL: url, cacheKey: urlString)
         var kf = self.kf
         kf.indicatorType = .activity
         (kf.indicator?.view as? UIActivityIndicatorView)?.color = .primary
-        self.kf.setImage(with: resource, options: [.transition(.fade(0.2))])
+        
+        self.kf.setImage(with: resource, placeholder: nil, options: [.transition(.fade(0.2))], progressBlock: { (receivedSize, totalSize) in
+            
+            let percentage = (Float(receivedSize) / Float(totalSize)) * 100.0
+            print("Downloading progress: \(percentage)%")
+            
+        }) { result in
+            
+            switch result {
+            case .success(_):
+                break // All good, nothing to do
+                
+            case .failure(let error):
+                
+                print(error)
+                
+                // Tries one more time
+                self.kf.setImage(with: resource, placeholder: nil, options: [.transition(.fade(0.2))], progressBlock: nil, completionHandler: { (result) in
+                    
+                    switch result {
+                    case .success(_):
+                        break
+                    case .failure(_):
+                        self.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
+                    }
+                })
+            }
+        }
     }
 }

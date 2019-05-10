@@ -21,7 +21,7 @@ class PartnerCommunityCollectionViewController: UICollectionViewCell {
     
     var delegate: ShowPartnerPageDelegate?
     
-    var sections = [String]()
+    var partnerSections = [String]()
     var partnersInEachSection = [String : [Partner]]() {
         didSet {
             tableView.reloadData()
@@ -29,19 +29,28 @@ class PartnerCommunityCollectionViewController: UICollectionViewCell {
     }
     
     lazy var tableView: UITableView = {
-        let tv = UITableView(frame: .zero, style: .grouped)
+        let tv = UITableView()
         tv.register(CommunityTableCell.self, forCellReuseIdentifier: identifier)
         tv.delegate = self
         tv.dataSource = self
         tv.backgroundColor = .background
         tv.alwaysBounceVertical = true
-        tv.translatesAutoresizingMaskIntoConstraints = false
         tv.separatorStyle = .none
         tv.sectionHeaderHeight = 56.0
         tv.estimatedSectionHeaderHeight = 56.0
         tv.rowHeight = 96.0
         tv.estimatedRowHeight = UITableView.automaticDimension
+        tv.translatesAutoresizingMaskIntoConstraints = false
         return tv
+    }()
+    
+    /// Spinner shown during load
+    let spinner : UIActivityIndicatorView = {
+        let s = UIActivityIndicatorView()
+        s.color = .primary
+        s.startAnimating()
+        s.hidesWhenStopped = true
+        return s
     }()
     
     // MARK: - Init
@@ -49,52 +58,17 @@ class PartnerCommunityCollectionViewController: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        fetchPartners {
-            
-            self.addSubview(self.tableView)
-            NSLayoutConstraint.activate([
-                self.tableView.topAnchor.constraint(equalTo: self.topAnchor),
-                self.tableView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-                self.tableView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-                self.tableView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            ])
-        }
+        self.addSubview(self.tableView)
+        NSLayoutConstraint.activate([
+            self.tableView.topAnchor.constraint(equalTo: self.topAnchor),
+            self.tableView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            self.tableView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            self.tableView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+        ])
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - Network
-    
-    func fetchPartners(onSuccess: @escaping () -> Void) {
-        
-        NetworkManager.shared.fetchPartners { (dictionary, partnerID) in
-            
-            let partner = Partner()
-            partner.set(dictionary: dictionary, id: partnerID)
-            
-            // Sorts partners by their type of partnership
-            if let type = partner.getValue(forField: .type) as? String {
-                
-                if !self.sections.contains(type) {
-                    
-                    self.sections.append(type)
-                    self.partnersInEachSection[type] = [partner]
-                    
-                    // sorting
-                    self.sections.sort { (lhs, rhs) -> Bool in
-                        (Const.typePartners.index(of: lhs) ?? 0) < (Const.typePartners.index(of: rhs) ?? 0)
-                    }
-                                        
-                } else {
-                    
-                    self.partnersInEachSection[type]?.append(partner)
-                }
-            }
-            
-            onSuccess()
-        }
     }
 }
 
@@ -103,15 +77,22 @@ class PartnerCommunityCollectionViewController: UICollectionViewCell {
 extension PartnerCommunityCollectionViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return sections.count
+        
+        if partnerSections.count == 0 {
+            tableView.backgroundView = spinner
+        } else {
+            tableView.backgroundView = nil
+            spinner.stopAnimating()
+        }
+        return partnerSections.count
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sections[section]
+        return partnerSections[section]
     }
         
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let type = sections[section]
+        let type = partnerSections[section]
         return (partnersInEachSection[type]?.count)!
     }
     
@@ -122,12 +103,12 @@ extension PartnerCommunityCollectionViewController: UITableViewDelegate, UITable
         
         let i = UIImageView(image: UIImage(named: "Star")?.withRenderingMode(.alwaysTemplate))
         i.contentMode = .scaleAspectFit
-        i.tintColor = Const.typeColor[sections[section]]
+        i.tintColor = Const.typeColor[partnerSections[section]]
         i.translatesAutoresizingMaskIntoConstraints = false
         
         let t = UILabel()
-        t.text = sections[section].uppercased()
-        t.textColor = Const.typeColor[sections[section]]
+        t.text = partnerSections[section].uppercased()
+        t.textColor = Const.typeColor[partnerSections[section]]
         t.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
         t.translatesAutoresizingMaskIntoConstraints = false
         
@@ -156,8 +137,9 @@ extension PartnerCommunityCollectionViewController: UITableViewDelegate, UITable
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! CommunityTableCell
+        cell.imageView?.kf.cancelDownloadTask() // cancel download task, if there's any
         
-        let type = sections[indexPath.section]
+        let type = partnerSections[indexPath.section]
         if let partner = (partnersInEachSection[type]?[indexPath.row]) {
         
             if let name = partner.getValue(forField: .name) as? String { cell.name.text = name }
@@ -172,11 +154,16 @@ extension PartnerCommunityCollectionViewController: UITableViewDelegate, UITable
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let type = sections[indexPath.section]
+        let type = partnerSections[indexPath.section]
         let partner = (partnersInEachSection[type]?[indexPath.row])!
         delegate?.showPartnerPageController(partner: partner)
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
-
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: identifier)
+        cell?.imageView?.kf.cancelDownloadTask()
+    }
 }

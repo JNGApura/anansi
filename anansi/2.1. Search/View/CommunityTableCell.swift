@@ -100,6 +100,6 @@ class CommunityTableCell: UITableViewCell {
         self.field.text = ""
         self.location.text = ""
         
-        self.profileImageView.image = nil
+        self.profileImageView.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
     }
 }

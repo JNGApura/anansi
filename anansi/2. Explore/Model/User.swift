@@ -23,6 +23,7 @@ enum userInfoType: String {
     case website = "website"
     case linkedin = "linkedin"
     case blockedUsers = "blockedUsers"
+    case ranking = "ranking"
 }
 
 enum userInfoSection: String {
@@ -48,6 +49,7 @@ class User: NSObject {
     private var website: String!
     private var linkedin: String!
     private var blockedUsers: [String: String]!
+    private var ranking: [String : Int]!
     
     
     // MARK: NSCoding Encoding
@@ -134,6 +136,8 @@ class User: NSObject {
             if let linkedin = value as? String { self.linkedin = linkedin }
         case .blockedUsers:
             if let blockedUsers = value as? [String : String] { self.blockedUsers = blockedUsers}
+        case .ranking:
+            if let ranking = value as? [String : Int] {self.ranking = ranking}
         }
     }
     
@@ -169,6 +173,8 @@ class User: NSObject {
             self.linkedin = nil
         case .blockedUsers:
             self.blockedUsers = nil
+        case .ranking:
+            self.ranking = nil
         }
     }
     
@@ -190,6 +196,7 @@ class User: NSObject {
         case .website: return website
         case .linkedin: return linkedin
         case .blockedUsers: return blockedUsers
+        case .ranking: return ranking
         }
     }
     
@@ -211,6 +218,7 @@ class User: NSObject {
         case .website: return "Website"
         case .linkedin: return "LinkedIn profile"
         case .blockedUsers: return "Blocked users"
+        case .ranking: return "View ranking"
         }
     }
     
@@ -232,6 +240,7 @@ class User: NSObject {
         case .website: return "https://"
         case .linkedin: return "linkedin.com/in/"
         case .blockedUsers: return "Blocked Users"
+        case .ranking: return "View ranking"
         }
     }
     
@@ -250,6 +259,7 @@ class User: NSObject {
         self.website = nil
         self.linkedin = nil
         self.blockedUsers = nil
+        self.ranking = nil
     }
 }
 

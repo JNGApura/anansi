@@ -31,50 +31,21 @@ class TabBarController: UITabBarController {
             let itemSelected = UIImage(named: item)?.withRenderingMode(.alwaysTemplate)
             
             // Gets view controller from string and adds to the array of viewcontrollers
-            let vc = NSObject.fromClassName(name: item + "ViewController") as! UIViewController
+            let vc = NSObject.fromClassName(name: item + "ViewController")
             vc.tabBarItem = UITabBarItem(title: item, image: itemNormal, selectedImage: itemSelected)
             vc.title = item
             
             let nc = UINavigationController(rootViewController: vc)
-            //nc.title = ""
-            
-            // Inserts the view controller inside a UINavigationController stack object, so each item can have their own navigation stack
             tabBarViewControllers.append(nc)
         }
-        
         viewControllers = tabBarViewControllers
-        
-        // Set the color of active tabs
-        //tabBar.tintColor = .red
-        //tabBarItem.setTitleTextAttributes([NSAttributedStringKey.foregroundColor: .red], for: .selected)
-        
-        // Set the color of inactive tabs
+
+        tabBar.isTranslucent = false
         tabBar.unselectedItemTintColor = .tertiary
         tabBarItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.tertiary], for: .normal)
         
         // Remove label to tab bar items
         removeTabBarItemText()
-        
-        // Remove translucence in tab bar
-        tabBar.isTranslucent = false
-        
-        // This should be removed
-        /*NetworkManager.shared.registerPartnerData(["name": "Santander Universidades",
-                                                   "field": "Finance",
-                                                   "location": "Lisboa"])
-
-        NetworkManager.shared.registerPartnerData(["name": "Técnico Lisboa",
-                                                   "field": "Education",
-                                                   "location": "Lisboa"])
-        
-        NetworkManager.shared.registerPartnerData(["name": "IEEE-IST Student Branch",
-                                                   "field": "Education",
-                                                   "location": "Lisboa"])
-        
-        NetworkManager.shared.registerPartnerData(["name": "Findmore Consulting",
-                                                   "field": "IT/Consulting",
-                                                   "location": "Lisboa"])*/
-        
     }
     
     override func didReceiveMemoryWarning() {

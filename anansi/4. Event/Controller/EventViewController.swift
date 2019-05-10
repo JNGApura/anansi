@@ -8,7 +8,7 @@
 
 import UIKit
 
-class EventViewController: UIViewController, UINavigationControllerDelegate {
+class EventViewController: UIViewController {
     
     // Custom initializers
     
@@ -20,20 +20,8 @@ class EventViewController: UIViewController, UINavigationControllerDelegate {
     
     var currentIndex: Int = 0
     
-    private let titleLabelView: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.textColor = .secondary
-        label.alpha = 0.0
-        label.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        label.text = "Event"
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
     lazy var scrollView : UIScrollView = {
         let sv = UIScrollView()
-        sv.delegate = self
         //sv.showsVerticalScrollIndicator = false
         sv.showsHorizontalScrollIndicator = false
         sv.backgroundColor = .background
@@ -69,7 +57,7 @@ class EventViewController: UIViewController, UINavigationControllerDelegate {
         layout.scrollDirection = .horizontal
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.register(EventScheduleCollectionViewCell.self, forCellWithReuseIdentifier: scheduleIdentifier)
-        cv.register(EventChallengeCollectionViewCell.self, forCellWithReuseIdentifier: challengeIdentifier)
+        //cv.register(EventChallengeCollectionViewCell.self, forCellWithReuseIdentifier: challengeIdentifier)
         cv.register(EventLocationCollectionViewCell.self, forCellWithReuseIdentifier: locationIdentifier)
         cv.isPagingEnabled = true
         cv.showsHorizontalScrollIndicator = false
@@ -92,7 +80,6 @@ class EventViewController: UIViewController, UINavigationControllerDelegate {
         contentView.addSubview(pageSelector)
         contentView.addSubview(collectionView)
         
-        //view.addSubview(topTabBar)
         NSLayoutConstraint.activate([
             
             // Activates scrollView constraints
@@ -181,7 +168,7 @@ class EventViewController: UIViewController, UINavigationControllerDelegate {
         
         navigationController?.view.backgroundColor = .background
         navigationController?.navigationBar.isTranslucent = false
-        navigationItem.titleView = titleLabelView
+        //navigationItem.titleView = titleLabelView
     }
     
     // MARK: - Custom functions
@@ -195,25 +182,6 @@ class EventViewController: UIViewController, UINavigationControllerDelegate {
     
 }
 
-// MARK: - UISCrollViewDelegate
-
-extension EventViewController: UIScrollViewDelegate {
-    
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        
-        let index = Int(targetContentOffset.pointee.x / view.frame.width)
-        
-        if index != currentIndex {
-            currentIndex = index
-            
-            let indexPath = IndexPath(item: currentIndex, section: 0)
-            
-            pageSelector.collectionView.selectItem(at: indexPath, animated: true, scrollPosition:.centeredHorizontally)
-            pageSelector.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
-        }
-    }
-}
-
 // MARK: - UICollectionView
 
 extension EventViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -225,11 +193,11 @@ extension EventViewController: UICollectionViewDataSource, UICollectionViewDeleg
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         switch indexPath.item {
-        case 1:
+        /*case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: challengeIdentifier, for: indexPath) as! EventChallengeCollectionViewCell
-            return cell
-            
-        case 2:
+            return cell*/
+        
+        case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: locationIdentifier, for: indexPath) as! EventLocationCollectionViewCell
             cell.delegate = self
             return cell
@@ -256,7 +224,25 @@ extension EventViewController: UICollectionViewDataSource, UICollectionViewDeleg
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0.0
     }
+}
+
+// MARK: - UISCrollViewDelegate
+
+extension EventViewController: UIScrollViewDelegate {
     
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        
+        let index = Int(targetContentOffset.pointee.x / view.frame.width)
+        
+        if index != currentIndex {
+            currentIndex = index
+            
+            let indexPath = IndexPath(item: currentIndex, section: 0)
+            
+            pageSelector.collectionView.selectItem(at: indexPath, animated: true, scrollPosition:.centeredHorizontally)
+            pageSelector.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        }
+    }
 }
 
 // MARK: - PageSelectorDelegate

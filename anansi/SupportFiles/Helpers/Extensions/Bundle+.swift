@@ -24,12 +24,15 @@ extension Bundle {
 // NSObject extension, to get an NSObject from its classname. More information: @ github.com/damienromito/NSObject-FromClassName
 // NOTE: does not handle when NSClassFromString returns nil
 extension NSObject {
-    class func fromClassName(name : String) -> NSObject {
+    class func fromClassName(name : String) -> UIViewController {
         
-        let className = Bundle.main.infoDictionary!["CFBundleName"] as! String + "." + name
+        if let appName : String = Bundle.main.infoDictionary!["CFBundleName"] as? String {
+            
+            if let aClass = NSClassFromString("\(appName.replacingOccurrences(of: "-", with: "_")).\(name)") as? UIViewController.Type {
+                return aClass.init()
+            }
+        }
         
-        let aClass = NSClassFromString(className) as! UIViewController.Type 
-        
-        return aClass.init()
+        return UIViewController()
     }
 }

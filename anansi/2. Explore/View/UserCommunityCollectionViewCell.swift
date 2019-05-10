@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol UserDidScrollOnCollectionViewCell: class {
+    func collectionViewCellDidScroll(offset: CGFloat)
+}
+
 protocol ShowUserProfileDelegate: class {
     func showUserProfileController(user: User)
 }
@@ -15,11 +19,21 @@ protocol ShowUserProfileDelegate: class {
 class UserCommunityCollectionViewCell: UICollectionViewCell {
     
     // Custom Initializers
-    
+        
     var delegate: ShowUserProfileDelegate?
+    var scrollDelegate: UserDidScrollOnCollectionViewCell?
     
-    var users : [User] = [] {
+    private var areUsersLoading = true
+    
+    var userSectionTitles = [String]()
+    var usersDictionary = [String: [User]]() {
         didSet {
+            
+            // This is a hack to avoid showing a list of users that's increasing in size
+            if usersDictionary.count > 5 && areUsersLoading {
+                areUsersLoading = false
+            }
+            
             tableView.reloadData()
         }
     }
@@ -40,50 +54,32 @@ class UserCommunityCollectionViewCell: UICollectionViewCell {
         tv.estimatedRowHeight = 96
         return tv
     }()
+
+    /// Spinner shown during load
+    let spinner : UIActivityIndicatorView = {
+        let s = UIActivityIndicatorView()
+        s.color = .primary
+        s.startAnimating()
+        s.hidesWhenStopped = true
+        return s
+    }()
     
     // MARK: - Init
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        fetchUsers()
-
-        addSubview(tableView)
+        self.addSubview(self.tableView)
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            self.tableView.topAnchor.constraint(equalTo: self.topAnchor),
+            self.tableView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            self.tableView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            self.tableView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
         ])
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - Network
-    
-    func fetchUsers() {
-        
-        NetworkManager.shared.fetchUsers { (dictionary, userID) in
-            
-            let user = User()
-            user.set(dictionary: dictionary, id: userID)
-            
-            if userID != NetworkManager.shared.getUID() {
-                if userID != "VE0sgL8MhIcHEt7U1Hqo6Ps8DDg2" {
-                    
-                    self.users.append(user)
-                }
-                
-            } else if userID == NetworkManager.shared.getUID(){
-                
-                if let interests = dictionary[userInfoType.interests.rawValue] as? [String] {
-                    UserDefaults.standard.set(interests, forKey: userInfoType.interests.rawValue)
-                    UserDefaults.standard.synchronize()
-                }
-            }
-        }
     }
 }
 
@@ -92,29 +88,97 @@ class UserCommunityCollectionViewCell: UICollectionViewCell {
 extension UserCommunityCollectionViewCell: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return users.count
+        
+        if !areUsersLoading {
+            
+            tableView.backgroundView = nil
+            spinner.stopAnimating()
+            
+            let nameKey = userSectionTitles[section]
+            if let listOfUsers = usersDictionary[nameKey] {
+                return listOfUsers.count
+            }
+            
+        } else {
+            tableView.backgroundView = spinner
+        }
+        
+        return 0
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return userSectionTitles.count
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return nil
+    }
+    
+    func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        
+        if !areUsersLoading {
+            return userSectionTitles
+        }
+        return [""]
+    }
+    
+    func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
+        return userSectionTitles.index(of: title)!
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserTableCell", for: indexPath) as! CommunityTableCell
+        cell.imageView?.kf.cancelDownloadTask() // cancel download task, if there's any
         
-        let user = users[indexPath.row]
+        let userKey = userSectionTitles[indexPath.section]
+        if let listOfUsers = usersDictionary[userKey] {
+            
+            let user = listOfUsers[indexPath.row]
+            
+            if let name = user.getValue(forField: .name) as? String { cell.name.text = name }
+            if let occupation = user.getValue(forField: .occupation) as? String { cell.field.text = occupation }
+            if let location = user.getValue(forField: .location) as? String { cell.location.text = "From \(location)" }
+            if let profileImageURL = user.getValue(forField: .profileImageURL) as? String { cell.profileImageURL = profileImageURL }            
+        }
         
-        if let name = user.getValue(forField: .name) as? String { cell.name.text = name }
-        if let occupation = user.getValue(forField: .occupation) as? String { cell.field.text = occupation }
-        if let location = user.getValue(forField: .location) as? String { cell.location.text = "From \(location)" }
-        if let profileImageURL = user.getValue(forField: .profileImageURL) as? String { cell.profileImageURL = profileImageURL }
-
         cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let user = users[indexPath.item]
-        delegate?.showUserProfileController(user: user)
-        
+        let nameKey = userSectionTitles[indexPath.section]
+        if let listOfUsers = usersDictionary[nameKey] {
+            let user = listOfUsers[indexPath.row]
+            
+            delegate?.showUserProfileController(user: user)
+        }
+
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "UserTableCell")
+        cell?.imageView?.kf.cancelDownloadTask()
+    }
+}
+
+// MARK: - UIScrollViewDelegate
+
+extension UserCommunityCollectionViewCell: UIScrollViewDelegate {
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        
+        let offsetY : CGFloat = tableView.contentOffset.y
+        //scrollDelegate?.collectionViewCellDidScroll(offset: offsetY)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        let offsetY : CGFloat = tableView.contentOffset.y
+        //scrollDelegate?.collectionViewCellDidScroll(offset: offsetY)
+
     }
 }

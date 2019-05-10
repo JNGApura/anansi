@@ -53,10 +53,10 @@ struct Const {
     static let timeDateHeightChatCells : CGFloat = 28.0
     
     // List of tabs in Community
-    static let communityTabs = ["Attendees", "Partners"]
+    static let communityTabs = ["Trending", "Attendees", "Partners"]
     
     // List of tabs in Event
-    static let eventTabs = ["Schedule", "xChallenge", "Location"]
+    static let eventTabs = ["Schedule", "Location"] //"xChallenge",
     
     // Formal address
     static let addressULisboa = "Aula Magna, Edifício da Reitoria, Alameda da Universidade, Lisboa"

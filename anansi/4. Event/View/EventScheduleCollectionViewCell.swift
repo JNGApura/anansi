@@ -33,27 +33,27 @@ class EventScheduleCollectionViewCell: UICollectionViewCell {
         [0 : [ScheduleData(type: "info", title: "Check-in & xChallenge kick-off", description: "Get your badge and goodie bag.", location: "Edifício da Reitoria", imageURL: ""),
               ScheduleData(type: "activity", title: "Filipa e Rita Barreiros", description: "Live performance.", location: "Salão Nobre", imageURL: "No7Qlm96VRNn7RYEIXV4Sjo7E0m2")],
          
-         1 : [ScheduleData(type: "talk", title: "P3DRA", description: "Há um caminho certo?", location: "Aula Magna", imageURL: "speaker-p3dra"),
-              ScheduleData(type: "talk", title: "Winy Mule", description: "Does radical feminism represent us?", location: "Aula Magna", imageURL: "speaker-winy"),
-              ScheduleData(type: "talk", title: "Joaquim Alves Gaspar", description: "Seria a Terra redonda em 1500?", location: "Aula Magna", imageURL: "speaker-joaquim"),
-              ScheduleData(type: "talk", title: "Marco Rodrigues", description: "O amor pode transformar uma vida", location: "Aula Magna", imageURL: "speaker-marco"),
-              ScheduleData(type: "talk", title: "Leyla Acaroglu", description: "How do we value invisible things?", location: "Aula Magna", imageURL: "speaker-leyla")],
+         1 : [ScheduleData(type: "talk", title: "P3DRA", description: "Há um caminho certo?", location: "Aula Magna · 10:20", imageURL: "speaker-p3dra"),
+              ScheduleData(type: "talk", title: "Winy Mule", description: "Does radical feminism represent us?", location: "Aula Magna · 10:40", imageURL: "speaker-winy"),
+              ScheduleData(type: "talk", title: "Joaquim Alves Gaspar", description: "Seria a Terra redonda em 1500?", location: "Aula Magna · 11:00", imageURL: "speaker-joaquim"),
+              ScheduleData(type: "talk", title: "Marco Rodrigues", description: "O amor pode transformar uma vida", location: "Aula Magna · 11:20", imageURL: "speaker-marco"),
+              ScheduleData(type: "talk", title: "Leyla Acaroglu", description: "How do we value invisible things?", location: "Aula Magna · 11:40", imageURL: "speaker-leyla")],
          
          2 : [ScheduleData(type: "info", title: "Lunch", description: "Enjoy our food trucks outside!", location: "Alameda da Universidade", imageURL: ""),
               ScheduleData(type: "activity", title: "Activities", description: "Yoga & mindfulness", location: "Alameda da Universidade", imageURL: "Ag6eSDTy6vcD0hJTOEnGOiib7OB2")],
          
-         3 : [ScheduleData(type: "talk", title: "Bia Berry", description: "The Melodies in my Head", location: "Aula Magna", imageURL: "speaker-bia"),
-              ScheduleData(type: "talk", title: "Gonçalo Fonseca", description: "Endurance as the key to success", location: "Aula Magna", imageURL: "speaker-goncalo"),
-              ScheduleData(type: "talk", title: "Ana Basílio", description: "A importância de sermos nós próprios", location: "Aula Magna", imageURL: "speaker-ana"),
-              ScheduleData(type: "talk", title: "Nuno Santos", description: "Create your own path", location: "Aula Magna", imageURL: "speaker-nuno")],
+         3 : [ScheduleData(type: "talk", title: "Bia Berry", description: "The Melodies in my Head", location: "Aula Magna · 13:40", imageURL: "speaker-bia"),
+              ScheduleData(type: "talk", title: "Gonçalo Fonseca", description: "Endurance as the key to success", location: "Aula Magna · 14:00", imageURL: "speaker-goncalo"),
+              ScheduleData(type: "talk", title: "Ana Basílio", description: "A importância de sermos nós próprios", location: "Aula Magna · 14:20", imageURL: "speaker-ana"),
+              ScheduleData(type: "talk", title: "Nuno Santos", description: "Create your own path", location: "Aula Magna · 14:40", imageURL: "speaker-nuno")],
          
          4 : [ScheduleData(type: "info", title: "Coffee-break", description: "Network with other attendees while enjoying a cup of coffee.", location: "Edifício da Reitoria", imageURL: ""),
               ScheduleData(type: "activity", title: "Mistah Isaac", description: "Live performance", location: "Salão Nobre", imageURL: "Adm3HuORGBZ2TAFt0xunYs7K6Is2")],
     
-         5 : [ScheduleData(type: "talk", title: "Rizumik", description: "Spontane-Us", location: "Aula Magna", imageURL: "speaker-rizumik"),
-              ScheduleData(type: "talk", title: "Daniel Caramujo", description: "Loneliness: public enemy number one", location: "Aula Magna", imageURL: "speaker-daniel"),
-              ScheduleData(type: "talk", title: "Joana Lobo Antunes", description: "What we talk about when we talk about scientists", location: "Aula Magna", imageURL: "speaker-joana"),
-              ScheduleData(type: "talk", title: "Catarina Holstein", description: "Master in Life Adventures – using the World as a Classroom", location: "Aula Magna", imageURL: "speaker-catarina")],
+         5 : [ScheduleData(type: "talk", title: "Rizumik", description: "Spontane-Us", location: "Aula Magna · 16:40", imageURL: "speaker-rizumik"),
+              ScheduleData(type: "talk", title: "Daniel Caramujo", description: "Loneliness: public enemy number one", location: "Aula Magna · 17:00", imageURL: "speaker-daniel"),
+              ScheduleData(type: "talk", title: "Joana Lobo Antunes", description: "What we talk about when we talk about scientists", location: "Aula Magna · 17:20", imageURL: "speaker-joana"),
+              ScheduleData(type: "talk", title: "Catarina Holstein", description: "Master in Life Adventures – using the World as a Classroom · 17:40", location: "Aula Magna", imageURL: "speaker-catarina")],
          
          6 : [ScheduleData(type: "info", title: "Closing remarks", description: "Farewell and xChallenge winners announcement", location: "Aula Magna", imageURL: "")]]
     

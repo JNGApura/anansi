@@ -13,10 +13,6 @@
 		2C0AD0212267DF93007B96EA /* DescriptionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AD0202267DF93007B96EA /* DescriptionTableViewCell.swift */; };
 		2C0ADB4B2042B3F700520F87 /* CommunityTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0ADB4A2042B3F700520F87 /* CommunityTableCell.swift */; };
 		2C0D47732287393C002D9E38 /* SearchTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D47722287393C002D9E38 /* SearchTableCell.swift */; };
-		2C0D4777228783CE002D9E38 /* UserPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D4776228783CE002D9E38 /* UserPageViewController.swift */; };
-		2C0D477A2287840F002D9E38 /* EmployeeTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D47782287840F002D9E38 /* EmployeeTableCell.swift */; };
-		2C0D477B2287840F002D9E38 /* UserTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D47792287840F002D9E38 /* UserTableCell.swift */; };
-		2C0D477D22878426002D9E38 /* Partner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D477C22878426002D9E38 /* Partner.swift */; };
 		2C0D477F228784D4002D9E38 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D477E228784D4002D9E38 /* Message.swift */; };
 		2C1668DE2012B0BD007C9B38 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1668DD2012B0BD007C9B38 /* User.swift */; };
 		2C171CED226AA81F00E05064 /* PageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C171CEC226AA81F00E05064 /* PageControl.swift */; };

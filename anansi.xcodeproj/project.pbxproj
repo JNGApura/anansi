@@ -126,10 +126,6 @@
 		2C0AD0202267DF93007B96EA /* DescriptionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionTableViewCell.swift; sourceTree = "<group>"; };
 		2C0ADB4A2042B3F700520F87 /* CommunityTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityTableCell.swift; sourceTree = "<group>"; };
 		2C0D47722287393C002D9E38 /* SearchTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableCell.swift; sourceTree = "<group>"; };
-		2C0D4776228783CE002D9E38 /* UserPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserPageViewController.swift; path = "../../../../../Downloads/android-material-design-ui-kit/anansi-2/anansi/2.2. User Profile/Controller/UserPageViewController.swift"; sourceTree = "<group>"; };
-		2C0D47782287840F002D9E38 /* EmployeeTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EmployeeTableCell.swift; path = "../../../../../Downloads/android-material-design-ui-kit/anansi-2/anansi/View/View/EmployeeTableCell.swift"; sourceTree = "<group>"; };
-		2C0D47792287840F002D9E38 /* UserTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserTableCell.swift; path = "../../../../../Downloads/android-material-design-ui-kit/anansi-2/anansi/View/View/UserTableCell.swift"; sourceTree = "<group>"; };
-		2C0D477C22878426002D9E38 /* Partner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Partner.swift; path = "../../../../../Downloads/android-material-design-ui-kit/anansi-2/anansi/View/Model/Partner.swift"; sourceTree = "<group>"; };
 		2C0D477E228784D4002D9E38 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Message.swift; path = "anansi/3.1. Chat/Model/Message.swift"; sourceTree = SOURCE_ROOT; };
 		2C1668DD2012B0BD007C9B38 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		2C171CEC226AA81F00E05064 /* PageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageControl.swift; sourceTree = "<group>"; };
@@ -141,7 +137,6 @@
 		2C42950020269C1900724385 /* UIViewController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+.swift"; sourceTree = "<group>"; };
 		2C584C1C2018714500E17FD3 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 		2C5A54EE2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UserCommunityCollectionViewCell.swift; path = "../../2.2. User Profile/View/UserCommunityCollectionViewCell.swift"; sourceTree = "<group>"; };
-		2C5A54F02042C73B006DB37A /* PartnerCommunityCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PartnerCommunityCollectionViewController.swift; path = ../../View/View/PartnerCommunityCollectionViewController.swift; sourceTree = "<group>"; };
 		2C5A54F52043593A006DB37A /* PartnerPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartnerPageViewController.swift; sourceTree = "<group>"; };
 		2C5A54F9204BAA26006DB37A /* SpeakerCardDetailedController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakerCardDetailedController.swift; sourceTree = "<group>"; };
 		2C5A54FB204CC019006DB37A /* SearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewController.swift; sourceTree = "<group>"; };
@@ -156,6 +151,12 @@
 		2C698901202ADDF200F6B4A8 /* SignUpController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpController.swift; sourceTree = "<group>"; };
 		2C698903202ADDFE00F6B4A8 /* ProfilingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilingController.swift; sourceTree = "<group>"; };
 		2C698905202AEFC500F6B4A8 /* Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Display.swift; sourceTree = "<group>"; };
+		2C6D4015228787FE00FCF1F6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		2C6D40182287894F00FCF1F6 /* EmployeeTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmployeeTableCell.swift; sourceTree = "<group>"; };
+		2C6D40192287894F00FCF1F6 /* UserTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTableCell.swift; sourceTree = "<group>"; };
+		2C6D401C2287895900FCF1F6 /* Partner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Partner.swift; sourceTree = "<group>"; };
+		2C6D401E2287896500FCF1F6 /* UserPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserPageViewController.swift; sourceTree = "<group>"; };
+		2C6D4020228789B600FCF1F6 /* PartnerCommunityCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartnerCommunityCollectionViewController.swift; sourceTree = "<group>"; };
 		2C708BDB200C40A0006E5ABD /* FeedbackPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackPageView.swift; sourceTree = "<group>"; };
 		2C70FBC420021793002E97E7 /* anansi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = anansi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C70FBC720021793002E97E7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -284,26 +285,15 @@
 		2C0D476D228731E9002D9E38 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				2C0D4776228783CE002D9E38 /* UserPageViewController.swift */,
+				2C6D401E2287896500FCF1F6 /* UserPageViewController.swift */,
 			);
 			path = Controller;
-			sourceTree = "<group>";
-		};
-		2C0D476E22873206002D9E38 /* 2.3. Partner Profile */ = {
-			isa = PBXGroup;
-			children = (
-				2C0D47712287322D002D9E38 /* Controller */,
-				2C0D477022873225002D9E38 /* View */,
-				2C0D476F2287321F002D9E38 /* Model */,
-			);
-			name = "2.3. Partner Profile";
-			path = View;
 			sourceTree = "<group>";
 		};
 		2C0D476F2287321F002D9E38 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				2C0D477C22878426002D9E38 /* Partner.swift */,
+				2C6D401C2287895900FCF1F6 /* Partner.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -311,8 +301,8 @@
 		2C0D477022873225002D9E38 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				2C0D47782287840F002D9E38 /* EmployeeTableCell.swift */,
-				2C0D47792287840F002D9E38 /* UserTableCell.swift */,
+				2C6D40182287894F00FCF1F6 /* EmployeeTableCell.swift */,
+				2C6D40192287894F00FCF1F6 /* UserTableCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -368,6 +358,16 @@
 			path = Controller;
 			sourceTree = "<group>";
 		};
+		2C6D40172287890900FCF1F6 /* 2.3. Partner Profile */ = {
+			isa = PBXGroup;
+			children = (
+				2C0D47712287322D002D9E38 /* Controller */,
+				2C0D477022873225002D9E38 /* View */,
+				2C0D476F2287321F002D9E38 /* Model */,
+			);
+			path = "2.3. Partner Profile";
+			sourceTree = "<group>";
+		};
 		2C70FBBB20021793002E97E7 = {
 			isa = PBXGroup;
 			children = (
@@ -397,7 +397,7 @@
 				2CEE5EBF2284948200ACC42C /* 2. Explore */,
 				2CEE5EDF22849AAF00ACC42C /* 2.1. Search */,
 				2C0D476A228731BD002D9E38 /* 2.2. User Profile */,
-				2C0D476E22873206002D9E38 /* 2.3. Partner Profile */,
+				2C6D40172287890900FCF1F6 /* 2.3. Partner Profile */,
 				2CEE5EBE2284947D00ACC42C /* 3. Connect */,
 				2CEE5ED72284999A00ACC42C /* 3.1. Chat */,
 				2C8AE56A204E5E6800DF8587 /* 3.2. ReportAbuse */,
@@ -604,7 +604,7 @@
 			isa = PBXGroup;
 			children = (
 				2C0ADB4A2042B3F700520F87 /* CommunityTableCell.swift */,
-				2C5A54F02042C73B006DB37A /* PartnerCommunityCollectionViewController.swift */,
+				2C6D4020228789B600FCF1F6 /* PartnerCommunityCollectionViewController.swift */,
 				2C5A54EE2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift */,
 				2CF6CB27228503B30050A053 /* TrendingCommunityCollectionViewCell.swift */,
 			);

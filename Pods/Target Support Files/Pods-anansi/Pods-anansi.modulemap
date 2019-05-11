@@ -1,0 +1,6 @@
+framework module Pods_anansi {
+  umbrella header "Pods-anansi-umbrella.h"
+
+  export *
+  module * { export * }
+}

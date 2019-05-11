@@ -1,0 +1,6 @@
+framework module Pods_anansiUITests {
+  umbrella header "Pods-anansiUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

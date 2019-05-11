@@ -12,13 +12,16 @@ class SearchTableViewController: UITableViewController {
     
     private let identifier = "SearchCell"
     
-    var sections = [String]()
+    var suggestedSections = [String]()
     
     var filteredUsers = [User]()
-    var filteredPartners = [Partner]()
+    var filteredSuggestions = [String : [User]]()
     
+    var myInterests = [String]()
+    var myRecentViewIDs = [String]()
+    
+    var trendingUsers = [User]()
     var users = [User]()
-    var partners =  [Partner]()
     
     lazy var searchController : UISearchController = {
         let sc = UISearchController(searchResultsController: nil)
@@ -40,7 +43,6 @@ class SearchTableViewController: UITableViewController {
         return sc
     }()
     
-    var searchWasCanceled = false
     var searchString: String!
     
     // Creates empty state for collectionView
@@ -49,20 +51,20 @@ class SearchTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fetchUsers()
-        fetchPartners()
+        fetchMyInterests()
+        fetchRecentlyViewedUsers()
         
-        tableView.register(CommunityTableCell.self, forCellReuseIdentifier: identifier)
+        tableView.register(SearchTableCell.self, forCellReuseIdentifier: identifier)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .background
         tableView.alwaysBounceVertical = true
         tableView.contentInset = UIEdgeInsets(top: 16.0, left: 0, bottom: 0, right: 0)
         tableView.separatorStyle = .none
-        tableView.rowHeight = 96
-        tableView.estimatedRowHeight = 96
-        tableView.sectionHeaderHeight = 36.0
-        tableView.estimatedSectionHeaderHeight = 36.0
+        tableView.rowHeight = 60.0
+        tableView.estimatedRowHeight = 60.0
+        tableView.sectionHeaderHeight = 20.0
+        tableView.estimatedSectionHeaderHeight = 20.0
         
         let attributes:[NSAttributedString.Key:Any] = [
             NSAttributedString.Key.foregroundColor : UIColor.primary,
@@ -73,6 +75,7 @@ class SearchTableViewController: UITableViewController {
         navigationItem.titleView = searchController.searchBar
         
         searchController.isActive = true
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -110,6 +113,11 @@ class SearchTableViewController: UITableViewController {
         // Sets notifications for keyboard
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        // Fetches necessary information
+        fetchMyInterests()
+        fetchRecentlyViewedUsers()
+        tableView.reloadData()
     }
     
     override func didReceiveMemoryWarning() {
@@ -117,30 +125,21 @@ class SearchTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    // MARK: - Network
-    
-    func fetchUsers() {
-        
-        NetworkManager.shared.fetchUsers { (dictionary, userID) in
-            if userID != NetworkManager.shared.getUID() {
-                let user = User()
-                user.set(dictionary: dictionary, id: userID)
-                self.users.append(user)
-            }
-        }
-    }
-    
-    func fetchPartners() {
-        
-        NetworkManager.shared.fetchPartners { (dictionary, partnerID) in
-            
-            let partner = Partner()
-            partner.set(dictionary: dictionary, id: partnerID)
-            self.partners.append(partner)
-        }
-    }
-    
     // MARK: - Custom functions
+    
+    private func fetchMyInterests() {
+        
+        if let interests = UserDefaults.standard.value(forKey: userInfoType.interests.rawValue) as? [String] {
+            myInterests = interests
+        }
+    }
+    
+    private func fetchRecentlyViewedUsers() {
+        
+        if let recentlyViewed = UserDefaults.standard.value(forKey: "recentlyViewedIDs") as? [String] {
+            myRecentViewIDs = recentlyViewed
+        }
+    }
     
     func showProfileController(user: User) {
         
@@ -192,31 +191,81 @@ class SearchTableViewController: UITableViewController {
     
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
         
-        sections.removeAll()
-        
-        // Filter users
-        filteredUsers = users.filter({ (user) -> Bool in
-            if let name = user.getValue(forField: .name) as? String {
-                return name.lowercased().contains(searchText.lowercased())
-            }
-            return false
-        })
-        if !filteredUsers.isEmpty {
-            filteredUsers = filteredUsers.sorted(by: { (($0).getValue(forField: .name) as? String)!.localizedCaseInsensitiveCompare((($1).getValue(forField: .name) as? String)!) == ComparisonResult.orderedAscending } )
-            sections.append("Attendees")
-        }
-        
-        // Filter partners
-        filteredPartners = partners.filter({ (partner) -> Bool in
-            if let name = partner.getValue(forField: .name) as? String {
-                return name.lowercased().contains(searchText.lowercased())
-            }
-            return false
-        })
-        if !filteredPartners.isEmpty {
+        if !searchText.isEmpty {
             
-            filteredPartners = filteredPartners.sorted(by: { (($0).getValue(forField: .name) as? String)!.localizedCaseInsensitiveCompare((($1).getValue(forField: .name) as? String)!) == ComparisonResult.orderedAscending } )
-            sections.append("Partners")
+            // Filter users
+            filteredUsers = users.filter({ (user) -> Bool in
+                if let name = user.getValue(forField: .name) as? String,
+                    let interests = user.getValue(forField: .interests) as? [String] {
+                    
+                    let nameResults = name.lowercased().contains(searchText.lowercased())
+                    let interestResults = interests.map{$0.lowercased()}.contains(searchText.lowercased())
+                    
+                    return nameResults || interestResults
+                }
+                return false
+            })
+            if !filteredUsers.isEmpty {
+                filteredUsers = filteredUsers.sorted(by: { (($0).getValue(forField: .name) as? String)!.localizedCaseInsensitiveCompare((($1).getValue(forField: .name) as? String)!) == .orderedAscending } )
+            }
+            
+        } else {
+            
+            // Clean up
+            suggestedSections.removeAll()
+            filteredSuggestions.removeAll()
+        
+            // Suggested
+            var suggested = [User]()
+            if !myInterests.isEmpty {
+                let suggestedUsers = users.sorted(by: { (lhs, rhs) in
+                    
+                    let lc = ((lhs.getValue(forField: .interests) as? [String]) ?? []).filter { myInterests.contains($0) }.count
+                    let rc = ((rhs.getValue(forField: .interests) as? [String]) ?? []).filter { myInterests.contains($0) }.count
+                    
+                    if lc == 0 && rc != 0 {
+                        return true
+                    } else if lc != 0 && rc == 0 {
+                        return false
+                    } else if lc == rc {
+                        return (lhs.getValue(forField: .name) as? String)!.localizedCaseInsensitiveCompare((rhs.getValue(forField: .name) as? String)!) == .orderedDescending
+                    } else {
+                        return lc < rc
+                    }
+                }).reversed().prefix(5)
+                suggested = Array(suggestedUsers)
+                
+            } else {
+                let suggestedUsers = trendingUsers.prefix(5)
+                suggested = Array(suggestedUsers)
+            }
+            
+            if !suggested.isEmpty {
+                suggestedSections.append("Suggested")
+                filteredSuggestions["Suggested"] = Array(suggested)
+            }
+            
+            // Recently viewed
+            let recentlyViewed = users.filter { (user) -> Bool in
+                
+                if let id = user.getValue(forField: .id) as? String {
+                    return myRecentViewIDs.contains(id)
+                }
+                return false
+                
+            }.sorted { (lhs, rhs) -> Bool in
+                
+                let lc = lhs.getValue(forField: .id) as! String
+                let rc = rhs.getValue(forField: .id) as! String
+                
+                return myRecentViewIDs.index(of: lc)! < myRecentViewIDs.index(of: rc)!
+                
+            }.prefix(5)
+            
+            if !recentlyViewed.isEmpty {
+                suggestedSections.append("Recently viewed")
+                filteredSuggestions["Recently viewed"] = Array(recentlyViewed)
+            }
         }
         
         tableView.reloadData()
@@ -246,17 +295,28 @@ class SearchTableViewController: UITableViewController {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         
-        if (sections.count == 0 && !searchBarIsEmpty()) {
+        if !searchBarIsEmpty() && filteredUsers.count == 0 {
             tableView.backgroundView = emptyState
+            return 0
+            
         } else {
             tableView.backgroundView = nil
+            
+            if searchBarIsEmpty() {
+                return suggestedSections.count
+            } else {
+                return 1
+            }
         }
-        
-        return sections.count
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sections[section]
+        
+        if searchBarIsEmpty() {
+            return suggestedSections[section]
+        } else {
+            return "Attendees"
+        }
     }
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
@@ -269,33 +329,38 @@ class SearchTableViewController: UITableViewController {
      }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if sections[section] == "Attendees" {
-            return filteredUsers.count
+        
+        if searchBarIsEmpty() {
+            let listOfUsers = filteredSuggestions[suggestedSections[section]]
+            return listOfUsers!.count
+            
         } else {
-            return filteredPartners.count
+            return filteredUsers.count
         }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! CommunityTableCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! SearchTableCell
+        cell.imageView?.kf.cancelDownloadTask() // cancel download task, if there's any
         
-        if sections[indexPath.section] == "Attendees" {
-            
-            let user = filteredUsers[indexPath.row]
-            if let name = user.getValue(forField: .name) as? String { cell.name.text = name }
-            if let occupation = user.getValue(forField: .occupation) as? String { cell.field.text = occupation }
-            if let location = user.getValue(forField: .location) as? String { cell.location.text = "From \(location)" }
-            if let profileImageURL = user.getValue(forField: .profileImageURL) as? String { cell.profileImageURL = profileImageURL }
-
+        let section = suggestedSections[indexPath.section]
+        let listOfUsers = filteredSuggestions[section]
+        
+        var user: User
+        if searchBarIsEmpty() && indexPath.row < listOfUsers!.count {
+            user = listOfUsers![indexPath.row]
         } else {
-            
-            let partner = filteredPartners[indexPath.row]
-            if let name = partner.getValue(forField: .name) as? String { cell.name.text = name }
-            if let occupation = partner.getValue(forField: .field) as? String { cell.field.text = occupation }
-            if let location = partner.getValue(forField: .location) as? String { cell.location.text = location }
-            if let profileImageURL = partner.getValue(forField: .profileImageURL) as? String { cell.profileImageURL = profileImageURL }
+            user = filteredUsers[indexPath.row]
         }
+        
+        if let name = user.getValue(forField: .name) as? String { cell.name.text = name }
+        if let interests = user.getValue(forField: .interests) as? [String] {
+            cell.interestsInCommon.text = "\(interests.filter { myInterests.contains($0) }.count) shared interests"
+        } else {
+            cell.interestsInCommon.text = "0 shared interests"
+        }
+        if let profileImageURL = user.getValue(forField: .profileImageURL) as? String { cell.profileImageURL = profileImageURL }
         
         cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
         return cell
@@ -306,15 +371,31 @@ class SearchTableViewController: UITableViewController {
         searchController.searchBar.resignFirstResponder()
         tableView.deselectRow(at: indexPath, animated: true)
         
-        if sections[indexPath.section] == "Attendees" {
-            
-            let user = filteredUsers[indexPath.row]
-            showProfileController(user: user)
+        let section = suggestedSections[indexPath.section]
+        let listOfUsers = filteredSuggestions[section]
+        
+        var user: User
+        if searchBarIsEmpty() {
+            user = listOfUsers![indexPath.row]
         } else {
-            
-            let partner = filteredPartners[indexPath.row]
-            showPartnerPageController(partner: partner)
+            user = filteredUsers[indexPath.row]
         }
+        
+        showProfileController(user: user)
+    }
+    
+    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: identifier)
+        cell?.imageView?.kf.cancelDownloadTask()
+    }
+    
+    // MARK: - UIScrollViewDelegate
+    
+    // this delegate is called when the scrollView (i.e your UITableView) will start scrolling
+    override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        
+        searchController.searchBar.endEditing(true)
     }
 }
 

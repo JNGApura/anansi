@@ -43,6 +43,18 @@ class TextViewTableCell: UITableViewCell {
         return v
     }()
     
+    lazy var limitLabel : UILabel = {
+        let l = UILabel()
+        l.text = ""
+        l.textColor = .primary
+        l.font = UIFont.boldSystemFont(ofSize: Const.captionFontSize)
+        l.numberOfLines = 0
+        l.textAlignment = .right
+        l.isHidden = true
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
+    }()
+    
     // data
     var field: userInfoType!
     var previousText: String!
@@ -55,7 +67,7 @@ class TextViewTableCell: UITableViewCell {
         self.selectionStyle = .none
         
         // Add everything as subviews to sectionView
-        [questionLabel, dataTextView, bottomLine].forEach { addSubview($0) }
+        [questionLabel, limitLabel, dataTextView, bottomLine].forEach { addSubview($0) }
         
         // Add NSLayoutConstraints
         NSLayoutConstraint.activate([
@@ -63,7 +75,12 @@ class TextViewTableCell: UITableViewCell {
             questionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea),
             questionLabel.topAnchor.constraint(equalTo: topAnchor, constant: Const.marginEight),
             questionLabel.heightAnchor.constraint(equalToConstant: 14.0),
-            questionLabel.widthAnchor.constraint(equalTo: widthAnchor, constant: -Const.marginSafeArea * 2.0),
+            questionLabel.widthAnchor.constraint(equalToConstant: frame.width / 2),
+            
+            limitLabel.leadingAnchor.constraint(equalTo: questionLabel.trailingAnchor),
+            limitLabel.heightAnchor.constraint(equalToConstant: 14.0),
+            limitLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
+            limitLabel.centerYAnchor.constraint(equalTo: questionLabel.centerYAnchor),
             
             dataTextView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea - 6.0),
             dataTextView.topAnchor.constraint(equalTo: questionLabel.bottomAnchor, constant: 4.0),
@@ -88,10 +105,24 @@ class TextViewTableCell: UITableViewCell {
         self.field = field
         
         questionLabel.text = label
-        dataTextView.text = value ?? ""
+        
+        if value != "" {
+            dataTextView.text = value
+            dataTextView.textColor = .secondary
+            
+            limitLabel.isHidden = false
+            limitLabel.text = "\(value!.count) / 240"
+            
+        } else {
+            dataTextView.text = placeholder
+            dataTextView.textColor = UIColor.lightGray.withAlphaComponent(0.6)
+            
+            limitLabel.isHidden = true
+            limitLabel.text = ""
+        }
 
         placeholderText = placeholder
-        previousText = value ?? ""
+        previousText = value
     }
     
     func valueChanged(_ sender: UITextView) {
@@ -127,7 +158,7 @@ extension TextViewTableCell: UITextViewDelegate {
         
         if textView.text == "" {
             textView.text = placeholderText
-            textView.textColor = .lightGray
+            textView.textColor = UIColor.lightGray.withAlphaComponent(0.6)
         }
 
         //textView.resignFirstResponder()
@@ -155,6 +186,14 @@ extension TextViewTableCell: UITextViewDelegate {
         var prospectiveText = (textView.text as NSString).replacingCharacters(in: range, with: text)
         let textLength = prospectiveText.count
         let limit = 240
+        
+        if textLength > 0 {
+            limitLabel.isHidden = false
+            limitLabel.text = "\(textLength) / 240"
+        } else {
+            limitLabel.isHidden = true
+            limitLabel.text = ""
+        }
         
         if textLength > limit {
             prospectiveText.removeLast(textLength - limit)

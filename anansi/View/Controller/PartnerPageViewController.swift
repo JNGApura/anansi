@@ -143,7 +143,7 @@ class PartnerPageViewController: UIViewController {
     // Partner card
     lazy var partnerCard : UIButton = {
         let b = UIButton()
-        b.setImage(UIImage(named: "Star")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        b.setImage(UIImage(named: "Partners")?.withRenderingMode(.alwaysTemplate), for: .normal)
         b.setTitle("Partner", for: .normal)
         b.setTitleColor(.background, for: .normal)
         b.titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)

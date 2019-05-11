@@ -70,10 +70,10 @@ class SettingsTableViewCell: UITableViewCell {
         NSLayoutConstraint.activate([
             
             itemIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea),
-            itemIcon.topAnchor.constraint(equalTo: topAnchor, constant: 20.0),
-            itemIcon.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20.0),
-            itemIcon.heightAnchor.constraint(equalToConstant: 32.0),
-            itemIcon.widthAnchor.constraint(equalToConstant: 32.0),
+            itemIcon.topAnchor.constraint(equalTo: topAnchor, constant: 18.0),
+            itemIcon.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -18.0),
+            itemIcon.heightAnchor.constraint(equalToConstant: 36.0),
+            itemIcon.widthAnchor.constraint(equalToConstant: 36.0),
             
             itemStackView.leadingAnchor.constraint(equalTo: itemIcon.trailingAnchor, constant: Const.marginEight * 2.0),
             itemStackView.trailingAnchor.constraint(equalTo: itemArrow.leadingAnchor, constant: -Const.marginEight * 2.0),

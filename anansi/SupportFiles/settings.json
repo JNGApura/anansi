@@ -2,7 +2,7 @@
   "structure" : [ {
     "action" : "view",
     "icon" : "basicInfo",
-    "title" : "Edit your basic information",
+    "title" : "Edit my basic information",
     "url" : "basicInfo"
   }, {
       "action" : "view",

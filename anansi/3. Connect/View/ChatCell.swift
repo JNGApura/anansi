@@ -59,7 +59,7 @@ class ChatCell: UITableViewCell {
         let i = UIImageView()
         i.contentMode = .scaleAspectFill
         i.translatesAutoresizingMaskIntoConstraints = false
-        i.layer.cornerRadius = 64.0 / 2
+        i.layer.cornerRadius = 60.0 / 2
         i.layer.masksToBounds = true
         return i
     }()
@@ -106,7 +106,7 @@ class ChatCell: UITableViewCell {
     
     let timeLabel: UILabel = {
         let l = UILabel()
-        l.font = UIFont.systemFont(ofSize: Const.footnoteFontSize)
+        l.font = UIFont.systemFont(ofSize: Const.captionFontSize)
         l.textColor = .secondary
         l.textAlignment = .right
         l.translatesAutoresizingMaskIntoConstraints = false
@@ -134,8 +134,8 @@ class ChatCell: UITableViewCell {
         NSLayoutConstraint.activate([
             profileImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight*2),
             profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            profileImageView.widthAnchor.constraint(equalToConstant: 64.0),
-            profileImageView.heightAnchor.constraint(equalToConstant: 64.0),
+            profileImageView.widthAnchor.constraint(equalToConstant: 60.0),
+            profileImageView.heightAnchor.constraint(equalToConstant: 60.0),
             
             topStackView.heightAnchor.constraint(equalToConstant: 24.0),
             

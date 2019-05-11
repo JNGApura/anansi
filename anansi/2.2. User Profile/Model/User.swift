@@ -51,7 +51,6 @@ class User: NSObject {
     private var blockedUsers: [String: String]!
     private var ranking: [String : Int]!
     
-    
     // MARK: NSCoding Encoding
     /*
     func encode(with aCoder: NSCoder) {

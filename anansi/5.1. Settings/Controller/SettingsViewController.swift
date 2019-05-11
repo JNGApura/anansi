@@ -166,6 +166,10 @@ class SettingsViewController: UIViewController {
             return
         }
         
+        // Resets UserDefault values
+        UserDefaults.standard.set([], forKey: "recentlyViewedIDs")
+        user?.saveInDisk(value: [], for: .interests)
+        
         NetworkManager.shared.logout {
             
             DispatchQueue.main.async {

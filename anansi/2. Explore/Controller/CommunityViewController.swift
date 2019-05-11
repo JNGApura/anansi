@@ -93,6 +93,9 @@ class CommunityViewController: UIViewController {
         let myID = NetworkManager.shared.getUID()
         NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
             self.me.set(dictionary: dictionary, id: myID!)
+            
+            let interests = self.me.getValue(forField: .interests) as! [String]
+            self.me.saveInDisk(value: interests, for: .interests)
         }
 
         view.addSubview(scrollView)
@@ -230,7 +233,7 @@ class CommunityViewController: UIViewController {
         }
     }
     
-    func fetchTrendingUsers(onSuccess: @escaping ([User]) -> Void) {
+    func fetchTrendingUsers(onSuccess: @escaping () -> Void) {
         
         // Clear arrays
         trendingIDs.removeAll()
@@ -250,7 +253,7 @@ class CommunityViewController: UIViewController {
                 }
             }
             
-            onSuccess(self.trendingUsers)
+            onSuccess()
         })
     }
     
@@ -334,13 +337,9 @@ extension CommunityViewController: UICollectionViewDataSource, UICollectionViewD
             cell.communityViewController = self
             
             DispatchQueue.main.async {
-                self.fetchTrendingUsers(onSuccess: { _ in
+                self.fetchTrendingUsers {
                     cell.users = self.trendingUsers
-                })
-            }
-            
-            if let myInterests = me.getValue(forField: .interests) as? [String] {
-                cell.myInterests = myInterests
+                }
             }
             
             return cell
@@ -356,11 +355,7 @@ extension CommunityViewController: UICollectionViewDataSource, UICollectionViewD
                     cell.usersDictionary = self.usersDictionary
                 }
             }
-            
-            if let myInterests = me.getValue(forField: .interests) as? [String] {
-                cell.myInterests = myInterests
-            }
-        
+
             return cell
             
         default:

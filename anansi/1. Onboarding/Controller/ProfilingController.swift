@@ -363,8 +363,7 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         let location = defaults.value(forKey: "location") as! String
         
         NetworkManager.shared.createUserInDB(email: email, ticket: ticket, name: name, occupation: occupation, location: location) {
-            // do nothing
-            print(NetworkManager.shared.getUID())
+            //print(NetworkManager.shared.getUID()!)
         }
     }
     

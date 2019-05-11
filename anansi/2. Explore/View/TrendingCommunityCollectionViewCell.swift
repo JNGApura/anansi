@@ -20,9 +20,7 @@ class TrendingCommunityCollectionViewCell: UICollectionViewCell {
             tableView.reloadData()
         }
     }
-    
-    var myInterests : [String]!
-    
+        
     lazy var tableView: UITableView = {
         let tv = UITableView()
         tv.register(CommunityTableCell.self, forCellReuseIdentifier: "UserTableCell")
@@ -60,14 +58,16 @@ class TrendingCommunityCollectionViewCell: UICollectionViewCell {
     
     @objc func fetchTrendingUsers() {
         
-        communityViewController?.fetchTrendingUsers(onSuccess: { (trendingUsers) in
+        communityViewController?.fetchTrendingUsers {
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
                 
-                self.users = trendingUsers
+                self.users = self.communityViewController!.trendingUsers
+                
+                self.tableView.reloadData()
                 self.refreshControl.endRefreshing()
             })
-        })
+        }
     }
     
     // MARK: - Init

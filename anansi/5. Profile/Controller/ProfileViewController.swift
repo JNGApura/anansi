@@ -342,9 +342,14 @@ class ProfileViewController: UIViewController {
         
         NetworkManager.shared.fetchUserOnce(userID: myID!) { (dictionary) in
             
+            // Gets me!
             let me = User()
             me.set(dictionary: dictionary, id: self.myID!)
             self.user = me
+            
+            // Saves interests on disk
+            let interests = me.getValue(forField: .interests) as! [String]
+            me.saveInDisk(value: interests, for: .interests)
             
             self.tableView.reloadData()
             

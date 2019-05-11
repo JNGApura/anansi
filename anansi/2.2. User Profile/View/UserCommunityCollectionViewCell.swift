@@ -37,9 +37,7 @@ class UserCommunityCollectionViewCell: UICollectionViewCell {
             tableView.reloadData()
         }
     }
-    
-    var myInterests : [String]!
-    
+        
     lazy var tableView: UITableView = {
         let tv = UITableView()
         tv.register(CommunityTableCell.self, forCellReuseIdentifier: "UserTableCell")

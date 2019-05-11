@@ -24,7 +24,6 @@
 		2C42950120269C1900724385 /* UIViewController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C42950020269C1900724385 /* UIViewController+.swift */; };
 		2C584C1D2018714500E17FD3 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C584C1C2018714500E17FD3 /* Header.swift */; };
 		2C5A54EF2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54EE2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift */; };
-		2C5A54F12042C73B006DB37A /* PartnerCommunityCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54F02042C73B006DB37A /* PartnerCommunityCollectionViewController.swift */; };
 		2C5A54F62043593A006DB37A /* PartnerPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54F52043593A006DB37A /* PartnerPageViewController.swift */; };
 		2C5A54FA204BAA26006DB37A /* SpeakerCardDetailedController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54F9204BAA26006DB37A /* SpeakerCardDetailedController.swift */; };
 		2C5A54FC204CC019006DB37A /* SearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54FB204CC019006DB37A /* SearchTableViewController.swift */; };
@@ -38,6 +37,12 @@
 		2C698902202ADDF200F6B4A8 /* SignUpController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C698901202ADDF200F6B4A8 /* SignUpController.swift */; };
 		2C698904202ADDFE00F6B4A8 /* ProfilingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C698903202ADDFE00F6B4A8 /* ProfilingController.swift */; };
 		2C698906202AEFC500F6B4A8 /* Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C698905202AEFC500F6B4A8 /* Display.swift */; };
+		2C6D4016228787FF00FCF1F6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2C6D4015228787FE00FCF1F6 /* GoogleService-Info.plist */; };
+		2C6D401A2287894F00FCF1F6 /* EmployeeTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D40182287894F00FCF1F6 /* EmployeeTableCell.swift */; };
+		2C6D401B2287894F00FCF1F6 /* UserTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D40192287894F00FCF1F6 /* UserTableCell.swift */; };
+		2C6D401D2287895900FCF1F6 /* Partner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D401C2287895900FCF1F6 /* Partner.swift */; };
+		2C6D401F2287896500FCF1F6 /* UserPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D401E2287896500FCF1F6 /* UserPageViewController.swift */; };
+		2C6D4021228789B700FCF1F6 /* PartnerCommunityCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D4020228789B600FCF1F6 /* PartnerCommunityCollectionViewController.swift */; };
 		2C708BDC200C40A0006E5ABD /* FeedbackPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C708BDB200C40A0006E5ABD /* FeedbackPageView.swift */; };
 		2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C70FBC720021793002E97E7 /* AppDelegate.swift */; };
 		2C79C8F52036148600FFCF70 /* InterestProfileTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C79C8F42036148600FFCF70 /* InterestProfileTableCell.swift */; };
@@ -1101,20 +1106,19 @@
 				2C7F6F182025967C008AB0CD /* CustomButtons.swift in Sources */,
 				2CEE5F7A2007619300E86365 /* NetworkManager.swift in Sources */,
 				2CBE2EC120351967009E5268 /* UIView+.swift in Sources */,
-				2C0D477B2287840F002D9E38 /* UserTableCell.swift in Sources */,
 				2C79C8F920382A5B00FFCF70 /* InterestsViewController.swift in Sources */,
+				2C6D401B2287894F00FCF1F6 /* UserTableCell.swift in Sources */,
 				2C7F6F1420259604008AB0CD /* UIFont+.swift in Sources */,
 				2C42950120269C1900724385 /* UIViewController+.swift in Sources */,
 				2C5A5500204D207C006DB37A /* ReportConfirmationView.swift in Sources */,
 				2C87DACF200CA072004F8730 /* Classes.swift in Sources */,
 				2C7F6F1A2025D902008AB0CD /* ChatAccessoryView.swift in Sources */,
 				2C698900202ADDEA00F6B4A8 /* LandingController.swift in Sources */,
-				2C5A54F12042C73B006DB37A /* PartnerCommunityCollectionViewController.swift in Sources */,
 				2C171CED226AA81F00E05064 /* PageControl.swift in Sources */,
 				2C698902202ADDF200F6B4A8 /* SignUpController.swift in Sources */,
 				2C6988FE202A89A700F6B4A8 /* ConnectEmptyState.swift in Sources */,
-				2C0D4777228783CE002D9E38 /* UserPageViewController.swift in Sources */,
 				2C79C8F72036293900FFCF70 /* UICollectionViewAlignedLayout.swift in Sources */,
+				2C6D401F2287896500FCF1F6 /* UserPageViewController.swift in Sources */,
 				2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */,
 				2C5A54FE204D138F006DB37A /* ReportAbuseController.swift in Sources */,
 				2CD55AD62033EFA100299926 /* ProfileViewController.swift in Sources */,
@@ -1133,9 +1137,10 @@
 				2C2841C6202D137100F8EA00 /* SearchEmptyState.swift in Sources */,
 				2C18A7812011A36700C03B20 /* Reachability.swift in Sources */,
 				2C0ADB4B2042B3F700520F87 /* CommunityTableCell.swift in Sources */,
+				2C6D401D2287895900FCF1F6 /* Partner.swift in Sources */,
 				2C7F6F0820259522008AB0CD /* Bundle+.swift in Sources */,
-				2C0D477D22878426002D9E38 /* Partner.swift in Sources */,
 				2C698906202AEFC500F6B4A8 /* Display.swift in Sources */,
+				2C6D4021228789B700FCF1F6 /* PartnerCommunityCollectionViewController.swift in Sources */,
 				2C0941DC226C772B00A295C1 /* BasicInfoViewController.swift in Sources */,
 				2C79C8F52036148600FFCF70 /* InterestProfileTableCell.swift in Sources */,
 				2C0AD0212267DF93007B96EA /* DescriptionTableViewCell.swift in Sources */,
@@ -1144,7 +1149,7 @@
 				2C82C59A202AF567004A2CBE /* ProfilingPage.swift in Sources */,
 				2CCE520B20061CB300DFC9B1 /* SettingsViewController.swift in Sources */,
 				2C7F6F04202594B6008AB0CD /* UIColor+.swift in Sources */,
-				2C0D477A2287840F002D9E38 /* EmployeeTableCell.swift in Sources */,
+				2C6D401A2287894F00FCF1F6 /* EmployeeTableCell.swift in Sources */,
 				2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */,
 				2C0AD01F2267D2FA007B96EA /* ContactInfoTableViewCell.swift in Sources */,
 				2C708BDC200C40A0006E5ABD /* FeedbackPageView.swift in Sources */,

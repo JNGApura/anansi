@@ -27,7 +27,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             sections.removeAll()
             sectionDataToDisplay.removeAll()
             iconForContactSection.removeAll()
-            
+                        
             if let profileImageURL = user?.getValue(forField: .profileImageURL) as? String {
                 headerView.profileImage.setImage(with: profileImageURL)
             } else {
@@ -267,6 +267,24 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         // Updates ranking
         if let id = user?.getValue(forField: .id) as? String {
             NetworkManager.shared.updatesUserViews(id: id)
+        }
+        
+        // Adds user to recently viewed
+        if var recentlyViewed = UserDefaults.standard.value(forKey: "recentlyViewedIDs") as? [String] {
+            
+            let userID = user?.getValue(forField: .id) as! String
+            
+            if let i = recentlyViewed.index(of: userID) { recentlyViewed.remove(at: i) }
+            recentlyViewed.insert(userID, at: 0)
+            
+            UserDefaults.standard.set(recentlyViewed, forKey: "recentlyViewedIDs")
+            UserDefaults.standard.synchronize()
+            
+        } else {
+            
+            let userID = user?.getValue(forField: .id) as! String
+            UserDefaults.standard.set([userID], forKey: "recentlyViewedIDs")
+            UserDefaults.standard.synchronize()
         }
     }
     

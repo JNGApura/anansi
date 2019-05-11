@@ -13,7 +13,7 @@ class TrendingCommunityCollectionViewCell: UICollectionViewCell {
     // Custom Initializers
     
     var delegate: ShowUserProfileDelegate?
-    weak var communityViewController: CommunityViewController?
+    var communityViewController: CommunityViewController?
     
     var users = [User]() {
         didSet {
@@ -38,7 +38,7 @@ class TrendingCommunityCollectionViewCell: UICollectionViewCell {
         return tv
     }()
     
-    // Spinner shown during load
+    /// Spinner shown during load
     let spinner : UIActivityIndicatorView = {
         let s = UIActivityIndicatorView()
         s.color = .primary
@@ -47,27 +47,29 @@ class TrendingCommunityCollectionViewCell: UICollectionViewCell {
         return s
     }()
     
-    // Refresh view
-    lazy var refreshControl : UIRefreshControl = {
+    // Refresh control
+    private lazy var refreshControl : UIRefreshControl = {
         let attributes = [NSAttributedString.Key.foregroundColor: UIColor.primary]
-        let c = UIRefreshControl()
-        c.tintColor = .primary
-        c.backgroundColor = .clear
-        c.addTarget(self, action: #selector(fetchTrendingUsers), for: .valueChanged)
-        c.attributedTitle = NSAttributedString(string: "Just a second... ⌛", attributes: attributes)
-        return c
+        let r = UIRefreshControl()
+        r.addTarget(self, action: #selector(fetchTrendingUsers), for: .valueChanged)
+        r.tintColor = .primary
+        r.backgroundColor = .clear
+        r.attributedTitle = NSAttributedString(string: "This will take a second...", attributes: attributes)
+        return r
     }()
     
     @objc func fetchTrendingUsers() {
-        
-        communityViewController?.fetchTrendingUsers(onSuccess: { (trendingUsers) in
+
+        communityViewController!.fetchTrendingUsers {
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 
-                self.users = trendingUsers
+                self.users = self.communityViewController!.trendingUsers
+                
+                self.tableView.reloadData()
                 self.refreshControl.endRefreshing()
-            })
-        })
+            }
+        }
     }
     
     // MARK: - Init
@@ -76,6 +78,7 @@ class TrendingCommunityCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         
         tableView.refreshControl = refreshControl
+        
         addSubview(tableView)
         
         NSLayoutConstraint.activate([

@@ -132,6 +132,7 @@ class NewChatController: UITableViewController {
     // MARK: - Private instance methods
     
     func didPresentSearchController(_ searchController: UISearchController) {
+        
         searchController.searchBar.becomeFirstResponder()
     }
     
@@ -162,13 +163,18 @@ class NewChatController: UITableViewController {
         
         // Filter users
         filteredUsers = users.filter({ (user) -> Bool in
-            if let name = user.getValue(forField: .name) as? String {
-                return name.lowercased().contains(searchText.lowercased())
+            if let name = user.getValue(forField: .name) as? String,
+                let interests = user.getValue(forField: .interests) as? [String] {
+                
+                let nameResults = name.lowercased().contains(searchText.lowercased())
+                let interestResults = interests.map{$0.lowercased()}.contains(searchText.lowercased())
+                
+                return nameResults || interestResults
             }
             return false
         })
         if !filteredUsers.isEmpty {
-            filteredUsers = filteredUsers.sorted(by: { (($0).getValue(forField: .name) as? String)!.localizedCaseInsensitiveCompare((($1).getValue(forField: .name) as? String)!) == ComparisonResult.orderedAscending } )
+            filteredUsers = filteredUsers.sorted(by: { (($0).getValue(forField: .name) as? String)!.localizedCaseInsensitiveCompare((($1).getValue(forField: .name) as? String)!) == .orderedAscending } )
         }
         
         tableView.reloadData()

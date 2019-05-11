@@ -22,6 +22,7 @@ class CommunityViewController: UIViewController {
     var me = User()
     var userSectionTitles = [String]()
     var usersDictionary = [String: [User]]()
+    var allUsers = [User]()
     var userIDs = [String]()
     
     var trendingUsers = [User]()
@@ -218,6 +219,8 @@ class CommunityViewController: UIViewController {
                         self.usersDictionary[nameKey]?.append(user)
                     }
                     
+                    self.allUsers.append(user)
+                    
                     // guard to avoid duplicates
                     self.userIDs.append(userID)
                 }
@@ -227,9 +230,13 @@ class CommunityViewController: UIViewController {
         }
     }
     
-    func fetchTrendingUsers(onSuccess: @escaping () -> Void) {
+    func fetchTrendingUsers(onSuccess: @escaping ([User]) -> Void) {
         
-        NetworkManager.shared.fetchTrendingUsers { (dictionary, userID) in
+        // Clear arrays
+        trendingIDs.removeAll()
+        trendingUsers.removeAll()
+                
+        NetworkManager.shared.fetchTrendingUsers(limited: 20, onSuccess: { (dictionary, userID) in
             
             let user = User()
             user.set(dictionary: dictionary, id: userID)
@@ -243,8 +250,8 @@ class CommunityViewController: UIViewController {
                 }
             }
             
-            onSuccess()
-        }
+            onSuccess(self.trendingUsers)
+        })
     }
     
     func fetchPartners(onSuccess: @escaping () -> Void) {
@@ -281,7 +288,6 @@ class CommunityViewController: UIViewController {
     // Sort array with punctuation & numbers at the end
     func sort(array: [String]) -> [String] {
         
-        //array.sorted(by: { $0 < $1 })
         return array.sorted(by: { (lhs, rhs) -> Bool in
             
             let regex = try? NSRegularExpression(pattern: "[0-9.!?\\-]", options: .caseInsensitive)
@@ -301,6 +307,8 @@ class CommunityViewController: UIViewController {
     @objc func showSearchViewController() {
         
         let searchController = SearchTableViewController(style: .grouped)
+        searchController.users = allUsers
+        searchController.trendingUsers = trendingUsers
         searchController.hidesBottomBarWhenPushed = true
         
         let navController = UINavigationController(rootViewController: searchController)
@@ -323,11 +331,12 @@ extension CommunityViewController: UICollectionViewDataSource, UICollectionViewD
         case 0:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: trendingIdentifier, for: indexPath) as! TrendingCommunityCollectionViewCell
             cell.delegate = self
+            cell.communityViewController = self
             
             DispatchQueue.main.async {
-                self.fetchTrendingUsers {
+                self.fetchTrendingUsers(onSuccess: { _ in
                     cell.users = self.trendingUsers
-                }
+                })
             }
             
             if let myInterests = me.getValue(forField: .interests) as? [String] {
@@ -479,6 +488,5 @@ extension CommunityViewController: UserDidScrollOnCollectionViewCell {
             scrollView.setContentOffset(scrollViewOffset, animated: true)
             
         }
-
     }
 }

@@ -83,23 +83,22 @@ class NetworkManager {
             
             // Gets user UID
             guard let uid = self.getUID() else { return }
-        
+
             // Saves newUser successfully in the database node
             let userReference = self.userDatabase.child(uid)
-            userReference.updateChildValues([
-                "email": email,
-                "ticket": ticket,
-                "name": name,
-                "occupation": occupation,
-                "location": location,],
-                //"ranking" : ["views" : 0], ],
-                    withCompletionBlock: { (err, userReference) in
-                        if err != nil {
-                            print(err!.localizedDescription)
-                            return
-                        }
-                        onSuccess()
-                })
+            userReference.updateChildValues([ "email": email,
+                                              "ticket": ticket,
+                                              "name": name,
+                                              "occupation": occupation,
+                                              "location": location],
+                withCompletionBlock: { (err, userReference) in
+                    
+                    if err != nil {
+                        print(err!.localizedDescription)
+                        return
+                    }
+                    onSuccess()
+            })
         }
     }
     
@@ -231,18 +230,24 @@ class NetworkManager {
         }, withCancel: nil)
     }
     
-    func fetchTrendingUsers(onSuccess: @escaping ([String: Any], String) -> Void){
-        userDatabase.queryOrdered(byChild: "ranking/views").queryLimited(toFirst: 20).observe(.childAdded, with: { (snapshot) in
+    func fetchTrendingUsers(limited limit: UInt, onSuccess: @escaping ([String: Any], String) -> Void){
+        
+        userDatabase.queryOrdered(byChild: "ranking/views").queryLimited(toFirst: limit).observe(.value) { (snapshot) in
             
-            if !snapshot.exists() { return } // just to be safe
-            
-            if let dictionary = snapshot.value as? [String: Any] {
+            if let result = snapshot.children.allObjects as? [DataSnapshot] {
                 
-                if dictionary.count > 3 { // NAME, OCCUPATION, LOCATION
-                    onSuccess(dictionary, snapshot.key)
+                for child in result {
+                    
+                    let dictionary = child.value as! [String: Any]
+                    if dictionary.count > 3 { // NAME, OCCUPATION, LOCATION
+                        onSuccess(dictionary, child.key)
+                    }
                 }
+                
+            } else {
+                print("No results")
             }
-        }, withCancel: nil)
+        }
     }
     
     /// Observes single event of user from userDatabase

@@ -41,12 +41,18 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
     
     private var localTyping = false
     
-    var titleLabelView : UILabel = {
-        let l = UILabel()
-        l.textColor = .secondary
-        l.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        return l
+    var titleLabelView : UIButton = {
+        let b = UIButton()
+        b.setTitleColor(.secondary, for: .normal)
+        b.titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
+        b.backgroundColor = .clear
+        b.addTarget(self, action: #selector(printStuff), for: .touchUpInside)
+        return b
     }()
+    
+    @objc func printStuff() {
+        print("stuff")
+    }
     
     var user: User? {
         didSet {
@@ -56,7 +62,7 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
             firstname = fullname.removeFirst()
             chatAccessoryView.placeholderText = "Message \(firstname)"
             
-            titleLabelView.text = (user?.getValue(forField: .name) as? String)!
+            titleLabelView.setTitle((user?.getValue(forField: .name) as? String)!, for: .normal)
             
             // Hides chatAcessoryView if user is blocked
             if let blockedDic = user?.getValue(forField: .blockedUsers) as? [String: String] {

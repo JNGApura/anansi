@@ -80,8 +80,7 @@ class ProfileViewController: UIViewController {
     
     lazy var settingsButton: UIButton = {
         let b = UIButton(type: .system)
-        b.setImage(UIImage(named: "settings")!.withRenderingMode(.alwaysTemplate), for: .normal)
-        b.tintColor = .secondary
+        b.setImage(UIImage(named: "settings")!.withRenderingMode(.alwaysOriginal), for: .normal)
         b.backgroundColor = .background
         b.layer.cornerRadius = 16.0
         b.layer.masksToBounds = true
@@ -384,21 +383,6 @@ class ProfileViewController: UIViewController {
         }
     }
     
-    /*
-    func estimateFrameForText(text: String, lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, hyphenation: Float = 1.0, alignment: NSTextAlignment = .natural) -> CGRect {
-        
-        let size = CGSize(width: view.frame.width - Const.marginEight * 4.0, height: 1000) // height arbitrarily high
-        let options = NSStringDrawingOptions.usesFontLeading.union(NSStringDrawingOptions.usesLineFragmentOrigin)
-        
-        let style = NSMutableParagraphStyle()
-        style.lineSpacing = lineSpacing
-        style.lineHeightMultiple = lineHeightMultiple
-        style.hyphenationFactor = hyphenation
-        style.alignment = alignment
-        
-        return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: Const.bodyFontSize), NSAttributedString.Key.paragraphStyle: style], context: nil)
-    }*/
-    
     @objc func navigateToSettingsViewController(_ sender: UIBarButtonItem){
         
         let settingsController = SettingsViewController()
@@ -431,9 +415,7 @@ class ProfileViewController: UIViewController {
         let keyboardHeight = keyboardEndFrame.height
         let screenHeight = view.frame.height
         let offset : CGFloat = 24.0
-        
-        print(activeField)
-        
+                
         if activeField != nil {
             
             var section : Int = 0, row : Int = 0
@@ -577,14 +559,6 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        /*
-        let sectionType = sections[indexPath.section]
-        let field = (fields[sectionType]?[indexPath.row])!
-        
-        if field == .interests {
-            navigateToInterestsViewController()
-        }*/
         
         tableView.deselectRow(at: indexPath, animated: true)
     }

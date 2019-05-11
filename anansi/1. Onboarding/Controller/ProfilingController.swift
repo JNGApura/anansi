@@ -18,17 +18,22 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
                       description: "To connect with other attendees, you need to provide your real name:",
                       questionTitle: "What's your name?",
                       questionPlaceholder: "First and last name"),
-        ProfilingPage(title: "Let others get to know you!",
+        ProfilingPage(title: "Let others get to know you.",
                       description: "Tell other attendees what you do, whether you are a student or a professional.",
                       questionTitle: "What do you do?",
                       questionPlaceholder: "E.g. dream catcher"),
-        ProfilingPage(title: "Last step!",
-                      description: "Let others know where you are from, or where you work from. This will break the ice!",
+        ProfilingPage(title: "This will break the ice.",
+                      description: "Let others know where you are from, or where you work from.",
                       questionTitle: "Where are you from?",
                       questionPlaceholder: "E.g. Atlantis"),
+        ProfilingPage(title: "Last step! (optional)",
+                      description: "Help others recognize you during the event. You can change this later in Settings.",
+                      questionTitle: "profileImage",
+                      questionPlaceholder: "profileImage"),
     ]
     
     private var currentPage = 0
+    private var imageURL = ""
     
     lazy var scrollView: UIScrollView = {
         let v = UIScrollView()
@@ -82,6 +87,44 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         return tf
     }()
     
+    lazy var profileImage: UIImageView = {
+        let i = UIImageView()
+        i.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
+        i.tintColor = .secondary
+        i.layer.cornerRadius = 42.0
+        i.clipsToBounds = true
+        i.contentMode = .scaleAspectFill
+        i.isHidden = true
+        i.translatesAutoresizingMaskIntoConstraints = false
+        return i
+    }()
+    
+    let addPictureButton: UIButton = {
+        let i = UIButton()
+        i.setImage(UIImage(named: "editProfileImage")!.withRenderingMode(.alwaysOriginal), for: .normal)
+        i.contentMode = .scaleAspectFill
+        i.layer.cornerRadius = 18.0
+        i.layer.masksToBounds = false
+        i.layer.shadowColor = UIColor.black.cgColor
+        i.layer.shadowOpacity = 0.2
+        i.layer.shadowOffset = CGSize(width: 2.0, height: 2.0)
+        i.layer.shadowRadius = 4.0
+        i.isHidden = true
+        i.translatesAutoresizingMaskIntoConstraints = false
+        i.addTarget(self, action: #selector(chooseProfileImage), for: .touchUpInside)
+        return i
+    }()
+    
+    lazy var activityIndicator: UIActivityIndicatorView = {
+        let ai = UIActivityIndicatorView()
+        ai.hidesWhenStopped = true
+        ai.color = .primary
+        ai.translatesAutoresizingMaskIntoConstraints = false
+        ai.isHidden = true
+        ai.stopAnimating()
+        return ai
+    }()
+    
     private let bottomControlView: UIView = {
         let v = UIView()
         v.backgroundColor = .background
@@ -110,8 +153,8 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         // Add other subviews
         bottomControlView.addSubview(nextButton)
         [scrollView, pageControl, bottomControlView].forEach { view.addSubview($0) }
-        [pageController.view, answerText, labelPlaceholder].forEach { scrollView.addSubview($0) }
-
+        [pageController.view, answerText, labelPlaceholder, profileImage, activityIndicator, addPictureButton].forEach { scrollView.addSubview($0) }
+        
         pageController.didMove(toParent: self)
         
         // Setting up answerTextField to update every time we go to a new page
@@ -145,14 +188,26 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
             labelPlaceholder.topAnchor.constraint(equalTo: answerText.topAnchor),
             labelPlaceholder.heightAnchor.constraint(equalToConstant: 26.0),
             
+            profileImage.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            profileImage.bottomAnchor.constraint(equalTo: pageController.view.bottomAnchor, constant: Const.marginEight),
+            profileImage.widthAnchor.constraint(equalToConstant: 84.0),
+            profileImage.heightAnchor.constraint(equalToConstant: 84.0),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: profileImage.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor),
+            
+            addPictureButton.trailingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 4.0),
+            addPictureButton.bottomAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: 4.0),
+            addPictureButton.widthAnchor.constraint(equalToConstant: 36.0),
+            addPictureButton.heightAnchor.constraint(equalToConstant: 36.0),
+            
             bottomControlView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomControlView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomControlView.heightAnchor.constraint(equalToConstant: Const.marginSafeArea * 2.5),
             
             nextButton.centerYAnchor.constraint(equalTo: bottomControlView.centerYAnchor),
-            nextButton.trailingAnchor.constraint(equalTo: bottomControlView.trailingAnchor, constant: -Const.marginSafeArea),
+            nextButton.trailingAnchor.constraint(equalTo: bottomControlView.trailingAnchor, constant: -Const.marginSafeArea * 2),
             nextButton.heightAnchor.constraint(equalTo: bottomControlView.heightAnchor),
-            
         ])
         
         bottomControlBottomAnchor = bottomControlView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
@@ -185,13 +240,15 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
 
         // Stores answers from profiling questions
         storeProfilingAnswer(currentPage)
+        let nextPage = currentPage + 1
         
         // Next button is disabled to avoid double-tapping
-        nextButton.isEnabled = false
-        self.nextButton.alpha = 0.4
+        if nextPage != profilingPages.count - 1 {
+            nextButton.isEnabled = false
+            self.nextButton.alpha = 0.4
+        }
         
         // cellControl is updated with newPage value
-        let nextPage = currentPage + 1
         pageControl.setCumulativePageIndicator(nextPage)
         
         // If currentPage is the last, then "Next" becomes "Done"
@@ -222,12 +279,23 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
             pageController.setViewControllers([ProfilingPageView(page: profilingPages[nextPage])], direction: .forward, animated: true, completion: nil)
             
             // Fades in answerTextField
-            UIView.animate(withDuration: 0.3, animations: {
-                self.answerText.alpha = 1.0
+            if nextPage != profilingPages.count - 1 {
                 
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.answerText.alpha = 1.0
+                    
                 }, completion: { (true) in
-                self.labelPlaceholder.isHidden = false
-            })
+                    self.labelPlaceholder.isHidden = false
+                })
+            } else {
+                
+                answerText.resignFirstResponder()
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    self.profileImage.isHidden = false
+                    self.addPictureButton.isHidden = false
+                }
+            }
             
             currentPage = nextPage
         }
@@ -247,6 +315,12 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
             
         case 2:
             defaults.set(answer, forKey: "location")
+            
+            // Now we're done with the mandatory fields, let's create the user!
+            createUser()
+            
+        case 3:
+            defaults.set(imageURL, forKey: "imageURL")
             
         default:
             print("Ups, something went wrong here!")
@@ -270,8 +344,14 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         defaults.setEventOnboarded(value: false)
         defaults.setProfileOnboarded(value: false)
         
-        // Now we're done with the onboarding & profiling, let's create the user!
-        createUser()
+        // Sends user to TabBarController
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            
+            let controller = TabBarController()
+            controller.modalPresentationStyle = .overFullScreen
+            controller.modalTransitionStyle = .crossDissolve
+            self.present(controller, animated: true, completion: nil)
+        }
     }
     
     func createUser() {
@@ -283,15 +363,8 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         let location = defaults.value(forKey: "location") as! String
         
         NetworkManager.shared.createUserInDB(email: email, ticket: ticket, name: name, occupation: occupation, location: location) {
-            
-            // Sends user to TabBarController
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                
-                let controller = TabBarController()
-                controller.modalPresentationStyle = .overFullScreen
-                controller.modalTransitionStyle = .crossDissolve
-                self.present(controller, animated: true, completion: nil)
-            }
+            // do nothing
+            print(NetworkManager.shared.getUID())
         }
     }
     
@@ -358,5 +431,73 @@ extension ProfilingController: UITextViewDelegate {
         }
         
         return true
+    }
+}
+
+// MARK: ImagePickerController
+
+extension ProfilingController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    @objc func chooseProfileImage() {
+        
+        let picker = UIImagePickerController()
+        
+        picker.delegate = self
+        picker.allowsEditing = true
+        picker.navigationBar.isTranslucent = false
+        
+        present(picker, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        var selectedImage: UIImage?
+        
+        if let editedImage = info[.editedImage] as? UIImage {
+            selectedImage = editedImage
+            
+        } else if let originalImage = info[.originalImage] as? UIImage {
+            selectedImage = originalImage
+        }
+        
+        if let image = selectedImage {
+            
+            let uid = NetworkManager.shared.getUID()
+
+            profileImage.alpha = 0.5
+            activityIndicator.isHidden = false
+            activityIndicator.startAnimating()
+            
+            NetworkManager.shared.removesImageFromStorage(folder: "profile_images") {
+                
+                NetworkManager.shared.storesImageInStorage(folder: "profile_images", image: image) { (imageURL) in
+             
+                    self.imageURL = imageURL
+                    
+                    NetworkManager.shared.register(value: imageURL, for: "profileImageURL", in: uid!)
+                    
+                    self.activityIndicator.isHidden = true
+                    self.activityIndicator.stopAnimating()
+                    self.profileImage.alpha = 1.0
+                    
+                    self.profileImage.contentMode = .scaleAspectFill
+                    self.profileImage.image = image
+                }
+            }
+            
+            self.activityIndicator.isHidden = true
+            self.activityIndicator.stopAnimating()
+            self.profileImage.alpha = 1.0
+            
+            self.profileImage.contentMode = .scaleAspectFill
+            self.profileImage.image = image
+        }
+        
+        picker.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        //print("Image picker was canceled")
+        dismiss(animated: true, completion: nil)
     }
 }

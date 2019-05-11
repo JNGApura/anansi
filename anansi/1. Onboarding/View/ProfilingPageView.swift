@@ -60,6 +60,7 @@ class ProfilingPageView: UIViewController {
         pageTitle.text = page.title
         pageDescription.text = page.description
         pageDescription.formatTextWithLineSpacing(lineSpacing: 8, lineHeightMultiple: 1.2, hyphenation: 0.5, alignment: .left)
+        
         pageQuestion.text = page.questionTitle
     }
     
@@ -94,7 +95,12 @@ class ProfilingPageView: UIViewController {
             bottomBorderAnswer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomBorderAnswer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomBorderAnswer.heightAnchor.constraint(equalToConstant: 1.0),
-            
         ])
+        
+        // If imagePicker
+        if pageQuestion.text == "profileImage" {
+            pageQuestion.isHidden = true
+            bottomBorderAnswer.isHidden = true
+        }
     }
 }

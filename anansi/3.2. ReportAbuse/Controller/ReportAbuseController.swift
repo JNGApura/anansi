@@ -172,7 +172,7 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
             
             buttonGroupView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.marginSafeArea * 1.25),
             buttonGroupView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            buttonGroupView.widthAnchor.constraint(equalToConstant: 172.0),
+            buttonGroupView.widthAnchor.constraint(equalToConstant: 246.0),
             buttonGroupView.heightAnchor.constraint(equalToConstant: 100.0),
             
             firstButton.topAnchor.constraint(equalTo: buttonGroupView.topAnchor),

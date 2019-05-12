@@ -51,8 +51,8 @@ class CommunityViewController: UIViewController {
         let hv = Header()
         hv.setTitleName(name: "Community")
         hv.actionButton.setImage(UIImage(named: "search")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        hv.actionButton.addTarget(self, action: #selector(showSearchViewController), for: .touchUpInside)
-        hv.actionButton.isHidden = false
+        //hv.actionButton.addTarget(self, action: #selector(showSearchViewController), for: .touchUpInside)
+        hv.actionButton.isHidden = true
         hv.backgroundColor = .background
         hv.translatesAutoresizingMaskIntoConstraints = false
         return hv
@@ -210,13 +210,18 @@ class CommunityViewController: UIViewController {
                 if userID != "VE0sgL8MhIcHEt7U1Hqo6Ps8DDg2" && !self.userIDs.contains(userID) { // iOS tester (Apple)
                     
                     let name = user.getValue(forField: .name) as! String
-                    let nameKey = String(name.uppercased().replacingOccurrences(of:" ", with: "").prefix(1))
+                    let nameKey = String(name.uppercased().replacingOccurrences(of:" ", with: "").prefix(1)) // remove spaces
                     
                     if !(self.userSectionTitles.contains(nameKey)) {
                         self.userSectionTitles.append(nameKey)
                         self.usersDictionary[nameKey] = [user]
                         
                         self.userSectionTitles = self.sort(array: self.userSectionTitles)
+                        
+                        // Hack to get search bar at the top of the tableView
+                        if !self.userSectionTitles.contains(" ") {
+                            self.userSectionTitles.insert(" ", at: 0)
+                        }
                         
                     } else {
                         self.usersDictionary[nameKey]?.append(user)
@@ -306,18 +311,6 @@ class CommunityViewController: UIViewController {
             }
         })
     }
-    
-    @objc func showSearchViewController() {
-        
-        let searchController = SearchTableViewController(style: .grouped)
-        searchController.users = allUsers
-        searchController.trendingUsers = trendingUsers
-        searchController.hidesBottomBarWhenPushed = true
-        
-        let navController = UINavigationController(rootViewController: searchController)
-        navController.modalPresentationStyle = .overFullScreen
-        present(navController, animated: true, completion: nil)
-    }
 }
 
 // MARK: - UICollectionView
@@ -346,8 +339,8 @@ extension CommunityViewController: UICollectionViewDataSource, UICollectionViewD
             
         case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: userIdentifier, for: indexPath) as! UserCommunityCollectionViewCell
-            cell.delegate = self
-            cell.scrollDelegate = self
+            cell.profileDelegate = self
+            cell.searchDelegate = self
             
             DispatchQueue.main.async {
                 self.fetchUsers {
@@ -430,7 +423,7 @@ extension CommunityViewController: PageSelectorDelegate {
     }
 }
 
-// MARK: - ShowProfileDelegate
+// MARK: - ShowUserProfileDelegate
 
 extension CommunityViewController: ShowUserProfileDelegate {
     
@@ -442,6 +435,23 @@ extension CommunityViewController: ShowUserProfileDelegate {
         userProfile.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: navigationController, action: nil)
         
         navigationController?.pushViewController(userProfile, animated: true)
+    }
+}
+
+// MARK: - ShowSearchDelegate
+
+extension CommunityViewController: ShowSearchDelegate {
+
+    func showSearchController() {
+        
+        let searchController = SearchTableViewController(style: .grouped)
+        searchController.users = allUsers
+        searchController.trendingUsers = trendingUsers
+        searchController.hidesBottomBarWhenPushed = true
+        
+        let navController = UINavigationController(rootViewController: searchController)
+        navController.modalPresentationStyle = .overFullScreen
+        present(navController, animated: true, completion: nil)
     }
 }
 
@@ -457,31 +467,5 @@ extension CommunityViewController: ShowPartnerPageDelegate {
         partnerPageController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: navigationController, action: nil)
         
         self.navigationController?.pushViewController(partnerPageController, animated: true)
-    }
-}
-
-// MARK: - ShowProfileDelegate
-
-extension CommunityViewController: UserDidScrollOnCollectionViewCell {
-    
-    func collectionViewCellDidScroll(offset: CGFloat) {
-        
-        print(offset)
-        
-        if headerView.frame.height < offset {
-            
-            var scrollViewOffset = scrollView.contentOffset
-            scrollViewOffset.y = headerView.frame.height
-            
-            print(headerView.frame.height)
-            
-            scrollView.setContentOffset(scrollViewOffset, animated: true)
-        } else {
-            
-            var scrollViewOffset = scrollView.contentOffset
-            scrollViewOffset.y = 0
-            scrollView.setContentOffset(scrollViewOffset, animated: true)
-            
-        }
     }
 }

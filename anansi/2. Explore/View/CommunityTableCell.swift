@@ -79,7 +79,8 @@ class CommunityTableCell: UITableViewCell {
         NSLayoutConstraint.activate([
             
             profileImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight * 2.0),
-            profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            profileImageView.topAnchor.constraint(equalTo: topAnchor, constant: Const.marginEight),
+            profileImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Const.marginEight),
             profileImageView.widthAnchor.constraint(equalToConstant: 80.0),
             profileImageView.heightAnchor.constraint(equalToConstant: 80.0),
             

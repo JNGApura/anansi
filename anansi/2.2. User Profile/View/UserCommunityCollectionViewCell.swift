@@ -8,20 +8,20 @@
 
 import UIKit
 
-protocol UserDidScrollOnCollectionViewCell: class {
-    func collectionViewCellDidScroll(offset: CGFloat)
-}
-
 protocol ShowUserProfileDelegate: class {
     func showUserProfileController(user: User)
+}
+
+protocol ShowSearchDelegate: class {
+    func showSearchController()
 }
 
 class UserCommunityCollectionViewCell: UICollectionViewCell {
     
     // Custom Initializers
         
-    var delegate: ShowUserProfileDelegate?
-    var scrollDelegate: UserDidScrollOnCollectionViewCell?
+    var profileDelegate: ShowUserProfileDelegate?
+    var searchDelegate: ShowSearchDelegate?
     
     private var areUsersLoading = true
     
@@ -40,6 +40,7 @@ class UserCommunityCollectionViewCell: UICollectionViewCell {
         
     lazy var tableView: UITableView = {
         let tv = UITableView()
+        tv.register(CommunitySearchCell.self, forCellReuseIdentifier: "SearchUsersCell")
         tv.register(CommunityTableCell.self, forCellReuseIdentifier: "UserTableCell")
         tv.delegate = self
         tv.dataSource = self
@@ -48,7 +49,7 @@ class UserCommunityCollectionViewCell: UICollectionViewCell {
         tv.translatesAutoresizingMaskIntoConstraints = false
         tv.contentInset = UIEdgeInsets(top: 8.0, left: 0, bottom: 0, right: 0)
         tv.separatorStyle = .none
-        tv.rowHeight = 96
+        tv.rowHeight = UITableView.automaticDimension
         tv.estimatedRowHeight = 96
         return tv
     }()
@@ -85,6 +86,10 @@ class UserCommunityCollectionViewCell: UICollectionViewCell {
     
 extension UserCommunityCollectionViewCell: UITableViewDelegate, UITableViewDataSource {
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return userSectionTitles.count
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if !areUsersLoading {
@@ -95,17 +100,16 @@ extension UserCommunityCollectionViewCell: UITableViewDelegate, UITableViewDataS
             let nameKey = userSectionTitles[section]
             if let listOfUsers = usersDictionary[nameKey] {
                 return listOfUsers.count
+                
+            } else {
+                // search bar
+                return 1
             }
             
         } else {
             tableView.backgroundView = spinner
         }
-        
         return 0
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return userSectionTitles.count
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -126,31 +130,46 @@ extension UserCommunityCollectionViewCell: UITableViewDelegate, UITableViewDataS
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "UserTableCell", for: indexPath) as! CommunityTableCell
-        cell.profileImageView.kf.cancelDownloadTask() // cancel download task, if there's any
+        if indexPath.section == 0 {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "SearchUsersCell", for: indexPath) as! CommunitySearchCell
+            cell.selectedBackgroundView = createViewWithBackgroundColor(.clear)
+            return cell
+            
+        } else {
         
-        let userKey = userSectionTitles[indexPath.section]
-        if let listOfUsers = usersDictionary[userKey] {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "UserTableCell", for: indexPath) as! CommunityTableCell
+            cell.profileImageView.kf.cancelDownloadTask() // cancel download task, if there's any
             
-            let user = listOfUsers[indexPath.row]
+            let userKey = userSectionTitles[indexPath.section]
+            if let listOfUsers = usersDictionary[userKey] {
+                
+                let user = listOfUsers[indexPath.row]
+                
+                if let name = user.getValue(forField: .name) as? String { cell.name.text = name }
+                if let occupation = user.getValue(forField: .occupation) as? String { cell.field.text = occupation }
+                if let location = user.getValue(forField: .location) as? String { cell.location.text = "From \(location)" }
+                if let profileImageURL = user.getValue(forField: .profileImageURL) as? String { cell.profileImageURL = profileImageURL }
+            }
             
-            if let name = user.getValue(forField: .name) as? String { cell.name.text = name }
-            if let occupation = user.getValue(forField: .occupation) as? String { cell.field.text = occupation }
-            if let location = user.getValue(forField: .location) as? String { cell.location.text = "From \(location)" }
-            if let profileImageURL = user.getValue(forField: .profileImageURL) as? String { cell.profileImageURL = profileImageURL }            
+            cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
+            return cell
         }
-        
-        cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
-        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let nameKey = userSectionTitles[indexPath.section]
-        if let listOfUsers = usersDictionary[nameKey] {
-            let user = listOfUsers[indexPath.row]
+        if indexPath.section == 0 {
             
-            delegate?.showUserProfileController(user: user)
+            searchDelegate?.showSearchController()
+        } else {
+            
+            let nameKey = userSectionTitles[indexPath.section]
+            if let listOfUsers = usersDictionary[nameKey] {
+                let user = listOfUsers[indexPath.row]
+                
+                profileDelegate?.showUserProfileController(user: user)
+            }
         }
 
         tableView.deselectRow(at: indexPath, animated: true)
@@ -160,23 +179,5 @@ extension UserCommunityCollectionViewCell: UITableViewDelegate, UITableViewDataS
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserTableCell") as! CommunityTableCell
         cell.profileImageView.kf.cancelDownloadTask()
-    }
-}
-
-// MARK: - UIScrollViewDelegate
-
-extension UserCommunityCollectionViewCell: UIScrollViewDelegate {
-    
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        
-        let offsetY : CGFloat = tableView.contentOffset.y
-        //scrollDelegate?.collectionViewCellDidScroll(offset: offsetY)
-    }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
-        let offsetY : CGFloat = tableView.contentOffset.y
-        //scrollDelegate?.collectionViewCellDidScroll(offset: offsetY)
-
     }
 }

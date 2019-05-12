@@ -32,7 +32,7 @@ class SearchTableViewController: UITableViewController {
         sc.definesPresentationContext = true
         sc.delegate = self
         sc.searchBar.delegate = self
-        sc.searchBar.placeholder = "Search in community"
+        sc.searchBar.placeholder = "Search for attendees"
         sc.searchBar.setImage(UIImage(named: "search")!.withRenderingMode(.alwaysTemplate), for: .search, state: .normal)
         sc.searchBar.barTintColor = .secondary // color of text field background
         sc.searchBar.tintColor = .secondary // color of bar button items

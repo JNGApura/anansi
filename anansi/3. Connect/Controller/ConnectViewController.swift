@@ -111,8 +111,6 @@ class ConnectViewController: UIViewController {
             // Sets CommunityOnboarded to true
             UserDefaults.standard.setConnectOnboarded(value: true)
         }
-        
-        //observeUserMessages()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -180,7 +178,7 @@ class ConnectViewController: UIViewController {
     
     @objc func navigateToNewChatController() {
         
-        let newChatController = NewChatController()
+        let newChatController = NewChatController(style: .grouped)
         newChatController.delegate = self
         newChatController.hidesBottomBarWhenPushed = true
         

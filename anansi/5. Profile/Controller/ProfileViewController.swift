@@ -51,6 +51,7 @@ class ProfileViewController: UIViewController {
         let sv = UIScrollView()
         sv.delegate = self
         sv.backgroundColor = .background
+        sv.showsVerticalScrollIndicator = false
         sv.translatesAutoresizingMaskIntoConstraints = false
         return sv
     }()

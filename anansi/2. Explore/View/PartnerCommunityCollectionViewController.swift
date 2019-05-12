@@ -101,7 +101,7 @@ extension PartnerCommunityCollectionViewController: UITableViewDelegate, UITable
         let v = UIView()
         v.backgroundColor = .background
         
-        let i = UIImageView(image: UIImage(named: "Star")?.withRenderingMode(.alwaysTemplate))
+        let i = UIImageView(image: UIImage(named: "Partners")?.withRenderingMode(.alwaysTemplate))
         i.contentMode = .scaleAspectFit
         i.tintColor = Const.typeColor[partnerSections[section]]
         i.translatesAutoresizingMaskIntoConstraints = false

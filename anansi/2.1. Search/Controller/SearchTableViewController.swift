@@ -152,15 +152,6 @@ class SearchTableViewController: UITableViewController {
         navigationController?.pushViewController(profileController, animated: true)
     }
     
-    func showPartnerPageController(partner: Partner) {
-        
-        let partnerPageController = PartnerPageViewController()
-        partnerPageController.partner = partner
-        partnerPageController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: navigationController, action: nil)
-        
-        navigationController?.pushViewController(partnerPageController, animated: true)
-    }
-    
     // MARK : KEYBOARD-related functions
     
     @objc func keyboardWillHide() {

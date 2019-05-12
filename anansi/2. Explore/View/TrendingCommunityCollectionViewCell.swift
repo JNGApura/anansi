@@ -113,7 +113,7 @@ extension TrendingCommunityCollectionViewCell: UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserTableCell", for: indexPath) as! CommunityTableCell
-        cell.imageView?.kf.cancelDownloadTask() // cancel download task, if there's any
+        cell.profileImageView.kf.cancelDownloadTask() // cancel download task, if there's any
         
         let user = users[indexPath.row]
         
@@ -136,7 +136,7 @@ extension TrendingCommunityCollectionViewCell: UITableViewDelegate, UITableViewD
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "UserTableCell")
-        cell?.imageView?.kf.cancelDownloadTask()
+        let cell = tableView.dequeueReusableCell(withIdentifier: "UserTableCell") as! CommunityTableCell
+        cell.profileImageView.kf.cancelDownloadTask()
     }
 }

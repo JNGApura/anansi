@@ -217,6 +217,7 @@ class NewChatController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "SearchCell", for: indexPath) as! CommunityTableCell
+        cell.profileImageView.kf.cancelDownloadTask() // cancel download task, if there's any
         
         var user: User
         if searchBarIsEmpty() {
@@ -251,6 +252,12 @@ class NewChatController: UITableViewController {
                 self.delegate?.showChatController(user: user)
             }
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SearchCell") as! CommunityTableCell
+        cell.profileImageView.kf.cancelDownloadTask()
     }
 }
 

@@ -173,7 +173,7 @@ class ChatCell: UITableViewCell {
         name.text = ""
         lastMessage.text = ""
         timeLabel.text = ""
-        profileImageView.image = nil
+        profileImageView.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
         
     }
 }

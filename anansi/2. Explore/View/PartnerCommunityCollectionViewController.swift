@@ -137,7 +137,7 @@ extension PartnerCommunityCollectionViewController: UITableViewDelegate, UITable
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! CommunityTableCell
-        cell.imageView?.kf.cancelDownloadTask() // cancel download task, if there's any
+        cell.profileImageView.kf.cancelDownloadTask() // cancel download task, if there's any
         
         let type = partnerSections[indexPath.section]
         if let partner = (partnersInEachSection[type]?[indexPath.row]) {
@@ -163,7 +163,7 @@ extension PartnerCommunityCollectionViewController: UITableViewDelegate, UITable
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifier)
-        cell?.imageView?.kf.cancelDownloadTask()
+        let cell = tableView.dequeueReusableCell(withIdentifier: identifier) as! CommunityTableCell
+        cell.profileImageView.kf.cancelDownloadTask()
     }
 }

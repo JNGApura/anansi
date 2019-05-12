@@ -212,6 +212,7 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ChatCell
+        cell.profileImageView.kf.cancelDownloadTask() // cancel download task, if there's any
         
         let chat = latestChats[indexPath.row]
         cell.message = chat
@@ -241,6 +242,12 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
             user.set(dictionary: dictionary, id: receiverID)
             self.showChatLogController(user: user)
         }
+    }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! ChatCell
+        cell.profileImageView.kf.cancelDownloadTask()
     }
     
     // ENABLE DELETION

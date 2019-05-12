@@ -12,18 +12,16 @@ class ScheduleTalkTableViewCell: UITableViewCell {
     
     var type : String? {
         didSet {
-            type == "talk" ? (card.image = UIImage(named: "speakerCard")!.withRenderingMode(.alwaysOriginal)) : (card.image = UIImage(named: "activityCard")!.withRenderingMode(.alwaysOriginal))
+            type == "talk" ? (card.backgroundColor = UIColor.primary.withAlphaComponent(0.1)) : (card.backgroundColor = UIColor.tertiary.withAlphaComponent(0.5))
         }
     }
     
-    let card : UIImageView = { // hack
-        let i = UIImageView()
-        //i.image = UIImage(named: "speakerCard")!.withRenderingMode(.alwaysOriginal)
-        i.contentMode = .scaleToFill
-        i.layer.cornerRadius = 8.0
-        i.clipsToBounds = true
-        i.translatesAutoresizingMaskIntoConstraints = false
-        return i
+    let card : UIView = {
+        let v = UIView()
+        v.layer.cornerRadius = 8.0
+        v.clipsToBounds = true
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
     }()
     
     let cardTitle : UILabel = {
@@ -76,7 +74,7 @@ class ScheduleTalkTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         
-        backgroundColor = .clear
+        selectionStyle = .none
         
         [card, cardTitle, cardDescription, cardLocation, speakerPic].forEach { addSubview($0) }
         
@@ -86,6 +84,7 @@ class ScheduleTalkTableViewCell: UITableViewCell {
             card.leadingAnchor.constraint(equalTo: leadingAnchor),
             card.trailingAnchor.constraint(equalTo: trailingAnchor),
             card.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -6.0),
+            card.heightAnchor.constraint(greaterThanOrEqualToConstant: 128.0),
             
             cardTitle.topAnchor.constraint(equalTo: card.topAnchor, constant: Const.marginEight * 2.0),
             cardTitle.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: Const.marginEight * 2.0),

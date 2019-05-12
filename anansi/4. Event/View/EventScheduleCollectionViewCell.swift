@@ -53,7 +53,7 @@ class EventScheduleCollectionViewCell: UICollectionViewCell {
          5 : [ScheduleData(type: "talk", title: "Rizumik", description: "Spontane-Us", location: "Aula Magna · 16:40", imageURL: "speaker-rizumik"),
               ScheduleData(type: "talk", title: "Daniel Caramujo", description: "Loneliness: public enemy number one", location: "Aula Magna · 17:00", imageURL: "speaker-daniel"),
               ScheduleData(type: "talk", title: "Joana Lobo Antunes", description: "What we talk about when we talk about scientists", location: "Aula Magna · 17:20", imageURL: "speaker-joana"),
-              ScheduleData(type: "talk", title: "Catarina Holstein", description: "Master in Life Adventures – using the World as a Classroom · 17:40", location: "Aula Magna", imageURL: "speaker-catarina")],
+              ScheduleData(type: "talk", title: "Catarina Holstein", description: "Master in Life Adventures – using the World as a Classroom", location: "Aula Magna · 17:40", imageURL: "speaker-catarina")],
          
          6 : [ScheduleData(type: "info", title: "Closing remarks", description: "Farewell and xChallenge winners announcement", location: "Aula Magna", imageURL: "")]]
     
@@ -74,7 +74,6 @@ class EventScheduleCollectionViewCell: UICollectionViewCell {
         tv.estimatedRowHeight = 128.0
         tv.rowHeight = UITableView.automaticDimension
         tv.showsVerticalScrollIndicator = false
-        //tv.allowsSelection = false
         tv.translatesAutoresizingMaskIntoConstraints = false
         return tv
     }()

@@ -60,6 +60,8 @@ class ScheduleInfoTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         
+        selectionStyle = .none
+        
         [card, cardTitle, cardDescription, cardLocation].forEach { addSubview($0) }
         
         NSLayoutConstraint.activate([

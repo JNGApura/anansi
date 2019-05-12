@@ -19,7 +19,7 @@ class SearchEmptyState: UIView {
     
     let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = #imageLiteral(resourceName: "Find_empty_state").withRenderingMode(.alwaysTemplate)
+        imageView.image = UIImage(named: "Find_empty_state")!.withRenderingMode(.alwaysTemplate)
         imageView.tintColor = .secondary
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false

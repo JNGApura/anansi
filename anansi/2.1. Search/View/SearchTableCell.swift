@@ -17,13 +17,14 @@ class SearchTableCell: UITableViewCell {
         }
     }
     
-    let profileImageView: UIImageView = {
+    lazy var profileImageView: UIImageView = {
         let i = UIImageView()
         i.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
         i.contentMode = .scaleAspectFill
         i.translatesAutoresizingMaskIntoConstraints = false
-        i.layer.cornerRadius = 20.0
+        i.layer.cornerRadius = 20
         i.layer.masksToBounds = true
+        i.clipsToBounds = true
         return i
     }()
     

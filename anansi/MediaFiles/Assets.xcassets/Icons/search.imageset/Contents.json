@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : " Find.pdf",
+      "filename" : "Find.pdf",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : " Find@2x.pdf",
+      "filename" : "Find@2x.pdf",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : " Find@3x.pdf",
+      "filename" : "Find@3x.pdf",
       "scale" : "3x"
     }
   ],

@@ -24,7 +24,7 @@ class InterestProfileEmptyTableCell: UITableViewCell {
         let l = UILabel()
         l.text = "Pick topics you're interested in"
         l.textColor = UIColor.secondary.withAlphaComponent(0.2)
-        l.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
+        l.font = UIFont.systemFont(ofSize: Const.calloutFontSize)
         l.numberOfLines = 0
         l.translatesAutoresizingMaskIntoConstraints = false
         return l

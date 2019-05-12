@@ -34,7 +34,7 @@ class TextFieldTableCell: UITableViewCell {
         tf.placeholder = "This is the answer"
         tf.textColor = .secondary
         tf.backgroundColor = .background
-        tf.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
+        tf.font = UIFont.systemFont(ofSize: Const.calloutFontSize)
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.isUserInteractionEnabled = true
         tf.returnKeyType = UIReturnKeyType.done

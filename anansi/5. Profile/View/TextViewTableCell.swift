@@ -30,7 +30,7 @@ class TextViewTableCell: UITableViewCell {
         tv.delegate = self
         tv.textColor = .secondary
         tv.backgroundColor = .background
-        tv.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
+        tv.font = UIFont.systemFont(ofSize: Const.calloutFontSize)
         tv.isScrollEnabled = false
         tv.translatesAutoresizingMaskIntoConstraints = false
         return tv

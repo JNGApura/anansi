@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "Artboard.pdf",
+      "filename" : "Wave@1x.pdf",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Artboard@2x.pdf",
+      "filename" : "Wave@2x.pdf",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Artboard@3x.pdf",
+      "filename" : "Wave@3x.pdf",
       "scale" : "3x"
     }
   ],

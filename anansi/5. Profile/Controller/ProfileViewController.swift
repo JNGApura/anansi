@@ -149,7 +149,7 @@ class ProfileViewController: UIViewController {
     
     lazy var checkIcon: UIImageView = {
         let i = UIImageView()
-        i.image = #imageLiteral(resourceName: "check-progress").withRenderingMode(.alwaysTemplate)
+        i.image = UIImage(named: "check-progress")!.withRenderingMode(.alwaysTemplate)
         i.backgroundColor = .background
         i.layer.borderWidth = 2
         i.layer.cornerRadius = 16.0
@@ -348,14 +348,22 @@ class ProfileViewController: UIViewController {
             me.set(dictionary: dictionary, id: self.myID!)
             self.user = me
             
-            // Saves interests on disk
-            let interests = me.getValue(forField: .interests) as! [String]
-            me.saveInDisk(value: interests, for: .interests)
+            // If interests are NOT on disk, save them
+            if (UserDefaults.standard.value(forKey: userInfoType.interests.rawValue) == nil) {
+                
+                if let interests = me.getValue(forField: .interests) as? [String] {
+                    me.saveInDisk(value: interests, for: .interests)
+                }
+            }
             
-            // Saves profile image URL on disk
-            let profileImageURL = me.getValue(forField: .profileImageURL) as! String
-            me.saveInDisk(value: profileImageURL, for: .profileImageURL)
-            
+            // If profile image is NOT on disk, save it
+            if (UserDefaults.standard.value(forKey: userInfoType.profileImageURL.rawValue) == nil) {
+                
+                if let profileImageURL = me.getValue(forField: .profileImageURL) as? String {
+                    me.saveInDisk(value: profileImageURL, for: .profileImageURL)
+                }
+            }
+
             self.tableView.reloadData()
             
             self.updateProgress(with: self.progressFields.count)
@@ -397,24 +405,20 @@ class ProfileViewController: UIViewController {
         
         let settingsController = SettingsViewController()
         settingsController.user = user
-        
-        let navController = UINavigationController(rootViewController: settingsController)
-        navController.setNavigationBarHidden(false, animated: false)
-        present(navController, animated: true, completion: nil)
+        navigationController?.setNavigationBarHidden(false, animated: false) // check this?
+        navigationController?.pushViewController(settingsController, animated: true)
     }
     
     @objc func navigateToInterestsViewController() {
         
         let interests = user?.getValue(forField: .interests) as? [String] ?? []
-        
+
         let interestController = InterestsViewController()
-        interestController.hidesBottomBarWhenPushed = true
         interestController.selectedInterests = interests
         interestController.delegate = self
         
-        let navController = UINavigationController(rootViewController: interestController)
-        navController.setNavigationBarHidden(false, animated: false)
-        present(navController, animated: true, completion: nil)
+        navigationController?.setNavigationBarHidden(false, animated: false) // check this?
+        navigationController?.pushViewController(interestController, animated: true)
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
@@ -548,6 +552,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
                 
                 let cell = tableView.dequeueReusableCell(withIdentifier: "InterestTableCell", for: indexPath) as! InterestProfileTableCell
                 
+                cell.selectionStyle = .none
                 cell.myInterests = interests.sorted()
                 cell.delegate = self
                 
@@ -562,6 +567,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
             } else {
              
                 let cell = tableView.dequeueReusableCell(withIdentifier: "InterestEmptyTableCell", for: indexPath) as! InterestProfileEmptyTableCell
+                cell.selectionStyle = .none
                 cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
                 return cell
             }
@@ -571,6 +577,14 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        let sectionType = sections[indexPath.section]
+        let field = (fields[sectionType]?[indexPath.row])!
+        
+        if field == .interests, (tableView.cellForRow(at: indexPath) as? InterestProfileEmptyTableCell != nil) {
+            
+            navigateToInterestsViewController()
+        }
     }
 }
 

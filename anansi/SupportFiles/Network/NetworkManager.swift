@@ -350,7 +350,7 @@ class NetworkManager {
     }
     
     // Get list of user-messages from database
-    func observeChats(from myID: String, onSuccess: @escaping ([String: Any]) -> Void) {
+    func observeChats(from myID: String, onSuccess: @escaping ([String: Any], String) -> Void) {
         
         userMessagesDatabase.child(myID).observe(.childAdded, with: { (snapshot) in
             
@@ -358,13 +358,14 @@ class NetworkManager {
 
             self.messagesDatabase.child(chatID).observe(.childAdded, with: { (mesg) in
                 
-                guard let dictionary = mesg.value as? [String: Any] else { return }
+                guard var dictionary = mesg.value as? [String: Any] else { return }
                 
                 if let receiver = dictionary["receiver"] as? String, receiver == myID {
                     mesg.ref.updateChildValues(["received" : "true"])
+                    dictionary.updateValue("true", forKey: "received")
                 }
           
-                onSuccess(dictionary)
+                onSuccess(dictionary, mesg.key)
                 
             }, withCancel: nil)
             

@@ -11,6 +11,7 @@ import UIKit
 class Message: NSObject {
     
     // Custom message
+    var id: String
     var timestamp: NSNumber?
     var sender: String?
     var receiver: String?
@@ -21,7 +22,10 @@ class Message: NSObject {
     var isDelivered: Bool?
     var isRead: Bool?
     
-    init(dictionary: [String: Any]) {
+    init(dictionary: [String: Any], messageID: String) {
+        
+        self.id = messageID
+        
         super.init()
         
         if let timestamp = dictionary["createdAt"] as? String {

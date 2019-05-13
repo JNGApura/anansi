@@ -41,6 +41,17 @@ class ConnectViewController: UIViewController {
         
     var observingChats : Bool = false
     
+    var unreadMessagesFromUserIDs = [String]() {
+        didSet {
+            
+            if unreadMessagesFromUserIDs.count != 0 {
+                tabBarItem.badgeValue = "\(unreadMessagesFromUserIDs.count)"
+            } else {
+                tabBarItem.badgeValue = nil
+            }
+        }
+    }
+    
     let myID = NetworkManager.shared.getUID()
     
     lazy var headerView : Header = {
@@ -133,13 +144,20 @@ class ConnectViewController: UIViewController {
         //messagesDictionary.removeAll()
         //tableView.reloadData()
         
-        NetworkManager.shared.observeChats(from: myID!) { (mesg) in
+        NetworkManager.shared.observeChats(from: myID!) { (mesg, msgID) in
             
-            let chat = Message(dictionary: mesg)
+            let chat = Message(dictionary: mesg, messageID: msgID)
             
             // Replaces message to messagesDictionary (last one = last sent)
             if let chatPartnerID = chat.partnerID() {
                 self.userChats[chatPartnerID] = chat
+                
+                if self.myID == chat.receiver,
+                    let isRead = chat.isRead, !isRead,
+                    !self.unreadMessagesFromUserIDs.contains(chatPartnerID) {
+                 
+                    self.unreadMessagesFromUserIDs.append(chatPartnerID)
+                }
             }
             
             self.reloadChats()
@@ -219,8 +237,11 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
             
             cell.badge.isHidden = isRead
             
-            if isRead { cell.lastMessage.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
-            } else { cell.lastMessage.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize) }
+            if isRead {
+                cell.lastMessage.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
+            } else {
+                cell.lastMessage.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
+            }
         }
         
         cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
@@ -274,18 +295,33 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+// MARK: - StartNewChatDelegate
+
 extension ConnectViewController: StartNewChatDelegate {
     
     @objc func showChatLogController(user: User) {
         
         let chatController = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
         chatController.user = user
+        chatController.delegate = self
         chatController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(chatController, animated: true)
     }
     
     func showChatController(user: User) {
         showChatLogController(user: user)
+    }
+}
+
+// MARK: - UpdatesBadgeCountDelegate
+
+extension ConnectViewController: UpdatesBadgeCountDelegate {
+    
+    func updatesBadgeCount(for userID: String) {
+        
+        if let i = unreadMessagesFromUserIDs.index(of: userID) {
+            unreadMessagesFromUserIDs.remove(at: i)
+        }
     }
 }
 

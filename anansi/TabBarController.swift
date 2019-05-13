@@ -21,6 +21,8 @@ class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        observeMessages()
+        
         view.backgroundColor = .background
 
         // Add view controllers to tab bar
@@ -43,7 +45,7 @@ class TabBarController: UITabBarController {
         tabBar.isTranslucent = false
         tabBar.unselectedItemTintColor = .tertiary
         tabBarItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.tertiary], for: .normal)
-        
+                
         // Remove label to tab bar items
         removeTabBarItemText()
     }
@@ -61,6 +63,37 @@ class TabBarController: UITabBarController {
                 item.imageInsets = UIEdgeInsets(top: 7, left: 0, bottom: -7, right: 0);
                 item.setTitleTextAttributes([NSAttributedString.Key.foregroundColor:UIColor.clear], for: .selected)
                 item.setTitleTextAttributes([NSAttributedString.Key.foregroundColor:UIColor.clear], for: .normal)
+            }
+        }
+    }
+    
+    // MARK: - Unread bagde for the connect (item = 1)
+    
+    var unreadMessagesFromUserIDs = [String]() {
+        didSet {
+            
+            if unreadMessagesFromUserIDs.count != 0 {
+                tabBar.items![1].badgeValue = "\(unreadMessagesFromUserIDs.count)"
+            } else {
+                tabBar.items![1].badgeValue = nil
+            }
+        }
+    }
+    
+    private func observeMessages() {
+        
+        let myID = NetworkManager.shared.getUID()
+        
+        NetworkManager.shared.observeChats(from: myID!) { (mesg, key) in
+            
+            let chat = Message(dictionary: mesg, messageID: key)
+            
+            if myID == chat.receiver,
+                let isRead = chat.isRead, !isRead,
+                let chatPartnerID = chat.partnerID(),
+                !self.unreadMessagesFromUserIDs.contains(chatPartnerID) {
+                
+                self.unreadMessagesFromUserIDs.append(chatPartnerID)
             }
         }
     }

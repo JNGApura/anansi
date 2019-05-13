@@ -9,7 +9,13 @@
 import UIKit
 import UIKit.UIGestureRecognizerSubclass
 
+protocol UpdatesBadgeCountDelegate {
+    func updatesBadgeCount(for userID: String)
+}
+
 class ChatLogController: UICollectionViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate  {
+    
+    var delegate: UpdatesBadgeCountDelegate?
     
     var keyboardDidShow = false
     
@@ -63,7 +69,7 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
                 if blockedDic.index(forKey: myID!) != nil {
                     hasBeenBlocked = true
                 }
-            }
+            }            
         }
     }
     lazy var userImageView : UIImageView = {
@@ -160,6 +166,23 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
         if messages.count > 0 {
             let indexPath = IndexPath(item: messages.count - 1, section: 0)
             collectionView?.scrollToItem(at: indexPath, at: .top, animated: true)
+            
+            // Get list of unread messages
+            var hasUnreadMessages = 0
+            for message in messages {
+                if message.receiver == self.myID!, let isRead = message.isRead, !isRead {
+                    
+                    let userID = user?.getValue(forField: .id) as! String
+                    NetworkManager.shared.markMessagesAs("read", with: message.id, from: self.myID!, to: userID) {}
+                    hasUnreadMessages += 1
+                }
+            }
+            
+            if hasUnreadMessages != 0 {
+                
+                let userID = user?.getValue(forField: .id) as! String
+                self.delegate?.updatesBadgeCount(for: userID)
+            }
         }
         
         observeTyping()
@@ -214,13 +237,8 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
         
         NetworkManager.shared.observeChatMessages(from: myID!, to: userID) { (mesgDictionary, mesgKey) in
             
-            let message = Message(dictionary: mesgDictionary)
+            let message = Message(dictionary: mesgDictionary, messageID: mesgKey)
             self.messages.append(message)
-            
-            // Get list of unread messages
-            if message.receiver == self.myID!, let isRead = message.isRead, !isRead {
-                NetworkManager.shared.markMessagesAs("read", with: mesgKey, from: self.myID!, to: userID) {}
-            }
             
             // Creates list of time labels
             if let seconds = message.timestamp?.doubleValue {

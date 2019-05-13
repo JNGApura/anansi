@@ -1,5 +1,5 @@
 //
-//  ChatCell.swift
+//  ChatTableCell.swift
 //  anansi
 //
 //  Created by João Nuno Gaspar Apura on 25/01/2018.
@@ -7,10 +7,8 @@
 //
 
 import UIKit
-import FirebaseDatabase
-import FirebaseAuth
 
-class ChatCell: UITableViewCell {
+class ChatTableCell: UITableViewCell {
     
     let myID = NetworkManager.shared.getUID()
     let badgeRadius : CGFloat = 9.0
@@ -124,16 +122,17 @@ class ChatCell: UITableViewCell {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         
         [name, timeLabel].forEach { topStackView.addArrangedSubview($0) }
-        topStackView.setCustomSpacing(Const.marginSafeArea, after: name)
+        topStackView.setCustomSpacing(Const.marginEight, after: name)
         
         [topStackView, lastMessage].forEach { stackView.addArrangedSubview($0) }
-        stackView.setCustomSpacing(Const.marginEight / 2.0, after: topStackView)
+        stackView.setCustomSpacing(4.0, after: topStackView)
         
         [profileImageView, badge, stackView, timeLabel, separator].forEach { addSubview($0) }
         
         NSLayoutConstraint.activate([
-            profileImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight*2),
-            profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            profileImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight * 2.0),
+            profileImageView.topAnchor.constraint(equalTo: topAnchor, constant: Const.marginEight * 1.5),
+            profileImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Const.marginEight * 1.5),
             profileImageView.widthAnchor.constraint(equalToConstant: 60.0),
             profileImageView.heightAnchor.constraint(equalToConstant: 60.0),
             
@@ -147,7 +146,7 @@ class ChatCell: UITableViewCell {
             stackView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Const.marginEight * 2.0),
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
             
-            lastMessage.heightAnchor.constraint(equalToConstant: 24.0),
+            lastMessage.heightAnchor.constraint(equalToConstant: 20.0),
 
             separator.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
             separator.trailingAnchor.constraint(equalTo: trailingAnchor),

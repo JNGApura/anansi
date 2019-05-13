@@ -94,8 +94,13 @@ class CommunityViewController: UIViewController {
         NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
             self.me.set(dictionary: dictionary, id: myID!)
             
+            // Save interests on disk
             let interests = self.me.getValue(forField: .interests) as! [String]
             self.me.saveInDisk(value: interests, for: .interests)
+            
+            // Saves profile image URL on disk
+            let profileImageURL = self.me.getValue(forField: .profileImageURL) as! String
+            self.me.saveInDisk(value: profileImageURL, for: .profileImageURL)
         }
 
         view.addSubview(scrollView)

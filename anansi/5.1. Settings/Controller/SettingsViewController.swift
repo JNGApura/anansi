@@ -169,6 +169,7 @@ class SettingsViewController: UIViewController {
         // Resets UserDefault values
         UserDefaults.standard.set([], forKey: "recentlyViewedIDs")
         user?.saveInDisk(value: [], for: .interests)
+        user?.saveInDisk(value: "", for: .profileImageURL)
         
         NetworkManager.shared.logout {
             

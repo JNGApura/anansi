@@ -352,6 +352,10 @@ class ProfileViewController: UIViewController {
             let interests = me.getValue(forField: .interests) as! [String]
             me.saveInDisk(value: interests, for: .interests)
             
+            // Saves profile image URL on disk
+            let profileImageURL = me.getValue(forField: .profileImageURL) as! String
+            me.saveInDisk(value: profileImageURL, for: .profileImageURL)
+            
             self.tableView.reloadData()
             
             self.updateProgress(with: self.progressFields.count)

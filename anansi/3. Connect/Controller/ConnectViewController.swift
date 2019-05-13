@@ -55,9 +55,8 @@ class ConnectViewController: UIViewController {
     lazy var headerView : Header = {
         let hv = Header()
         hv.setTitleName(name: "Connect")
-        hv.actionButton.setImage(UIImage(named: "new_message")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        hv.setActionButtonAsProfileButton()
         hv.actionButton.addTarget(self, action: #selector(navigateToNewChatController), for: .touchUpInside)
-        hv.actionButton.isHidden = false
         hv.backgroundColor = .background
         hv.translatesAutoresizingMaskIntoConstraints = false
         return hv
@@ -65,18 +64,32 @@ class ConnectViewController: UIViewController {
     
     lazy var tableView : UIDynamicTableView = {
         let tv = UIDynamicTableView()
-        tv.register(ChatCell.self, forCellReuseIdentifier: "cell")
-        tv.translatesAutoresizingMaskIntoConstraints = false
-        tv.isScrollEnabled = false
+        tv.register(ChatTableCell.self, forCellReuseIdentifier: "ChatCell")
         tv.delegate = self
         tv.dataSource = self
-        tv.rowHeight = 96
-        tv.estimatedRowHeight = 96
+        tv.rowHeight = UITableView.automaticDimension
+        tv.estimatedRowHeight = 96.0
         tv.separatorStyle = .none
         tv.allowsMultipleSelection = true
+        tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: Const.marginSafeArea, right: 0)
+        tv.translatesAutoresizingMaskIntoConstraints = false
         return tv
     }()
     var tableViewHeightAnchor: NSLayoutConstraint?
+    
+    lazy var CTAbutton : UIButton = {
+        let b = UIButton()
+        b.setImage(UIImage(named: "NewChat")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        b.setImage(UIImage(named: "NewChat")?.withRenderingMode(.alwaysTemplate), for: .highlighted)
+        b.backgroundColor = .primary
+        b.imageView?.tintColor = .background
+        b.imageView?.contentMode = .scaleToFill
+        b.layer.cornerRadius = 56.0 / 2
+        b.layer.masksToBounds = false
+        b.addTarget(self, action: #selector(navigateToNewChatController), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -84,20 +97,24 @@ class ConnectViewController: UIViewController {
         // Sets up UI
         view.addSubview(headerView)
         view.addSubview(tableView)
+        view.addSubview(CTAbutton)
         
         NSLayoutConstraint.activate([
             
-            // Activates headerView constraints
             headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             headerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             headerView.widthAnchor.constraint(equalTo: view.widthAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 80.0),
             
-            // Activates tableView constraints
             tableView.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
             tableView.widthAnchor.constraint(equalTo: headerView.widthAnchor),
             tableView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 12.0),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            CTAbutton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Const.marginSafeArea + 4.0),
+            CTAbutton.heightAnchor.constraint(equalToConstant: 56.0),
+            CTAbutton.widthAnchor.constraint(equalToConstant: 56.0),
+            CTAbutton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -Const.marginSafeArea + 4.0),
         ])
     }
     
@@ -133,6 +150,15 @@ class ConnectViewController: UIViewController {
         self.navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
+    override func viewWillLayoutSubviews() {
+        
+        // Add dropshadow to button
+        CTAbutton.layer.shadowColor = UIColor.secondary.withAlphaComponent(0.4).cgColor
+        CTAbutton.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
+        CTAbutton.layer.shadowRadius = 4.0
+        CTAbutton.layer.shadowOpacity = 1.0
+    }
+    
     // MARK: - Custom functions
     
     private func observeUserMessages() {
@@ -140,7 +166,6 @@ class ConnectViewController: UIViewController {
         // Just to be safe, let's remove all messages' and messagesDictionary's content
         //chats.removeAll()
         //messagesDictionary.removeAll()
-        //tableView.reloadData()
         
         NetworkManager.shared.observeChats(from: myID!) { (mesg, msgID) in
             
@@ -207,6 +232,10 @@ class ConnectViewController: UIViewController {
 
 extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+        
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if (latestChats.count == 0) {
@@ -218,13 +247,9 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         return latestChats.count
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 84.0
-    }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ChatCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ChatCell", for: indexPath) as! ChatTableCell
         cell.profileImageView.kf.cancelDownloadTask() // cancel download task, if there's any
         
         let chat = latestChats[indexPath.row]
@@ -263,14 +288,14 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! ChatCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ChatCell") as! ChatTableCell
         cell.profileImageView.kf.cancelDownloadTask()
     }
     
     // ENABLE DELETION
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        
+
         return true
     }
     

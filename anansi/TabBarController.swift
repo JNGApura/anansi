@@ -16,12 +16,15 @@ class TabBarController: UITabBarController {
     
     fileprivate var tabBarViewControllers = [UINavigationController]()
     
+    private let myID = NetworkManager.shared.getUID()
+    
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         observeMessages()
+        fetchImportantInfoFromMyself()
         
         view.backgroundColor = .background
 
@@ -82,18 +85,34 @@ class TabBarController: UITabBarController {
     
     private func observeMessages() {
         
-        let myID = NetworkManager.shared.getUID()
-        
         NetworkManager.shared.observeChats(from: myID!) { (mesg, key) in
             
             let chat = Message(dictionary: mesg, messageID: key)
             
-            if myID == chat.getValue(forField: .receiver) as? String,
+            if self.myID == chat.getValue(forField: .receiver) as? String,
                 let isRead = chat.getValue(forField: .isRead) as? Bool, !isRead,
                 let chatPartnerID = chat.partnerID(),
                 !self.unreadChats.contains(chatPartnerID) {
                 
                 self.unreadChats.append(chatPartnerID)
+            }
+        }
+    }
+    
+    private func fetchImportantInfoFromMyself() {
+        
+        // Fetch me
+        NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
+            
+            // Save necessary information on disk
+            if let interests = dictionary[userInfoType.interests.rawValue] as? [String] {
+                UserDefaults.standard.set(interests, forKey: userInfoType.interests.rawValue)
+                UserDefaults.standard.synchronize()
+            }
+            
+            if let profileImageURL = dictionary[userInfoType.profileImageURL.rawValue] as? String {
+                UserDefaults.standard.set(profileImageURL, forKey: userInfoType.profileImageURL.rawValue)
+                UserDefaults.standard.synchronize()
             }
         }
     }

@@ -36,8 +36,7 @@ class NewChatController: UITableViewController {
         sc.definesPresentationContext = true
         sc.delegate = self
         sc.searchBar.delegate = self
-        sc.searchBar.placeholder = "Start a new conversation"
-        sc.searchBar.setImage(UIImage(named: "new_message")!.withRenderingMode(.alwaysTemplate), for: .search, state: .normal)
+        sc.searchBar.setImage(UIImage(named: "plus")!.withRenderingMode(.alwaysTemplate), for: .search, state: .normal)
         sc.searchBar.barTintColor = .secondary // color of text field background
         sc.searchBar.tintColor = .secondary // color of bar button items
         sc.searchBar.backgroundColor = .background // color of box surrounding text field
@@ -77,6 +76,11 @@ class NewChatController: UITableViewController {
         navigationItem.titleView = searchController.searchBar
         
         searchController.isActive = true
+        
+        // Placeholder message
+        let CTA = ["Start a new conversation", "Ignite a discussion", "Challenge others to change", "Spread your ideas", "Be the change", "Share your passion"]
+        searchController.searchBar.placeholder = CTA[Int.random(in: 0 ..< CTA.count)]
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {

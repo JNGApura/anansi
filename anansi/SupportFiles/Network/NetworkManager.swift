@@ -86,11 +86,11 @@ class NetworkManager {
 
             // Saves newUser successfully in the database node
             let userReference = self.userDatabase.child(uid)
-            userReference.updateChildValues([ "email": email,
-                                              "ticket": ticket,
-                                              "name": name,
-                                              "occupation": occupation,
-                                              "location": location],
+            userReference.updateChildValues([ userInfoType.email.rawValue: email,
+                                              userInfoType.ticket.rawValue: ticket,
+                                              userInfoType.name.rawValue: name,
+                                              userInfoType.occupation.rawValue: occupation,
+                                              userInfoType.location.rawValue: location],
                 withCompletionBlock: { (err, userReference) in
                     
                     if err != nil {
@@ -295,7 +295,7 @@ class NetworkManager {
     /// Updates id's # visualizations (Int) in DB
     func updatesUserViews(id: String) {
         
-        userDatabase.child(id).child("ranking").child("views").runTransactionBlock { (currentData: MutableData) -> TransactionResult in
+        userDatabase.child(id).child("ranking/views").runTransactionBlock { (currentData: MutableData) -> TransactionResult in
             var value = currentData.value as? Int
             if (value == nil) {
                 value = 0
@@ -360,9 +360,9 @@ class NetworkManager {
                 
                 guard var dictionary = mesg.value as? [String: Any] else { return }
                 
-                if let receiver = dictionary["receiver"] as? String, receiver == myID {
-                    mesg.ref.updateChildValues(["received" : "true"])
-                    dictionary.updateValue("true", forKey: "received")
+                if let receiver = dictionary[messageInfoType.receiver.rawValue] as? String, receiver == myID {
+                    mesg.ref.updateChildValues([messageInfoType.isDelivered.rawValue : "true"])
+                    dictionary.updateValue("true", forKey: messageInfoType.isDelivered.rawValue)
                 }
           
                 onSuccess(dictionary, mesg.key)

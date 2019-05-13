@@ -161,7 +161,12 @@ extension UserCommunityCollectionViewCell: UITableViewDelegate, UITableViewDataS
         
         if indexPath.section == 0 {
             
-            searchDelegate?.showSearchController()
+            // Weird bug when there's a delayed action when tapped on a selectionStyle = .none cell
+            // Solutions: changing to selectionStyle = .default or using DispatchQueue.main.async
+            DispatchQueue.main.async{
+                self.searchDelegate?.showSearchController()
+            }
+            
         } else {
             
             let nameKey = userSectionTitles[indexPath.section]

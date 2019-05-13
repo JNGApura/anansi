@@ -41,11 +41,11 @@ class ConnectViewController: UIViewController {
         
     var observingChats : Bool = false
     
-    var unreadMessagesFromUserIDs = [String]() {
+    var unreadChats = [String]() {
         didSet {
             
-            if unreadMessagesFromUserIDs.count != 0 {
-                tabBarItem.badgeValue = "\(unreadMessagesFromUserIDs.count)"
+            if unreadChats.count != 0 {
+                tabBarItem.badgeValue = "\(unreadChats.count)"
             } else {
                 tabBarItem.badgeValue = nil
             }
@@ -154,9 +154,9 @@ class ConnectViewController: UIViewController {
                 
                 if self.myID == chat.receiver,
                     let isRead = chat.isRead, !isRead,
-                    !self.unreadMessagesFromUserIDs.contains(chatPartnerID) {
+                    !self.unreadChats.contains(chatPartnerID) {
                  
-                    self.unreadMessagesFromUserIDs.append(chatPartnerID)
+                    self.unreadChats.append(chatPartnerID)
                 }
             }
             
@@ -319,8 +319,8 @@ extension ConnectViewController: UpdatesBadgeCountDelegate {
     
     func updatesBadgeCount(for userID: String) {
         
-        if let i = unreadMessagesFromUserIDs.index(of: userID) {
-            unreadMessagesFromUserIDs.remove(at: i)
+        if let i = unreadChats.index(of: userID) {
+            unreadChats.remove(at: i)
         }
     }
 }

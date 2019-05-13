@@ -69,11 +69,11 @@ class TabBarController: UITabBarController {
     
     // MARK: - Unread bagde for the connect (item = 1)
     
-    var unreadMessagesFromUserIDs = [String]() {
+    var unreadChats = [String]() {
         didSet {
             
-            if unreadMessagesFromUserIDs.count != 0 {
-                tabBar.items![1].badgeValue = "\(unreadMessagesFromUserIDs.count)"
+            if unreadChats.count != 0 {
+                tabBar.items![1].badgeValue = "\(unreadChats.count)"
             } else {
                 tabBar.items![1].badgeValue = nil
             }
@@ -91,9 +91,9 @@ class TabBarController: UITabBarController {
             if myID == chat.receiver,
                 let isRead = chat.isRead, !isRead,
                 let chatPartnerID = chat.partnerID(),
-                !self.unreadMessagesFromUserIDs.contains(chatPartnerID) {
+                !self.unreadChats.contains(chatPartnerID) {
                 
-                self.unreadMessagesFromUserIDs.append(chatPartnerID)
+                self.unreadChats.append(chatPartnerID)
             }
         }
     }

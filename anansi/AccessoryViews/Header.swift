@@ -110,7 +110,7 @@ class ProfileHeader : UIView {
     
     var profileImage: UIImageView = {
         let i = UIImageView()
-        i.image = #imageLiteral(resourceName: "profileImageTemplate").withRenderingMode(.alwaysOriginal)
+        i.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
         i.layer.cornerRadius = Const.profileImageHeight / 2
         i.clipsToBounds = true
         i.contentMode = .scaleAspectFill

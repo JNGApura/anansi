@@ -206,7 +206,7 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
             bottomControlView.heightAnchor.constraint(equalToConstant: Const.marginSafeArea * 2.5),
             
             nextButton.centerYAnchor.constraint(equalTo: bottomControlView.centerYAnchor),
-            nextButton.trailingAnchor.constraint(equalTo: bottomControlView.trailingAnchor, constant: -Const.marginSafeArea * 2),
+            nextButton.trailingAnchor.constraint(equalTo: bottomControlView.trailingAnchor, constant: -Const.marginSafeArea),
             nextButton.heightAnchor.constraint(equalTo: bottomControlView.heightAnchor),
         ])
         
@@ -221,7 +221,9 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(handleFirstReponser), userInfo: nil, repeats: false)
+        if currentPage != profilingPages.count - 1 {
+            Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(handleFirstReponser), userInfo: nil, repeats: false)
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -232,6 +234,7 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
     
     // Presents keyboard for answerTextField
     @objc func handleFirstReponser() {
+        
         answerText.becomeFirstResponder()
     }
     
@@ -308,19 +311,19 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         
         switch currentPage {
         case 0:
-            defaults.set(answer, forKey: "name")
+            defaults.set(answer, forKey: userInfoType.name.rawValue)
             
         case 1:
-            defaults.set(answer, forKey: "occupation")
+            defaults.set(answer, forKey: userInfoType.occupation.rawValue)
             
         case 2:
-            defaults.set(answer, forKey: "location")
+            defaults.set(answer, forKey: userInfoType.location.rawValue)
             
             // Now we're done with the mandatory fields, let's create the user!
             createUser()
             
         case 3:
-            defaults.set(imageURL, forKey: "imageURL")
+            defaults.set(imageURL, forKey: userInfoType.profileImageURL.rawValue)
             
         default:
             print("Ups, something went wrong here!")
@@ -356,14 +359,14 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
     
     func createUser() {
         
-        let email = defaults.value(forKey: "email") as! String
-        let ticket = defaults.value(forKey: "ticket") as! String
-        let name = defaults.value(forKey: "name") as! String
-        let occupation = defaults.value(forKey: "occupation") as! String
-        let location = defaults.value(forKey: "location") as! String
+        let email = defaults.value(forKey: userInfoType.email.rawValue) as! String
+        let ticket = defaults.value(forKey: userInfoType.ticket.rawValue) as! String
+        let name = defaults.value(forKey: userInfoType.name.rawValue) as! String
+        let occupation = defaults.value(forKey: userInfoType.occupation.rawValue) as! String
+        let location = defaults.value(forKey: userInfoType.location.rawValue) as! String
         
         NetworkManager.shared.createUserInDB(email: email, ticket: ticket, name: name, occupation: occupation, location: location) {
-            //print(NetworkManager.shared.getUID()!)
+            print(NetworkManager.shared.getUID()!)
         }
     }
     
@@ -473,7 +476,7 @@ extension ProfilingController: UIImagePickerControllerDelegate, UINavigationCont
              
                     self.imageURL = imageURL
                     
-                    NetworkManager.shared.register(value: imageURL, for: "profileImageURL", in: uid!)
+                    NetworkManager.shared.register(value: imageURL, for: userInfoType.profileImageURL.rawValue, in: uid!)
                     
                     self.activityIndicator.isHidden = true
                     self.activityIndicator.stopAnimating()

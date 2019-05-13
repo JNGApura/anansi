@@ -295,6 +295,7 @@ extension BasicInfoViewController: UIImagePickerControllerDelegate, UINavigation
                     self.profileImage.contentMode = .scaleAspectFill
                     self.profileImage.image = image
                     self.user?.setValue(value: imageURL, for: .profileImageURL)
+                    self.user?.saveInDisk(value: imageURL, for: .profileImageURL)
                 }
             }
         }

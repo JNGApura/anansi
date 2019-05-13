@@ -47,7 +47,7 @@ class UserCommunityCollectionViewCell: UICollectionViewCell {
         tv.backgroundColor = .background
         tv.alwaysBounceVertical = true
         tv.translatesAutoresizingMaskIntoConstraints = false
-        tv.contentInset = UIEdgeInsets(top: 8.0, left: 0, bottom: 0, right: 0)
+        tv.contentInset = UIEdgeInsets(top: 8.0, left: 0, bottom: Const.marginSafeArea, right: 0)
         tv.separatorStyle = .none
         tv.rowHeight = UITableView.automaticDimension
         tv.estimatedRowHeight = 96
@@ -182,7 +182,10 @@ extension UserCommunityCollectionViewCell: UITableViewDelegate, UITableViewDataS
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "UserTableCell") as! CommunityTableCell
-        cell.profileImageView.kf.cancelDownloadTask()
+        if indexPath.section != 0 {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "UserTableCell") as! CommunityTableCell
+            cell.profileImageView.kf.cancelDownloadTask()
+        }
     }
 }

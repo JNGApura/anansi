@@ -40,6 +40,7 @@ class PartnerCommunityCollectionViewController: UICollectionViewCell {
         tv.estimatedSectionHeaderHeight = 56.0
         tv.rowHeight = 96.0
         tv.estimatedRowHeight = UITableView.automaticDimension
+        tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: Const.marginSafeArea, right: 0)
         tv.translatesAutoresizingMaskIntoConstraints = false
         return tv
     }()

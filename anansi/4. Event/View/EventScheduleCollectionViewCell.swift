@@ -73,6 +73,7 @@ class EventScheduleCollectionViewCell: UICollectionViewCell {
         tv.estimatedSectionHeaderHeight = 56.0
         tv.estimatedRowHeight = 128.0
         tv.rowHeight = UITableView.automaticDimension
+        tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: Const.marginSafeArea, right: 0)
         tv.showsVerticalScrollIndicator = false
         tv.translatesAutoresizingMaskIntoConstraints = false
         return tv

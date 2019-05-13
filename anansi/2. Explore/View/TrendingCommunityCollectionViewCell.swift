@@ -29,7 +29,7 @@ class TrendingCommunityCollectionViewCell: UICollectionViewCell {
         tv.backgroundColor = .background
         tv.alwaysBounceVertical = true
         tv.translatesAutoresizingMaskIntoConstraints = false
-        tv.contentInset = UIEdgeInsets(top: 8.0, left: 0, bottom: 0, right: 0)
+        tv.contentInset = UIEdgeInsets(top: 8.0, left: 0, bottom: Const.marginSafeArea, right: 0)
         tv.separatorStyle = .none
         tv.rowHeight = 96
         tv.estimatedRowHeight = 96

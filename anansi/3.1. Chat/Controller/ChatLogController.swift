@@ -19,9 +19,9 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
     
     var hasBeenBlocked : Bool = false {
         didSet {
-            emptyStateView.messageLabel.isHidden = hasBeenBlocked
-            emptyStateView.waveHandEmoji.isHidden = hasBeenBlocked
-            emptyStateView.waveButton.isHidden = hasBeenBlocked
+            noMessageStateView.messageLabel.isHidden = hasBeenBlocked
+            noMessageStateView.waveHandEmoji.isHidden = hasBeenBlocked
+            noMessageStateView.waveButton.isHidden = hasBeenBlocked
             
             chatAccessoryView.isHidden = hasBeenBlocked
         }
@@ -41,19 +41,6 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
     
     private var localTyping = false
     
-    var titleLabelView : UIButton = {
-        let b = UIButton()
-        b.setTitleColor(.secondary, for: .normal)
-        b.titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        b.backgroundColor = .clear
-        b.addTarget(self, action: #selector(printStuff), for: .touchUpInside)
-        return b
-    }()
-    
-    @objc func printStuff() {
-        print("stuff")
-    }
-    
     var user: User? {
         didSet {
             observeMessages()
@@ -62,8 +49,14 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
             firstname = fullname.removeFirst()
             chatAccessoryView.placeholderText = "Message \(firstname)"
             
-            titleLabelView.setTitle((user?.getValue(forField: .name) as? String)!, for: .normal)
-            
+            // User information in navigation bar
+            userNameLabel.text = (user?.getValue(forField: .name) as? String)!
+            if let userImage = user?.getValue(forField: .profileImageURL) as? String {
+                userImageView.setImage(with: userImage)
+            } else {
+                userImageView.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
+            }
+
             // Hides chatAcessoryView if user is blocked
             if let blockedDic = user?.getValue(forField: .blockedUsers) as? [String: String] {
                 
@@ -73,6 +66,38 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
             }
         }
     }
+    lazy var userImageView : UIImageView = {
+        let i = UIImageView()
+        i.backgroundColor = .background
+        i.contentMode = .scaleAspectFill
+        i.layer.cornerRadius = 14.0
+        i.clipsToBounds = true
+        i.translatesAutoresizingMaskIntoConstraints = false
+        return i
+    }()
+    
+    lazy var userNameLabel : UILabel = {
+        let l = UILabel()
+        l.textColor = .secondary
+        l.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
+        l.backgroundColor = .clear
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
+    }()
+    
+    lazy var titleLabelView : UIStackView = {
+        let sv = UIStackView(arrangedSubviews: [userImageView, userNameLabel])
+        sv.axis = .horizontal
+        sv.distribution = .equalSpacing
+        sv.alignment = .fill
+        sv.backgroundColor = .clear
+        sv.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showsUserProfilePage)))
+        sv.isUserInteractionEnabled = true
+        sv.translatesAutoresizingMaskIntoConstraints = false
+        return sv
+    }()
+    
+    // MARK: Accessory view
     
     override var inputAccessoryView: UIView {
         return chatAccessoryView
@@ -85,7 +110,7 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
         return cv
     }()
     
-    lazy var emptyStateView: ChatEmptyState = {
+    lazy var noMessageStateView: ChatEmptyState = {
         let e = ChatEmptyState(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height))
         e.chatLogController = self
         return e
@@ -102,6 +127,19 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
         collectionView?.backgroundColor = .white
         collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: "cell")
         collectionView?.keyboardDismissMode = .interactive
+        
+        titleLabelView.setCustomSpacing(Const.marginEight, after: userImageView)
+        
+        NSLayoutConstraint.activate([
+            
+            userImageView.topAnchor.constraint(equalTo: titleLabelView.topAnchor),
+            userImageView.bottomAnchor.constraint(equalTo: titleLabelView.bottomAnchor),
+            userImageView.widthAnchor.constraint(equalToConstant: 28.0),
+            userImageView.heightAnchor.constraint(equalToConstant: 28.0),
+            
+            userNameLabel.centerYAnchor.constraint(equalTo: userImageView.centerYAnchor),
+        ])
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -136,6 +174,39 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
+    // MARK: Layout
+    
+    private func setupNavigationBarItems() {
+        
+        navigationController?.view.backgroundColor = .background
+        navigationController?.navigationBar.isTranslucent = false
+        navigationItem.titleView = nil
+        
+        // Adds custom leftBarButton
+        let leftButton: UIButton = {
+            let b = UIButton(type: .system)
+            b.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
+            b.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
+            b.tintColor = .primary
+            b.addTarget(self, action: #selector(backAction(_:)), for: .touchUpInside)
+            return b
+        }()
+        navigationItem.leftBarButtonItems = [UIBarButtonItem(customView: leftButton), UIBarButtonItem(customView: titleLabelView)]
+        
+        // Adds custom rightBarButton
+        let rightButton: UIButton = {
+            let b = UIButton(type: .system)
+            b.setImage(UIImage(named: "info")!.withRenderingMode(.alwaysTemplate), for: .normal)
+            b.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
+            b.tintColor = .secondary
+            b.addTarget(self, action: #selector(showActionSheet), for: .touchUpInside)
+            return b
+        }()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rightButton)
+    }
+    
+    // MARK: - Network
     
     private func observeMessages() {
         
@@ -176,6 +247,8 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
         }
     }
     
+    // MARK: - Keyboard-related functions
+    
     func setupKeyboardObservers() {
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardDidHide), name: UIResponder.keyboardDidHideNotification, object: nil)
@@ -183,47 +256,32 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
     
     @objc func handleKeyboardDidShow() {
         keyboardDidShow = true
-        
-        /*
-        if messages.count > 0 {
-            let indexPath = IndexPath(item: messages.count - 1, section: 0)
-            collectionView?.scrollToItem(at: indexPath, at: .top, animated: true)
-        }*/
     }
     
     @objc func handleKeyboardDidHide() {
         keyboardDidShow = false
     }
     
-    // MARK: Layout
+    // MARK: - Custom functions
     
-    private func setupNavigationBarItems() {
+    @objc func showsUserProfilePage() {
         
-        navigationController?.view.backgroundColor = .background
-        navigationController?.navigationBar.isTranslucent = false
-        navigationItem.titleView = titleLabelView
-        
-        // Adds custom leftBarButton
-        let leftButton: UIButton = {
-            let b = UIButton(type: .system)
-            b.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
-            b.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
-            b.tintColor = .primary
-            b.addTarget(self, action: #selector(backAction(_:)), for: .touchUpInside)
-            return b
-        }()
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftButton)
-        
-        // Adds custom rightBarButton
-        let rightButton: UIButton = {
-            let b = UIButton(type: .system)
-            b.setImage(UIImage(named: "info")!.withRenderingMode(.alwaysTemplate), for: .normal)
-            b.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
-            b.tintColor = .secondary
-            b.addTarget(self, action: #selector(showActionSheet), for: .touchUpInside)
-            return b
-        }()
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rightButton)
+        if cameFromUserProfile {
+            
+            navigationController?.popViewController(animated: true)
+            navigationController?.navigationBar.isTranslucent = true
+            navigationController?.view.backgroundColor = .background
+            
+            dismiss(animated: true, completion: nil)
+            
+        } else {
+            
+            let controller = UserPageViewController()
+            controller.user = user
+            controller.cameFromChat = true
+            controller.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: self.navigationController, action: nil)
+            navigationController?.pushViewController(controller, animated: true)
+        }
     }
     
     @objc func showActionSheet() {
@@ -233,23 +291,8 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
         alertController.view.tintColor = UIColor.init(red: 0/255.0, green: 122/255.0, blue: 255/255.0, alpha: 1.0) // Apple's blue?
         
         let contactDetails = UIAlertAction(title: "Contact details", style: .default, handler: { (action) -> Void in
-        
-            if self.cameFromUserProfile {
-                
-                self.navigationController?.popViewController(animated: true)
-                self.navigationController?.navigationBar.isTranslucent = true
-                self.navigationController?.view.backgroundColor = .background
-                
-                self.dismiss(animated: true, completion: nil)
-                
-            } else {
-        
-                let controller = UserPageViewController()
-                controller.user = self.user
-                controller.cameFromChat = true
-                controller.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: self.navigationController, action: nil)
-                self.navigationController?.pushViewController(controller, animated: true)
-            }
+
+            self.showsUserProfilePage()
         })
         alertController.addAction(contactDetails)
         
@@ -289,8 +332,6 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
         present(alertController, animated: true, completion: nil)
     }
     
-    // MARK: User Interaction
-    
     @objc func backAction(_ sender: UIBarButtonItem) {
         navigationController?.popViewController(animated: true)
         
@@ -307,14 +348,14 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
     
 }
 
-// MARK: User Interaction
+// MARK: UICollectionViewDelegateFlowLayout
 
 extension ChatLogController: UICollectionViewDelegateFlowLayout {
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         if (messages.count == 0) {
-            collectionView.backgroundView = emptyStateView
+            collectionView.backgroundView = noMessageStateView
             titleLabelView.isHidden = true
             
         } else {

@@ -39,16 +39,6 @@ class SettingsViewController: UIViewController {
         return l
     }()
     
-    lazy var dismissButton: UIButton = {
-        let b = UIButton(type: .system)
-        b.setTitle("Dismiss", for: .normal)
-        b.setTitleColor(.primary, for: .normal)
-        b.titleLabel?.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
-        b.backgroundColor = .background
-        b.addTarget(self, action: #selector(dismissAction), for: .touchUpInside)
-        return b
-    }()
-    
     lazy var tableView : UITableView = {
         let t = UITableView()
         t.register(SettingsTableViewCell.self, forCellReuseIdentifier: identifier)
@@ -109,7 +99,16 @@ class SettingsViewController: UIViewController {
             
             navigationItem.titleView = titleLabel
             
-            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dismissButton)
+            let backButton: UIButton = {
+                let b = UIButton(type: .system)
+                b.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
+                b.frame = CGRect(x: 0, y: 0, width: 24.0, height: 24.0)
+                b.tintColor = .primary
+                b.translatesAutoresizingMaskIntoConstraints = false
+                b.addTarget(self, action: #selector(back), for: .touchUpInside)
+                return b
+            }()
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
         }
     }
     
@@ -144,7 +143,7 @@ class SettingsViewController: UIViewController {
         }
     }
     
-    @objc func dismissAction() {
+    @objc func back() {
         
         navigationController?.popViewController(animated: true)
         dismiss(animated: true, completion: nil)

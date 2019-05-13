@@ -25,17 +25,7 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
         }
     }
     var countInterests : Int = 0
-    
-    lazy var dismissButton: UIButton = {
-        let b = UIButton(type: .system)
-        b.setTitle("Dismiss", for: .normal)
-        b.setTitleColor(.primary, for: .normal)
-        b.titleLabel?.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
-        b.backgroundColor = .background
-        b.addTarget(self, action: #selector(backAction(_:)), for: .touchUpInside)
-        return b
-    }()
-    
+
     lazy var scrollView : UIScrollView = {
         let sv = UIScrollView()
         sv.delegate = self
@@ -97,20 +87,15 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
         return b
     }()
     
-    lazy var backgroundButton: PrimaryButton = {
-        let b = PrimaryButton()
+    lazy var buttonBackground: UIView = {
+        let b = UIView()
         b.backgroundColor = .background
-        b.layer.borderColor = UIColor.background.cgColor
         b.translatesAutoresizingMaskIntoConstraints = false
-        b.layer.cornerRadius = 20
-        b.clipsToBounds = true
-        b.adjustsImageWhenDisabled = false
-        b.isEnabled = false
         return b
     }()
     
     lazy var selectedInterestsLabel: UILabel = {
-        let l = UILabel()
+        let l = UILabel(frame: CGRect(x: 0, y: 0, width: 48.0, height: 20.0))
         l.text = "\(countInterests) / 7 "
         l.font = UIFont.boldSystemFont(ofSize: Const.footnoteFontSize)
         l.textColor = .secondary
@@ -118,7 +103,6 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
         l.clipsToBounds = true
         l.backgroundColor = .tertiary
         l.textAlignment = .center
-        l.translatesAutoresizingMaskIntoConstraints = false
         return l
     }()
     
@@ -139,10 +123,9 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         // Sets up UI
         view.addSubview(scrollView)
-        view.addSubview(selectedInterestsLabel)
         
         scrollView.addSubview(contentView)
-        [screenTitle, screenDescription, collectionView, backgroundButton, saveButton].forEach { contentView.addSubview($0) }
+        [screenTitle, screenDescription, collectionView, buttonBackground, saveButton].forEach { contentView.addSubview($0) }
         
         NSLayoutConstraint.activate([
             
@@ -171,20 +154,15 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
             collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Const.marginSafeArea),
             collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            backgroundButton.centerXAnchor.constraint(equalTo: saveButton.centerXAnchor),
-            backgroundButton.centerYAnchor.constraint(equalTo: saveButton.centerYAnchor),
-            backgroundButton.widthAnchor.constraint(equalTo: saveButton.widthAnchor),
-            backgroundButton.heightAnchor.constraint(equalTo: saveButton.heightAnchor),
+            buttonBackground.centerXAnchor.constraint(equalTo: saveButton.centerXAnchor),
+            buttonBackground.topAnchor.constraint(equalTo: saveButton.topAnchor, constant: -Const.marginEight),
+            buttonBackground.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            buttonBackground.widthAnchor.constraint(equalTo: view.widthAnchor),
             
             saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.marginEight),
             saveButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Const.marginSafeArea),
             saveButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Const.marginSafeArea),
             saveButton.heightAnchor.constraint(equalToConstant: 40.0),
-            
-            selectedInterestsLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Const.marginSafeArea),
-            selectedInterestsLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Const.marginEight),
-            selectedInterestsLabel.heightAnchor.constraint(equalToConstant: 20.0),
-            selectedInterestsLabel.widthAnchor.constraint(equalToConstant: 48.0),
         ])
         
         interestCollectionViewHeightAnchor = collectionView.heightAnchor.constraint(equalToConstant: 0.0)
@@ -209,9 +187,29 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.view.backgroundColor = .background
-        navigationItem.titleView = nil
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dismissButton)
+        let titleLabel : UILabel = {
+            let l = UILabel()
+            l.text = "Interests"
+            l.textColor = .secondary
+            l.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
+            return l
+        }()
+        
+        navigationItem.titleView = titleLabel
+        
+        let backButton: UIButton = {
+            let b = UIButton(type: .system)
+            b.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
+            b.frame = CGRect(x: 0, y: 0, width: 24.0, height: 24.0)
+            b.tintColor = .primary
+            b.translatesAutoresizingMaskIntoConstraints = false
+            b.addTarget(self, action: #selector(backAction), for: .touchUpInside)
+            return b
+        }()
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: selectedInterestsLabel)
     }
 
     // MARK: Custom functions
@@ -229,7 +227,7 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         self.delegate?.interestListWasSaved(list: selectedInterests!)
         
-        saveButton.setImage(UIImage(named: "check")!.withRenderingMode(.alwaysTemplate), for: .normal)
+        saveButton.setImage(UIImage(named: "check-progress")!.withRenderingMode(.alwaysTemplate), for: .normal)
         saveButton.setTitle(" Interests saved!", for: .normal)
         saveButton.isEnabled = false
         
@@ -239,7 +237,6 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
             self.saveButton.setTitle("Save interests", for: .normal)
             self.saveButton.isEnabled = true
         }
-        
     }
     
     func estimateFrameForText(text: String) -> CGRect {

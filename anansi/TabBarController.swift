@@ -88,8 +88,8 @@ class TabBarController: UITabBarController {
             
             let chat = Message(dictionary: mesg, messageID: key)
             
-            if myID == chat.receiver,
-                let isRead = chat.isRead, !isRead,
+            if myID == chat.getValue(forField: .receiver) as? String,
+                let isRead = chat.getValue(forField: .isRead) as? Bool, !isRead,
                 let chatPartnerID = chat.partnerID(),
                 !self.unreadChats.contains(chatPartnerID) {
                 

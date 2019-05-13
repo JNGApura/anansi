@@ -174,10 +174,12 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
             // Get list of unread messages
             var hasUnreadMessages = 0
             for message in messages {
-                if message.receiver == self.myID!, let isRead = message.isRead, !isRead {
+                if (message.getValue(forField: .receiver) as? String) == self.myID!,
+                    let isRead = message.getValue(forField: .isRead) as? Bool, !isRead {
                     
                     let userID = user?.getValue(forField: .id) as! String
-                    NetworkManager.shared.markMessagesAs("read", with: message.id, from: self.myID!, to: userID) {}
+                    let messageID = message.getValue(forField: .id) as? String
+                    NetworkManager.shared.markMessagesAs("read", with: messageID!, from: self.myID!, to: userID) {}
                     hasUnreadMessages += 1
                 }
             }
@@ -245,7 +247,7 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
             self.messages.append(message)
             
             // Creates list of time labels
-            if let seconds = message.timestamp?.doubleValue {
+            if let seconds = (message.getValue(forField: .timestamp) as? NSNumber)?.doubleValue {
                 
                 if self.messages.count == 1 {
                     let dateA = NSDate(timeIntervalSince1970: seconds)
@@ -402,7 +404,7 @@ extension ChatLogController: UICollectionViewDelegateFlowLayout {
             cell.timeDate.isHidden = true
         }
         
-        if message.sender == myID! {
+        if (message.getValue(forField: .sender) as? String) == myID! {
             
             // cell is aligned to the right
             cell.stackView.alignment = .trailing
@@ -417,8 +419,11 @@ extension ChatLogController: UICollectionViewDelegateFlowLayout {
             // If the last message is mine, then status is visible
             if indexPath.item == messages.count - 1  {
                 
+                let isRead = message.getValue(forField: .isRead) as? Bool
+                let isDelivered = message.getValue(forField: .isDelivered) as? Bool
+                
                 cell.statusView.isHidden = false
-                cell.statusView.text = (message.isRead)! ? "Read" : (message.isDelivered)! ? "Delivered" : "Sent"
+                cell.statusView.text = isRead! ? "Read" : isDelivered! ? "Delivered" : "Sent"
                 
             } else {
                 cell.statusView.isHidden = true
@@ -448,12 +453,12 @@ extension ChatLogController: UICollectionViewDelegateFlowLayout {
         var height: CGFloat = 80.0 // dummy
         let message = messages[indexPath.item]
         
-        if let text = message.text {
+        if let text = message.getValue(forField: .text) as? String {
             height = estimateFrameForText(text: text).height + 17 // 17: safe margin
         }
         
         // For statusView
-        if indexPath.item == messages.count - 1, message.sender == myID! {
+        if indexPath.item == messages.count - 1, (message.getValue(forField: .sender) as? String) == myID! {
             height += Const.timeDateHeightChatCells
         } else {
             height += 0

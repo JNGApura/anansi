@@ -150,8 +150,8 @@ class ConnectViewController: UIViewController {
             if let chatPartnerID = chat.partnerID() {
                 self.userChats[chatPartnerID] = chat
                 
-                if self.myID == chat.receiver,
-                    let isRead = chat.isRead, !isRead,
+                if self.myID == chat.getValue(forField: .receiver) as? String,
+                    let isRead = chat.getValue(forField: .isRead) as? Bool, !isRead,
                     !self.unreadChats.contains(chatPartnerID) {
                  
                     self.unreadChats.append(chatPartnerID)
@@ -166,7 +166,7 @@ class ConnectViewController: UIViewController {
        
         latestChats = Array(userChats.values)
         latestChats.sort(by: { (A, B) -> Bool in
-            return A.timestamp?.int32Value > B.timestamp?.int32Value
+            return (A.getValue(forField: .timestamp) as! NSNumber).int32Value > (B.getValue(forField: .timestamp) as! NSNumber).int32Value
         })
         
         tableView.reloadData()
@@ -230,7 +230,8 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         let chat = latestChats[indexPath.row]
         cell.message = chat
         
-        if myID == chat.receiver, let isRead = chat.isRead {
+        if myID == chat.getValue(forField: .receiver) as? String,
+            let isRead = chat.getValue(forField: .isRead) as? Bool {
             
             cell.badge.isHidden = isRead
             

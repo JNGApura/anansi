@@ -39,13 +39,13 @@ class ChatCell: UITableViewCell {
                     } else {
                         var displayMessage: String = ""
                         
-                        if let sender = self.message?.sender, sender == self.myID { displayMessage += "You: " }
-                        if let message = self.message!.text { displayMessage += message }
+                        if let sender = self.message?.getValue(forField: .sender) as? String, sender == self.myID { displayMessage += "You: " }
+                        if let message = self.message!.getValue(forField: .text) as? String { displayMessage += message }
                         
                         self.lastMessage.text = displayMessage
                     }
                     
-                    if let seconds = self.message?.timestamp?.doubleValue {
+                    if let seconds = (self.message?.getValue(forField: .timestamp) as? NSNumber)?.doubleValue {
                         
                         let timestampDate = NSDate(timeIntervalSince1970: seconds)
                         self.timeLabel.text = createTimeString(date: timestampDate)

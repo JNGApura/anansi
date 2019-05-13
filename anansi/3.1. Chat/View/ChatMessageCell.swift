@@ -14,8 +14,9 @@ class ChatMessageCell: UICollectionViewCell {
     
     var message: Message? {
         didSet {
-            textView.text = message?.text
-            bubbleViewWidthAnchor?.constant = estimateFrameForText(text: (message?.text)!).width + 28.0 // 28: safe margin?
+            let text = message?.getValue(forField: .text) as? String
+            textView.text = text
+            bubbleViewWidthAnchor?.constant = estimateFrameForText(text: text!).width + 28.0 // 28: safe margin?
         }
     }
         

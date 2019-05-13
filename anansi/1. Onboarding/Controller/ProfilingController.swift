@@ -255,7 +255,7 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         if nextPage == profilingPages.count - 1 {
             
             nextButton.setTitle("Done ", for: .normal)
-            nextButton.setImage(UIImage(named: "check")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            nextButton.setImage(UIImage(named: "check-progress")?.withRenderingMode(.alwaysTemplate), for: .normal)
             nextButton.imageView?.tintColor = .primary
             nextButton.setTitleColor(.primary, for: .normal)
             nextButton.addTarget(self, action: #selector(pushTabBarController), for: .touchUpInside)

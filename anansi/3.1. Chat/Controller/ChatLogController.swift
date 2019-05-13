@@ -72,6 +72,9 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
             }            
         }
     }
+    
+    // TitleLabelView
+    
     lazy var userImageView : UIImageView = {
         let i = UIImageView()
         i.backgroundColor = .background
@@ -375,12 +378,11 @@ extension ChatLogController: UICollectionViewDelegateFlowLayout {
         
         if (messages.count == 0) {
             collectionView.backgroundView = noMessageStateView
-            titleLabelView.isHidden = true
             
         } else {
             collectionView.backgroundView = nil
-            titleLabelView.isHidden = false
         }
+        
         return messages.count
     }
     

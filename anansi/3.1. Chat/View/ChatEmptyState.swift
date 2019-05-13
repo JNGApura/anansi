@@ -17,69 +17,64 @@ class ChatEmptyState: UIView {
         }
     }
     
-    var user: User?
+    var user: User? {
+        didSet {
+            
+            // Sets my profile image
+            if let myProfileImage = UserDefaults.standard.value(forKey: userInfoType.profileImageURL.rawValue) as? String {
+                myImage.setImage(with: myProfileImage)
+            } else {
+                myImage.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
+            }
+            
+            // Sets conversation starter
+            var fullname = ((user?.getValue(forField: .name) as? String)!).components(separatedBy: " ")
+            let firstname = fullname.removeFirst()
+            let CTA : [String] = ["This could be the start of a meaningful conversation with \(firstname).",
+                                  "Don't be afraid to share your ideas with \(firstname).",
+                                  "Type. Send. That easy!",
+                                  "What shall you say to \(firstname)?",
+                                  "You're here! The day just got better for \(firstname).",
+                                  "Be cool. But also be warm.",
+                                  "Alright, time for meaningful discussions!"]
+            
+            messageLabel.text = CTA[Int.random(in: 0 ..< CTA.count)]
+        }
+    }
     
-    let profileView: UIView = {
+    let joinedImages: UIView = {
         let v = UIView()
         v.translatesAutoresizingMaskIntoConstraints = false
         return v
     }()
-    
-    let topSeparatorLine: UIView = {
-        let v = UIView()
-        v.backgroundColor = .tertiary
-        v.translatesAutoresizingMaskIntoConstraints = false
-        return v
+
+    let myImage: UIImageView = {
+        let i = UIImageView()
+        i.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
+        i.backgroundColor = .background
+        i.contentMode = .scaleAspectFill
+        i.layer.cornerRadius = 56.0 / 2
+        i.layer.borderWidth = 2.0
+        i.layer.borderColor = UIColor.background.cgColor
+        i.layer.masksToBounds = true
+        i.clipsToBounds = true
+        i.translatesAutoresizingMaskIntoConstraints = false
+        return i
     }()
     
-    let bottomSeparatorLine: UIView = {
-        let v = UIView()
-        v.backgroundColor = .tertiary
-        v.translatesAutoresizingMaskIntoConstraints = false
-        return v
-    }()
-    
-    let userImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.backgroundColor = .background
-        imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 80 / 2
-        imageView.layer.masksToBounds = true
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
-    
-    let userName: UILabel = {
-        let tl = UILabel()
-        tl.font = UIFont.boldSystemFont(ofSize: Const.headlineFontSize)
-        tl.textColor = .secondary
-        tl.textAlignment = .left
-        tl.translatesAutoresizingMaskIntoConstraints = false
-        return tl
-    }()
-    
-    let userOccupation: UILabel = {
-        let tl = UILabel()
-        tl.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
-        tl.textColor = .secondary
-        tl.textAlignment = .left
-        tl.translatesAutoresizingMaskIntoConstraints = false
-        return tl
-    }()
-    
-    let userLocation: UILabel = {
-        let tl = UILabel()
-        tl.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
-        tl.textColor = .secondary
-        tl.textAlignment = .left
-        tl.translatesAutoresizingMaskIntoConstraints = false
-        return tl
+    let userImage: UIImageView = {
+        let i = UIImageView()
+        i.backgroundColor = .background
+        i.contentMode = .scaleAspectFill
+        i.layer.cornerRadius = 52.0 / 2
+        i.clipsToBounds = true
+        i.translatesAutoresizingMaskIntoConstraints = false
+        return i
     }()
     
     let messageLabel: UILabel = {
         let l = UILabel()
-        l.text = "Say hi with a wave!"
-        l.textColor = .secondary
+        l.textColor = UIColor.secondary.withAlphaComponent(0.5)
         l.numberOfLines = 0
         l.textAlignment = .center
         l.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
@@ -98,7 +93,7 @@ class ChatEmptyState: UIView {
     
     let waveButton: UIButton = {
         let l = UIButton()
-        l.setTitle("Wave", for: .normal)
+        l.setTitle("Say hi!", for: .normal)
         l.titleLabel?.textAlignment = .center
         l.titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.calloutFontSize)
         l.tintColor = .white
@@ -115,8 +110,8 @@ class ChatEmptyState: UIView {
         backgroundColor = .background
         
         // Add subviews
-        [topSeparatorLine, userImageView, userName, userOccupation, userLocation, bottomSeparatorLine].forEach { profileView.addSubview($0) }
-        [profileView, messageLabel, waveHandEmoji, waveButton].forEach { addSubview($0) }
+        [userImage, myImage].forEach { joinedImages.addSubview($0) }
+        [joinedImages, messageLabel, waveHandEmoji, waveButton].forEach { addSubview($0) }
         
         // Add layout constraints
         setupLayoutConstraints()
@@ -128,26 +123,10 @@ class ChatEmptyState: UIView {
     
     override func layoutSubviews() {
         
-        // Set user's profile image
-        if let userImage = user?.getValue(forField: .profileImageURL) as? String {
-            userImageView.setImage(with: userImage)
+        if let img = user?.getValue(forField: .profileImageURL) as? String {
+            userImage.setImage(with: img)
         } else {
-            userImageView.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
-        }
-        
-        // Set user's name
-        if let name = user?.getValue(forField: .name) as? String {
-            userName.text = name
-        }
-        
-        // Set user's title
-        if let occupation = user?.getValue(forField: .occupation) as? String {
-            userOccupation.text = occupation
-        }
-        
-        // Set user's location
-        if let location = user?.getValue(forField: .location) as? String {
-            userLocation.text = "From " + location
+            userImage.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
         }
     }
     
@@ -155,54 +134,33 @@ class ChatEmptyState: UIView {
         
         NSLayoutConstraint.activate([
             
-            profileView.topAnchor.constraint(equalTo: topAnchor),
-            profileView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            profileView.widthAnchor.constraint(equalTo: widthAnchor),
-            profileView.heightAnchor.constraint(equalToConstant: 140.0),
+            joinedImages.topAnchor.constraint(equalTo: topAnchor, constant: Const.marginSafeArea * 2),
+            joinedImages.centerXAnchor.constraint(equalTo: centerXAnchor),
+            joinedImages.heightAnchor.constraint(equalToConstant: 56.0),
+            joinedImages.widthAnchor.constraint(equalToConstant: 90.0),
             
-            topSeparatorLine.topAnchor.constraint(equalTo: profileView.topAnchor),
-            topSeparatorLine.leadingAnchor.constraint(equalTo: profileView.leadingAnchor),
-            topSeparatorLine.widthAnchor.constraint(equalTo: profileView.widthAnchor),
-            topSeparatorLine.heightAnchor.constraint(equalToConstant: 1),
+            userImage.centerYAnchor.constraint(equalTo: joinedImages.centerYAnchor),
+            userImage.leadingAnchor.constraint(equalTo: joinedImages.leadingAnchor),
+            userImage.widthAnchor.constraint(equalToConstant: 52.0),
+            userImage.heightAnchor.constraint(equalToConstant: 52.0),
             
-            userImageView.centerYAnchor.constraint(equalTo: profileView.centerYAnchor),
-            userImageView.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 16.0),
-            userImageView.widthAnchor.constraint(equalToConstant: 80.0),
-            userImageView.heightAnchor.constraint(equalToConstant: 80.0),
-            
-            userName.topAnchor.constraint(equalTo: profileView.topAnchor, constant: 32.0),
-            userName.leadingAnchor.constraint(equalTo: userImageView.trailingAnchor, constant: 16.0),
-            userName.widthAnchor.constraint(equalTo: profileView.widthAnchor),
-            userName.heightAnchor.constraint(equalToConstant: 30.0),
-            
-            userOccupation.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 4.0),
-            userOccupation.leadingAnchor.constraint(equalTo: userImageView.trailingAnchor, constant: 16.0),
-            userOccupation.widthAnchor.constraint(equalTo: profileView.widthAnchor),
-            userOccupation.heightAnchor.constraint(equalToConstant: 20.0),
-            
-            userLocation.topAnchor.constraint(equalTo: userOccupation.bottomAnchor, constant: 4.0),
-            userLocation.leadingAnchor.constraint(equalTo: userImageView.trailingAnchor, constant: 16.0),
-            userLocation.widthAnchor.constraint(equalTo: profileView.widthAnchor),
-            userLocation.heightAnchor.constraint(equalToConstant: 20.0),
-            
-            bottomSeparatorLine.bottomAnchor.constraint(equalTo: profileView.bottomAnchor),
-            bottomSeparatorLine.leadingAnchor.constraint(equalTo: profileView.leadingAnchor),
-            bottomSeparatorLine.widthAnchor.constraint(equalTo: profileView.widthAnchor),
-            bottomSeparatorLine.heightAnchor.constraint(equalToConstant: 1),
-            
-            messageLabel.topAnchor.constraint(equalTo: profileView.bottomAnchor, constant: 30.0),
+            myImage.centerYAnchor.constraint(equalTo: joinedImages.centerYAnchor),
+            myImage.trailingAnchor.constraint(equalTo: joinedImages.trailingAnchor),
+            myImage.widthAnchor.constraint(equalToConstant: 56.0),
+            myImage.heightAnchor.constraint(equalToConstant: 56.0),
+
+            messageLabel.topAnchor.constraint(equalTo: joinedImages.bottomAnchor, constant: Const.marginSafeArea),
             messageLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            messageLabel.widthAnchor.constraint(equalTo: widthAnchor),
-            messageLabel.heightAnchor.constraint(equalToConstant: 20.0),
+            messageLabel.widthAnchor.constraint(equalTo: widthAnchor, constant: -Const.marginSafeArea * 4.0),
             
-            waveHandEmoji.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 20.0),
+            waveHandEmoji.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: Const.marginEight * 2.0),
             waveHandEmoji.centerXAnchor.constraint(equalTo: centerXAnchor),
             waveHandEmoji.widthAnchor.constraint(equalTo: widthAnchor),
             waveHandEmoji.heightAnchor.constraint(equalToConstant: 64.0),
             
-            waveButton.topAnchor.constraint(equalTo: waveHandEmoji.bottomAnchor, constant: 16.0),
+            waveButton.topAnchor.constraint(equalTo: waveHandEmoji.bottomAnchor, constant: Const.marginEight * 2.0),
             waveButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-            waveButton.widthAnchor.constraint(equalToConstant: 86.0),
+            waveButton.widthAnchor.constraint(equalToConstant: 88.0),
             waveButton.heightAnchor.constraint(equalToConstant: 36.0),
         ])
     }

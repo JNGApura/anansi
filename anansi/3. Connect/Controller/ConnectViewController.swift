@@ -38,9 +38,7 @@ class ConnectViewController: UIViewController {
     private var latestChats = [Message]()
     
     private var userChats = [String : Message]()
-        
-    var observingChats : Bool = false
-    
+            
     var unreadChats = [String]() {
         didSet {
             
@@ -161,7 +159,6 @@ class ConnectViewController: UIViewController {
             }
             
             self.reloadChats()
-            self.observingChats = true
         }
     }
     

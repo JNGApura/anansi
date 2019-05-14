@@ -185,31 +185,33 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
     
     private func setupNavigationBarItems() {
         
-        navigationController?.navigationBar.isTranslucent = false
-        navigationController?.view.backgroundColor = .background
-        
-        let titleLabel : UILabel = {
-            let l = UILabel()
-            l.text = "Interests"
-            l.textColor = .secondary
-            l.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-            return l
-        }()
-        
-        navigationItem.titleView = titleLabel
-        
-        let backButton: UIButton = {
-            let b = UIButton(type: .system)
-            b.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
-            b.frame = CGRect(x: 0, y: 0, width: 24.0, height: 24.0)
-            b.tintColor = .primary
-            b.translatesAutoresizingMaskIntoConstraints = false
-            b.addTarget(self, action: #selector(backAction), for: .touchUpInside)
-            return b
-        }()
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: selectedInterestsLabel)
+        if let navigationBar = navigationController?.navigationBar {
+            navigationBar.barTintColor = .background
+            navigationBar.isTranslucent = false
+            
+            let titleLabel : UILabel = {
+                let l = UILabel()
+                l.text = "Interests"
+                l.textColor = .secondary
+                l.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
+                return l
+            }()
+            
+            navigationItem.titleView = titleLabel
+            
+            let backButton: UIButton = {
+                let b = UIButton(type: .system)
+                b.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
+                b.frame = CGRect(x: 0, y: 0, width: 24.0, height: 24.0)
+                b.tintColor = .primary
+                b.translatesAutoresizingMaskIntoConstraints = false
+                b.addTarget(self, action: #selector(backAction), for: .touchUpInside)
+                return b
+            }()
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+            
+            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: selectedInterestsLabel)
+        }
     }
 
     // MARK: Custom functions

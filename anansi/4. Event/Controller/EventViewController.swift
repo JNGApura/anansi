@@ -38,7 +38,7 @@ class EventViewController: UIViewController {
     lazy var headerView : Header = {
         let hv = Header()
         hv.setTitleName(name: "Event")
-        //hv.actionButton.addTarget(self, action: #selector(navigateToSettingsViewController), for: .touchUpInside)
+        hv.actionButton.addTarget(self, action: #selector(navigateToProfile), for: .touchUpInside)
         hv.backgroundColor = .background
         hv.translatesAutoresizingMaskIntoConstraints = false
         return hv
@@ -173,11 +173,14 @@ class EventViewController: UIViewController {
     
     // MARK: - Custom functions
     
-    @objc func navigateToSettingsViewController() {
+    @objc func navigateToProfile() {
         
-        let controller = SettingsViewController()
-        let navController = UINavigationController(rootViewController: controller)
-        self.present(navController, animated: true, completion: nil)
+        let newChatController = ProfileViewController()
+        newChatController.hidesBottomBarWhenPushed = true
+        
+        let navController = UINavigationController(rootViewController: newChatController)
+        navController.modalPresentationStyle = .overFullScreen
+        present(navController, animated: true, completion: nil)
     }
     
 }

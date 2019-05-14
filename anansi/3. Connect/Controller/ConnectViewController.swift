@@ -55,7 +55,6 @@ class ConnectViewController: UIViewController {
     lazy var headerView : Header = {
         let hv = Header()
         hv.setTitleName(name: "Connect")
-        hv.setActionButtonAsProfileButton()
         hv.actionButton.addTarget(self, action: #selector(navigateToNewChatController), for: .touchUpInside)
         hv.backgroundColor = .background
         hv.translatesAutoresizingMaskIntoConstraints = false
@@ -220,6 +219,16 @@ class ConnectViewController: UIViewController {
         
         let newChatController = NewChatController(style: .grouped)
         newChatController.delegate = self
+        newChatController.hidesBottomBarWhenPushed = true
+        
+        let navController = UINavigationController(rootViewController: newChatController)
+        navController.modalPresentationStyle = .overFullScreen
+        present(navController, animated: true, completion: nil)
+    }
+    
+    @objc func navigateToProfile() {
+        
+        let newChatController = ProfileViewController()
         newChatController.hidesBottomBarWhenPushed = true
         
         let navController = UINavigationController(rootViewController: newChatController)

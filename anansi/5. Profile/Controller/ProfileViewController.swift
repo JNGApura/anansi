@@ -79,17 +79,6 @@ class ProfileViewController: UIViewController {
         return hv
     }()
     
-    lazy var settingsButton: UIButton = {
-        let b = UIButton(type: .system)
-        b.setImage(UIImage(named: "settings")!.withRenderingMode(.alwaysOriginal), for: .normal)
-        b.backgroundColor = .background
-        b.layer.cornerRadius = 16.0
-        b.layer.masksToBounds = true
-        b.addTarget(self, action: #selector(navigateToSettingsViewController), for: .touchUpInside)
-        b.translatesAutoresizingMaskIntoConstraints = false
-        return b
-    }()
-    
     // Achievement view
     lazy var achievementView: UIView = {
         let v = UIView()
@@ -197,7 +186,7 @@ class ProfileViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        [backgroundImage, headerView, settingsButton, achievementView, tableView].forEach { contentView.addSubview($0)}
+        [backgroundImage, headerView, achievementView, tableView].forEach { contentView.addSubview($0)}
         
         NSLayoutConstraint.activate([
             
@@ -216,16 +205,11 @@ class ProfileViewController: UIViewController {
             backgroundImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             backgroundImage.heightAnchor.constraint(equalToConstant: 374.0),
             
-            headerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Const.marginSafeArea),
+            headerView.topAnchor.constraint(equalTo: contentView.topAnchor),
             headerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             headerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 214.0),
-            
-            settingsButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Const.marginSafeArea),
-            settingsButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Const.marginSafeArea),
-            settingsButton.widthAnchor.constraint(equalToConstant: 32.0),
-            settingsButton.heightAnchor.constraint(equalToConstant: 32.0),
-            
+        
             achievementView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: Const.marginSafeArea),
             achievementView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             achievementView.widthAnchor.constraint(equalTo: contentView.widthAnchor, constant: -Const.marginSafeArea * 2.0),
@@ -294,8 +278,43 @@ class ProfileViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        navigationItem.titleView?.isHidden = true
+        if let navigationBar = navigationController?.navigationBar {
+            navigationBar.barTintColor = .clear
+            navigationBar.isTranslucent = true
+            
+            navigationItem.titleView = nil
+
+            let dismissButton: UIButton = {
+                let b = UIButton()
+                b.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
+                b.setImage(UIImage(named: "close")!.withRenderingMode(.alwaysTemplate), for: .normal)
+                b.contentMode = .scaleAspectFit
+                b.tintColor = .primary
+                b.backgroundColor = .background
+                b.layer.cornerRadius = 16.0
+                b.layer.masksToBounds = true
+                b.addTarget(self, action: #selector(dismissViewController), for: .touchUpInside)
+                return b
+            }()
+            
+            let settingsButton: UIButton = {
+                let b = UIButton()
+                b.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
+                b.setImage(UIImage(named: "settings")!.withRenderingMode(.alwaysTemplate), for: .normal)
+                b.contentMode = .scaleAspectFit
+                b.tintColor = .secondary
+                b.backgroundColor = .background
+                b.layer.cornerRadius = 16.0
+                b.layer.masksToBounds = true
+                b.addTarget(self, action: #selector(navigateToSettingsViewController), for: .touchUpInside)
+                return b
+            }()
+            
+            let middleSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+            middleSpace.width = 16.0
+            
+            navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: dismissButton), middleSpace, UIBarButtonItem(customView: settingsButton)]
+        }
         
         // Fetch meeee!
         fetchMe()
@@ -304,6 +323,7 @@ class ProfileViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        navigationController?.setNavigationBarHidden(false, animated: false)
         
         if !UserDefaults.standard.isProfileOnboarded() {
             
@@ -401,11 +421,18 @@ class ProfileViewController: UIViewController {
         }
     }
     
+    @objc func dismissViewController() {
+        
+        navigationController?.popViewController(animated: true)
+        dismiss(animated: true, completion: nil)
+    }
+    
     @objc func navigateToSettingsViewController(_ sender: UIBarButtonItem){
         
         let settingsController = SettingsViewController()
         settingsController.user = user
-        navigationController?.setNavigationBarHidden(false, animated: false) // check this?
+        
+        //navigationController?.setNavigationBarHidden(false, animated: false) // check this?
         navigationController?.pushViewController(settingsController, animated: true)
     }
     
@@ -417,7 +444,7 @@ class ProfileViewController: UIViewController {
         interestController.selectedInterests = interests
         interestController.delegate = self
         
-        navigationController?.setNavigationBarHidden(false, animated: false) // check this?
+        //navigationController?.setNavigationBarHidden(false, animated: false) // check this?
         navigationController?.pushViewController(interestController, animated: true)
     }
     

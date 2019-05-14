@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 // Header, UIView subclass
 class Header : UIView {
@@ -27,21 +28,17 @@ class Header : UIView {
         return l
     }()
     
-    let actionButton: UIButton = {
+    let profileButton: UIButton = {
         let b = UIButton()
-        b.setImage(UIImage(named: "settings")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        b.tintColor = .secondary
         b.backgroundColor = .background
         b.layer.cornerRadius = 16.0
         b.layer.masksToBounds = true
         b.translatesAutoresizingMaskIntoConstraints = false
-        b.isHidden = true
         return b
     }()
     
-    let otherActionButton: UIButton = {
+    let actionButton: UIButton = {
         let b = UIButton()
-        b.setImage(UIImage(named: "settings")?.withRenderingMode(.alwaysTemplate), for: .normal)
         b.tintColor = .secondary
         b.backgroundColor = .background
         b.layer.cornerRadius = 16.0
@@ -55,7 +52,7 @@ class Header : UIView {
         super.init(frame: frame)
         
         // Add headerTitle and headerBottomBorder subviews
-        [headerTitle, bottomLine, actionButton, otherActionButton].forEach { addSubview($0) }
+        [headerTitle, bottomLine, profileButton, actionButton].forEach { addSubview($0) }
         
         // Adds layout constraints
         NSLayoutConstraint.activate([
@@ -68,20 +65,26 @@ class Header : UIView {
             headerTitle.bottomAnchor.constraint(equalTo: bottomLine.topAnchor, constant: -4.0),
             headerTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea),
             
-            actionButton.centerYAnchor.constraint(equalTo: headerTitle.centerYAnchor),
-            actionButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
-            actionButton.widthAnchor.constraint(equalToConstant: 32.0),
-            actionButton.heightAnchor.constraint(equalToConstant: 32.0),
+            profileButton.centerYAnchor.constraint(equalTo: headerTitle.centerYAnchor),
+            profileButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
+            profileButton.widthAnchor.constraint(equalToConstant: 32.0),
+            profileButton.heightAnchor.constraint(equalToConstant: 32.0),
             
-            otherActionButton.centerYAnchor.constraint(equalTo: headerTitle.centerYAnchor),
-            otherActionButton.trailingAnchor.constraint(equalTo: actionButton.leadingAnchor, constant: -Const.marginEight * 2.0),
-            otherActionButton.widthAnchor.constraint(equalToConstant: 32.0),
-            otherActionButton.heightAnchor.constraint(equalToConstant: 32.0)
+            actionButton.centerYAnchor.constraint(equalTo: headerTitle.centerYAnchor),
+            actionButton.trailingAnchor.constraint(equalTo: profileButton.leadingAnchor, constant: -Const.marginEight * 2.0),
+            actionButton.widthAnchor.constraint(equalToConstant: 32.0),
+            actionButton.heightAnchor.constraint(equalToConstant: 32.0)
         ])
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        setProfileImage()
     }
     
     // Sets title name
@@ -102,6 +105,14 @@ class Header : UIView {
     // Sets background color, default: Color.background
     func setBackgroundColor(color: UIColor) {
         self.backgroundColor = color
+    }
+    
+    func setProfileImage() {
+        
+        let myProfileImage = UserDefaults.standard.value(forKey: userInfoType.profileImageURL.rawValue) as? String
+
+        profileButton.kf.setImage(with: URL(string: myProfileImage!), for: .normal, placeholder: UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal))
+        profileButton.kf.setBackgroundImage(with: URL(string: myProfileImage!), for: .normal, placeholder: UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal))
     }
 }
 
@@ -191,7 +202,7 @@ class ProfileHeader : UIView {
             location.topAnchor.constraint(equalTo: occupation.bottomAnchor, constant: Const.marginEight / 2.0),
             location.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea),
             location.widthAnchor.constraint(equalTo: widthAnchor),
-            location.heightAnchor.constraint(equalToConstant: 20.0)
+            location.heightAnchor.constraint(equalToConstant: 20.0),
         ])
     }
     

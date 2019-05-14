@@ -34,7 +34,6 @@ class CommunityViewController: UIViewController {
     
     lazy var scrollView : UIScrollView = {
         let sv = UIScrollView()
-        //sv.showsVerticalScrollIndicator = false
         sv.showsHorizontalScrollIndicator = false
         sv.backgroundColor = .background
         sv.translatesAutoresizingMaskIntoConstraints = false
@@ -50,9 +49,8 @@ class CommunityViewController: UIViewController {
     lazy var headerView : Header = {
         let hv = Header()
         hv.setTitleName(name: "Community")
-        hv.actionButton.setImage(UIImage(named: "search")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        //hv.actionButton.addTarget(self, action: #selector(showSearchViewController), for: .touchUpInside)
-        hv.actionButton.isHidden = true
+        hv.setProfileImage()
+        hv.profileButton.addTarget(self, action: #selector(navigateToProfile), for: .touchUpInside)
         hv.backgroundColor = .background
         hv.translatesAutoresizingMaskIntoConstraints = false
         return hv
@@ -92,15 +90,10 @@ class CommunityViewController: UIViewController {
         // Fetch me
         let myID = NetworkManager.shared.getUID()
         NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
+            
             self.me.set(dictionary: dictionary, id: myID!)
             
-            // Save interests on disk
-            let interests = self.me.getValue(forField: .interests) as! [String]
-            self.me.saveInDisk(value: interests, for: .interests)
-            
-            // Saves profile image URL on disk
-            let profileImageURL = self.me.getValue(forField: .profileImageURL) as! String
-            self.me.saveInDisk(value: profileImageURL, for: .profileImageURL)
+            self.headerView.setProfileImage()
         }
 
         view.addSubview(scrollView)
@@ -152,9 +145,7 @@ class CommunityViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         setupNavigationBarItems()
-        
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -185,7 +176,8 @@ class CommunityViewController: UIViewController {
     //*** This is required to fix navigation bar forever disappear on fast backswipe bug.
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func didReceiveMemoryWarning() {
@@ -315,6 +307,16 @@ class CommunityViewController: UIViewController {
                 return lhs < rhs
             }
         })
+    }
+    
+    @objc func navigateToProfile() {
+        
+        let newChatController = ProfileViewController()
+        newChatController.hidesBottomBarWhenPushed = true
+        
+        let navController = UINavigationController(rootViewController: newChatController)
+        navController.modalPresentationStyle = .overFullScreen
+        present(navController, animated: true, completion: nil)
     }
 }
 

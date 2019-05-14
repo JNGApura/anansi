@@ -289,7 +289,7 @@ class ProfileViewController: UIViewController {
                 b.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
                 b.setImage(UIImage(named: "close")!.withRenderingMode(.alwaysTemplate), for: .normal)
                 b.contentMode = .scaleAspectFit
-                b.tintColor = .primary
+                b.tintColor = .secondary
                 b.backgroundColor = .background
                 b.layer.cornerRadius = 16.0
                 b.layer.masksToBounds = true

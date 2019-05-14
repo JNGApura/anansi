@@ -38,7 +38,8 @@ class EventViewController: UIViewController {
     lazy var headerView : Header = {
         let hv = Header()
         hv.setTitleName(name: "Event")
-        hv.actionButton.addTarget(self, action: #selector(navigateToProfile), for: .touchUpInside)
+        hv.setProfileImage()
+        hv.profileButton.addTarget(self, action: #selector(navigateToProfile), for: .touchUpInside)
         hv.backgroundColor = .background
         hv.translatesAutoresizingMaskIntoConstraints = false
         return hv

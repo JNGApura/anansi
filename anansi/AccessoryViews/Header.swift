@@ -109,10 +109,15 @@ class Header : UIView {
     
     func setProfileImage() {
         
-        let myProfileImage = UserDefaults.standard.value(forKey: userInfoType.profileImageURL.rawValue) as? String
+        if let myProfileImage = UserDefaults.standard.value(forKey: userInfoType.profileImageURL.rawValue) as? String {
 
-        profileButton.kf.setImage(with: URL(string: myProfileImage!), for: .normal, placeholder: UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal))
-        profileButton.kf.setBackgroundImage(with: URL(string: myProfileImage!), for: .normal, placeholder: UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal))
+            profileButton.kf.setImage(with: URL(string: myProfileImage), for: .normal, placeholder: UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal))
+            profileButton.kf.setBackgroundImage(with: URL(string: myProfileImage), for: .normal, placeholder: UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal))
+        } else {
+            
+            profileButton.setImage(UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal), for: .normal)
+            profileButton.setBackgroundImage(UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal), for: .normal)
+        }
     }
 }
 

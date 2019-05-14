@@ -163,7 +163,7 @@ class ProfileViewController: UIViewController {
         tv.dataSource = self
         tv.separatorStyle = .none
         tv.allowsSelection = true
-        tv.sectionHeaderHeight = 56.0
+        tv.sectionHeaderHeight = UITableView.automaticDimension
         tv.estimatedSectionHeaderHeight = 56.0
         tv.rowHeight = UITableView.automaticDimension
         tv.estimatedRowHeight = 84
@@ -179,6 +179,8 @@ class ProfileViewController: UIViewController {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         
+        view.backgroundColor = .background
+        
         // Fetches meeee!
         fetchMe()
         
@@ -193,7 +195,7 @@ class ProfileViewController: UIViewController {
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
             contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
@@ -218,7 +220,7 @@ class ProfileViewController: UIViewController {
             tableView.topAnchor.constraint(equalTo: achievementView.bottomAnchor, constant: Const.marginEight),
             tableView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             tableView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24.0),
+            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
         
         // CALL-TO-ACTION VIEW
@@ -477,7 +479,7 @@ class ProfileViewController: UIViewController {
                 cellMaxY = cell.frame.maxY
             }
 
-            let distanceToBottom = screenHeight - (cellMaxY + tableView.frame.origin.y - scrollView.contentOffset.y - statusBarHeight - offset)
+            let distanceToBottom = screenHeight - (cellMaxY + tableView.frame.origin.y - scrollView.contentOffset.y)
             let collapseSpace = keyboardHeight - distanceToBottom
             
             if collapseSpace < 0 { return }

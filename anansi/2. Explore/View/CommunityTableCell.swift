@@ -71,8 +71,8 @@ class CommunityTableCell: UITableViewCell {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         
         [name, field, location].forEach { stackView.addArrangedSubview($0) }
-        stackView.setCustomSpacing(Const.marginEight / 2.0, after: name)
-        stackView.setCustomSpacing(Const.marginEight / 2.0, after: location)
+        stackView.setCustomSpacing(4.0, after: name)
+        stackView.setCustomSpacing(2.0, after: field)
         
         [profileImageView, stackView].forEach { addSubview($0) }
         
@@ -83,6 +83,10 @@ class CommunityTableCell: UITableViewCell {
             profileImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Const.marginEight),
             profileImageView.widthAnchor.constraint(equalToConstant: 80.0),
             profileImageView.heightAnchor.constraint(equalToConstant: 80.0),
+            
+            name.heightAnchor.constraint(equalToConstant: 20.0),
+            field.heightAnchor.constraint(equalToConstant: 20.0),
+            location.heightAnchor.constraint(equalToConstant: 20.0),
             
             stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
             stackView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Const.marginEight * 2.0),

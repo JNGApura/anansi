@@ -27,6 +27,12 @@ class NewChatController: UITableViewController {
     var trendingUsers = [User]()
     var users = [User]()
     
+    var placeholder : String! {
+        didSet {
+            searchController.searchBar.placeholder = placeholder
+        }
+    }
+    
     lazy var searchController : UISearchController = {
         let sc = UISearchController(searchResultsController: nil)
         sc.searchResultsUpdater = self
@@ -76,11 +82,6 @@ class NewChatController: UITableViewController {
         navigationItem.titleView = searchController.searchBar
         
         searchController.isActive = true
-        
-        // Placeholder message
-        let CTA = ["Start a new conversation", "Ignite a discussion", "Challenge others to change", "Spread your ideas", "Be the change", "Share your passion"]
-        searchController.searchBar.placeholder = CTA[Int.random(in: 0 ..< CTA.count)]
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {

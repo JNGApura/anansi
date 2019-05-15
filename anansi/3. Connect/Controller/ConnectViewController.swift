@@ -38,6 +38,8 @@ class ConnectViewController: UIViewController {
     private var latestChats = [Message]()
     
     private var userChats = [String : Message]()
+    
+    private var CTA : String!
             
     var unreadChats = [String]() {
         didSet {
@@ -142,7 +144,12 @@ class ConnectViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        // Observe messages from DB
         observeUserMessages()
+        
+        // Placeholder message for empty state (or new chat page)
+        CTA = Const.emptystateTitle[Int.random(in: 0 ..< Const.emptystateTitle.count)]
+        tableView.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -219,6 +226,7 @@ class ConnectViewController: UIViewController {
     @objc func navigateToNewChatController() {
         
         let newChatController = NewChatController(style: .grouped)
+        newChatController.placeholder = CTA
         newChatController.delegate = self
         newChatController.hidesBottomBarWhenPushed = true
         
@@ -249,8 +257,12 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if (latestChats.count == 0) {
-            self.tableView.backgroundView = ConnectEmptyState(frame: CGRect(x: 0, y: 0, width: self.tableView.bounds.size.width, height: self.tableView.bounds.size.height))
+            let emptystate = ConnectEmptyState(frame: CGRect(x: 0, y: 0, width: self.tableView.bounds.size.width, height: self.tableView.bounds.size.height))
+            emptystate.placeholder = CTA
+            self.tableView.backgroundView = emptystate
+            
         } else {
+    
             self.tableView.backgroundView = nil
         }
         

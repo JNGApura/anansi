@@ -49,7 +49,7 @@ struct Const {
     /// UINavigation button height
     static let navButtonHeight: CGFloat = 38
     
-    /// This will change
+    ///
     static let timeDateHeightChatCells : CGFloat = 28.0
     
     // List of tabs in Community
@@ -68,6 +68,15 @@ struct Const {
     // Kapter Promocode
     static let kaptenPromoCode = "TEDX19"
     
+    // Placeholders for connect empty state (and new chat)
+    static let emptystateTitle = ["Start a new conversation",
+                                  "Ignite a discussion",
+                                  "Spread your ideas"]//, "Be the change", "Be the change", "Share your passion"]
+    
+    static let emptystateSubtitle = ["Share your ideas by connecting with other attendees",
+                                     "Be the change you want to see in the world",
+                                     "Start meaningful discussions with other attendees"]
+
     /// Color gradient mapping structure
     static let colorGradient : [Int:[UIColor]] = [0 : [.orange, .magenta],
                                                   1 : [.magenta, .cyan],

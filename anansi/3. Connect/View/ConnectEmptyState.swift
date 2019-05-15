@@ -10,15 +10,27 @@ import UIKit
 
 class ConnectEmptyState: UIView {
     
-    let view: UIView = {
-        let v = UIView()
+    var placeholder : String! {
+        didSet {
+            
+            let index = Const.emptystateTitle.index(of: placeholder)
+            
+            stateTitle.text = placeholder
+            stateDescription.text = Const.emptystateSubtitle[index!]
+            imageView.image = UIImage(named: "Connect-empty-\(index!)")!.withRenderingMode(.alwaysOriginal)
+        }
+    }
+    
+    let stackView: UIStackView = {
+        let v = UIStackView()
+        v.axis = .vertical
+        v.distribution = .fill
         v.translatesAutoresizingMaskIntoConstraints = false
         return v
     }()
     
     let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = #imageLiteral(resourceName: "Connect_empty_state").withRenderingMode(.alwaysTemplate)
         imageView.tintColor = .secondary
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -27,17 +39,16 @@ class ConnectEmptyState: UIView {
     
     let stateTitle: UILabel = {
         let tl = UILabel()
-        tl.text = "No messages yet"
-        tl.font = UIFont.boldSystemFont(ofSize: Const.headlineFontSize)
+        tl.font = UIFont.boldSystemFont(ofSize: 20.0)
         tl.textColor = .secondary
         tl.textAlignment = .center
+        tl.numberOfLines = 0
         tl.translatesAutoresizingMaskIntoConstraints = false
         return tl
     }()
     
     let stateDescription: UILabel = {
         let tl = UILabel()
-        tl.text = "Share your ideas by connecting with other attendees"
         tl.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
         tl.textColor = .secondary
         tl.textAlignment = .center
@@ -52,8 +63,10 @@ class ConnectEmptyState: UIView {
         backgroundColor = .background
         
         // Add subviews
-        addSubview(view)
-        [imageView, stateTitle, stateDescription].forEach { view.addSubview($0) }
+        [imageView, stateTitle, stateDescription].forEach { stackView.addArrangedSubview($0) }
+        stackView.setCustomSpacing(Const.marginEight * 2.0, after: imageView)
+        stackView.setCustomSpacing(Const.marginEight, after: stateTitle)
+        addSubview(stackView)
         
         // Add layout constraints
         setupLayoutConstraints()
@@ -67,25 +80,10 @@ class ConnectEmptyState: UIView {
         
         NSLayoutConstraint.activate([
             
-            view.centerXAnchor.constraint(equalTo: centerXAnchor),
-            view.centerYAnchor.constraint(equalTo: centerYAnchor),
-            view.widthAnchor.constraint(equalTo: widthAnchor),
-            view.heightAnchor.constraint(equalToConstant: 182.0),
+            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -Const.marginSafeArea * 2.0),
+            stackView.widthAnchor.constraint(equalTo: widthAnchor, constant: -Const.marginSafeArea * 5.5),
             
-            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            imageView.topAnchor.constraint(equalTo: view.topAnchor),
-            imageView.widthAnchor.constraint(equalToConstant: 72.0),
-            imageView.heightAnchor.constraint(equalToConstant: 72.0),
-            
-            stateTitle.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 16.0),
-            stateTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stateTitle.widthAnchor.constraint(equalTo: view.widthAnchor),
-            stateTitle.heightAnchor.constraint(equalToConstant: 30.0),
-            
-            stateDescription.topAnchor.constraint(equalTo: stateTitle.bottomAnchor, constant: 16.0),
-            stateDescription.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stateDescription.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -132.0),
-            //stateDescription.heightAnchor.constraint(equalToConstant: 48.0),
         ])
     }
 }

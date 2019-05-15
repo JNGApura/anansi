@@ -16,37 +16,57 @@ class ChatTableCell: UITableViewCell {
     var message : Message? {
         didSet {
             
-            if let id = message?.partnerID() {
+            if let partnerID = message?.partnerID() {
                 
-                NetworkManager.shared.fetchUser(userID: id) { (dictionary) in
+                NetworkManager.shared.fetchUser(userID: partnerID) { (dictionary) in
                     
+                    // Fetches user
                     let user = User()
-                    user.set(dictionary: dictionary, id: id)
+                    user.set(dictionary: dictionary, id: partnerID)
                     
+                    // User name
                     self.name.text = user.getValue(forField: .name) as? String
                     
+                    // Sets user's profile image
                     if let imageURL = (user.getValue(forField: .profileImageURL) as? String) {
                         self.profileImageView.setImage(with: imageURL)
+                        self.hasReadImage.setImage(with: imageURL)
                     } else {
                         self.profileImageView.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
+                        self.hasReadImage.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
                     }
                     
+                    // Sets message box
                     if let isTyping = dictionary["isTypingTo"] as? String, isTyping == self.myID! {
                         self.lastMessage.text = "is typing..."
                         
                     } else {
+                        
                         var displayMessage: String = ""
                         
-                        if let sender = self.message?.getValue(forField: .sender) as? String, sender == self.myID { displayMessage += "You: " }
+                        // Sender
+                        if let sender = self.message?.getValue(forField: .sender) as? String, sender == self.myID {
+                            
+                            displayMessage += "You: "
+                            
+                            // If chatPartner has seen my message, I display his/her profile picture in a small icon
+                            if let isRead = self.message?.getValue(forField: .isRead) as? Bool, isRead {
+                                self.hasReadImage.isHidden = false
+                            } else {
+                                self.hasReadImage.isHidden = true
+                            }
+                        }
+                        
+                        // Message
                         if let message = self.message!.getValue(forField: .text) as? String { displayMessage += message }
                         
                         self.lastMessage.text = displayMessage
+                        self.lastMessage.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
                     }
                     
+                    // Sets timestamp
                     if let seconds = (self.message?.getValue(forField: .timestamp) as? NSNumber)?.doubleValue {
-                        
-                        let timestampDate = NSDate(timeIntervalSince1970: seconds)
-                        self.timeLabel.text = createTimeString(date: timestampDate)
+                        self.timeLabel.text = " · " + createWeektimeString(date: NSDate(timeIntervalSince1970: seconds))
                     }
                 }
             }
@@ -59,6 +79,7 @@ class ChatTableCell: UITableViewCell {
         i.translatesAutoresizingMaskIntoConstraints = false
         i.layer.cornerRadius = 60.0 / 2
         i.layer.masksToBounds = true
+        i.clipsToBounds = true
         return i
     }()
     
@@ -78,15 +99,21 @@ class ChatTableCell: UITableViewCell {
     
     let lastMessage: UILabel = {
         let tl = UILabel()
-        tl.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
         tl.textColor = UIColor.secondary.withAlphaComponent(0.4)
         tl.translatesAutoresizingMaskIntoConstraints = false
         tl.lineBreakMode = .byTruncatingTail
-        tl.numberOfLines = 0
         return tl
     }()
     
-    let topStackView : UIStackView = {
+    let timeLabel: UILabel = {
+        let l = UILabel()
+        l.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
+        l.textColor = UIColor.secondary.withAlphaComponent(0.4)
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
+    }()
+    
+    let bottomStackView : UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.distribution = .fill
@@ -102,13 +129,15 @@ class ChatTableCell: UITableViewCell {
         return sv
     }()
     
-    let timeLabel: UILabel = {
-        let l = UILabel()
-        l.font = UIFont.systemFont(ofSize: Const.captionFontSize)
-        l.textColor = .secondary
-        l.textAlignment = .right
-        l.translatesAutoresizingMaskIntoConstraints = false
-        return l
+    let hasReadImage: UIImageView = {
+        let i = UIImageView()
+        i.contentMode = .scaleAspectFill
+        i.layer.cornerRadius = 14.0 / 2
+        i.layer.masksToBounds = true
+        i.clipsToBounds = true
+        i.isHidden = true
+        i.translatesAutoresizingMaskIntoConstraints = false
+        return i
     }()
     
     let separator: UIView = {
@@ -121,13 +150,11 @@ class ChatTableCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         
-        [name, timeLabel].forEach { topStackView.addArrangedSubview($0) }
-        topStackView.setCustomSpacing(Const.marginEight, after: name)
+        [lastMessage, timeLabel].forEach { bottomStackView.addArrangedSubview($0) }
+        [name, bottomStackView].forEach { stackView.addArrangedSubview($0) }
+        stackView.setCustomSpacing(Const.marginEight / 4.0, after: name)
         
-        [topStackView, lastMessage].forEach { stackView.addArrangedSubview($0) }
-        stackView.setCustomSpacing(4.0, after: topStackView)
-        
-        [profileImageView, badge, stackView, timeLabel, separator].forEach { addSubview($0) }
+        [profileImageView, badge, stackView, hasReadImage, separator].forEach { addSubview($0) }
         
         NSLayoutConstraint.activate([
             profileImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight * 2.0),
@@ -136,33 +163,33 @@ class ChatTableCell: UITableViewCell {
             profileImageView.widthAnchor.constraint(equalToConstant: 60.0),
             profileImageView.heightAnchor.constraint(equalToConstant: 60.0),
             
-            topStackView.heightAnchor.constraint(equalToConstant: 24.0),
-            
-            timeLabel.trailingAnchor.constraint(equalTo: topStackView.trailingAnchor),
-            timeLabel.centerYAnchor.constraint(equalTo: name.centerYAnchor),
-            timeLabel.widthAnchor.constraint(equalToConstant: 80.0),
+            name.heightAnchor.constraint(equalToConstant: 24.0),
+            bottomStackView.heightAnchor.constraint(equalToConstant: 20.0),
             
             stackView.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
             stackView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Const.marginEight * 2.0),
-            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
+            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -42.0),
             
-            lastMessage.heightAnchor.constraint(equalToConstant: 20.0),
-
+            hasReadImage.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
+            hasReadImage.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
+            hasReadImage.heightAnchor.constraint(equalToConstant: 14.0),
+            hasReadImage.widthAnchor.constraint(equalToConstant: 14.0),
+            
             separator.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
             separator.trailingAnchor.constraint(equalTo: trailingAnchor),
             separator.bottomAnchor.constraint(equalTo: bottomAnchor),
             separator.heightAnchor.constraint(equalToConstant: 1)
         ])
-    }
+     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // Is this necessary?
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        // Is this necessary?
         badge.frame = CGRect(x: profileImageView.frame.maxX - badgeRadius, y: profileImageView.frame.midY - badgeRadius, width: badgeRadius * 2, height: badgeRadius * 2)
     }
     

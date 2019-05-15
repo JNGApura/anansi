@@ -19,6 +19,30 @@ func iterateEnum<T: Hashable>(_: T.Type) -> AnyIterator<T> {
     }
 }
 
+// Creates time string (week) for Connect tab
+func createWeektimeString(date: NSDate) -> String {
+    
+    var calendar = NSCalendar.current
+    calendar.timeZone = NSTimeZone.local
+    
+    let components = calendar.dateComponents([.weekOfYear, .day, .hour, .minute], from: date as Date, to: Date())
+
+    if components.weekOfYear! >= 1 {
+        return "\(components.weekOfYear!)w"
+        
+    } else if components.weekOfYear! < 1 && components.day! >= 1 {
+        return "\(components.day!)d"
+        
+    } else if components.day! < 1 && components.hour! >= 1 {
+        return "\(components.hour!)h"
+        
+    } else if components.hour! < 1 && components.minute! >= 1 {
+        return "\(components.minute!)m"
+    }
+
+    return ""
+}
+
 // Create time strings for messages
 func createTimeString(date: NSDate) -> String {
     

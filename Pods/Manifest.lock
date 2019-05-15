@@ -1,4 +1,7 @@
 PODS:
+  - Crashlytics (3.13.0):
+    - Fabric (~> 1.10.0)
+  - Fabric (1.10.0)
   - Firebase/Auth (5.20.2):
     - Firebase/CoreOnly
     - FirebaseAuth (= 5.4.2)
@@ -91,6 +94,8 @@ PODS:
   - ReachabilitySwift (3)
 
 DEPENDENCIES:
+  - Crashlytics (~> 3.13.0)
+  - Fabric (~> 1.10.0)
   - Firebase/Auth
   - Firebase/Core
   - Firebase/Database
@@ -101,6 +106,8 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - Crashlytics
+    - Fabric
     - Firebase
     - FirebaseAnalytics
     - FirebaseAnalyticsInterop
@@ -121,6 +128,8 @@ SPEC REPOS:
     - ReachabilitySwift
 
 SPEC CHECKSUMS:
+  Crashlytics: 1f5f752c7feac0add0cc1774756f96444fa3b1a7
+  Fabric: 09de1e053eb7dc415593166ad3e53d4c88123405
   Firebase: 0c8cf33f266410c61ab3e2265cfa412200351d9c
   FirebaseAnalytics: ece1aa57a4f43c64d53a648b5a5e05151aae947b
   FirebaseAnalyticsInterop: efbe45c8385ec626e29f9525e5ebd38520dfb6c1
@@ -140,6 +149,6 @@ SPEC CHECKSUMS:
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   ReachabilitySwift: f5b9bb30a0777fac8f09ce8b067e32faeb29bb64
 
-PODFILE CHECKSUM: 5c7ed446d716cd957f5008db8f0cae6ca61fcdfb
+PODFILE CHECKSUM: 51ba17f81182425587cd2704df2c1e92675de849
 
 COCOAPODS: 1.6.1

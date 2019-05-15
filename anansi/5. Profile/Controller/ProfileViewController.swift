@@ -424,6 +424,8 @@ class ProfileViewController: UIViewController {
     }
     
     @objc func dismissViewController() {
+
+        view.endEditing(true)
         
         navigationController?.popViewController(animated: true)
         dismiss(animated: true, completion: nil)
@@ -457,7 +459,6 @@ class ProfileViewController: UIViewController {
         
         let keyboardHeight = keyboardEndFrame.height
         let screenHeight = view.frame.height
-        let offset : CGFloat = 24.0
                 
         if activeField != nil {
             

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C07774222878E6600D246F0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2C07774122878E6500D246F0 /* GoogleService-Info.plist */; };
+		2C0777442287C51000D246F0 /* CommunitySearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0777432287C51000D246F0 /* CommunitySearchCell.swift */; };
 		2C0941DC226C772B00A295C1 /* BasicInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0941DB226C772B00A295C1 /* BasicInfoViewController.swift */; };
 		2C0941DE226C7B6400A295C1 /* TextFieldTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0941DD226C7B6400A295C1 /* TextFieldTableCell.swift */; };
 		2C0AD01F2267D2FA007B96EA /* ContactInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AD01E2267D2FA007B96EA /* ContactInfoTableViewCell.swift */; };
@@ -37,7 +39,6 @@
 		2C698902202ADDF200F6B4A8 /* SignUpController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C698901202ADDF200F6B4A8 /* SignUpController.swift */; };
 		2C698904202ADDFE00F6B4A8 /* ProfilingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C698903202ADDFE00F6B4A8 /* ProfilingController.swift */; };
 		2C698906202AEFC500F6B4A8 /* Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C698905202AEFC500F6B4A8 /* Display.swift */; };
-		2C6D4016228787FF00FCF1F6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2C6D4015228787FE00FCF1F6 /* GoogleService-Info.plist */; };
 		2C6D401A2287894F00FCF1F6 /* EmployeeTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D40182287894F00FCF1F6 /* EmployeeTableCell.swift */; };
 		2C6D401B2287894F00FCF1F6 /* UserTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D40192287894F00FCF1F6 /* UserTableCell.swift */; };
 		2C6D401D2287895900FCF1F6 /* Partner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D401C2287895900FCF1F6 /* Partner.swift */; };
@@ -82,7 +83,7 @@
 		2CD55AD62033EFA100299926 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD55AD52033EFA100299926 /* ProfileViewController.swift */; };
 		2CDD28532018981400AB1F32 /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDD28522018981400AB1F32 /* ChatLogController.swift */; };
 		2CDD28572019C77900AB1F32 /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDD28562019C77900AB1F32 /* ChatMessageCell.swift */; };
-		2CDD2859201AB27300AB1F32 /* ChatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDD2858201AB27200AB1F32 /* ChatCell.swift */; };
+		2CDD2859201AB27300AB1F32 /* ChatTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDD2858201AB27200AB1F32 /* ChatTableCell.swift */; };
 		2CDF6B072042422200CC3B92 /* CommunityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF6B062042422200CC3B92 /* CommunityViewController.swift */; };
 		2CEBB14922601A3400821896 /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEBB14822601A3400821896 /* EventViewController.swift */; };
 		2CEBB14B22601A8B00821896 /* PageSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEBB14A22601A8B00821896 /* PageSelector.swift */; };
@@ -120,6 +121,8 @@
 
 /* Begin PBXFileReference section */
 		1C5C16022A37BE4973F0C034 /* Pods-anansiUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-anansiUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-anansiUITests/Pods-anansiUITests.release.xcconfig"; sourceTree = "<group>"; };
+		2C07774122878E6500D246F0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		2C0777432287C51000D246F0 /* CommunitySearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitySearchCell.swift; sourceTree = "<group>"; };
 		2C0941DB226C772B00A295C1 /* BasicInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicInfoViewController.swift; sourceTree = "<group>"; };
 		2C0941DD226C7B6400A295C1 /* TextFieldTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldTableCell.swift; sourceTree = "<group>"; };
 		2C0AD01E2267D2FA007B96EA /* ContactInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInfoTableViewCell.swift; sourceTree = "<group>"; };
@@ -151,7 +154,6 @@
 		2C698901202ADDF200F6B4A8 /* SignUpController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpController.swift; sourceTree = "<group>"; };
 		2C698903202ADDFE00F6B4A8 /* ProfilingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilingController.swift; sourceTree = "<group>"; };
 		2C698905202AEFC500F6B4A8 /* Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Display.swift; sourceTree = "<group>"; };
-		2C6D4015228787FE00FCF1F6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2C6D40182287894F00FCF1F6 /* EmployeeTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmployeeTableCell.swift; sourceTree = "<group>"; };
 		2C6D40192287894F00FCF1F6 /* UserTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTableCell.swift; sourceTree = "<group>"; };
 		2C6D401C2287895900FCF1F6 /* Partner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Partner.swift; sourceTree = "<group>"; };
@@ -201,7 +203,7 @@
 		2CDD28522018981400AB1F32 /* ChatLogController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
 		2CDD285420190ED500AB1F32 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		2CDD28562019C77900AB1F32 /* ChatMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
-		2CDD2858201AB27200AB1F32 /* ChatCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatCell.swift; sourceTree = "<group>"; };
+		2CDD2858201AB27200AB1F32 /* ChatTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableCell.swift; sourceTree = "<group>"; };
 		2CDF6B062042422200CC3B92 /* CommunityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityViewController.swift; sourceTree = "<group>"; };
 		2CEBB14822601A3400821896 /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
 		2CEBB14A22601A8B00821896 /* PageSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageSelector.swift; sourceTree = "<group>"; };
@@ -488,6 +490,7 @@
 				2C70FBC720021793002E97E7 /* AppDelegate.swift */,
 				2C7DE7F0201740D700EEB1F4 /* LaunchScreen.storyboard */,
 				2C70FBD520021793002E97E7 /* Info.plist */,
+				2C07774122878E6500D246F0 /* GoogleService-Info.plist */,
 				2CC3EF61201566A500EBC7B2 /* settings.json */,
 				2CEE5F7B20077C4100E86365 /* anansi.entitlements */,
 			);
@@ -557,7 +560,6 @@
 			children = (
 				2C2841D1202D1B9100F8EA00 /* Controller */,
 				2CEE5ECC2284960900ACC42C /* View */,
-				2CEE5ECD2284960E00ACC42C /* Model */,
 			);
 			path = "4. Event";
 			sourceTree = "<group>";
@@ -583,7 +585,7 @@
 			isa = PBXGroup;
 			children = (
 				2C7F6F1520259622008AB0CD /* Badge.swift */,
-				2CDD2858201AB27200AB1F32 /* ChatCell.swift */,
+				2CDD2858201AB27200AB1F32 /* ChatTableCell.swift */,
 				2C6988FD202A89A700F6B4A8 /* ConnectEmptyState.swift */,
 			);
 			path = View;
@@ -604,6 +606,7 @@
 			isa = PBXGroup;
 			children = (
 				2C0ADB4A2042B3F700520F87 /* CommunityTableCell.swift */,
+				2C0777432287C51000D246F0 /* CommunitySearchCell.swift */,
 				2C6D4020228789B600FCF1F6 /* PartnerCommunityCollectionViewController.swift */,
 				2C5A54EE2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift */,
 				2CF6CB27228503B30050A053 /* TrendingCommunityCollectionViewCell.swift */,
@@ -646,13 +649,6 @@
 				2CB6AFE7226481EC00E1702E /* ScheduleInfoTableViewCell.swift */,
 			);
 			path = View;
-			sourceTree = "<group>";
-		};
-		2CEE5ECD2284960E00ACC42C /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		2CEE5ECE2284968200ACC42C /* View */ = {
@@ -764,8 +760,8 @@
 			isa = PBXGroup;
 			children = (
 				2C7F6F192025D902008AB0CD /* ChatAccessoryView.swift */,
-				2CDD28562019C77900AB1F32 /* ChatMessageCell.swift */,
 				2C6988FB202A83C600F6B4A8 /* ChatEmptyState.swift */,
+				2CDD28562019C77900AB1F32 /* ChatMessageCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -856,6 +852,7 @@
 				2C70FBC120021793002E97E7 /* Frameworks */,
 				2C70FBC220021793002E97E7 /* Resources */,
 				912D9175C29F5525A3B88903 /* [CP] Embed Pods Frameworks */,
+				2C077748228C37A600D246F0 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -965,6 +962,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2CC3EF642015752000EBC7B2 /* settings.json in Resources */,
+				2C07774222878E6600D246F0 /* GoogleService-Info.plist in Resources */,
 				2C19D02D227BA6FA00275B99 /* Assets.xcassets in Resources */,
 				2C7DE7F1201740D700EEB1F4 /* LaunchScreen.storyboard in Resources */,
 			);
@@ -1022,6 +1020,24 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		2C077748228C37A600D246F0 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Script that initializes Crashlytics\n\"${PODS_ROOT}/Fabric/run\"\n";
 		};
 		912D9175C29F5525A3B88903 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1093,6 +1109,7 @@
 				2C7F6F0E202595C1008AB0CD /* UserDefaults+.swift in Sources */,
 				2C7F6F02202594AC008AB0CD /* UICollectionView+.swift in Sources */,
 				2CC3EF6A201577DD00EBC7B2 /* AboutPageView.swift in Sources */,
+				2C0777442287C51000D246F0 /* CommunitySearchCell.swift in Sources */,
 				2CBE2EC3203525C2009E5268 /* GradientCell.swift in Sources */,
 				2C5A54FA204BAA26006DB37A /* SpeakerCardDetailedController.swift in Sources */,
 				2CF6CB28228503B30050A053 /* TrendingCommunityCollectionViewCell.swift in Sources */,
@@ -1132,7 +1149,7 @@
 				2C198AAD204015F300CFC705 /* TabSelector.swift in Sources */,
 				2C0D477F228784D4002D9E38 /* Message.swift in Sources */,
 				2C5A54EF2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift in Sources */,
-				2CDD2859201AB27300AB1F32 /* ChatCell.swift in Sources */,
+				2CDD2859201AB27300AB1F32 /* ChatTableCell.swift in Sources */,
 				2CEBB14F22615B9A00821896 /* EventChallengeCollectionViewCell.swift in Sources */,
 				2C2841C6202D137100F8EA00 /* SearchEmptyState.swift in Sources */,
 				2C18A7812011A36700C03B20 /* Reachability.swift in Sources */,
@@ -1315,6 +1332,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = anansi/SupportFiles/anansi.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = BHE99ZFAUF;
 				INFOPLIST_FILE = anansi/SupportFiles/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;

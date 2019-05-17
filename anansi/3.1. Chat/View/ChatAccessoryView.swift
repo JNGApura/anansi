@@ -29,6 +29,17 @@ class ChatAccessoryView: UIView {
         }
     }
     
+    let borderView : UIView = {
+        let v = UIView()
+        v.backgroundColor = .background
+        v.layer.borderColor = UIColor.tertiary.cgColor
+        v.layer.borderWidth = 1.5
+        v.layer.cornerRadius = 22.0
+        v.clipsToBounds = true
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
+    
     lazy var sendButton : UIButton = {
         let b = UIButton()
         b.setTitle("Send", for: .normal)
@@ -48,12 +59,7 @@ class ChatAccessoryView: UIView {
         tf.textColor = .secondary
         tf.placeholder = ""
         tf.isScrollEnabled = false
-        tf.layer.borderColor = UIColor.tertiary.cgColor
-        tf.layer.borderWidth = 1.5
-        tf.layer.cornerRadius = 22.0
-        tf.clipsToBounds = true
-        tf.contentInset = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 0.0)
-        tf.textContainerInset = UIEdgeInsets(top: 9.0, left: 0.0, bottom: 8.0, right: 76.0)
+        tf.delegate = self
         tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
     }()
@@ -91,21 +97,26 @@ class ChatAccessoryView: UIView {
         visualEffectView.backgroundColor = UIColor(white: 1.0, alpha: 0.9)
         
         // Add subviews
-        [visualEffectView, inputTextView, sendButton, isTypingBox].forEach { addSubview($0)}
+        [visualEffectView, borderView, inputTextView, sendButton, isTypingBox].forEach { addSubview($0)}
         isTypingBox.addSubview(isTypingLabel)
         
         // Add layout constraints
         NSLayoutConstraint.activate([
             
-            sendButton.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor, constant: -5.0),
-            sendButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea - 2.0),
+            sendButton.bottomAnchor.constraint(equalTo: inputTextView.bottomAnchor, constant: 3.0),
+            sendButton.trailingAnchor.constraint(equalTo: borderView.trailingAnchor, constant: -Const.marginEight * 2.0),
             sendButton.widthAnchor.constraint(equalToConstant: 44.0),
             sendButton.heightAnchor.constraint(equalToConstant: 44.0),
+
+            borderView.topAnchor.constraint(equalTo: topAnchor, constant: Const.marginEight),
+            borderView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight),
+            borderView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor, constant: -Const.marginEight),
+            borderView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight),
             
-            inputTextView.topAnchor.constraint(equalTo: topAnchor, constant: Const.marginEight),
-            inputTextView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea / 2.0),
-            inputTextView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor, constant: -Const.marginEight),
-            inputTextView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight),
+            inputTextView.topAnchor.constraint(equalTo: borderView.topAnchor, constant: Const.marginEight / 2.0),
+            inputTextView.leadingAnchor.constraint(equalTo: borderView.leadingAnchor, constant: Const.marginEight * 2.0),
+            inputTextView.bottomAnchor.constraint(equalTo: borderView.bottomAnchor, constant: -Const.marginEight / 2.0),
+            inputTextView.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -Const.marginEight / 2.0),
             
             isTypingBox.leadingAnchor.constraint(equalTo: leadingAnchor),
             isTypingBox.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -116,8 +127,6 @@ class ChatAccessoryView: UIView {
             isTypingLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
             isTypingLabel.centerYAnchor.constraint(equalTo: isTypingBox.centerYAnchor, constant: -2.0),
         ])
-        
-        inputTextView.delegate = self
     }
     
     required init?(coder aDecoder: NSCoder) {

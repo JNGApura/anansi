@@ -128,15 +128,18 @@ class ChatLogViewController: UITableViewController {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         
-        //tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 24.0, right: 0) // 88
-        tableView.alwaysBounceVertical = true
-        tableView.backgroundColor = .background
         tableView.register(ChatMessageCell.self, forCellReuseIdentifier: "cell")
+        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 24.0, right: 0) // 88
+        tableView.backgroundColor = .background
+        tableView.sectionHeaderHeight = 32.0
+        tableView.alwaysBounceVertical = true
         tableView.keyboardDismissMode = .interactive
         tableView.isDirectionalLockEnabled = true
         //tableView.isPagingEnabled = true
         tableView.isScrollEnabled = true
-        tableView.separatorColor = .none
+        tableView.separatorStyle = .none
+        tableView.tableFooterView = UIView(frame: CGRect.zero)
+        tableView.sectionFooterHeight = 0.0
         
         titleLabelView.setCustomSpacing(Const.marginEight, after: userImageView)
         NSLayoutConstraint.activate([
@@ -148,7 +151,6 @@ class ChatLogViewController: UITableViewController {
             
             userNameLabel.centerYAnchor.constraint(equalTo: userImageView.centerYAnchor),
         ])
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -415,13 +417,35 @@ extension ChatLogViewController {
         return dates.count
     }
     
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         let firstMessageInSection = listOfMessagesPerDate[dates[section]]?.first
         let timestampSec = (firstMessageInSection!.getValue(forField: .timestamp) as? NSNumber)!.doubleValue
         let currentMsgDate = NSDate(timeIntervalSince1970: timestampSec)
         
-        return timestring(from: currentMsgDate)
+        let v = UIView()
+        v.backgroundColor = .background
+        
+        let l : UILabel = {
+            let l = UILabel()
+            l.text = timestring(from: currentMsgDate)
+            l.backgroundColor = .clear
+            l.textColor = UIColor.secondary.withAlphaComponent(0.5)
+            l.font = UIFont.systemFont(ofSize: Const.captionFontSize)
+            l.textAlignment = .center
+            l.translatesAutoresizingMaskIntoConstraints = false
+            return l
+        }()
+        
+        v.addSubview(l)
+        v.addConstraint(NSLayoutConstraint(item: l, attribute: .centerY, relatedBy: .equal, toItem: v, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+        v.addConstraint(NSLayoutConstraint(item: l, attribute: .centerX, relatedBy: .equal, toItem: v, attribute: .centerX, multiplier: 1.0, constant: 0.0))
+        
+        return v
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 0.01
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

@@ -80,7 +80,7 @@ func timestring(from date: NSDate) -> String {
     let components = calendar.dateComponents([.year, .weekOfYear, .day, .hour], from: calendar.startOfDay(for: date as Date), to: Date())
 
     if components.day! > 1 || (components.day! == 1 && components.hour! >= 12) {
-        formatter.dateFormat = "EEE, HH:mm"
+        formatter.dateFormat = "eeee HH:mm"
         
     } else if components.day! == 1 {
         return "yesterday"

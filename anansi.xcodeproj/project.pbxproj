@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		2C07774222878E6600D246F0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2C07774122878E6500D246F0 /* GoogleService-Info.plist */; };
 		2C0777442287C51000D246F0 /* CommunitySearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0777432287C51000D246F0 /* CommunitySearchCell.swift */; };
-		2C07774A228CB75D00D246F0 /* ChatLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C077749228CB75D00D246F0 /* ChatLogViewController.swift */; };
+		2C07774C228F5DB600D246F0 /* ChatLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C07774B228F5DB500D246F0 /* ChatLogViewController.swift */; };
 		2C0941DC226C772B00A295C1 /* BasicInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0941DB226C772B00A295C1 /* BasicInfoViewController.swift */; };
 		2C0941DE226C7B6400A295C1 /* TextFieldTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0941DD226C7B6400A295C1 /* TextFieldTableCell.swift */; };
 		2C0AD01F2267D2FA007B96EA /* ContactInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AD01E2267D2FA007B96EA /* ContactInfoTableViewCell.swift */; };
@@ -82,7 +82,6 @@
 		2CCE51FD20060E4A00DFC9B1 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE51FC20060E4A00DFC9B1 /* Constants.swift */; };
 		2CCE520B20061CB300DFC9B1 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */; };
 		2CD55AD62033EFA100299926 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD55AD52033EFA100299926 /* ProfileViewController.swift */; };
-		2CDD28532018981400AB1F32 /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDD28522018981400AB1F32 /* ChatLogController.swift */; };
 		2CDD28572019C77900AB1F32 /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDD28562019C77900AB1F32 /* ChatMessageCell.swift */; };
 		2CDD2859201AB27300AB1F32 /* ChatTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDD2858201AB27200AB1F32 /* ChatTableCell.swift */; };
 		2CDF6B072042422200CC3B92 /* CommunityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF6B062042422200CC3B92 /* CommunityViewController.swift */; };
@@ -124,7 +123,7 @@
 		1C5C16022A37BE4973F0C034 /* Pods-anansiUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-anansiUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-anansiUITests/Pods-anansiUITests.release.xcconfig"; sourceTree = "<group>"; };
 		2C07774122878E6500D246F0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2C0777432287C51000D246F0 /* CommunitySearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitySearchCell.swift; sourceTree = "<group>"; };
-		2C077749228CB75D00D246F0 /* ChatLogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogViewController.swift; sourceTree = "<group>"; };
+		2C07774B228F5DB500D246F0 /* ChatLogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatLogViewController.swift; sourceTree = "<group>"; };
 		2C0941DB226C772B00A295C1 /* BasicInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicInfoViewController.swift; sourceTree = "<group>"; };
 		2C0941DD226C7B6400A295C1 /* TextFieldTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldTableCell.swift; sourceTree = "<group>"; };
 		2C0AD01E2267D2FA007B96EA /* ContactInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInfoTableViewCell.swift; sourceTree = "<group>"; };
@@ -202,7 +201,6 @@
 		2CCE51FC20060E4A00DFC9B1 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		2CD55AD52033EFA100299926 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
-		2CDD28522018981400AB1F32 /* ChatLogController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
 		2CDD285420190ED500AB1F32 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		2CDD28562019C77900AB1F32 /* ChatMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
 		2CDD2858201AB27200AB1F32 /* ChatTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableCell.swift; sourceTree = "<group>"; };
@@ -744,9 +742,8 @@
 		2CEE5ED8228499AE00ACC42C /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				2CDD28522018981400AB1F32 /* ChatLogController.swift */,
+				2C07774B228F5DB500D246F0 /* ChatLogViewController.swift */,
 				2C7E9549202D8FCF0020B7A4 /* NewChatController.swift */,
-				2C077749228CB75D00D246F0 /* ChatLogViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -1130,7 +1127,7 @@
 				2C6D401B2287894F00FCF1F6 /* UserTableCell.swift in Sources */,
 				2C7F6F1420259604008AB0CD /* UIFont+.swift in Sources */,
 				2C42950120269C1900724385 /* UIViewController+.swift in Sources */,
-				2C07774A228CB75D00D246F0 /* ChatLogViewController.swift in Sources */,
+				2C07774C228F5DB600D246F0 /* ChatLogViewController.swift in Sources */,
 				2C5A5500204D207C006DB37A /* ReportConfirmationView.swift in Sources */,
 				2C87DACF200CA072004F8730 /* Classes.swift in Sources */,
 				2C7F6F1A2025D902008AB0CD /* ChatAccessoryView.swift in Sources */,
@@ -1175,7 +1172,6 @@
 				2C0AD01F2267D2FA007B96EA /* ContactInfoTableViewCell.swift in Sources */,
 				2C708BDC200C40A0006E5ABD /* FeedbackPageView.swift in Sources */,
 				2CEBB155226244D700821896 /* LocationTableViewCell.swift in Sources */,
-				2CDD28532018981400AB1F32 /* ChatLogController.swift in Sources */,
 				2CB6AFE62264122400E1702E /* SettingsTableViewCell.swift in Sources */,
 				2CEBB15722627F9800821896 /* CLLocation+.swift in Sources */,
 				2C0D47732287393C002D9E38 /* SearchTableCell.swift in Sources */,

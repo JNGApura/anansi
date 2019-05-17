@@ -21,6 +21,9 @@ class ProfileViewController: UIViewController {
     var activeField : userInfoType! = nil
     var currentIndexPath : IndexPath!
     
+    var keyboardIsActive : Bool = false
+    var estimatedHeightForTextView : CGFloat? = nil
+    
     var user: User? {
         didSet {
             
@@ -60,6 +63,15 @@ class ProfileViewController: UIViewController {
         let cv = UIView()
         cv.translatesAutoresizingMaskIntoConstraints = false
         return cv
+    }()
+    
+    lazy var buttonListBackground: UIView = {
+        let l = UIView()
+        l.layer.cornerRadius = 17.0
+        l.clipsToBounds = true
+        l.backgroundColor = .background
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
     }()
     
     // Cover
@@ -179,6 +191,7 @@ class ProfileViewController: UIViewController {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         
+        (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .clear
         view.backgroundColor = .background
         
         // Fetches meeee!
@@ -186,6 +199,7 @@ class ProfileViewController: UIViewController {
         
         // Sets up UI
         view.addSubview(scrollView)
+        view.addSubview(buttonListBackground)
         scrollView.addSubview(contentView)
         
         [backgroundImage, headerView, achievementView, tableView].forEach { contentView.addSubview($0)}
@@ -221,6 +235,11 @@ class ProfileViewController: UIViewController {
             tableView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             tableView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            
+            buttonListBackground.topAnchor.constraint(equalTo: view.topAnchor, constant: statusBarHeight + 5.0),
+            buttonListBackground.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Const.marginEight * 2.0),
+            buttonListBackground.widthAnchor.constraint(equalToConstant: 80.0),
+            buttonListBackground.heightAnchor.constraint(equalToConstant: 34.0),
         ])
         
         // CALL-TO-ACTION VIEW
@@ -292,7 +311,7 @@ class ProfileViewController: UIViewController {
                 b.setImage(UIImage(named: "close")!.withRenderingMode(.alwaysTemplate), for: .normal)
                 b.contentMode = .scaleAspectFit
                 b.tintColor = .secondary
-                b.backgroundColor = .background
+                b.backgroundColor = UIColor.tertiary.withAlphaComponent(0.4)
                 b.layer.cornerRadius = 16.0
                 b.layer.masksToBounds = true
                 b.addTarget(self, action: #selector(dismissViewController), for: .touchUpInside)
@@ -305,7 +324,7 @@ class ProfileViewController: UIViewController {
                 b.setImage(UIImage(named: "settings")!.withRenderingMode(.alwaysTemplate), for: .normal)
                 b.contentMode = .scaleAspectFit
                 b.tintColor = .secondary
-                b.backgroundColor = .background
+                b.backgroundColor = UIColor.tertiary.withAlphaComponent(0.4)
                 b.layer.cornerRadius = 16.0
                 b.layer.masksToBounds = true
                 b.addTarget(self, action: #selector(navigateToSettingsViewController), for: .touchUpInside)
@@ -436,7 +455,6 @@ class ProfileViewController: UIViewController {
         let settingsController = SettingsViewController()
         settingsController.user = user
         
-        //navigationController?.setNavigationBarHidden(false, animated: false) // check this?
         navigationController?.pushViewController(settingsController, animated: true)
     }
     
@@ -448,7 +466,6 @@ class ProfileViewController: UIViewController {
         interestController.selectedInterests = interests
         interestController.delegate = self
         
-        //navigationController?.setNavigationBarHidden(false, animated: false) // check this?
         navigationController?.pushViewController(interestController, animated: true)
     }
     
@@ -457,6 +474,7 @@ class ProfileViewController: UIViewController {
         guard let userInfo = notification.userInfo,
             let keyboardEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         
+        keyboardIsActive = true
         let keyboardHeight = keyboardEndFrame.height
         let screenHeight = view.frame.height
                 
@@ -471,12 +489,13 @@ class ProfileViewController: UIViewController {
             }
             
             var cellMaxY : CGFloat
-            if activeField == .bio {
-                let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! TextViewTableCell
+            
+            if [.sharedEmail, .website, .linkedin].contains(activeField) {
+                let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! TextFieldTableCell
                 cellMaxY = cell.frame.maxY
                 
             } else {
-                let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! TextFieldTableCell
+                let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! TextViewTableCell
                 cellMaxY = cell.frame.maxY
             }
 
@@ -486,17 +505,21 @@ class ProfileViewController: UIViewController {
             if collapseSpace < 0 { return }
             scrollView.frame.origin.y -= collapseSpace
             view.layoutIfNeeded()
+            
+            (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .background
         }
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
         
+        keyboardIsActive = false
+        
         UIView.animate(withDuration: 0.2, animations: {
-            self.scrollView.frame.origin.y = 0
+            //self.scrollView.frame.origin.y = 0
+            self.tableView.reloadData()
             self.view.layoutIfNeeded()
-        })
+        })        
     }
-    
 }
 
 // MARK: UITableViewDelegate
@@ -561,21 +584,21 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             }
             
-            if field == .bio {
+            if [.sharedEmail, .website, .linkedin].contains(field) {
                 
-                let cell = tableView.dequeueReusableCell(withIdentifier: "TextViewCell", for: indexPath) as! TextViewTableCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "TextFieldCell", for: indexPath) as! TextFieldTableCell
                 cell.delegate = self
                 cell.configureWithField(field: field, andValue: valueForField, withLabel: labelForField, withPlaceholder: placeholderForField)
                 return cell
                 
             } else {
-        
-                let cell = tableView.dequeueReusableCell(withIdentifier: "TextFieldCell", for: indexPath) as! TextFieldTableCell
+                
+                let cell = tableView.dequeueReusableCell(withIdentifier: "TextViewCell", for: indexPath) as! TextViewTableCell
                 cell.delegate = self
                 cell.configureWithField(field: field, andValue: valueForField, withLabel: labelForField, withPlaceholder: placeholderForField)
                 return cell
             }
-            
+
         } else {
             
             if let interests : [String] = user?.getValue(forField: .interests) as? [String] {
@@ -651,7 +674,6 @@ extension ProfileViewController:  TextFieldTableCellDelegate {
         }
         
         activeField = nil
-        tableView.reloadData()
     }
     
     func fieldDidBeginEditing(field: userInfoType) {
@@ -667,11 +689,18 @@ extension ProfileViewController:  TextFieldTableCellDelegate {
 
 extension ProfileViewController: TextViewTableCellDelegate {
     
-    func didBeginEditingTextView(field: userInfoType) {
+    func didBeginEditingTextView(field: userInfoType, withHeight height: CGFloat) {
         activeField = field
+        estimatedHeightForTextView = height
     }
     
-    func didChangeValueIn(field: userInfoType, to value: String) {
+    func didEndEditingTextView(field: userInfoType) {
+        activeField = nil
+        estimatedHeightForTextView = nil
+        view.layoutIfNeeded()
+    }
+    
+    func didChangeValueIn(field: userInfoType, to value: String, by height: CGFloat) {
         
         let uid = user?.getValue(forField: .id) as! String
         
@@ -694,7 +723,17 @@ extension ProfileViewController: TextViewTableCellDelegate {
             updateProgress(with: progressFields.count)
         }
         
-        activeField = nil
+        // Change scrollview's frame origin if there's a line change
+        if estimatedHeightForTextView != height {
+            
+            UIView.animate(withDuration: 0.2, animations: {
+                self.scrollView.frame.origin.y -= (height - self.estimatedHeightForTextView!)
+                self.view.layoutIfNeeded()
+            })
+            
+            estimatedHeightForTextView = height
+        }
+        
         tableView.beginUpdates()
         tableView.endUpdates()
     }
@@ -744,6 +783,9 @@ extension ProfileViewController: UIScrollViewDelegate {
         
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
+        // If keyboard is active, ignore scroll UI changes
+        if keyboardIsActive { return }
+        
         let topDistance = barHeight + statusBarHeight
         let offsetY : CGFloat = scrollView.contentOffset.y
         
@@ -752,7 +794,40 @@ extension ProfileViewController: UIScrollViewDelegate {
             let zoomRatio = (-(offsetY + topDistance) * 0.0065) + 1.0
             backgroundImage.transform = CGAffineTransform(scaleX: zoomRatio, y: zoomRatio)
             
+            //navigationController?.navigationBar.barTintColor = .clear
+            (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .clear
+            
+            //(UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .clear
+            //navigationController?.navigationBar.barTintColor = .clear
+            //navigationController?.navigationBar.isTranslucent = true
+            
         } else {
+            
+            let alpha = -offsetY/topDistance
+            
+            if alpha <= 1.0 {
+            
+                //navigationController?.navigationBar.backgroundColor = UIColor.background.withAlphaComponent(1.0 - alpha)
+                //navigationController?.navigationBar.barTintColor = UIColor.background.withAlphaComponent(1.0 - alpha)
+                //navigationController?.navigationBar.isTranslucent = true
+                (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = UIColor.background.withAlphaComponent(1.0 - alpha)
+                
+
+            } else {
+                //navigationController?.navigationBar.backgroundColor = .background
+                //navigationController?.navigationBar.barTintColor = .background
+                //navigationController?.navigationBar.isTranslucent = false
+                (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .background
+            }
+            
+            
+            
+            //navigationController?.navigationBar.barTintColor = UIColor.background.withAlphaComponent(1.0 + offsetY/totalScroll)
+            //navigationController?.navigationBar.isTranslucent = false
+            
+            //
+            
+            
             backgroundImage.transform = CGAffineTransform.identity
         }
         backgroundImage.layoutIfNeeded()

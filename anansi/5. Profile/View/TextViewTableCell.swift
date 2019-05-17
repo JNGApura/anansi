@@ -9,8 +9,9 @@
 import UIKit
 
 protocol TextViewTableCellDelegate: class {
-    func didChangeValueIn(field: userInfoType, to value: String)
-    func didBeginEditingTextView(field: userInfoType)
+    func didEndEditingTextView(field: userInfoType)
+    func didChangeValueIn(field: userInfoType, to value: String, by height: CGFloat)
+    func didBeginEditingTextView(field: userInfoType, withHeight height: CGFloat)
 }
 
 class TextViewTableCell: UITableViewCell {
@@ -59,12 +60,15 @@ class TextViewTableCell: UITableViewCell {
     var field: userInfoType!
     var previousText: String!
     var placeholderText: String!
+    var textHeight: CGFloat!
     
     weak var delegate: TextViewTableCellDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.selectionStyle = .none
+        
+        selectionStyle = .none
+        contentMode = .topLeft
         
         // Add everything as subviews to sectionView
         [questionLabel, limitLabel, dataTextView, bottomLine].forEach { addSubview($0) }
@@ -110,15 +114,19 @@ class TextViewTableCell: UITableViewCell {
             dataTextView.text = value
             dataTextView.textColor = .secondary
             
-            limitLabel.isHidden = false
-            limitLabel.text = "\(value!.count) / 240"
+            if field == .bio {
+                limitLabel.isHidden = false
+                limitLabel.text = "\(value!.count) / 240"
+            }
             
         } else {
             dataTextView.text = placeholder
             dataTextView.textColor = UIColor.lightGray.withAlphaComponent(0.6)
             
-            limitLabel.isHidden = true
-            limitLabel.text = ""
+            if field == .bio {
+                limitLabel.isHidden = true
+                limitLabel.text = ""
+            }
         }
 
         placeholderText = placeholder
@@ -126,7 +134,9 @@ class TextViewTableCell: UITableViewCell {
     }
     
     func valueChanged(_ sender: UITextView) {
-        self.delegate?.didChangeValueIn(field: field, to: sender.text!)
+        
+        estimateSizeFor(sender)
+        self.delegate?.didChangeValueIn(field: field, to: sender.text!, by: textHeight)
     }
     
     // MARK: - Layout
@@ -140,8 +150,7 @@ class TextViewTableCell: UITableViewCell {
             
             if constraint.firstAttribute == .height {
                 constraint.constant = estimatedSize.height
-                
-                valueChanged(textView)
+                textHeight = estimatedSize.height
             }
         }
     }
@@ -151,7 +160,7 @@ extension TextViewTableCell: UITextViewDelegate {
     
     func textViewDidChange(_ textView: UITextView) {
         
-        estimateSizeFor(textView)
+        valueChanged(textView)
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -161,12 +170,15 @@ extension TextViewTableCell: UITextViewDelegate {
             textView.textColor = UIColor.lightGray.withAlphaComponent(0.6)
         }
 
+        self.delegate?.didEndEditingTextView(field: field)
         //textView.resignFirstResponder()
     }
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         
-        self.delegate?.didBeginEditingTextView(field: field)
+        estimateSizeFor(textView)
+        self.delegate?.didBeginEditingTextView(field: field, withHeight: textHeight)
+        
         return true
     }
     
@@ -176,35 +188,38 @@ extension TextViewTableCell: UITextViewDelegate {
             textView.text = ""
             textView.textColor = .secondary
         }
-        
         //textView.becomeFirstResponder()
     }
     
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         
+        guard text.rangeOfCharacter(from: CharacterSet.newlines) == nil else {
+            return false
+        }
+        
         var prospectiveText = (textView.text as NSString).replacingCharacters(in: range, with: text)
         let textLength = prospectiveText.count
-        let limit = 240
+        let characterLimit = field == .bio ? 240 : 120
         
-        if textLength > 0 {
+        if textLength > 0 && field == .bio {
             limitLabel.isHidden = false
-            limitLabel.text = "\(textLength) / 240"
+            limitLabel.text = "\(textLength) / \(characterLimit)"
+            
         } else {
             limitLabel.isHidden = true
             limitLabel.text = ""
         }
         
-        if textLength > limit {
-            prospectiveText.removeLast(textLength - limit)
+        if textLength > characterLimit {
+            
+            prospectiveText.removeLast(textLength - characterLimit)
             
             textView.text = prospectiveText
-            estimateSizeFor(textView)
-            
-            return false
+            valueChanged(textView)            
         }
-
-        return true
+        
+        return !(textLength > characterLimit)
     }
     
 }

@@ -51,16 +51,11 @@ class CommunityViewController: UIViewController {
         let hv = Header()
         hv.setTitleName(name: "Community")
         hv.setProfileImage()
-        hv.profileButton.addTarget(self, action: #selector(self.crashButtonTapped(_:)), for: .touchUpInside)
-        //hv.profileButton.addTarget(self, action: #selector(navigateToProfile), for: .touchUpInside)
+        hv.profileButton.addTarget(self, action: #selector(navigateToProfile), for: .touchUpInside)
         hv.backgroundColor = .background
         hv.translatesAutoresizingMaskIntoConstraints = false
         return hv
     }()
-    
-    @objc func crashButtonTapped(_ sender: AnyObject) {
-        Crashlytics.sharedInstance().crash()
-    }
     
     private lazy var pageSelector: PageSelector = {
         let tb = PageSelector()

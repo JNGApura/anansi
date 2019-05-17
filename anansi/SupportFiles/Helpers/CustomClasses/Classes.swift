@@ -19,24 +19,27 @@ func iterateEnum<T: Hashable>(_: T.Type) -> AnyIterator<T> {
     }
 }
 
-// Creates time string (week) for Connect tab
-func createWeektimeString(date: NSDate) -> String {
+// Creates time string (week, day, hour, minute) for Connect tab
+func createDateIntervalString(from date: NSDate) -> String {
     
     var calendar = NSCalendar.current
     calendar.timeZone = NSTimeZone.local
     
-    let components = calendar.dateComponents([.weekOfYear, .day, .hour, .minute], from: date as Date, to: Date())
+    let components = calendar.dateComponents([.year, .weekOfYear, .day, .hour, .minute], from: date as Date, to: Date())
 
-    if components.weekOfYear! >= 1 {
+    if components.year! >= 1 {
+        return "\(components.year!)y"
+        
+    } else if components.weekOfYear! >= 1 {
         return "\(components.weekOfYear!)w"
         
-    } else if components.weekOfYear! < 1 && components.day! >= 1 {
-        return "\(components.day!)d"
+    } else if components.day! >= 1 {
+        return components.hour! < 12 ? "\(components.day!)d" : "\(components.day! + 1)d"
         
-    } else if components.day! < 1 && components.hour! >= 1 {
+    } else if components.hour! >= 1 {
         return "\(components.hour!)h"
         
-    } else if components.hour! < 1 && components.minute! >= 1 {
+    } else if components.minute! >= 1 {
         return "\(components.minute!)m"
     }
 
@@ -44,84 +47,55 @@ func createWeektimeString(date: NSDate) -> String {
 }
 
 // Create time strings for messages
-func createTimeString(date: NSDate) -> String {
+func createDateIntervalStringForMessage(from date: NSDate) -> String {
+    
+    var calendar = NSCalendar.current
+    calendar.timeZone = NSTimeZone.local
+    
+    let components = calendar.dateComponents([.year, .weekOfYear, .day, .hour, .minute], from: date as Date, to: Date())
+    var dateIntervalString = ""
+    
+    if components.weekOfYear! >= 1 {
+        dateIntervalString += "\(components.weekOfYear!)w"
+    }
+    
+    if components.day! >= 1 {
+        dateIntervalString += "\(components.day!)d"
+    }
+    
+    if components.hour! >= 1 {
+        dateIntervalString += "\(components.hour!)h"
+    }
+    
+    return dateIntervalString
+}
+
+
+func timestring(from date: NSDate) -> String {
     
     let formatter = DateFormatter()
     var calendar = NSCalendar.current
     calendar.timeZone = NSTimeZone.local
     
-    let components = calendar.dateComponents([.month, .day], from: calendar.startOfDay(for: date as Date), to: Date())
-    
-    if components.day! == 1 {
-        return "yesterday"
-        
-    } else if components.day! < 1 {
-        formatter.dateFormat = "HH:mm"
-        
-    } else if components.day! > 1 && components.month! < 1 {
+    let components = calendar.dateComponents([.year, .weekOfYear, .day, .hour], from: calendar.startOfDay(for: date as Date), to: Date())
+
+    if components.day! > 1 || (components.day! == 1 && components.hour! >= 12) {
         formatter.dateFormat = "EEE, HH:mm"
         
-    } else if components.month! >= 1 {
-        formatter.dateFormat = "dd/MMM/yy"
+    } else if components.day! == 1 {
+        return "yesterday"
+        
+    } else {
+        formatter.dateFormat = "HH:mm"
+    }
+    
+    if components.weekOfYear! >= 1 {
+        formatter.dateFormat = "MMM d, HH:mm"
+    }
+    
+    if components.year! >= 1 {
+        formatter.dateFormat = "MMM d yyyy, HH:mm"
     }
     
     return formatter.string(from: date as Date)
-}
-
-func createTimeString(dateA: Date, dateB: Date) -> String {
-    
-    let formatter = DateFormatter()
-    var calendar = NSCalendar.current
-    calendar.timeZone = NSTimeZone.local
-    
-    //let dateMessageB = calendar.dateComponents([.month, .day, .hour], from: dateFromMessageB, to: now)
-    let AtoB = calendar.dateComponents([.day], from: dateA, to: dateB)
-    let AtoNow = calendar.dateComponents([.day], from: calendar.startOfDay(for: dateA), to: Date())
-    let BtoNow = calendar.dateComponents([.day], from: calendar.startOfDay(for: dateB), to: Date())
-    
-    if AtoB.day! >= 1 {
-        
-        if AtoNow.day! > 7 {
-            formatter.dateFormat = "dd/MMM/yy, HH:mm"
-            
-        } else if BtoNow.day! == 1 {
-            formatter.dateFormat = "'yesterday', HH:mm"
-            
-        } else {
-            formatter.dateFormat = "EEE, HH:mm"
-        }
-        
-    } else if AtoB.day! < 1 {
-        
-        if BtoNow.day! < 1 && AtoNow.day! >= 1{
-            formatter.dateFormat = "'today', HH:mm"
-            
-        } else {
-            formatter.dateFormat = ""
-        }
-    }
-
-    return formatter.string(from: dateB as Date)
-    
-    /*
-    if BtoA.month! < 0 {
-        formatter.dateFormat = "dd/MMM/yy, HH:mm"
-        
-    } else if BtoA.day! <= 0 {
-        
-        if BtoNow.day! > 1 { //dateMessageB.day! >= 1 &&
-            formatter.dateFormat = "E, HH:mm"
-            
-        } else if BtoNow.day! == 1 { //dateMessageB.day! <= 1 &&
-            formatter.dateFormat = "'yesterday', HH:mm"
-            
-        } else if BtoNow.day! < 1 { //dateMessageB.day! < 1 {
-            formatter.dateFormat = "'today', HH:mm"
-        }
-        
-    } else {
-        formatter.dateFormat = ""
-    }
-    
-    return formatter.string(from: dateB as Date)*/
 }

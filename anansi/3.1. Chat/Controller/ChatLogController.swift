@@ -6,6 +6,7 @@
 //  Copyright © 2018 João Apura. All rights reserved.
 //
 
+/*
 import UIKit
 import UIKit.UIGestureRecognizerSubclass
 
@@ -121,7 +122,7 @@ class ChatLogController: UICollectionViewController, UINavigationControllerDeleg
     
     lazy var noMessageStateView: ChatEmptyState = {
         let e = ChatEmptyState(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height))
-        e.chatLogController = self
+        e.chatLogViewController = self
         return e
     }()
     
@@ -595,4 +596,4 @@ extension ChatLogController: ChatAccessoryDelegate {
             }
         }
     }
-}
+}*/

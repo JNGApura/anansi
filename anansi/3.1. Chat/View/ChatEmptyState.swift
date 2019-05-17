@@ -10,10 +10,10 @@ import UIKit
 
 class ChatEmptyState: UIView {
     
-    var chatLogController: ChatLogController? {
+    var chatLogViewController: ChatLogViewController? {
         didSet {
-            user = chatLogController?.user
-            waveButton.addTarget(chatLogController, action: #selector(ChatLogController.sendWave), for: .touchUpInside)
+            user = chatLogViewController!.user
+            waveButton.addTarget(ChatLogViewController.self, action: #selector(chatLogViewController!.sendWave), for: .touchUpInside)
         }
     }
     

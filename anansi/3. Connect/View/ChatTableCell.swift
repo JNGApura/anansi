@@ -66,7 +66,7 @@ class ChatTableCell: UITableViewCell {
                     
                     // Sets timestamp
                     if let seconds = (self.message?.getValue(forField: .timestamp) as? NSNumber)?.doubleValue {
-                        self.timeLabel.text = " · " + createWeektimeString(date: NSDate(timeIntervalSince1970: seconds))
+                        self.timeLabel.text = " · " + createDateIntervalString(from: NSDate(timeIntervalSince1970: seconds))
                     }
                 }
             }

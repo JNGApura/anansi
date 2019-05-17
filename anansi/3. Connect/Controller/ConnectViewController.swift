@@ -346,7 +346,7 @@ extension ConnectViewController: StartNewChatDelegate {
     
     @objc func showChatLogController(user: User) {
         
-        let chatController = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
+        let chatController = ChatLogViewController(style: .grouped)//ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
         chatController.user = user
         chatController.delegate = self
         chatController.hidesBottomBarWhenPushed = true
@@ -369,7 +369,6 @@ extension ConnectViewController: UpdatesBadgeCountDelegate {
         }
     }
 }
-
 
 class UIDynamicTableView: UITableView {
     

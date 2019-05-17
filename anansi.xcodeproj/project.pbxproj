@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2C07774222878E6600D246F0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2C07774122878E6500D246F0 /* GoogleService-Info.plist */; };
 		2C0777442287C51000D246F0 /* CommunitySearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0777432287C51000D246F0 /* CommunitySearchCell.swift */; };
+		2C07774A228CB75D00D246F0 /* ChatLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C077749228CB75D00D246F0 /* ChatLogViewController.swift */; };
 		2C0941DC226C772B00A295C1 /* BasicInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0941DB226C772B00A295C1 /* BasicInfoViewController.swift */; };
 		2C0941DE226C7B6400A295C1 /* TextFieldTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0941DD226C7B6400A295C1 /* TextFieldTableCell.swift */; };
 		2C0AD01F2267D2FA007B96EA /* ContactInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AD01E2267D2FA007B96EA /* ContactInfoTableViewCell.swift */; };
@@ -123,13 +124,14 @@
 		1C5C16022A37BE4973F0C034 /* Pods-anansiUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-anansiUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-anansiUITests/Pods-anansiUITests.release.xcconfig"; sourceTree = "<group>"; };
 		2C07774122878E6500D246F0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2C0777432287C51000D246F0 /* CommunitySearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitySearchCell.swift; sourceTree = "<group>"; };
+		2C077749228CB75D00D246F0 /* ChatLogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogViewController.swift; sourceTree = "<group>"; };
 		2C0941DB226C772B00A295C1 /* BasicInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicInfoViewController.swift; sourceTree = "<group>"; };
 		2C0941DD226C7B6400A295C1 /* TextFieldTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldTableCell.swift; sourceTree = "<group>"; };
 		2C0AD01E2267D2FA007B96EA /* ContactInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInfoTableViewCell.swift; sourceTree = "<group>"; };
 		2C0AD0202267DF93007B96EA /* DescriptionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionTableViewCell.swift; sourceTree = "<group>"; };
 		2C0ADB4A2042B3F700520F87 /* CommunityTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityTableCell.swift; sourceTree = "<group>"; };
 		2C0D47722287393C002D9E38 /* SearchTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableCell.swift; sourceTree = "<group>"; };
-		2C0D477E228784D4002D9E38 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Message.swift; path = "anansi/3.1. Chat/Model/Message.swift"; sourceTree = SOURCE_ROOT; };
+		2C0D477E228784D4002D9E38 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Message.swift; path = "anansi/3. Connect/Model/Message.swift"; sourceTree = SOURCE_ROOT; };
 		2C1668DD2012B0BD007C9B38 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		2C171CEC226AA81F00E05064 /* PageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageControl.swift; sourceTree = "<group>"; };
 		2C18A7802011A36700C03B20 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
@@ -744,6 +746,7 @@
 			children = (
 				2CDD28522018981400AB1F32 /* ChatLogController.swift */,
 				2C7E9549202D8FCF0020B7A4 /* NewChatController.swift */,
+				2C077749228CB75D00D246F0 /* ChatLogViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -1127,6 +1130,7 @@
 				2C6D401B2287894F00FCF1F6 /* UserTableCell.swift in Sources */,
 				2C7F6F1420259604008AB0CD /* UIFont+.swift in Sources */,
 				2C42950120269C1900724385 /* UIViewController+.swift in Sources */,
+				2C07774A228CB75D00D246F0 /* ChatLogViewController.swift in Sources */,
 				2C5A5500204D207C006DB37A /* ReportConfirmationView.swift in Sources */,
 				2C87DACF200CA072004F8730 /* Classes.swift in Sources */,
 				2C7F6F1A2025D902008AB0CD /* ChatAccessoryView.swift in Sources */,

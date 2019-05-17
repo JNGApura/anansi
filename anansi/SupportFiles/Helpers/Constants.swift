@@ -50,7 +50,7 @@ struct Const {
     static let navButtonHeight: CGFloat = 38
     
     ///
-    static let timeDateHeightChatCells : CGFloat = 28.0
+    static let timeDateHeightChatCells : CGFloat = 22.0
     
     // List of tabs in Community
     static let communityTabs = ["Trending", "Attendees", "Partners"]

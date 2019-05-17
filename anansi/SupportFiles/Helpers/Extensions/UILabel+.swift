@@ -31,6 +31,28 @@ extension UILabel {
         text.addAttribute(NSAttributedString.Key.paragraphStyle, value:style, range: NSMakeRange(0, text.length))
         self.attributedText = text
     }
+    
+    public var requiredHeight: CGFloat {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 250 - Const.marginEight * 4.0, height: CGFloat.greatestFiniteMagnitude))
+        label.numberOfLines = 0
+        label.lineBreakMode = NSLineBreakMode.byWordWrapping
+        label.font = font
+        label.text = text
+        label.attributedText = attributedText
+        label.sizeToFit()
+        return label.frame.height
+    }
+    
+    public var requiredWidth: CGFloat {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: CGFloat.greatestFiniteMagnitude, height: frame.size.height))
+        label.numberOfLines = 0
+        label.lineBreakMode = NSLineBreakMode.byWordWrapping
+        label.font = font
+        label.text = text
+        label.attributedText = attributedText
+        label.sizeToFit()
+        return label.frame.width
+    }
 
 }
 

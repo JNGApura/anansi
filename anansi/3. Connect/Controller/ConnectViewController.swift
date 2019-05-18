@@ -277,18 +277,6 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         let chat = latestChats[indexPath.row]
         cell.message = chat
         
-        if myID == chat.getValue(forField: .receiver) as? String,
-            let isRead = chat.getValue(forField: .isRead) as? Bool {
-            
-            cell.badge.isHidden = isRead
-            
-            if isRead {
-                cell.lastMessage.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
-            } else {
-                cell.lastMessage.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
-            }
-        }
-        
         cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
         return cell
     }

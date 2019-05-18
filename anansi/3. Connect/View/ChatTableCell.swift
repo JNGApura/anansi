@@ -38,14 +38,17 @@ class ChatTableCell: UITableViewCell {
                     
                     // Sets message box
                     if let isTyping = dictionary["isTypingTo"] as? String, isTyping == self.myID! {
+                        
                         self.lastMessage.text = "is typing..."
+                        self.timeLabel.text = ""
                         
                     } else {
                         
                         var displayMessage: String = ""
                         
                         // Sender
-                        if let sender = self.message?.getValue(forField: .sender) as? String, sender == self.myID {
+                        if let sender = self.message?.getValue(forField: .sender) as? String,
+                            sender == self.myID {
                             
                             displayMessage += "You: "
                             
@@ -55,18 +58,31 @@ class ChatTableCell: UITableViewCell {
                             } else {
                                 self.hasReadImage.isHidden = true
                             }
+                            
+                        } else {
+                            // If I received the message and haven't read, I display the unread badge
+                            if let isRead = self.message?.getValue(forField: .isRead) as? Bool {
+                                
+                                self.badge.isHidden = isRead
+                                
+                                if isRead {
+                                    self.lastMessage.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
+                                    self.timeLabel.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
+                                } else {
+                                    self.lastMessage.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
+                                    self.timeLabel.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
+                                }
+                            }
                         }
                         
                         // Message
                         if let message = self.message!.getValue(forField: .text) as? String { displayMessage += message }
-                        
                         self.lastMessage.text = displayMessage
-                        self.lastMessage.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
-                    }
-                    
-                    // Sets timestamp
-                    if let seconds = (self.message?.getValue(forField: .timestamp) as? NSNumber)?.doubleValue {
-                        self.timeLabel.text = " · " + createDateIntervalString(from: NSDate(timeIntervalSince1970: seconds))
+                        
+                        // Sets timestamp
+                        if let seconds = (self.message?.getValue(forField: .timestamp) as? NSNumber)?.doubleValue {
+                            self.timeLabel.text = " · " + createDateIntervalString(from: NSDate(timeIntervalSince1970: seconds))
+                        }
                     }
                 }
             }
@@ -83,14 +99,20 @@ class ChatTableCell: UITableViewCell {
         return i
     }()
     
-    lazy var badge : Badge = {
-        let b = Badge(frame: CGRect(x: 0, y: 0, width: badgeRadius * 2, height: badgeRadius * 2), innerColor: .primary, outerColor: .background, innerRadius: 6)
-        b.isHidden = true
-        return b
+    lazy var badge : UIView = {
+        let v = UIView()
+        v.backgroundColor = .primary
+        v.layer.cornerRadius = 14.0 / 2
+        v.layer.masksToBounds = true
+        v.clipsToBounds = true
+        v.isHidden = true
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
     }()
     
     let name: UILabel = {
         let tl = UILabel()
+        tl.text = ""
         tl.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
         tl.textColor = .secondary
         tl.translatesAutoresizingMaskIntoConstraints = false
@@ -99,6 +121,8 @@ class ChatTableCell: UITableViewCell {
     
     let lastMessage: UILabel = {
         let tl = UILabel()
+        tl.text = ""
+        tl.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
         tl.textColor = UIColor.secondary.withAlphaComponent(0.4)
         tl.translatesAutoresizingMaskIntoConstraints = false
         tl.lineBreakMode = .byTruncatingTail
@@ -107,6 +131,7 @@ class ChatTableCell: UITableViewCell {
     
     let timeLabel: UILabel = {
         let l = UILabel()
+        l.text = ""
         l.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
         l.textColor = UIColor.secondary.withAlphaComponent(0.4)
         l.translatesAutoresizingMaskIntoConstraints = false
@@ -154,7 +179,7 @@ class ChatTableCell: UITableViewCell {
         [name, bottomStackView].forEach { stackView.addArrangedSubview($0) }
         stackView.setCustomSpacing(Const.marginEight / 4.0, after: name)
         
-        [profileImageView, badge, stackView, hasReadImage, separator].forEach { addSubview($0) }
+        [profileImageView, stackView, hasReadImage, badge, separator].forEach { addSubview($0) }
         
         NSLayoutConstraint.activate([
             profileImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight * 2.0),
@@ -175,6 +200,11 @@ class ChatTableCell: UITableViewCell {
             hasReadImage.heightAnchor.constraint(equalToConstant: 14.0),
             hasReadImage.widthAnchor.constraint(equalToConstant: 14.0),
             
+            badge.centerYAnchor.constraint(equalTo: hasReadImage.centerYAnchor),
+            badge.centerXAnchor.constraint(equalTo: hasReadImage.centerXAnchor),
+            badge.heightAnchor.constraint(equalToConstant: 14.0),
+            badge.widthAnchor.constraint(equalToConstant: 14.0),
+            
             separator.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
             separator.trailingAnchor.constraint(equalTo: trailingAnchor),
             separator.bottomAnchor.constraint(equalTo: bottomAnchor),
@@ -186,13 +216,6 @@ class ChatTableCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // Is this necessary?
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        badge.frame = CGRect(x: profileImageView.frame.maxX - badgeRadius, y: profileImageView.frame.midY - badgeRadius, width: badgeRadius * 2, height: badgeRadius * 2)
-    }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         
@@ -200,6 +223,5 @@ class ChatTableCell: UITableViewCell {
         lastMessage.text = ""
         timeLabel.text = ""
         profileImageView.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
-        
     }
 }

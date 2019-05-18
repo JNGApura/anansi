@@ -79,6 +79,16 @@ func timestring(from date: NSDate) -> String {
     
     let components = calendar.dateComponents([.year, .weekOfYear, .day, .hour], from: calendar.startOfDay(for: date as Date), to: Date())
 
+    if components.weekOfYear! >= 1 {
+        formatter.dateFormat = "MMM d, HH:mm"
+        return formatter.string(from: date as Date)
+    }
+    
+    if components.year! >= 1 {
+        formatter.dateFormat = "MMM d yyyy, HH:mm"
+        return formatter.string(from: date as Date)
+    }
+    
     if components.day! > 1 || (components.day! == 1 && components.hour! >= 12) {
         formatter.dateFormat = "eeee HH:mm"
         
@@ -87,14 +97,6 @@ func timestring(from date: NSDate) -> String {
         
     } else {
         formatter.dateFormat = "HH:mm"
-    }
-    
-    if components.weekOfYear! >= 1 {
-        formatter.dateFormat = "MMM d, HH:mm"
-    }
-    
-    if components.year! >= 1 {
-        formatter.dateFormat = "MMM d yyyy, HH:mm"
     }
     
     return formatter.string(from: date as Date)

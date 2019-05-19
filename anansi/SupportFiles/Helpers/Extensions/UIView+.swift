@@ -81,6 +81,18 @@ extension UIView {
         v.clipsToBounds = true
         return v
     }
+    
+    func shake() {
+        
+        let a = CABasicAnimation(keyPath: "position")
+        a.duration = 0.1
+        a.repeatCount = 2
+        a.autoreverses = true
+        a.fromValue = NSValue(cgPoint: CGPoint(x: self.center.x - Const.marginEight / 2.0, y: self.center.y))
+        a.toValue = NSValue(cgPoint: CGPoint(x: self.center.x + Const.marginEight / 2.0, y: self.center.y))
+        
+        self.layer.add(a, forKey: "position")
+    }
 }
 
 extension UIViewController {

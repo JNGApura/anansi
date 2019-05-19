@@ -344,10 +344,22 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
         self.errorEmail.text = ""
         self.showLoadingInButton() // Activity indicator shows up
         
-        if ticket.range(of: #"^([0-9]{7}|[0-9]{8})$"#, options: .regularExpression) == nil {
+        if email == "Email address" {
+            self.errorEmail.text = "Your email has an incorrect format. Try again?"
+            self.borderEmail.backgroundColor = .primary
+            self.emailText.shake()
+            self.borderEmail.shake()
             
+            self.hideLoadingInButton() // Activity indicator is hidden
+            
+            return
+        }
+        
+        if ticket.range(of: #"^([0-9]{7}|[0-9]{8})$"#, options: .regularExpression) == nil {
             self.errorTicket.text = "Ticket reference has 7 to 8 digits. Try again?"
             self.borderTicket.backgroundColor = .primary
+            self.ticketText.shake()
+            self.borderTicket.shake()
             
             self.hideLoadingInButton() // Activity indicator is hidden
             
@@ -376,13 +388,20 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
             case .invalidEmail:
                 self.errorEmail.text = "Your email has an incorrect format. Try again?"
                 self.borderEmail.backgroundColor = .primary
+                self.emailText.shake()
+                self.borderEmail.shake()
                 
             case .weakPassword:
                 self.errorTicket.text = "Ticket reference has 7 to 8 digits. Try again?"
                 self.borderTicket.backgroundColor = .primary
+                self.ticketText.shake()
+                self.borderTicket.shake()
+                
                 if email == "" {
                     self.errorEmail.text = "Your email has an incorrect format. Try again?"
                     self.borderEmail.backgroundColor = .primary
+                    self.emailText.shake()
+                    self.borderEmail.shake()
                 }
                 
             case .emailAlreadyInUse:
@@ -393,10 +412,14 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
                     case .wrongPassword:
                         self.errorTicket.text = "Your ticket reference doesn't match. Try again?"
                         self.borderTicket.backgroundColor = .primary
+                        self.ticketText.shake()
+                        self.borderTicket.shake()
                         
                     case .invalidEmail:
                         self.errorEmail.text = "Your email doesn't match. Try again?"
                         self.borderEmail.backgroundColor = .primary
+                        self.emailText.shake()
+                        self.borderEmail.shake()
                         
                     default:
                         print("Error: \(String(describing: errorCode))")

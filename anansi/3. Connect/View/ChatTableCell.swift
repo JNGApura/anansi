@@ -76,7 +76,14 @@ class ChatTableCell: UITableViewCell {
                         }
                         
                         // Message
-                        if let message = self.message!.getValue(forField: .text) as? String { displayMessage += message }
+                        if let message = self.message!.getValue(forField: .text) as? String {
+                            
+                            if message == ":compass:" {
+                                displayMessage += "🧭"
+                            } else {
+                                displayMessage += message
+                            }
+                        }
                         self.lastMessage.text = displayMessage
                         
                         // Sets timestamp

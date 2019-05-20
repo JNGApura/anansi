@@ -17,6 +17,7 @@
 		2C0ADB4B2042B3F700520F87 /* CommunityTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0ADB4A2042B3F700520F87 /* CommunityTableCell.swift */; };
 		2C0D47732287393C002D9E38 /* SearchTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D47722287393C002D9E38 /* SearchTableCell.swift */; };
 		2C0DD5DF2291943400188DA2 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DD5DE2291943400188DA2 /* Message.swift */; };
+		2C0DD5E122922EAF00188DA2 /* StickerMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DD5E022922EAF00188DA2 /* StickerMessageCell.swift */; };
 		2C1668DE2012B0BD007C9B38 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1668DD2012B0BD007C9B38 /* User.swift */; };
 		2C171CED226AA81F00E05064 /* PageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C171CEC226AA81F00E05064 /* PageControl.swift */; };
 		2C18A7812011A36700C03B20 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C18A7802011A36700C03B20 /* Reachability.swift */; };
@@ -131,6 +132,7 @@
 		2C0ADB4A2042B3F700520F87 /* CommunityTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityTableCell.swift; sourceTree = "<group>"; };
 		2C0D47722287393C002D9E38 /* SearchTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableCell.swift; sourceTree = "<group>"; };
 		2C0DD5DE2291943400188DA2 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		2C0DD5E022922EAF00188DA2 /* StickerMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerMessageCell.swift; sourceTree = "<group>"; };
 		2C1668DD2012B0BD007C9B38 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		2C171CEC226AA81F00E05064 /* PageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageControl.swift; sourceTree = "<group>"; };
 		2C18A7802011A36700C03B20 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
@@ -744,6 +746,7 @@
 				2C7F6F192025D902008AB0CD /* ChatAccessoryView.swift */,
 				2C6988FB202A83C600F6B4A8 /* ChatEmptyState.swift */,
 				2CDD28562019C77900AB1F32 /* ChatMessageCell.swift */,
+				2C0DD5E022922EAF00188DA2 /* StickerMessageCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1153,6 +1156,7 @@
 				2CA3E0D220098276005617A9 /* FeedbackPagesViewController.swift in Sources */,
 				2C0AD01F2267D2FA007B96EA /* ContactInfoTableViewCell.swift in Sources */,
 				2C708BDC200C40A0006E5ABD /* FeedbackPageView.swift in Sources */,
+				2C0DD5E122922EAF00188DA2 /* StickerMessageCell.swift in Sources */,
 				2CEBB155226244D700821896 /* LocationTableViewCell.swift in Sources */,
 				2CB6AFE62264122400E1702E /* SettingsTableViewCell.swift in Sources */,
 				2CEBB15722627F9800821896 /* CLLocation+.swift in Sources */,

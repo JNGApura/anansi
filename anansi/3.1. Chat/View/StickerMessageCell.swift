@@ -1,21 +1,15 @@
 //
-//  ChatMessageCell.swift
+//  StickerMessageCell.swift
 //  anansi
 //
-//  Created by João Nuno Gaspar Apura on 25/01/2018.
-//  Copyright © 2018 João Apura. All rights reserved.
+//  Created by João Nuno Gaspar Apura on 20/05/2019.
+//  Copyright © 2019 João Apura. All rights reserved.
 //
 
 import UIKit
 
-protocol CellGestureRecognizerDelegate: class {
-    func singleTapDetected(in indexPath: IndexPath)
-    func doubleTapDetected(in indexPath: IndexPath, with message: Message, and love: Bool)
-    func longPressDetected(in indexPath: IndexPath, with message: Message, from sender: UILongPressGestureRecognizer)
-}
+class StickerMessageCell: UITableViewCell {
 
-class ChatMessageCell: UITableViewCell {
-    
     // MARK: Custom initializers
     
     weak var gestureRecognizerDelegate: CellGestureRecognizerDelegate?
@@ -26,22 +20,17 @@ class ChatMessageCell: UITableViewCell {
     
     var isLoved: Bool = false
     
-    let msgtxt : UILabel = {
-        let l = UILabel()
-        l.font = UIFont.systemFont(ofSize: Const.calloutFontSize)
-        l.textAlignment = .left
-        l.numberOfLines = 0
-        l.translatesAutoresizingMaskIntoConstraints = false
-        return l
+    let msgImg : UIImageView = {
+        let i = UIImageView()
+        i.image = UIImage(named: "Compass-Full")!.withRenderingMode(.alwaysOriginal)
+        i.contentMode = .scaleAspectFit
+        i.translatesAutoresizingMaskIntoConstraints = false
+        return i
     }()
     
     let bubble: UIView = {
         let bv = UIView()
-        bv.layer.borderWidth = 2
-        bv.layer.borderColor = UIColor.red.cgColor
-        bv.layer.cornerRadius = 20
-        bv.layer.masksToBounds = true
-        bv.clipsToBounds = true
+        bv.backgroundColor = .clear
         bv.translatesAutoresizingMaskIntoConstraints = false
         return bv
     }()
@@ -56,7 +45,7 @@ class ChatMessageCell: UITableViewCell {
         i.translatesAutoresizingMaskIntoConstraints = false
         return i
     }()
-
+    
     let timestamp : UILabel = {
         let l = UILabel()
         l.textColor = UIColor.secondary.withAlphaComponent(0.6)
@@ -108,8 +97,6 @@ class ChatMessageCell: UITableViewCell {
     // To be able to modify the constraints externally
     var bubbleTrailingAnchor: NSLayoutConstraint?
     var bubbleLeadingAnchor: NSLayoutConstraint?
-    var messageLabelHeightAnchor: NSLayoutConstraint?
-    var bubbleViewHeightAnchor: NSLayoutConstraint?
     
     // MARK: Cell init
     
@@ -127,19 +114,20 @@ class ChatMessageCell: UITableViewCell {
         selectionStyle = .none
         
         // Add subviews
-        [bubble, msgtxt, loveButton, msgstatus, loveReaction].forEach { addSubview($0) }
+        [bubble, msgImg, loveButton, msgstatus, loveReaction].forEach { addSubview($0) }
         
         // Add layout constraints to subviews
         NSLayoutConstraint.activate([
             
             bubble.topAnchor.constraint(equalTo: topAnchor, constant: 3.0),
             bubble.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3.0),
-            bubble.widthAnchor.constraint(lessThanOrEqualToConstant: 262.0),
+            bubble.heightAnchor.constraint(equalToConstant: 64.0),
+            bubble.widthAnchor.constraint(equalToConstant: 64.0),
             
-            msgtxt.topAnchor.constraint(equalTo: bubble.topAnchor, constant: Const.marginEight),
-            msgtxt.bottomAnchor.constraint(equalTo: bubble.bottomAnchor, constant: -Const.marginEight),
-            msgtxt.leadingAnchor.constraint(equalTo: bubble.leadingAnchor, constant: Const.marginEight * 2.0),
-            msgtxt.trailingAnchor.constraint(equalTo: bubble.trailingAnchor, constant: -Const.marginEight * 2.0),
+            msgImg.centerXAnchor.constraint(equalTo: bubble.centerXAnchor),
+            msgImg.centerYAnchor.constraint(equalTo: bubble.centerYAnchor),
+            msgImg.heightAnchor.constraint(equalToConstant: 64.0),
+            msgImg.widthAnchor.constraint(equalToConstant: 64.0),
             
             loveButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight * 2.0),
             loveButton.centerYAnchor.constraint(equalTo: centerYAnchor),
@@ -162,11 +150,7 @@ class ChatMessageCell: UITableViewCell {
         
         bubbleTrailingAnchor = bubble.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight * 2.0)
         bubbleTrailingAnchor?.isActive = true
-        
-        messageLabelHeightAnchor = msgtxt.heightAnchor.constraint(equalToConstant: 0.0)
-        messageLabelHeightAnchor?.isActive = true
     }
-
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -178,15 +162,6 @@ class ChatMessageCell: UITableViewCell {
         
         self.message = message
         self.isIncoming = isIncoming
-        
-        if let text = message.getValue(forField: .text) as? String {
-            msgtxt.text = text
-            msgtxt.textColor = isIncoming ? .secondary : .background
-            messageLabelHeightAnchor?.constant = msgtxt.requiredHeight
-        }
-        
-        bubble.backgroundColor = isIncoming ? UIColor.tertiary.withAlphaComponent(0.5) : .primary
-        bubble.layer.borderColor = isIncoming ? UIColor.tertiary.withAlphaComponent(0.5).cgColor : UIColor.primary.cgColor
         
         msgstatus.isHidden = isLast ? false : true
         
@@ -243,9 +218,7 @@ class ChatMessageCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
-        msgtxt.text = ""
-        
+                
         loveButton.setImage(UIImage(named: "heart-unfilled")!.withRenderingMode(.alwaysTemplate), for: .normal)
         loveButton.imageView?.tintColor = .tertiary
         

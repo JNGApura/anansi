@@ -339,6 +339,8 @@ class NetworkManager {
                     
                     guard let dictionary = mesg.value as? [String: Any] else { return }
                     
+                    guard let msgtxt = dictionary["message"] as? String, msgtxt != "" else { return }
+                    
                     /*
                     if let receiver = mesg.ref.value(forKey: "receiver") as? String, receiver == myID {
                         mesg.ref.updateChildValues(["received" : "true"])

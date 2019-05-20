@@ -150,7 +150,8 @@ class ChatLogViewController: UIViewController {
     
     lazy var tableView : UITableView = {
         let tv = UITableView.init(frame: CGRect.zero, style: .grouped)
-        tv.register(ChatMessageCell.self, forCellReuseIdentifier: "cell")
+        tv.register(ChatMessageCell.self, forCellReuseIdentifier: "ChatCell")
+        tv.register(StickerMessageCell.self, forCellReuseIdentifier: "StickerCell")
         tv.delegate = self
         tv.dataSource = self
         tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 64.0, right: 0) // 88
@@ -544,10 +545,7 @@ extension ChatLogViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ChatMessageCell
-        cell.gestureRecognizerDelegate = self
-        cell.indexPath = indexPath
-        
+        // Get all the info needed
         let date = dates[indexPath.section]
         let message = listOfMessagesPerDate[date]![indexPath.row]
         let usrimg = user?.getValue(forField: .profileImageURL) as? String ?? ""
@@ -563,9 +561,22 @@ extension ChatLogViewController: UITableViewDelegate, UITableViewDataSource {
             if indexPath.section == lastsection && indexPath.row == lastrow { isLast = true }
         }
         
-        cell.config(message: message, isIncoming: isIncoming, isLast: isLast, with: usrimg)
-        
-        return cell
+        // Determines which type is required
+        if (message.getValue(forField: .text) as? String) == ":compass:" {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "StickerCell", for: indexPath) as! StickerMessageCell
+            cell.gestureRecognizerDelegate = self
+            cell.indexPath = indexPath
+            cell.config(message: message, isIncoming: isIncoming, isLast: isLast, with: usrimg)
+            return cell
+            
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ChatCell", for: indexPath) as! ChatMessageCell
+            cell.gestureRecognizerDelegate = self
+            cell.indexPath = indexPath
+            cell.config(message: message, isIncoming: isIncoming, isLast: isLast, with: usrimg)
+            return cell
+        }
      }
     
     /*
@@ -653,55 +664,67 @@ extension ChatLogViewController: ChatAccessoryDelegate {
 }
 
 extension ChatLogViewController: CellGestureRecognizerDelegate {
+    
     func singleTapDetected(in indexPath: IndexPath) {
         // Nothing here (not implemented in ChatMessageCell
     }
     
-    func doubleTapDetected(in indexPath: IndexPath, with love: Bool) {
+    func doubleTapDetected(in indexPath: IndexPath, with message: Message, and love: Bool) {
         
         activeIndexPath = indexPath
-        let cell = tableView.cellForRow(at: indexPath) as! ChatMessageCell
         
-        if let msg = cell.message {
-            
-            let msgID = msg.getValue(forField: .id) as? String
-            let sender = msg.getValue(forField: .sender) as? String
-            let receiver = msg.getValue(forField: .receiver) as? String
-            
-            if love {
-                NetworkManager.shared.registerReaction("heart", for: msgID!, to: sender!, from: receiver!) {
-                    // Add completion block, if necessary
-                }
-            } else {
-                NetworkManager.shared.removeReaction("heart", for: msgID!, to: sender!, from: receiver!) {
-                    // Add completion block, if necessary
-                }
+        let msgID = message.getValue(forField: .id) as? String
+        let sender = message.getValue(forField: .sender) as? String
+        let receiver = message.getValue(forField: .receiver) as? String
+        
+        if love {
+            NetworkManager.shared.registerReaction("heart", for: msgID!, to: sender!, from: receiver!) {
+                
+                // Haptic feedback
+                let generator = UIImpactFeedbackGenerator(style: .medium)
+                generator.impactOccurred()
+            }
+        } else {
+            NetworkManager.shared.removeReaction("heart", for: msgID!, to: sender!, from: receiver!) {
+
+                // Haptic feedback
+                let generator = UIImpactFeedbackGenerator(style: .medium)
+                generator.impactOccurred()
             }
         }
     }
     
     // Long press shows an alert controller with some functionalities, such as copy, unsend, etc
-    func longPressDetected(in indexPath: IndexPath, from sender: UILongPressGestureRecognizer) {
+    func longPressDetected(in indexPath: IndexPath, with message: Message, from sender: UILongPressGestureRecognizer) {
         
         becomeFirstResponder()
         
         activeIndexPath = indexPath
-        let cell = tableView.cellForRow(at: indexPath) as! ChatMessageCell
-        let receiver = cell.message!.getValue(forField: .receiver) as? String
+        
+        let receiver = message.getValue(forField: .receiver) as? String
         
         let copy = UIMenuItem(title: "Copy", action: #selector(copytxt(_:)))
-        let delete = UIMenuItem(title: "Unsend", action: #selector(unsend(_:)))
-        
+        let deleteTxt = UIMenuItem(title: "Unsend", action: #selector(unsendTxt(_:)))
+        let deleteSticker = UIMenuItem(title: "Unsend", action: #selector(unsendSticker(_:)))
         let menu = UIMenuController.shared
-        menu.menuItems = (myID == receiver) ? [copy] : [copy, delete]
-        menu.setTargetRect(sender.view!.frame, in: cell)
+        
+        if let cell = tableView.cellForRow(at: indexPath) as? ChatMessageCell {
+            menu.menuItems = (myID == receiver) ? [copy] : [copy, deleteTxt]
+            menu.setTargetRect(sender.view!.frame, in: cell)
+            
+        } else {
+            menu.menuItems = (myID == receiver) ? [] : [deleteSticker]
+            menu.setTargetRect(sender.view!.frame, in: tableView.cellForRow(at: indexPath) as! StickerMessageCell)
+        }
         menu.setMenuVisible(true, animated: true)
     }
     
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(copytxt(_:)) {
             return true
-        } else if action == #selector(unsend(_:)) {
+        } else if action == #selector(unsendTxt(_:)) {
+            return true
+        } else if action == #selector(unsendSticker(_:)) {
             return true
         }
         return false
@@ -715,34 +738,46 @@ extension ChatLogViewController: CellGestureRecognizerDelegate {
         }
     }
     
-    @objc func unsend(_ sender: Any?) {
+    @objc func unsendTxt(_ sender: Any?) {
         
         let cell = tableView.cellForRow(at: activeIndexPath) as! ChatMessageCell
         if let msg = cell.message {
+            unsend(message: msg)
+        }
+    }
+    
+    @objc func unsendSticker(_ sender: Any?) {
         
-            let msgID = msg.getValue(forField: .id) as? String
-            let sender = msg.getValue(forField: .sender) as? String
-            let receiver = msg.getValue(forField: .receiver) as? String
+        let cell = tableView.cellForRow(at: activeIndexPath) as! StickerMessageCell
+        if let msg = cell.message {
+            unsend(message: msg)
+        }
+    }
+    
+    func unsend(message: Message) {
+        
+        let msgID = message.getValue(forField: .id) as? String
+        let sender = message.getValue(forField: .sender) as? String
+        let receiver = message.getValue(forField: .receiver) as? String
+        
+        let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: (message.getValue(forField: .timestamp) as? NSNumber)!.doubleValue))
+        var msgArray = listOfMessagesPerDate[dateString]
+        
+        if let j = msgArray?.index(of: message) {
             
-            let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: (cell.message!.getValue(forField: .timestamp) as? NSNumber)!.doubleValue))
-            var msgArray = listOfMessagesPerDate[dateString]
-            
-            if let j = msgArray?.index(of: msg) {
+            NetworkManager.shared.deleteMessage(with: msgID!, from: sender!, to: receiver!) {
                 
-                NetworkManager.shared.deleteMessage(with: msgID!, from: sender!, to: receiver!) {
-                    
-                    // Remove msg from listOfMessagesPerDate
-                    msgArray?.remove(at: j)
-                    self.listOfMessagesPerDate[dateString] = msgArray
-                    
-                    // If listOfMessagesPerDate becomes empty for a specific date, remove the section
-                    if msgArray?.count == 0 {
-                        let i = self.dates.index(of: dateString)
-                        self.dates.remove(at: i!)
-                    }
-                    
-                    self.tableView.reloadData()
+                // Remove msg from listOfMessagesPerDate
+                msgArray?.remove(at: j)
+                self.listOfMessagesPerDate[dateString] = msgArray
+                
+                // If listOfMessagesPerDate becomes empty for a specific date, remove the section
+                if msgArray?.count == 0 {
+                    let i = self.dates.index(of: dateString)
+                    self.dates.remove(at: i!)
                 }
+                
+                self.tableView.reloadData()
             }
         }
     }

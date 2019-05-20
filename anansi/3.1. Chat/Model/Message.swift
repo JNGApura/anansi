@@ -14,6 +14,7 @@ enum messageInfoType: String {
     case sender = "sender"
     case receiver = "receiver"
     case text = "message"
+    case hasReaction = "hasReaction"
     case isSent = "sent"
     case isDelivered = "received"
     case isRead = "read"
@@ -27,6 +28,7 @@ class Message: NSObject {
     private var sender: String!
     private var receiver: String!
     private var text: String!
+    private var hasReaction : [String : String]!
     private var isSent: Bool!
     private var isDelivered: Bool!
     private var isRead: Bool!
@@ -51,13 +53,15 @@ class Message: NSObject {
         case .id:
             if let id = value as? String { self.id = id }
         case .timestamp:
-            if let timestamp = value as? String { self.timestamp = convertToTimestamp(string: timestamp) as NSNumber}
+            if let timestamp = value as? String { self.timestamp = convertToTimestamp(string: timestamp) as NSNumber }
         case .sender:
             if let sender = value as? String { self.sender = sender }
         case .receiver:
             if let receiver = value as? String { self.receiver = receiver }
         case .text:
             if let text = value as? String { self.text = text }
+        case .hasReaction:
+            if let hasReaction = value as? [String : String] { self.hasReaction = hasReaction }
         case .isSent:
             if let isSent = value as? String { self.isSent = NSString(string: isSent).boolValue }
         case .isDelivered:
@@ -76,6 +80,7 @@ class Message: NSObject {
         case .sender: return sender
         case .receiver: return receiver
         case .text: return text
+        case .hasReaction: return hasReaction
         case .isSent: return isSent
         case .isDelivered: return isDelivered
         case .isRead: return isRead

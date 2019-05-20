@@ -370,7 +370,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             self.dismiss(animated: true, completion: nil)
         } else {
             
-            let chatController = ChatLogViewController(style: .grouped)//ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
+            let chatController = ChatLogViewController()
             chatController.user = user
             chatController.cameFromUserProfile = true
             chatController.hidesBottomBarWhenPushed = true

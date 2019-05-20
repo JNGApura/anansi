@@ -7,29 +7,7 @@
 //
 
 import UIKit
-
-// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
-// Consider refactoring the code to use the non-optional operators.
-fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-    switch (lhs, rhs) {
-    case let (l?, r?):
-        return l < r
-    case (nil, _?):
-        return true
-    default:
-        return false
-    }
-}
-// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
-// Consider refactoring the code to use the non-optional operators.
-fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-    switch (lhs, rhs) {
-    case let (l?, r?):
-        return l > r
-    default:
-        return rhs < lhs
-    }
-}
+import ReachabilitySwift
 
 class ConnectViewController: UIViewController {
     
@@ -38,6 +16,8 @@ class ConnectViewController: UIViewController {
     private var latestChats = [Message]()
     
     private var userChats = [String : Message]()
+    
+    private var areChatLoadings = true
     
     private var CTA : String!
             
@@ -93,13 +73,35 @@ class ConnectViewController: UIViewController {
         return b
     }()
     
+    // Spinner shown during load
+    let spinner : UIActivityIndicatorView = {
+        let s = UIActivityIndicatorView()
+        s.color = .primary
+        s.startAnimating()
+        s.hidesWhenStopped = true
+        return s
+    }()
+    
+    // When user is disconnected
+    let disconnectedView : UILabel = {
+        let v = UILabel()
+        v.text = "No internet connection"
+        v.textColor = .background
+        v.font = UIFont.boldSystemFont(ofSize: 14.0)
+        v.textAlignment = .center
+        v.backgroundColor = .primary
+        v.isHidden = true
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
+    
+    let reachability = Reachability()!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Sets up UI
-        view.addSubview(headerView)
-        view.addSubview(tableView)
-        view.addSubview(CTAbutton)
+        [tableView, disconnectedView, headerView, CTAbutton].forEach { view.addSubview($0) }
         
         NSLayoutConstraint.activate([
             
@@ -107,6 +109,11 @@ class ConnectViewController: UIViewController {
             headerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             headerView.widthAnchor.constraint(equalTo: view.widthAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 80.0),
+            
+            disconnectedView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -32.0),
+            disconnectedView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            disconnectedView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            disconnectedView.heightAnchor.constraint(equalToConstant: 32.0),
             
             tableView.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
             tableView.widthAnchor.constraint(equalTo: headerView.widthAnchor),
@@ -118,6 +125,9 @@ class ConnectViewController: UIViewController {
             CTAbutton.widthAnchor.constraint(equalToConstant: 56.0),
             CTAbutton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -Const.marginSafeArea + 4.0),
         ])
+        
+        // Handles network reachablibity
+        startMonitoringNetwork()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -155,6 +165,9 @@ class ConnectViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.navigationController?.setNavigationBarHidden(false, animated: false)
+        
+        // Stop NetworkStatusListener
+        ReachabilityManager.shared.reachability.stopNotifier()
     }
     
     override func viewWillLayoutSubviews() {
@@ -174,23 +187,33 @@ class ConnectViewController: UIViewController {
         //chats.removeAll()
         //messagesDictionary.removeAll()
         
-        NetworkManager.shared.observeChats(from: myID!) { (mesg, msgID) in
+        NetworkManager.shared.observeExistingConversations(from: myID!, onSuccess: {
             
-            let chat = Message(dictionary: mesg, messageID: msgID)
-            
-            // Replaces message to messagesDictionary (last one = last sent)
-            if let chatPartnerID = chat.partnerID() {
-                self.userChats[chatPartnerID] = chat
+            // If there're conversations in Firebase
+            NetworkManager.shared.observeChats(from: self.myID!, onSuccess: { (mesg, msgID) in
                 
-                if self.myID == chat.getValue(forField: .receiver) as? String,
-                    let isRead = chat.getValue(forField: .isRead) as? Bool, !isRead,
-                    !self.unreadChats.contains(chatPartnerID) {
-                 
-                    self.unreadChats.append(chatPartnerID)
+                let chat = Message(dictionary: mesg, messageID: msgID)
+                
+                // Replaces message to messagesDictionary (last one = last sent)
+                if let chatPartnerID = chat.partnerID() {
+                    self.userChats[chatPartnerID] = chat
+                    
+                    if self.myID == chat.getValue(forField: .receiver) as? String,
+                        let isRead = chat.getValue(forField: .isRead) as? Bool, !isRead,
+                        !self.unreadChats.contains(chatPartnerID) {
+                        
+                        self.unreadChats.append(chatPartnerID)
+                    }
                 }
-            }
+                
+                self.areChatLoadings = false
+                self.reloadChats()
+            })
             
-            self.reloadChats()
+        }) {
+            // If there aren't conversations
+            self.areChatLoadings = false
+            self.tableView.reloadData()
         }
     }
     
@@ -256,16 +279,24 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if (latestChats.count == 0) {
-            let emptystate = ConnectEmptyState(frame: CGRect(x: 0, y: 0, width: self.tableView.bounds.size.width, height: self.tableView.bounds.size.height))
-            emptystate.placeholder = CTA
-            self.tableView.backgroundView = emptystate
+        if !areChatLoadings {
+            
+            if latestChats.count > 0 {
+                tableView.backgroundView = nil
+                spinner.stopAnimating()
+                
+            } else {
+                let emptystate = ConnectEmptyState(frame: CGRect(x: 0, y: 0, width: self.tableView.bounds.size.width, height: self.tableView.bounds.size.height))
+                emptystate.placeholder = CTA
+                tableView.backgroundView = emptystate
+                
+                return 0
+            }
             
         } else {
-    
-            self.tableView.backgroundView = nil
+            tableView.backgroundView = spinner
         }
-        
+
         return latestChats.count
     }
     
@@ -334,7 +365,7 @@ extension ConnectViewController: StartNewChatDelegate {
     
     @objc func showChatLogController(user: User) {
         
-        let chatController = ChatLogViewController(style: .grouped)//ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
+        let chatController = ChatLogViewController()
         chatController.user = user
         chatController.delegate = self
         chatController.hidesBottomBarWhenPushed = true
@@ -357,6 +388,55 @@ extension ConnectViewController: UpdatesBadgeCountDelegate {
         }
     }
 }
+
+// MARK: - NetworkStatusListener | Handles network reachability
+
+extension ConnectViewController {
+    
+    func startMonitoringNetwork() {
+        
+        reachability.whenUnreachable = { reachability in
+            DispatchQueue.main.async { self.showAlert() }
+        }
+        
+        reachability.whenReachable = { reachability in
+            DispatchQueue.main.async { self.hideAlert() }
+        }
+        
+        do {
+            try reachability.startNotifier()
+        } catch {
+            print("Unable to start notifier")
+        }
+        
+        if reachability.isReachable {
+            DispatchQueue.main.async { self.disconnectedView.isHidden = true }
+        } else {
+            DispatchQueue.main.async { self.showAlert() }
+        }
+    }
+    
+    func showAlert() {
+        
+        self.disconnectedView.isHidden = false
+        
+        UIView.animate(withDuration: 0.5, animations: {
+            self.disconnectedView.transform = CGAffineTransform(translationX: 0, y: 32.0)
+        })
+    }
+    
+    func hideAlert() {
+        
+        UIView.animate(withDuration: 0.5, animations: {
+            self.disconnectedView.transform = .identity
+            
+        }, completion: { (bool) in
+            self.disconnectedView.isHidden = true
+        })
+    }
+}
+
+/// Stuff
 
 class UIDynamicTableView: UITableView {
     

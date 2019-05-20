@@ -16,7 +16,7 @@
 		2C0AD0212267DF93007B96EA /* DescriptionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AD0202267DF93007B96EA /* DescriptionTableViewCell.swift */; };
 		2C0ADB4B2042B3F700520F87 /* CommunityTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0ADB4A2042B3F700520F87 /* CommunityTableCell.swift */; };
 		2C0D47732287393C002D9E38 /* SearchTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D47722287393C002D9E38 /* SearchTableCell.swift */; };
-		2C0D477F228784D4002D9E38 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D477E228784D4002D9E38 /* Message.swift */; };
+		2C0DD5DF2291943400188DA2 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DD5DE2291943400188DA2 /* Message.swift */; };
 		2C1668DE2012B0BD007C9B38 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1668DD2012B0BD007C9B38 /* User.swift */; };
 		2C171CED226AA81F00E05064 /* PageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C171CEC226AA81F00E05064 /* PageControl.swift */; };
 		2C18A7812011A36700C03B20 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C18A7802011A36700C03B20 /* Reachability.swift */; };
@@ -124,14 +124,13 @@
 		2C07774122878E6500D246F0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2C0777432287C51000D246F0 /* CommunitySearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitySearchCell.swift; sourceTree = "<group>"; };
 		2C07774B228F5DB500D246F0 /* ChatLogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatLogViewController.swift; sourceTree = "<group>"; };
-		2C07774D2290501B00D246F0 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Message.swift; path = "anansi/3. Connect/Model/Message.swift"; sourceTree = SOURCE_ROOT; };
 		2C0941DB226C772B00A295C1 /* BasicInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicInfoViewController.swift; sourceTree = "<group>"; };
 		2C0941DD226C7B6400A295C1 /* TextFieldTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldTableCell.swift; sourceTree = "<group>"; };
 		2C0AD01E2267D2FA007B96EA /* ContactInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInfoTableViewCell.swift; sourceTree = "<group>"; };
 		2C0AD0202267DF93007B96EA /* DescriptionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionTableViewCell.swift; sourceTree = "<group>"; };
 		2C0ADB4A2042B3F700520F87 /* CommunityTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityTableCell.swift; sourceTree = "<group>"; };
 		2C0D47722287393C002D9E38 /* SearchTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableCell.swift; sourceTree = "<group>"; };
-		2C0D477E228784D4002D9E38 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Message.swift; path = "anansi/3. Connect/Model/Message.swift"; sourceTree = SOURCE_ROOT; };
+		2C0DD5DE2291943400188DA2 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		2C1668DD2012B0BD007C9B38 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		2C171CEC226AA81F00E05064 /* PageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageControl.swift; sourceTree = "<group>"; };
 		2C18A7802011A36700C03B20 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
@@ -520,7 +519,6 @@
 			children = (
 				2C2841CF202D1B8200F8EA00 /* Controller */,
 				2CEE5EC62284950600ACC42C /* View */,
-				2CEE5EC5228494FC00ACC42C /* Model */,
 			);
 			path = "3. Connect";
 			sourceTree = "<group>";
@@ -540,7 +538,6 @@
 			children = (
 				2C2841D2202D1BB500F8EA00 /* Controller */,
 				2CEE5ECE2284968200ACC42C /* View */,
-				2CEE5ECF2284968A00ACC42C /* Model */,
 			);
 			path = "5. Profile";
 			sourceTree = "<group>";
@@ -571,14 +568,6 @@
 				2CEE5ED3228496A900ACC42C /* Model */,
 			);
 			path = "5.2. Feedback";
-			sourceTree = "<group>";
-		};
-		2CEE5EC5228494FC00ACC42C /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				2C0D477E228784D4002D9E38 /* Message.swift */,
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		2CEE5EC62284950600ACC42C /* View */ = {
@@ -663,13 +652,6 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		2CEE5ECF2284968A00ACC42C /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
 		2CEE5ED02284969300ACC42C /* Controller */ = {
 			isa = PBXGroup;
 			children = (
@@ -751,7 +733,7 @@
 		2CEE5ED9228499B200ACC42C /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				2C07774D2290501B00D246F0 /* Message.swift */,
+				2C0DD5DE2291943400188DA2 /* Message.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1147,8 +1129,8 @@
 				2C584C1D2018714500E17FD3 /* Header.swift in Sources */,
 				2C7B601620044F4D00FF5488 /* TabBarController.swift in Sources */,
 				2C6924FA226DE1A30007496A /* InterestsUserTableCell.swift in Sources */,
+				2C0DD5DF2291943400188DA2 /* Message.swift in Sources */,
 				2C198AAD204015F300CFC705 /* TabSelector.swift in Sources */,
-				2C0D477F228784D4002D9E38 /* Message.swift in Sources */,
 				2C5A54EF2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift in Sources */,
 				2CDD2859201AB27300AB1F32 /* ChatTableCell.swift in Sources */,
 				2CEBB14F22615B9A00821896 /* EventChallengeCollectionViewCell.swift in Sources */,

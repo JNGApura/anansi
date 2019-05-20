@@ -58,7 +58,15 @@ class TrendingCommunityCollectionViewCell: UICollectionViewCell {
     
     @objc func fetchTrendingUsers() {
         
-        communityViewController?.fetchTrendingUsers {
+        if !(communityViewController!.reachability.isReachable) {
+            let attributes = [NSAttributedString.Key.foregroundColor: UIColor.primary]
+            refreshControl.attributedTitle = NSAttributedString(string: "No internet connection 😳", attributes: attributes)
+        } else {
+            let attributes = [NSAttributedString.Key.foregroundColor: UIColor.primary]
+            refreshControl.attributedTitle = NSAttributedString(string: "Just a second... ⌛", attributes: attributes)
+        }
+        
+        communityViewController!.fetchTrendingUsers {
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
                 

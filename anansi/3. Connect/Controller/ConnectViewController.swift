@@ -167,7 +167,7 @@ class ConnectViewController: UIViewController {
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         
         // Stop NetworkStatusListener
-        ReachabilityManager.shared.reachability.stopNotifier()
+        reachability.stopNotifier()
     }
     
     override func viewWillLayoutSubviews() {

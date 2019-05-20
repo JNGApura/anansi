@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Crashlytics
+import ReachabilitySwift
 
 class CommunityViewController: UIViewController {
 
@@ -82,6 +82,8 @@ class CommunityViewController: UIViewController {
         cv.showsHorizontalScrollIndicator = false
         return cv
     }()
+    
+    let reachability = Reachability()!
         
     // MARK: - View lifecycle
     
@@ -142,6 +144,9 @@ class CommunityViewController: UIViewController {
         currentIndex = 0
         let indexPath = IndexPath.init(item: currentIndex, section: 0)
         collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+        
+        // Handles network reachablibity
+        startMonitoringNetwork()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -172,6 +177,9 @@ class CommunityViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.navigationController?.setNavigationBarHidden(false, animated: false)
+        
+        // Stop NetworkStatusListener
+        reachability.stopNotifier()
     }
     
     //*** This is required to fix navigation bar forever disappear on fast backswipe bug.
@@ -475,5 +483,19 @@ extension CommunityViewController: ShowPartnerPageDelegate {
         partnerPageController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: navigationController, action: nil)
         
         self.navigationController?.pushViewController(partnerPageController, animated: true)
+    }
+}
+
+// MARK: - NetworkStatusListener | Handles network reachability
+
+extension CommunityViewController {
+    
+    func startMonitoringNetwork() {
+        
+        do {
+            try reachability.startNotifier()
+        } catch {
+            print("Unable to start notifier")
+        }
     }
 }

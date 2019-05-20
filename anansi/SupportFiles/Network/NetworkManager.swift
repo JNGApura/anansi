@@ -25,6 +25,7 @@ class NetworkManager {
     private let partnerDatabase = Database.database().reference().child("partners")
     private let feedbackDatabase = Database.database().reference().child("feedback")
  
+    
     // MARK: Sign-up / Log-in functions
     
     /// Handles login communication with firebase (Auth)
@@ -163,6 +164,7 @@ class NetworkManager {
             onSuccess()
         }
     }
+    
     
     // MARK: USER DATABASE FUNCTIONS
     
@@ -305,6 +307,7 @@ class NetworkManager {
         }
     }
     
+    
     // MARK: - CHAT MESSAGES
     // Post chat message in databse
     func postChatMessageInDB(sender: String, receiver: String, message: [String: Any], onSuccess: @escaping () -> Void) {
@@ -349,13 +352,42 @@ class NetworkManager {
         }, withCancel: nil)
     }
     
-    // Get list of user-messages from database
+    // Checks if user has conversations in Firebase
+    func observeExistingConversations(from myID: String, onSuccess: @escaping () -> Void, onFailure: @escaping () -> Void) {
+        
+        // Check if user-messages exists in databse
+        userMessagesDatabase.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            if snapshot.hasChild(myID){
+                
+                let childRef = snapshot.ref.child(myID)
+                childRef.observeSingleEvent(of: .value, with: { (snapshot) in
+                    
+                    if snapshot.childrenCount > 0 {
+                        // If there's more than 0 children in message node, then there're conversations in Firebase
+                        onSuccess()
+                        
+                    } else {
+                        // No chats in the messageNode (although there's a userMessage node in Firebase)
+                        // (use-case: when user had 1 conversation, but deleted it)
+                        onFailure()
+                    }
+                })
+                
+            } else{
+                // No user-messages node in Firebase
+                onFailure()
+            }
+        })
+    }
+    
+    // Get list of chats from database
     func observeChats(from myID: String, onSuccess: @escaping ([String: Any], String) -> Void) {
         
         userMessagesDatabase.child(myID).observe(.childAdded, with: { (snapshot) in
             
             let chatID = snapshot.value as! String
-
+            
             self.messagesDatabase.child(chatID).observe(.childAdded, with: { (mesg) in
                 
                 guard var dictionary = mesg.value as? [String: Any] else { return }
@@ -364,24 +396,12 @@ class NetworkManager {
                     mesg.ref.updateChildValues([messageInfoType.isDelivered.rawValue : "true"])
                     dictionary.updateValue("true", forKey: messageInfoType.isDelivered.rawValue)
                 }
-          
+                
                 onSuccess(dictionary, mesg.key)
                 
             }, withCancel: nil)
             
         }, withCancel: nil)
-    }
-    
-    // Delete user-messages from database
-    func deleteChatMessages(from myID: String, to userID: String, onSuccess: @escaping () -> Void) {
-        
-        userMessagesDatabase.child(myID).child(userID).removeValue { (error, ref) in
-            if error != nil {
-                print("Failed to delete message:", error!)
-                return
-            }
-            onSuccess()
-        }
     }
     
     // Mark messages as read
@@ -391,6 +411,21 @@ class NetworkManager {
         if sender < receiver { childNode = "\(sender)_\(receiver)" } else { childNode = "\(receiver)_\(sender)" }
         
         messagesDatabase.child(childNode).child(messageID).updateChildValues([key: "true"]) { (error, ref) in
+            if error != nil {
+                print(error!)
+                return
+            }
+            onSuccess()
+        }
+    }
+    
+    // Adds reaction to message
+    func registerReaction(_ reaction: String, for messageID: String, to sender: String, from receiver: String, onSuccess: @escaping () -> Void) {
+        
+        let childNode: String
+        if sender < receiver { childNode = "\(sender)_\(receiver)" } else { childNode = "\(receiver)_\(sender)" }
+        
+        messagesDatabase.child(childNode).child(messageID).child("hasReaction").updateChildValues([receiver: reaction]) { (error, ref) in
             if error != nil {
                 print(error!)
                 return
@@ -416,12 +451,56 @@ class NetworkManager {
         }
     }
     
+    // Delete user-messages from database
+    func deleteChatMessages(from myID: String, to userID: String, onSuccess: @escaping () -> Void) {
+        
+        userMessagesDatabase.child(myID).child(userID).removeValue { (error, ref) in
+            if error != nil {
+                print("Failed to delete conversations: ", error!)
+                return
+            }
+            onSuccess()
+        }
+    }
+    
+    // Delete / unsend a message from databse
+    func deleteMessage(with msgID: String, from sender: String, to receiver: String, onSuccess: @escaping () -> Void) {
+        
+        let childNode: String
+        if sender < receiver { childNode = "\(sender)_\(receiver)" } else { childNode = "\(receiver)_\(sender)" }
+        
+        messagesDatabase.child(childNode).child(msgID).removeValue { (error, ref) in
+            if error != nil {
+                print("Failed to delete message: ", error!)
+                return
+            }
+            onSuccess()
+        }
+    }
+    
+    // Removes reaction from message
+    func removeReaction(_ reaction: String, for messageID: String, to sender: String, from receiver: String, onSuccess: @escaping () -> Void) {
+        
+        let childNode: String
+        if sender < receiver { childNode = "\(sender)_\(receiver)" } else { childNode = "\(receiver)_\(sender)" }
+        
+        messagesDatabase.child(childNode).child(messageID).child("hasReaction").child(receiver).removeValue { (error, ref) in
+            if error != nil {
+                print("Failed to remove reaction: ", error!)
+                return
+            }
+            onSuccess()
+        }
+    }
+    
+    
     // MARK: - ANALYTICS Events
     
     func logEvent(name: String, parameters: [String : Any]?) {
         
         Analytics.logEvent(name, parameters: parameters)
     }
+    
     
     // MARK: - FEEDBACK DATABASE
 

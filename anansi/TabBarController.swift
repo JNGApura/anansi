@@ -85,7 +85,7 @@ class TabBarController: UITabBarController {
     
     private func observeMessages() {
         
-        NetworkManager.shared.observeChats(from: myID!) { (mesg, key) in
+        NetworkManager.shared.observeChats(from: myID!, onSuccess: { (mesg, key) in
             
             let chat = Message(dictionary: mesg, messageID: key)
             
@@ -96,7 +96,8 @@ class TabBarController: UITabBarController {
                 
                 self.unreadChats.append(chatPartnerID)
             }
-        }
+            
+        })
     }
     
     private func fetchImportantInfoFromMyself() {

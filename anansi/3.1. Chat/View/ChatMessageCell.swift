@@ -8,21 +8,34 @@
 
 import UIKit
 
+protocol CellGestureRecognizerDelegate: class {
+    func singleTapDetected(in indexPath: IndexPath)
+    func doubleTapDetected(in indexPath: IndexPath, with love: Bool)
+    func longPressDetected(in indexPath: IndexPath, from sender: UILongPressGestureRecognizer)
+}
+
 class ChatMessageCell: UITableViewCell {
     
     // MARK: Custom initializers
-    var message: Message!
     
-    let messageLabel : UILabel = {
+    weak var gestureRecognizerDelegate: CellGestureRecognizerDelegate?
+    
+    var indexPath: IndexPath!
+    var message: Message!
+    var isIncoming: Bool!
+    
+    var isLoved: Bool = false
+    
+    let msgtxt : UILabel = {
         let l = UILabel()
-        l.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
+        l.font = UIFont.systemFont(ofSize: Const.calloutFontSize)
         l.textAlignment = .left
         l.numberOfLines = 0
         l.translatesAutoresizingMaskIntoConstraints = false
         return l
     }()
     
-    let bubbleView: UIView = {
+    let bubble: UIView = {
         let bv = UIView()
         bv.layer.borderWidth = 2
         bv.layer.borderColor = UIColor.red.cgColor
@@ -32,27 +45,55 @@ class ChatMessageCell: UITableViewCell {
         bv.translatesAutoresizingMaskIntoConstraints = false
         return bv
     }()
+    
+    let msgstatus : UIImageView = {
+        let i = UIImageView()
+        i.layer.cornerRadius = 16.0 / 2
+        i.layer.masksToBounds = true
+        i.clipsToBounds = true
+        i.contentMode = .scaleAspectFit
+        i.isHidden = true
+        i.translatesAutoresizingMaskIntoConstraints = false
+        return i
+    }()
 
-    let timestampView : UILabel = {
+    let timestamp : UILabel = {
         let l = UILabel()
         l.textColor = UIColor.secondary.withAlphaComponent(0.6)
         l.textAlignment = .right
-        l.backgroundColor = .background
         l.font = UIFont.systemFont(ofSize: Const.captionFontSize)
-        //l.isHidden = true
+        l.isHidden = true
         l.translatesAutoresizingMaskIntoConstraints = false
         return l
     }()
     
-    let statusView : UILabel = {
-        let l = UILabel()
-        l.textColor = UIColor.secondary.withAlphaComponent(0.6)
-        l.textAlignment = .right
-        l.backgroundColor = .background
-        l.font = UIFont.boldSystemFont(ofSize: Const.captionFontSize)
-        l.isHidden = true
-        l.translatesAutoresizingMaskIntoConstraints = false
-        return l
+    lazy var loveButton : UIButton = {
+        let b = UIButton()
+        b.setImage(UIImage(named: "heart-unfilled")!.withRenderingMode(.alwaysTemplate), for: .normal)
+        b.imageView?.tintColor = .tertiary
+        b.imageView?.contentMode = .scaleAspectFit
+        b.addTarget(self, action: #selector(spreadLove), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+    
+    let loveReaction : UIImageView = {
+        let i = UIImageView()
+        i.image = UIImage(named: "heart-filled")!.withRenderingMode(.alwaysTemplate)
+        i.tintColor = .primary
+        i.contentMode = .scaleAspectFit
+        i.isHidden = true
+        i.translatesAutoresizingMaskIntoConstraints = false
+        return i
+    }()
+    
+    let bubbleLoveStack: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.alignment = .fill
+        sv.distribution = .equalCentering
+        sv.translatesAutoresizingMaskIntoConstraints = false
+        return sv
     }()
     
     let horizontalStackView: UIStackView = {
@@ -60,11 +101,12 @@ class ChatMessageCell: UITableViewCell {
         sv.axis = .horizontal
         sv.distribution = .fill
         sv.isHidden = true
+        sv.contentMode = .top
         sv.translatesAutoresizingMaskIntoConstraints = false
         return sv
     }()
     
-    let verticalStackView: UIStackView = {
+    let messageStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .vertical
         sv.distribution = .fill
@@ -73,56 +115,65 @@ class ChatMessageCell: UITableViewCell {
     }()
     
     // To be able to modify the constraints externally
-    var bubbleViewTrailingAnchor: NSLayoutConstraint?
-    var bubbleViewLeadingAnchor: NSLayoutConstraint?
+    var bubbleTrailingAnchor: NSLayoutConstraint?
+    var bubbleLeadingAnchor: NSLayoutConstraint?
     var messageLabelHeightAnchor: NSLayoutConstraint?
     var bubbleViewHeightAnchor: NSLayoutConstraint?
-    var statusViewWidthAnchor: NSLayoutConstraint?
     
     // MARK: Cell init
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        // tapRecognizer, placed in viewDidLoad
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress))
+        bubble.addGestureRecognizer(longPressRecognizer)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(doubleTap))
+        tap.numberOfTapsRequired = 2
+        bubble.addGestureRecognizer(tap)
         
         selectionStyle = .none
         
         // Add subviews
-        [timestampView, statusView].forEach( {horizontalStackView.addArrangedSubview($0)} )
-        [bubbleView, horizontalStackView].forEach( {verticalStackView.addArrangedSubview($0)} )
-        [verticalStackView, messageLabel].forEach( {addSubview($0)} )
+        [bubble, msgtxt, loveButton, msgstatus, loveReaction].forEach { addSubview($0) }
         
         // Add layout constraints to subviews
         NSLayoutConstraint.activate([
             
-            verticalStackView.topAnchor.constraint(equalTo: topAnchor, constant: 3.0),
-            verticalStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3.0),
-            verticalStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight * 2.0),
-            verticalStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight * 2.0),
-
-            horizontalStackView.topAnchor.constraint(equalTo: bubbleView.bottomAnchor),
-            horizontalStackView.heightAnchor.constraint(equalToConstant: Const.timeDateHeightChatCells),
-            horizontalStackView.widthAnchor.constraint(equalTo: widthAnchor, constant: -Const.marginEight * 4.0),
+            bubble.topAnchor.constraint(equalTo: topAnchor, constant: 3.0),
+            bubble.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3.0),
+            bubble.widthAnchor.constraint(lessThanOrEqualToConstant: 262.0),
             
-            messageLabel.topAnchor.constraint(equalTo: bubbleView.topAnchor, constant: Const.marginEight),
-            messageLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -Const.marginEight),
-            messageLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: Const.marginEight * 2.0),
-            messageLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -Const.marginEight * 2.0),
+            msgtxt.topAnchor.constraint(equalTo: bubble.topAnchor, constant: Const.marginEight),
+            msgtxt.bottomAnchor.constraint(equalTo: bubble.bottomAnchor, constant: -Const.marginEight),
+            msgtxt.leadingAnchor.constraint(equalTo: bubble.leadingAnchor, constant: Const.marginEight * 2.0),
+            msgtxt.trailingAnchor.constraint(equalTo: bubble.trailingAnchor, constant: -Const.marginEight * 2.0),
             
-            bubbleView.widthAnchor.constraint(lessThanOrEqualToConstant: 250.0),
-            bubbleView.topAnchor.constraint(equalTo: verticalStackView.topAnchor),
-            bubbleView.heightAnchor.constraint(equalTo: messageLabel.heightAnchor, constant: Const.marginEight * 2.0)
+            loveButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight * 2.0),
+            loveButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+            loveButton.widthAnchor.constraint(equalToConstant: 16.0),
+            loveButton.heightAnchor.constraint(equalToConstant: 16.0),
+            
+            msgstatus.topAnchor.constraint(equalTo: bubble.bottomAnchor, constant: 2.0),
+            msgstatus.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight),
+            msgstatus.heightAnchor.constraint(equalToConstant: 16.0),
+            msgstatus.widthAnchor.constraint(equalToConstant: 16.0),
+            
+            loveReaction.topAnchor.constraint(equalTo: msgstatus.topAnchor),
+            loveReaction.trailingAnchor.constraint(equalTo: msgstatus.leadingAnchor, constant: -Const.marginEight / 2.0),
+            loveReaction.heightAnchor.constraint(equalToConstant: 16.0),
+            loveReaction.widthAnchor.constraint(equalToConstant: 16.0),
         ])
         
-        bubbleViewLeadingAnchor = bubbleView.leadingAnchor.constraint(equalTo: verticalStackView.leadingAnchor)
-        bubbleViewLeadingAnchor?.isActive = false
+        bubbleLeadingAnchor = bubble.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight * 2.0)
+        bubbleLeadingAnchor?.isActive = false
         
-        bubbleViewTrailingAnchor = bubbleView.trailingAnchor.constraint(equalTo: verticalStackView.trailingAnchor)
-        bubbleViewTrailingAnchor?.isActive = true
+        bubbleTrailingAnchor = bubble.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight * 2.0)
+        bubbleTrailingAnchor?.isActive = true
         
-        messageLabelHeightAnchor = messageLabel.heightAnchor.constraint(equalToConstant: 24.0)
+        messageLabelHeightAnchor = msgtxt.heightAnchor.constraint(equalToConstant: 0.0)
         messageLabelHeightAnchor?.isActive = true
-        
-        statusViewWidthAnchor = statusView.widthAnchor.constraint(lessThanOrEqualToConstant: 72.0)
-        statusViewWidthAnchor?.isActive = true
     }
 
     
@@ -132,62 +183,120 @@ class ChatMessageCell: UITableViewCell {
     
     // MARK: - Custom functions
     
-    func config(message: Message, isIncoming: Bool, isLast: Bool) {
+    func config(message: Message, isIncoming: Bool, isLast: Bool, with imgURL: String) {
         
         self.message = message
+        self.isIncoming = isIncoming
         
         if let text = message.getValue(forField: .text) as? String {
-            messageLabel.text = text
-            messageLabel.textColor = isIncoming ? .secondary : .background
-
-            messageLabelHeightAnchor?.constant = messageLabel.requiredHeight
+            msgtxt.text = text
+            msgtxt.textColor = isIncoming ? .secondary : .background
+            messageLabelHeightAnchor?.constant = msgtxt.requiredHeight
         }
         
-        bubbleView.backgroundColor = isIncoming ? UIColor.tertiary.withAlphaComponent(0.5) : .primary
-        bubbleView.layer.borderColor = isIncoming ? UIColor.tertiary.withAlphaComponent(0.5).cgColor : UIColor.primary.cgColor
-        verticalStackView.alignment = isIncoming ? .leading : .trailing
+        bubble.backgroundColor = isIncoming ? UIColor.tertiary.withAlphaComponent(0.5) : .primary
+        bubble.layer.borderColor = isIncoming ? UIColor.tertiary.withAlphaComponent(0.5).cgColor : UIColor.primary.cgColor
         
-        // Timestamp label
-        let timestampSec = (message.getValue(forField: .timestamp) as? NSNumber)!.doubleValue
-        let timestr = timestring(from: NSDate(timeIntervalSince1970: timestampSec))
-        timestampView.text = "\(timestr)"
-        timestampView.textAlignment = isIncoming ? .left : .right
-        timestampView.isHidden = isLast ? true : false
-        
-        horizontalStackView.isHidden = isLast ? false : true
-        statusView.isHidden = isLast ? false : true
+        msgstatus.isHidden = isLast ? false : true
         
         // Bubbles
         if isIncoming {
-
-            bubbleViewTrailingAnchor?.isActive = false
-            bubbleViewLeadingAnchor?.isActive = true
+            bubbleTrailingAnchor?.isActive = false
+            bubbleLeadingAnchor?.isActive = true
             
         } else {
-            
-            bubbleViewTrailingAnchor?.isActive = true
-            bubbleViewLeadingAnchor?.isActive = false
+            bubbleTrailingAnchor?.isActive = true
+            bubbleLeadingAnchor?.isActive = false
             
             // If the last message is mine, then status is visible
             if isLast  {
                 
                 let isRead = message.getValue(forField: .isRead) as? Bool
                 let isDelivered = message.getValue(forField: .isDelivered) as? Bool
-                statusView.text = isRead! ? " Read" : isDelivered! ? " Delivered" : " Sent"
-                timestampView.text = "\(timestr) ·"
+                let isSent = message.getValue(forField: .isSent) as? Bool
+                
+                if isRead! {
+                    if imgURL != "" { msgstatus.setImage(with: imgURL) }
+                    else { msgstatus.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal) }
+                }
+                else if isSent! || isDelivered! { msgstatus.image = UIImage(named: "message-delivered")!.withRenderingMode(.alwaysOriginal) }
+                else { msgstatus.image = UIImage(named: "message-sent")!.withRenderingMode(.alwaysOriginal) }
+            }
+        }
+        
+        // Reactions
+        loveButton.isHidden = isIncoming ? false : true
+        loveReaction.isHidden = true
+        
+        // receiver reacts to the sender
+        let receiver = message.getValue(forField: .receiver) as? String
+        
+        if let reactions = message.getValue(forField: .hasReaction) as? [String : String],
+            let reaction = reactions[receiver!] {
+            
+            isLoved = true
+            if isIncoming {
+                
+                if reaction == "heart" {
+                    loveButton.setImage(UIImage(named: "heart-filled")!.withRenderingMode(.alwaysTemplate), for: .normal)
+                    loveButton.imageView?.tintColor = .primary
+                }
+                
+            } else {
+                
+                // Something wrong here, check later
+                loveReaction.isHidden = false
             }
         }
     }
     
-    func handleTimeShowRequest() {
+    override func prepareForReuse() {
+        super.prepareForReuse()
         
-        // Shows or hides horizontalStackView with timestamp
-        horizontalStackView.isHidden = statusView.isHidden && !horizontalStackView.isHidden
+        msgtxt.text = ""
         
-        // Behavior is a bit different for the last cell (if isLast = true)
-        if !statusView.isHidden {
-            statusViewWidthAnchor?.constant = statusView.requiredWidth
-            timestampView.isHidden = !timestampView.isHidden
+        loveButton.setImage(UIImage(named: "heart-unfilled")!.withRenderingMode(.alwaysTemplate), for: .normal)
+        loveButton.imageView?.tintColor = .tertiary
+        
+        loveReaction.isHidden = true
+    }
+    
+    @objc func spreadLove() {
+        
+        if !isLoved {
+            loveButton.setImage(UIImage(named: "heart-filled")!.withRenderingMode(.alwaysTemplate), for: .normal)
+            loveButton.imageView?.tintColor = .primary
+            loveButton.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+            
+            UIView.animate(withDuration: 0.4, delay: 0.0, usingSpringWithDamping: 0.5, initialSpringVelocity: 8.0, options: [], animations: {
+                self.loveButton.transform = .identity
+            }, completion: nil)
+            
+        } else {
+            loveButton.setImage(UIImage(named: "heart-unfilled")!.withRenderingMode(.alwaysTemplate), for: .normal)
+            loveButton.imageView?.tintColor = .tertiary
         }
+        isLoved = !isLoved
+        
+        // Haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        
+        // Acknowledges gesture to ChatLogViewController
+        self.gestureRecognizerDelegate?.doubleTapDetected(in: indexPath, with: isLoved)
+    }
+    
+    // MARK: - UIGestureRecognizer
+    
+    @objc func doubleTap(sender: UITapGestureRecognizer) {
+        
+        guard sender.state == .ended else { return }
+        spreadLove()
+    }
+    
+    @objc func longPress(sender: UILongPressGestureRecognizer) {
+        
+        guard sender.state == .began else { return }
+        self.gestureRecognizerDelegate?.longPressDetected(in: indexPath, from: sender)
     }
 }

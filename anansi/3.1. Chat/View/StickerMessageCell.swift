@@ -61,6 +61,7 @@ class StickerMessageCell: UITableViewCell {
         b.setImage(UIImage(named: "heart-unfilled")!.withRenderingMode(.alwaysTemplate), for: .normal)
         b.imageView?.tintColor = .tertiary
         b.imageView?.contentMode = .scaleAspectFit
+        b.imageEdgeInsets = UIEdgeInsets(top: 12.0, left: 12.0, bottom: 12.0, right: 12.0);
         b.addTarget(self, action: #selector(spreadLove), for: .touchUpInside)
         b.translatesAutoresizingMaskIntoConstraints = false
         return b
@@ -129,10 +130,10 @@ class StickerMessageCell: UITableViewCell {
             msgImg.heightAnchor.constraint(equalToConstant: 64.0),
             msgImg.widthAnchor.constraint(equalToConstant: 64.0),
             
-            loveButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight * 2.0),
+            loveButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight / 2.0),
             loveButton.centerYAnchor.constraint(equalTo: centerYAnchor),
-            loveButton.widthAnchor.constraint(equalToConstant: 16.0),
-            loveButton.heightAnchor.constraint(equalToConstant: 16.0),
+            loveButton.widthAnchor.constraint(equalToConstant: 40.0),
+            loveButton.heightAnchor.constraint(equalToConstant: 40.0),
             
             msgstatus.topAnchor.constraint(equalTo: bubble.bottomAnchor, constant: 2.0),
             msgstatus.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight),

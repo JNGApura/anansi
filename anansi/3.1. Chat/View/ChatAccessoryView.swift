@@ -31,7 +31,7 @@ class ChatAccessoryView: UIView {
     
     let borderView : UIView = {
         let v = UIView()
-        v.backgroundColor = .background
+        v.backgroundColor = .clear
         v.layer.borderColor = UIColor.tertiary.cgColor
         v.layer.borderWidth = 1.5
         v.layer.cornerRadius = 22.0
@@ -42,19 +42,24 @@ class ChatAccessoryView: UIView {
     
     lazy var sendButton : UIButton = {
         let b = UIButton()
-        b.setTitle("Send", for: .normal)
+        b.setImage(UIImage(named: "Compass-Full")!.withRenderingMode(.alwaysOriginal), for: .normal)
+        b.imageView?.contentMode = .center
+        b.imageView?.transform = CGAffineTransform(scaleX: 0.22, y: 0.22)
         b.setTitleColor(.primary, for: .normal)
         b.titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        b.translatesAutoresizingMaskIntoConstraints = false
-        b.isEnabled = false
-        b.alpha = 0.4
+        b.layer.cornerRadius = 22.0
+        b.clipsToBounds = true
         b.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
         return b
     }()
     var sendButtonTrailingAnchor: NSLayoutConstraint?
     
     lazy var inputTextView : UITextView = {
         let tf = UITextView()
+        tf.layer.borderColor = UIColor.clear.cgColor
+        tf.layer.borderWidth = 1.5
+        tf.layer.cornerRadius = 22.0
         tf.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
         tf.textColor = .secondary
         tf.placeholder = ""
@@ -63,7 +68,6 @@ class ChatAccessoryView: UIView {
         tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
     }()
-    //var inputTextViewHeightAnchor: NSLayoutConstraint?
     
     let isTypingBox : UIView = {
         let v = UIView()
@@ -97,35 +101,35 @@ class ChatAccessoryView: UIView {
         visualEffectView.backgroundColor = UIColor(white: 1.0, alpha: 0.9)
         
         // Add subviews
-        [visualEffectView, borderView, inputTextView, sendButton, isTypingBox].forEach { addSubview($0)}
+        [visualEffectView, isTypingBox, sendButton, borderView, inputTextView].forEach { addSubview($0)}
         isTypingBox.addSubview(isTypingLabel)
         
         // Add layout constraints
         NSLayoutConstraint.activate([
             
-            sendButton.bottomAnchor.constraint(equalTo: inputTextView.bottomAnchor, constant: 3.0),
-            sendButton.trailingAnchor.constraint(equalTo: borderView.trailingAnchor, constant: -Const.marginEight * 2.0),
+            sendButton.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor, constant: -Const.marginEight),
+            sendButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight),
             sendButton.widthAnchor.constraint(equalToConstant: 44.0),
             sendButton.heightAnchor.constraint(equalToConstant: 44.0),
 
             borderView.topAnchor.constraint(equalTo: topAnchor, constant: Const.marginEight),
             borderView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight),
             borderView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor, constant: -Const.marginEight),
-            borderView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight),
+            borderView.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -Const.marginEight),
             
-            inputTextView.topAnchor.constraint(equalTo: borderView.topAnchor, constant: Const.marginEight / 2.0),
-            inputTextView.leadingAnchor.constraint(equalTo: borderView.leadingAnchor, constant: Const.marginEight * 2.0),
-            inputTextView.bottomAnchor.constraint(equalTo: borderView.bottomAnchor, constant: -Const.marginEight / 2.0),
-            inputTextView.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -Const.marginEight / 2.0),
+            inputTextView.topAnchor.constraint(equalTo: borderView.topAnchor, constant: 2.0),
+            inputTextView.leadingAnchor.constraint(equalTo: borderView.leadingAnchor, constant: Const.marginEight),
+            inputTextView.bottomAnchor.constraint(equalTo: borderView.bottomAnchor, constant: -2.0),
+            inputTextView.trailingAnchor.constraint(equalTo: borderView.trailingAnchor, constant: -Const.marginEight),
             
             isTypingBox.leadingAnchor.constraint(equalTo: leadingAnchor),
             isTypingBox.trailingAnchor.constraint(equalTo: trailingAnchor),
-            isTypingBox.bottomAnchor.constraint(equalTo: inputTextView.topAnchor, constant: -2.0),
-            isTypingBox.heightAnchor.constraint(equalToConstant: 17.0),
+            isTypingBox.bottomAnchor.constraint(equalTo: inputTextView.topAnchor, constant: -Const.marginEight / 2.0),
+            isTypingBox.heightAnchor.constraint(equalToConstant: 20.0),
             
-            isTypingLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea + 9.0),
+            isTypingLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea + 8.0),
             isTypingLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
-            isTypingLabel.centerYAnchor.constraint(equalTo: isTypingBox.centerYAnchor, constant: -2.0),
+            isTypingLabel.centerYAnchor.constraint(equalTo: isTypingBox.centerYAnchor),
         ])
     }
     
@@ -134,8 +138,20 @@ class ChatAccessoryView: UIView {
     }
     
     @objc func handleSend() {
+        
         let message = (inputTextView.text)!
-        delegate?.sendMessage(message: message)
+        print(message)
+        
+        if message.count == 0 {
+            delegate?.sendMessage(message: ":compass:")
+        } else {
+            delegate?.sendMessage(message: message)
+        }
+        
+        // return button to initial scale
+        UIView.animate(withDuration: 0.2) {
+            self.sendButton.imageView!.transform = CGAffineTransform(scaleX: 0.22, y: 0.22)
+        }
     }
 }
 
@@ -169,13 +185,16 @@ extension ChatAccessoryView: UITextViewDelegate {
         if textLength > 0 {
             
             textView.placeholder = ""
-            sendButton.isEnabled = true
-            sendButton.alpha = 1.0
+            UIView.animate(withDuration: 0.2) {
+                self.sendButton.imageView!.transform = CGAffineTransform(rotationAngle:  CGFloat.pi / 2).concatenating(CGAffineTransform(scaleX: 0.4, y: 0.4))
+            }
             
         } else {
+            
             textView.placeholder = placeholderText
-            sendButton.isEnabled = false
-            sendButton.alpha = 0.4
+            UIView.animate(withDuration: 0.2) {
+                self.sendButton.imageView!.transform = CGAffineTransform(scaleX: 0.22, y: 0.22)
+            }
         }
         
         return true

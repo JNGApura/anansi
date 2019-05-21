@@ -114,7 +114,7 @@ class ChatLogViewController: UIViewController {
     override var canBecomeFirstResponder: Bool { return true }
     
     lazy var chatAccessoryView: ChatAccessoryView = {
-        let cv = ChatAccessoryView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50.0))
+        let cv = ChatAccessoryView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 44.0))
         cv.delegate = self
         return cv
     }()

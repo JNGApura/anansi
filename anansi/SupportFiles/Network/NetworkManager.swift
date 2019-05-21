@@ -390,6 +390,8 @@ class NetworkManager {
             
             let chatID = snapshot.value as! String
             
+            // perhaps have three diferent closures: onChildAdded, onChildRemoved, onChildChanged
+            
             self.messagesDatabase.child(chatID).observe(.childAdded, with: { (mesg) in
                 
                 guard var dictionary = mesg.value as? [String: Any] else { return }
@@ -402,6 +404,14 @@ class NetworkManager {
                 onSuccess(dictionary, mesg.key)
                 
             }, withCancel: nil)
+            
+            /*
+            self.messagesDatabase.child(chatID).observe(.childRemoved, with: { (mesg) in
+                
+                guard let dictionary = mesg.value as? [String: Any] else { return }
+                onSuccess(dictionary, mesg.key)
+                
+            }, withCancel: nil)*/
             
         }, withCancel: nil)
     }

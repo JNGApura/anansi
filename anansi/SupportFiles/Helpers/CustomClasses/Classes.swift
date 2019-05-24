@@ -41,6 +41,9 @@ func createDateIntervalString(from date: NSDate) -> String {
         
     } else if components.minute! >= 1 {
         return "\(components.minute!)m"
+        
+    } else if components.minute! < 1 {
+        return "Now"
     }
 
     return ""

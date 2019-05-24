@@ -282,6 +282,5 @@ extension SettingsViewController: SendsUserBackProtocol {
     
     func sendsUserback(user: User) {
         self.user = user
-        print("updated user")
     }
 }

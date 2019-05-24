@@ -156,7 +156,10 @@ class EventViewController: UIViewController {
     //*** This is required to fix navigation bar forever disappear on fast backswipe bug.
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
         self.navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        headerView.setProfileImage()
     }
     
     override func didReceiveMemoryWarning() {

@@ -338,7 +338,7 @@ class ProfileViewController: UIViewController {
         }
         
         // Fetch meeee!
-        fetchMe()
+        //fetchMe()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -663,12 +663,14 @@ extension ProfileViewController:  TextFieldTableCellDelegate {
             
         } else {
             user?.removeValue(for: field)
-            NetworkManager.shared.removeData(field.rawValue)
+            NetworkManager.shared.removeData(field.rawValue, in: myID!)
             
             if [.bio, .tedTitle, .sharedEmail, .website, .linkedin].contains(field) {
 
-                let removeFieldAtIndex = progressFields.index(of: field)
-                progressFields.remove(at: removeFieldAtIndex!)
+                if progressFields.contains(field),
+                    let removeFieldAtIndex = progressFields.index(of: field) {
+                    progressFields.remove(at: removeFieldAtIndex)
+                }
                 updateProgress(with: progressFields.count)
             }
         }
@@ -715,7 +717,7 @@ extension ProfileViewController: TextViewTableCellDelegate {
             
         } else {
             user?.removeValue(for: field)
-            NetworkManager.shared.removeData(field.rawValue)
+            NetworkManager.shared.removeData(field.rawValue, in: myID!)
             
             if let removeFieldAtIndex = progressFields.index(of: field) {
                 progressFields.remove(at: removeFieldAtIndex)
@@ -759,9 +761,10 @@ extension ProfileViewController: InterestListDelegate {
             }
             
         } else {
-            let removeFieldAtIndex = progressFields.index(of: .interests)
-            if let index = removeFieldAtIndex {
-                progressFields.remove(at: index)
+            
+            if let removeFieldAtIndex = progressFields.index(of: .interests) {
+                
+                progressFields.remove(at: removeFieldAtIndex)
                 updateProgress(with: progressFields.count)
             }
         }        
@@ -794,42 +797,21 @@ extension ProfileViewController: UIScrollViewDelegate {
             let zoomRatio = (-(offsetY + topDistance) * 0.0065) + 1.0
             backgroundImage.transform = CGAffineTransform(scaleX: zoomRatio, y: zoomRatio)
             
-            //navigationController?.navigationBar.barTintColor = .clear
             (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .clear
-            
-            //(UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .clear
-            //navigationController?.navigationBar.barTintColor = .clear
-            //navigationController?.navigationBar.isTranslucent = true
             
         } else {
             
             let alpha = -offsetY/topDistance
-            
             if alpha <= 1.0 {
-            
-                //navigationController?.navigationBar.backgroundColor = UIColor.background.withAlphaComponent(1.0 - alpha)
-                //navigationController?.navigationBar.barTintColor = UIColor.background.withAlphaComponent(1.0 - alpha)
-                //navigationController?.navigationBar.isTranslucent = true
                 (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = UIColor.background.withAlphaComponent(1.0 - alpha)
-                
 
             } else {
-                //navigationController?.navigationBar.backgroundColor = .background
-                //navigationController?.navigationBar.barTintColor = .background
-                //navigationController?.navigationBar.isTranslucent = false
                 (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .background
             }
-            
-            
-            
-            //navigationController?.navigationBar.barTintColor = UIColor.background.withAlphaComponent(1.0 + offsetY/totalScroll)
-            //navigationController?.navigationBar.isTranslucent = false
-            
-            //
-            
-            
+
             backgroundImage.transform = CGAffineTransform.identity
         }
+        
         backgroundImage.layoutIfNeeded()
     }
 }

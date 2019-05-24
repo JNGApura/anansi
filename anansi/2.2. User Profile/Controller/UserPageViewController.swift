@@ -487,21 +487,23 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
                 
             } else {
                 
+                var profileID = String()
+                
                 if URLstring.contains("linkedin.com/in") {
-                    
-                    let profileID = URLstring[URLstring.range(of: "linkedin.com/in/")!.upperBound...]
-                    if let url = URL(string: "linkedin://profile/\(profileID)") {
-                        
-                        UIApplication.shared.open(url, options: [:]) { (result) in
-                            if !result {
-                                self.openURLfromStringInWebViewer(string: "https://\(URLstring)")
-                            }
-                        }
-                        return
-                    }
+                    profileID = String(URLstring[URLstring.range(of: "linkedin.com/in/")!.upperBound...])
                     
                 } else {
-                    openURLfromStringInWebViewer(string: "https://\(URLstring)")
+                    profileID = URLstring
+                }
+                    
+                if let url = URL(string: "linkedin://profile/\(profileID)") {
+                    
+                    UIApplication.shared.open(url, options: [:]) { (result) in
+                        if !result {
+                            self.openURLfromStringInWebViewer(string: "https://\(URLstring)")
+                        }
+                    }
+                    return
                 }
             }
         }

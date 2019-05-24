@@ -103,6 +103,13 @@ extension TextFieldTableCell: UITextFieldDelegate {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        // I check if text == "" for .website or .linkedin
+        if (field == .website || field == .linkedin),
+            dataTextField.text == "" {
+            
+            dataTextField.text = dataTextField.placeholder
+        }
 
         self.delegate?.fieldDidBeginEditing(field: field)
     }
@@ -111,21 +118,37 @@ extension TextFieldTableCell: UITextFieldDelegate {
         
         if previousText != dataTextField.text {
             
+            // If it's empty
             if dataTextField.text == "" {
                 
+                // If .name, .occupation, .location I display a warning
                 if (field == .name || field == .occupation || field == .location) {
-                
                     dataTextField.text = previousText
                     self.delegate?.fieldChangeForbidden(field: field)
                 
-                } else { dataTextField.text = "" }
+                // If other field, I display empty (= placeholder)
+                } else {
+                    dataTextField.text = ""
+                }
+            
+            // If it's not empty
+            } else {
+                
+                // I check if text == placeholder for .website or .linkedin
+                if (field == .website || field == .linkedin),
+                    dataTextField.text == dataTextField.placeholder {
+                    
+                    dataTextField.text = ""
+                }
             }
             
+            previousText = textField.text
             valueChanged(textField)
         }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
         textField.resignFirstResponder()
         return true
     }

@@ -24,6 +24,7 @@ enum userInfoType: String {
     case linkedin = "linkedin"
     case blockedUsers = "blockedUsers"
     case ranking = "ranking"
+    case isTyping = "isTypingTo"
 }
 
 enum userInfoSection: String {
@@ -50,6 +51,7 @@ class User: NSObject {
     private var linkedin: String!
     private var blockedUsers: [String: String]!
     private var ranking: [String : Int]!
+    private var isTyping: String!
     
     // MARK: NSCoding Encoding
     /*
@@ -137,6 +139,8 @@ class User: NSObject {
             if let blockedUsers = value as? [String : String] { self.blockedUsers = blockedUsers}
         case .ranking:
             if let ranking = value as? [String : Int] {self.ranking = ranking}
+        case .isTyping:
+            if let isTyping = value as? String { self.isTyping = isTyping}
         }
     }
     
@@ -174,6 +178,8 @@ class User: NSObject {
             self.blockedUsers = nil
         case .ranking:
             self.ranking = nil
+        case .isTyping:
+            self.isTyping = nil
         }
     }
     
@@ -196,6 +202,7 @@ class User: NSObject {
         case .linkedin: return linkedin
         case .blockedUsers: return blockedUsers
         case .ranking: return ranking
+        case .isTyping: return isTyping
         }
     }
     
@@ -218,6 +225,7 @@ class User: NSObject {
         case .linkedin: return "LinkedIn profile"
         case .blockedUsers: return "Blocked users"
         case .ranking: return "View ranking"
+        case .isTyping: return "is typing..."
         }
     }
     
@@ -240,6 +248,7 @@ class User: NSObject {
         case .linkedin: return "linkedin.com/in/"
         case .blockedUsers: return "Blocked Users"
         case .ranking: return "View ranking"
+        case .isTyping: return "is typing..."
         }
     }
     
@@ -259,31 +268,6 @@ class User: NSObject {
         self.linkedin = nil
         self.blockedUsers = nil
         self.ranking = nil
+        self.isTyping = nil
     }
 }
-
-
-/*
- // MARK: - Hashable/Equatable
- override var hash: Int { return ID.hash }
- override var hashValue: Int { return ID.hashValue }
- override func isEqual(_ object: Any?) -> Bool {
- guard let otherPerson = object as? Mom else { return false }
- return otherPerson == self
- }
- 
- static var _dateFormatter: DateFormatter?
- fileprivate static var dateFormatter: DateFormatter {
- if (_dateFormatter == nil) {
- _dateFormatter = DateFormatter()
- _dateFormatter!.locale = Locale(identifier: "en_US_POSIX")
- _dateFormatter!.dateFormat = "MM/dd/yyyy"
- }
- return _dateFormatter!
- }
- static func dateFromString(dateString: String) -> Date? {
- return dateFormatter.date(from: dateString)
- }
- static func dateStringFromDate(date: Date) -> String {
- return dateFormatter.string(from: date)
- }*/

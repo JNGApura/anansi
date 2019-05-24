@@ -11,90 +11,8 @@ import UIKit
 class ChatTableCell: UITableViewCell {
     
     let myID = NetworkManager.shared.getUID()
-    let badgeRadius : CGFloat = 9.0
     
-    var message : Message? {
-        didSet {
-            
-            if let partnerID = message?.partnerID() {
-                
-                NetworkManager.shared.fetchUser(userID: partnerID) { (dictionary) in
-                    
-                    // Fetches user
-                    let user = User()
-                    user.set(dictionary: dictionary, id: partnerID)
-                    
-                    // User name
-                    self.name.text = user.getValue(forField: .name) as? String
-                    
-                    // Sets user's profile image
-                    if let imageURL = (user.getValue(forField: .profileImageURL) as? String) {
-                        self.profileImageView.setImage(with: imageURL)
-                        self.hasReadImage.setImage(with: imageURL)
-                    } else {
-                        self.profileImageView.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
-                        self.hasReadImage.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
-                    }
-                    
-                    // Sets message box
-                    if let isTyping = dictionary["isTypingTo"] as? String, isTyping == self.myID! {
-                        
-                        self.lastMessage.text = "is typing..."
-                        self.timeLabel.text = ""
-                        
-                    } else {
-                        
-                        var displayMessage: String = ""
-                        
-                        // Sender
-                        if let sender = self.message?.getValue(forField: .sender) as? String,
-                            sender == self.myID {
-                            
-                            displayMessage += "You: "
-                            
-                            // If chatPartner has seen my message, I display his/her profile picture in a small icon
-                            if let isRead = self.message?.getValue(forField: .isRead) as? Bool, isRead {
-                                self.hasReadImage.isHidden = false
-                            } else {
-                                self.hasReadImage.isHidden = true
-                            }
-                            
-                        } else {
-                            // If I received the message and haven't read, I display the unread badge
-                            if let isRead = self.message?.getValue(forField: .isRead) as? Bool {
-                                
-                                self.badge.isHidden = isRead
-                                
-                                if isRead {
-                                    self.lastMessage.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
-                                    self.timeLabel.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
-                                } else {
-                                    self.lastMessage.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
-                                    self.timeLabel.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
-                                }
-                            }
-                        }
-                        
-                        // Message
-                        if let message = self.message!.getValue(forField: .text) as? String {
-                            
-                            if message == ":compass:" {
-                                displayMessage += "🧭"
-                            } else {
-                                displayMessage += message
-                            }
-                        }
-                        self.lastMessage.text = displayMessage
-                        
-                        // Sets timestamp
-                        if let seconds = (self.message?.getValue(forField: .timestamp) as? NSNumber)?.doubleValue {
-                            self.timeLabel.text = " · " + createDateIntervalString(from: NSDate(timeIntervalSince1970: seconds))
-                        }
-                    }
-                }
-            }
-        }
-    }
+    var message : Message?
     
     let profileImageView: UIImageView = {
         let i = UIImageView()
@@ -129,10 +47,10 @@ class ChatTableCell: UITableViewCell {
     let lastMessage: UILabel = {
         let tl = UILabel()
         tl.text = ""
+        tl.textAlignment = .left
         tl.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
         tl.textColor = UIColor.secondary.withAlphaComponent(0.4)
         tl.translatesAutoresizingMaskIntoConstraints = false
-        tl.lineBreakMode = .byTruncatingTail
         return tl
     }()
     
@@ -148,6 +66,7 @@ class ChatTableCell: UITableViewCell {
     let bottomStackView : UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
+        sv.alignment = .leading
         sv.distribution = .fill
         sv.translatesAutoresizingMaskIntoConstraints = false
         return sv
@@ -156,6 +75,7 @@ class ChatTableCell: UITableViewCell {
     let stackView : UIStackView = {
         let sv = UIStackView()
         sv.axis = .vertical
+        sv.alignment = .leading
         sv.distribution = .fill
         sv.translatesAutoresizingMaskIntoConstraints = false
         return sv
@@ -229,6 +149,83 @@ class ChatTableCell: UITableViewCell {
         name.text = ""
         lastMessage.text = ""
         timeLabel.text = ""
+        
         profileImageView.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
+        hasReadImage.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
+    }
+    
+    
+    func configure(with message: Message, and user: User) {
+        
+        //self.message = message
+        
+        // User name
+        self.name.text = user.getValue(forField: .name) as? String
+        
+        // Sets user's profile image
+        if let imageURL = (user.getValue(forField: .profileImageURL) as? String) {
+            profileImageView.setImage(with: imageURL)
+            hasReadImage.setImage(with: imageURL)
+            
+        } else {
+            profileImageView.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
+            hasReadImage.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
+        }
+        
+        // Sets message box
+        if let isTyping = user.getValue(forField: .isTyping) as? String, isTyping == self.myID! {
+        
+            self.lastMessage.text = user.label(forField: .isTyping)
+            self.timeLabel.text = ""
+            
+        } else {
+            
+            var displayMessage = String()
+            
+            // Sender
+            if let sender = message.getValue(forField: .sender) as? String,
+                sender == myID {
+                
+                displayMessage += "You: "
+                            
+                // If chatPartner has seen my message, I display his/her profile picture in a small icon
+                if let isRead = message.getValue(forField: .isRead) as? Bool {
+                    
+                    self.hasReadImage.isHidden = !isRead
+                }
+                
+            } else {
+                // If I received the message and haven't read, I display the unread badge
+                if let isRead = message.getValue(forField: .isRead) as? Bool {
+                    
+                    self.badge.isHidden = isRead
+                    
+                    if isRead {
+                        lastMessage.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
+                        timeLabel.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
+                        
+                    } else {
+                        lastMessage.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
+                        timeLabel.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
+                    }
+                }
+            }
+            
+            // Message
+            if let message = message.getValue(forField: .text) as? String {
+                
+                if message == ":compass:" {
+                    displayMessage += "🧭"
+                } else {
+                    displayMessage += message
+                }
+            }
+            lastMessage.text = displayMessage
+            
+            // Sets timestamp
+            if let seconds = (message.getValue(forField: .timestamp) as? NSNumber)?.doubleValue {
+                timeLabel.text = " · " + createDateIntervalString(from: NSDate(timeIntervalSince1970: seconds))
+            }
+        }
     }
 }

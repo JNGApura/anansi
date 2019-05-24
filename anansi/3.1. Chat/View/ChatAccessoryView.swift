@@ -140,7 +140,6 @@ class ChatAccessoryView: UIView {
     @objc func handleSend() {
         
         let message = (inputTextView.text)!
-        print(message)
         
         if message.count == 0 {
             delegate?.sendMessage(message: ":compass:")

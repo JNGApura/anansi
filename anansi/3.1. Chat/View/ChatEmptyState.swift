@@ -8,14 +8,13 @@
 
 import UIKit
 
+protocol ChatEmptyStateDelegate {
+    func wave()
+}
+
 class ChatEmptyState: UIView {
     
-    var chatLogViewController: ChatLogViewController? {
-        didSet {
-            user = chatLogViewController!.user
-            waveButton.addTarget(ChatLogViewController.self, action: #selector(chatLogViewController!.sendWave), for: .touchUpInside)
-        }
-    }
+    var delegate: ChatEmptyStateDelegate?
     
     var user: User? {
         didSet {
@@ -91,17 +90,18 @@ class ChatEmptyState: UIView {
         return l
     }()
     
-    let waveButton: UIButton = {
-        let l = UIButton()
-        l.setTitle("Say hi!", for: .normal)
-        l.titleLabel?.textAlignment = .center
-        l.titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.calloutFontSize)
-        l.tintColor = .white
-        l.backgroundColor = .primary
-        l.layer.cornerRadius = 18
-        l.layer.masksToBounds = true
-        l.translatesAutoresizingMaskIntoConstraints = false
-        return l
+    lazy var waveButton: UIButton = {
+        let b = UIButton()
+        b.setTitle("Say hi!", for: .normal)
+        b.titleLabel?.textAlignment = .center
+        b.titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.calloutFontSize)
+        b.tintColor = .white
+        b.backgroundColor = .primary
+        b.layer.cornerRadius = 18
+        b.layer.masksToBounds = true
+        b.addTarget(self, action: #selector(sendWave), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
     }()
     
     override init(frame: CGRect) {
@@ -163,5 +163,9 @@ class ChatEmptyState: UIView {
             waveButton.widthAnchor.constraint(equalToConstant: 88.0),
             waveButton.heightAnchor.constraint(equalToConstant: 36.0),
         ])
+    }
+    
+    @objc func sendWave() {
+        delegate?.wave()
     }
 }

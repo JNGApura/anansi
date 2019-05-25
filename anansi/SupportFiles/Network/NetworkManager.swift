@@ -407,64 +407,6 @@ class NetworkManager {
         }
     }
     
-    /*func observeChats(from myID: String, onSuccess: @escaping ([String: Any], String) -> Void) {
-        
-        userMessagesDatabase.child(myID).observe(.childAdded, with: { (snapshot) in
-            
-            let chatID = snapshot.value as! String
-            
-            // perhaps have three diferent closures: onChildAdded, onChildRemoved, onChildChanged
-            
-            self.messagesDatabase.child(chatID).observe(.childAdded, with: { (mesg) in
-                
-                guard var dictionary = mesg.value as? [String: Any] else { return }
-                
-                if let receiver = dictionary[messageInfoType.receiver.rawValue] as? String, receiver == myID {
-                    mesg.ref.updateChildValues([messageInfoType.isDelivered.rawValue : "true"])
-                    dictionary.updateValue("true", forKey: messageInfoType.isDelivered.rawValue)
-                }
-                
-                onSuccess(dictionary, mesg.key)
-                
-            }, withCancel: nil)
-            
-            /*
-             self.messagesDatabase.child(chatID).observe(.childRemoved, with: { (mesg) in
-             
-             guard let dictionary = mesg.value as? [String: Any] else { return }
-             onSuccess(dictionary, mesg.key)
-             
-             }, withCancel: nil)
-            */
-            
-        }, withCancel: nil)
-    }*/
-    
-    
-    // TO DO: CHECK IF THIS IS THE RIGHT WAY TO DO IT
-    // Get list of chat messages from database
-    func observeChatMessages(from myID: String, to userID: String, onSuccess: @escaping ([String: Any], String) -> Void) {
-        
-        userMessagesDatabase.child(myID).child(userID).observeSingleEvent(of: .value, with: { (snapshot) in
-                        
-            if let chatID = snapshot.value as? String {
-                
-                self.messagesDatabase.child(chatID).observe(.childAdded, with: { (mesg) in
-                    
-                    guard let dictionary = mesg.value as? [String: Any] else { return }
-                    
-                    guard let msgtxt = dictionary["message"] as? String, msgtxt != "" else { return }
-                    
-                    onSuccess(dictionary, mesg.key)
-                    
-                }, withCancel: nil)
-            }
-            
-        }, withCancel: nil)
-    }
-    // ALL GOOD AFTER THIS ONE
-    
-    
     // Create childnode for userMessages
     
     func childNode(_ sender: String, _ receiver: String) -> String {
@@ -493,8 +435,17 @@ class NetworkManager {
                 return
             }
             
-            self.userMessagesDatabase.child(sender).updateChildValues([receiver: childNode])
-            self.userMessagesDatabase.child(receiver).updateChildValues([sender: childNode])
+            self.userMessagesDatabase.child(sender).observeSingleEvent(of: .value) { (snapshot) in
+                if !snapshot.hasChildren() {
+                    ref.updateChildValues([receiver: childNode])
+                }
+            }
+            
+            self.userMessagesDatabase.child(receiver).observeSingleEvent(of: .value) { (snapshot) in
+                if !snapshot.hasChildren() {
+                    ref.updateChildValues([sender: childNode])
+                }
+            }
             
             onSuccess?()
         }

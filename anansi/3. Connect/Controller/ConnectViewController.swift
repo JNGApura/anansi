@@ -159,6 +159,7 @@ class ConnectViewController: UIViewController {
         
         // Stop NetworkStatusListener
         reachability.stopNotifier()
+        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: reachability)
     }
     
     // MARK: - Layout

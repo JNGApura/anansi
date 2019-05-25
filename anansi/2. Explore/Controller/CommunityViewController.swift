@@ -180,6 +180,7 @@ class CommunityViewController: UIViewController {
         
         // Stop NetworkStatusListener
         reachability.stopNotifier()
+        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: reachability)
     }
     
     //*** This is required to fix navigation bar forever disappear on fast backswipe bug.

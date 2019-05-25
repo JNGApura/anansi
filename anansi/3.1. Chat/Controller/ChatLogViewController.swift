@@ -73,8 +73,10 @@ class ChatLogViewController: UIViewController {
         tv.delegate = self
         tv.dataSource = self
         //tv.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 88.0, right: 0) // 88
-        tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 88.0, right: 0) // 88
-        tv.backgroundColor = .background
+        tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0) // 88
+        
+        tv.backgroundColor = .yellow
+        
         tv.alwaysBounceVertical = true
         tv.keyboardDismissMode = .interactive
         tv.isDirectionalLockEnabled = true
@@ -123,9 +125,9 @@ class ChatLogViewController: UIViewController {
     
     // Accessory view
     
-    override var inputAccessoryView: UIView {
-        return chatAccessoryView
-    }
+   // override var inputAccessoryView: UIView {
+   //     return chatAccessoryView
+   // }
     override var canBecomeFirstResponder: Bool { return true }
     
     lazy var chatAccessoryView: ChatAccessoryView = {
@@ -260,6 +262,7 @@ class ChatLogViewController: UIViewController {
         
         // Stop NetworkStatusListener
         reachability.stopNotifier()
+        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: reachability)
         
         // Clear all important variables
         dates.removeAll()
@@ -311,7 +314,8 @@ class ChatLogViewController: UIViewController {
     
     @objc func handleKeyboardDidShow(notification: NSNotification) {
         keyboardDidShow = true
-        //reloadChats()
+        
+        view.layoutIfNeeded()
         
         /*
         guard let userInfo = notification.userInfo,

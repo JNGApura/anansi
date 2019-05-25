@@ -23,7 +23,6 @@ class CommunityViewController: UIViewController {
     var me = User()
     var userSectionTitles = [String]()
     var usersDictionary = [String: [User]]()
-    var allUsers = [User]()
     var userIDs = [String]()
     
     var trendingUsers = [User]()
@@ -32,6 +31,8 @@ class CommunityViewController: UIViewController {
     var partnerSections = [String]()
     var partnersInEachSection = [String : [Partner]]()
     var partnerIDs = [String]()
+    
+    var areUsersLoading = true
     
     lazy var scrollView : UIScrollView = {
         let sv = UIScrollView()
@@ -95,7 +96,6 @@ class CommunityViewController: UIViewController {
         NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
             
             self.me.set(dictionary: dictionary, id: myID!)
-            
             self.headerView.setProfileImage()
         }
 
@@ -187,6 +187,7 @@ class CommunityViewController: UIViewController {
         super.viewDidLayoutSubviews()
         
         navigationController?.setNavigationBarHidden(true, animated: false)
+        headerView.setProfileImage()
     }
     
     override func didReceiveMemoryWarning() {
@@ -200,101 +201,6 @@ class CommunityViewController: UIViewController {
         navigationController?.view.backgroundColor = .background
         navigationController?.navigationBar.isTranslucent = false
         //navigationItem.titleView = titleLabelView
-    }
-    
-    // MARK: Network calls
-    
-    func fetchUsers(onSuccess: @escaping () -> Void) {
-        
-        NetworkManager.shared.fetchUsers { (dictionary, userID) in
-            
-            let user = User()
-            user.set(dictionary: dictionary, id: userID)
-            
-            if userID != NetworkManager.shared.getUID() {
-                
-                if userID != "VE0sgL8MhIcHEt7U1Hqo6Ps8DDg2" && !self.userIDs.contains(userID) { // iOS tester (Apple)
-                    
-                    let name = user.getValue(forField: .name) as! String
-                    let nameKey = String(name.uppercased().replacingOccurrences(of:" ", with: "").prefix(1)) // remove spaces
-                    
-                    if !(self.userSectionTitles.contains(nameKey)) {
-                        self.userSectionTitles.append(nameKey)
-                        self.usersDictionary[nameKey] = [user]
-                        
-                        self.userSectionTitles = self.sort(array: self.userSectionTitles)
-                        
-                        // Hack to get search bar at the top of the tableView
-                        if !self.userSectionTitles.contains(" ") {
-                            self.userSectionTitles.insert(" ", at: 0)
-                        }
-                        
-                    } else {
-                        self.usersDictionary[nameKey]?.append(user)
-                    }
-                    
-                    self.allUsers.append(user)
-                    
-                    // guard to avoid duplicates
-                    self.userIDs.append(userID)
-                }
-            }
-            
-            onSuccess()
-        }
-    }
-    
-    func fetchTrendingUsers(onSuccess: @escaping () -> Void) {
-        
-        // Clear arrays
-        trendingIDs.removeAll()
-        trendingUsers.removeAll()
-                
-        NetworkManager.shared.fetchTrendingUsers(limited: 20, onSuccess: { (dictionary, userID) in
-            
-            let user = User()
-            user.set(dictionary: dictionary, id: userID)
-            
-            if userID != NetworkManager.shared.getUID() {
-                
-                if !self.trendingIDs.contains(userID) {
-                    
-                    self.trendingUsers.append(user)
-                    self.trendingIDs.append(userID)
-                }
-            }
-            
-            onSuccess()
-        })
-    }
-    
-    func fetchPartners(onSuccess: @escaping () -> Void) {
-        
-        NetworkManager.shared.fetchPartners { (dictionary, partnerID) in
-            
-            let partner = Partner()
-            partner.set(dictionary: dictionary, id: partnerID)
-            
-            // Sorts partners by their type of partnership
-            if !self.partnerIDs.contains(partnerID), let type = partner.getValue(forField: .type) as? String {
-                
-                if !(self.partnerSections.contains(type)) {
-                    self.partnerSections.append(type)
-                    self.partnersInEachSection[type] = [partner]
-                    
-                    self.partnerSections.sort { (lhs, rhs) -> Bool in
-                        (Const.typePartners.index(of: lhs) ?? 0) < (Const.typePartners.index(of: rhs) ?? 0)
-                    }
-                    
-                } else {
-                    self.partnersInEachSection[type]?.append(partner)
-                }
-                
-                // guard to avoid duplicates
-                self.partnerIDs.append(partnerID)
-            }
-            onSuccess()
-        }
     }
     
     // MARK: - Custom functions
@@ -461,7 +367,7 @@ extension CommunityViewController: ShowSearchDelegate {
     func showSearchController() {
         
         let searchController = SearchTableViewController(style: .grouped)
-        searchController.users = allUsers
+        searchController.users = usersDictionary.values.flatMap { $0 }
         searchController.trendingUsers = trendingUsers
         searchController.hidesBottomBarWhenPushed = true
         
@@ -498,4 +404,198 @@ extension CommunityViewController {
             print("Unable to start notifier")
         }
     }
+}
+
+// MARK: Network calls
+
+extension CommunityViewController {
+    
+    func fetchUsers(onSuccess: @escaping () -> Void) {
+        
+        // Hack to get search bar at the top of the tableView
+        if !userSectionTitles.contains(" ") {
+            userSectionTitles.insert(" ", at: 0)
+        }
+    
+        NetworkManager.shared.fetchUsers(onAdd: { (dic, userID) in
+            
+            let user = User()
+            user.set(dictionary: dic, id: userID)
+            
+            if userID != NetworkManager.shared.getUID() {
+                if userID != "VE0sgL8MhIcHEt7U1Hqo6Ps8DDg2" && !self.userIDs.contains(userID) { // iOS tester (Apple)
+                    
+                    let name = user.getValue(forField: .name) as! String
+                    let nameKey = String(name.uppercased().replacingOccurrences(of:" ", with: "").prefix(1)) // remove spaces
+                    
+                    if !(self.userSectionTitles.contains(nameKey)) {
+                        self.userSectionTitles.append(nameKey)
+                        self.usersDictionary[nameKey] = [user]
+                        
+                        self.userSectionTitles = self.sort(array: self.userSectionTitles)
+                        
+                    } else {
+                        
+                        var listOfUsersWithSameNameKey = self.usersDictionary[nameKey]!
+                        listOfUsersWithSameNameKey.append(user)
+                        
+                        // Sorting
+                        self.usersDictionary[nameKey] = listOfUsersWithSameNameKey.sorted(by: { (($0).getValue(forField: .name) as? String)!.localizedCaseInsensitiveCompare((($1).getValue(forField: .name) as? String)!) == .orderedAscending })
+                    }
+                    
+                    // guard to avoid duplicates
+                    self.userIDs.append(userID)
+                    
+                    onSuccess()
+                }
+            }
+            
+        }, onChange: { (dic, userID) in
+
+            let user = User()
+            user.set(dictionary: dic, id: userID)
+            
+            if self.userIDs.contains(userID) {
+                
+                let name = user.getValue(forField: .name) as! String
+                let nameKey = String(name.uppercased().replacingOccurrences(of:" ", with: "").prefix(1)) // remove spaces
+                let listOfUsersWithSameNameKey = self.usersDictionary[nameKey]!
+                
+                for (index, element) in listOfUsersWithSameNameKey.enumerated() {
+                    
+                    if (element.getValue(forField: .id) as? String) == userID {
+                        self.usersDictionary[nameKey]![index] = user
+                        
+                        onSuccess()
+                    }
+                }
+            }
+            
+        }, onRemove: { (dic, userID) in
+
+            let user = User()
+            user.set(dictionary: dic, id: userID)
+            
+            if self.userIDs.contains(userID) {
+                    
+                let name = user.getValue(forField: .name) as! String
+                let nameKey = String(name.uppercased().replacingOccurrences(of:" ", with: "").prefix(1)) // remove spaces
+                let listOfUsersWithSameNameKey = self.usersDictionary[nameKey]!
+                
+                for (index, element) in listOfUsersWithSameNameKey.enumerated() {
+                    
+                    if (element.getValue(forField: .id) as? String) == userID {
+                        self.usersDictionary[nameKey]!.remove(at: index)
+                        
+                        if self.usersDictionary[nameKey]!.count == 0 {
+                            let j = self.userSectionTitles.index(of: nameKey)
+                            self.userSectionTitles.remove(at: j!)
+                        }
+                        
+                        let k = self.userIDs.index(of: userID)
+                        self.userIDs.remove(at: k!)
+                        
+                        onSuccess()
+                    }
+                }
+            }
+        })
+    }
+    
+    func fetchTrendingUsers(onSuccess: @escaping () -> Void) {
+        
+        // Clear arrays
+        trendingIDs.removeAll()
+        trendingUsers.removeAll()
+        
+        NetworkManager.shared.fetchTrendingUsers(limited: 20, onSuccess: { (dictionary, userID) in
+            
+            let user = User()
+            user.set(dictionary: dictionary, id: userID)
+            
+            if userID != NetworkManager.shared.getUID() {
+                
+                if !self.trendingIDs.contains(userID) {
+                    
+                    self.trendingUsers.append(user)
+                    self.trendingIDs.append(userID)
+                }
+            }
+            onSuccess()
+            
+        })
+    }
+    
+    func fetchPartners(onSuccess: @escaping () -> Void) {
+        
+        NetworkManager.shared.fetchPartners(onAdd: { (dic, partnerID) in
+            
+            let partner = Partner()
+            partner.set(dictionary: dic, id: partnerID)
+            
+            // Sorts partners by their type of partnership
+            if !self.partnerIDs.contains(partnerID),
+                let type = partner.getValue(forField: .type) as? String {
+                
+                if !(self.partnerSections.contains(type)) {
+                    self.partnerSections.append(type)
+                    self.partnersInEachSection[type] = [partner]
+                    
+                    self.partnerSections.sort { (lhs, rhs) -> Bool in
+                        (Const.typePartners.index(of: lhs) ?? 0) < (Const.typePartners.index(of: rhs) ?? 0)
+                    }
+                    
+                } else {
+                    self.partnersInEachSection[type]?.append(partner)
+                }
+                
+                // guard to avoid duplicates
+                self.partnerIDs.append(partnerID)
+                
+                onSuccess()
+            }
+
+        }, onChange: { (dic, partnerID) in
+            
+            let partner = Partner()
+            partner.set(dictionary: dic, id: partnerID)
+            
+            let type = partner.getValue(forField: .type) as! String
+            let listPartnersOfSameType = self.partnersInEachSection[type]!
+            
+            for (index, element) in listPartnersOfSameType.enumerated() {
+                
+                if (element.getValue(forField: .id) as? String) == partnerID {
+                    self.partnersInEachSection[type]![index] = partner
+                    onSuccess()
+                }
+            }
+            
+        }, onRemove: { (dic, partnerID) in
+            
+            let partner = Partner()
+            partner.set(dictionary: dic, id: partnerID)
+            
+            let type = partner.getValue(forField: .type) as! String
+            let listPartnersOfSameType = self.partnersInEachSection[type]!
+            
+            for (index, element) in listPartnersOfSameType.enumerated() {
+                
+                if (element.getValue(forField: .id) as? String) == partnerID {
+                    self.partnersInEachSection[type]!.remove(at: index)
+                    
+                    if self.partnersInEachSection[type]!.count == 0 {
+                        let j = self.partnerSections.index(of: type)
+                        self.partnerSections.remove(at: j!)
+                    }
+                    
+                    let k = self.partnerIDs.index(of: partnerID)
+                    self.partnerIDs.remove(at: k!)
+                    
+                    onSuccess()
+                }
+            }
+        })
+    }
+    
 }

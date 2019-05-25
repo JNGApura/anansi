@@ -151,13 +151,15 @@ class NewChatController: UITableViewController {
     
     func fetchUsers() {
         
-        NetworkManager.shared.fetchUsers { (dictionary, userID) in
+        NetworkManager.shared.fetchUsers(onAdd: { (dictionary, userID) in
+            
             if userID != NetworkManager.shared.getUID() {
                 let user = User()
                 user.set(dictionary: dictionary, id: userID)
                 self.users.append(user)
             }
-        }
+            
+        }, onChange: nil, onRemove: nil)
     }
     
     func fetchTrendingUsers() {

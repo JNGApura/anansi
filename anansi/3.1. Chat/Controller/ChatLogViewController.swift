@@ -10,13 +10,7 @@ import UIKit
 import UIKit.UIGestureRecognizerSubclass
 import ReachabilitySwift
 
-protocol UpdatesBadgeCountDelegate {
-    func updatesBadgeCount(for userID: String)
-}
-
 class ChatLogViewController: UIViewController {
-    
-    var delegate: UpdatesBadgeCountDelegate?
     
     var keyboardDidShow = false
     
@@ -48,7 +42,6 @@ class ChatLogViewController: UIViewController {
     
     var user: User? {
         didSet {
-            observeMessages()
             
             var fullname = ((user?.getValue(forField: .name) as? String)!).components(separatedBy: " ")
             firstname = fullname.removeFirst()
@@ -72,6 +65,28 @@ class ChatLogViewController: UIViewController {
             }
         }
     }
+    
+    lazy var tableView : UITableView = {
+        let tv = UITableView.init(frame: CGRect.zero, style: .grouped)
+        tv.register(ChatMessageCell.self, forCellReuseIdentifier: "ChatCell")
+        tv.register(StickerMessageCell.self, forCellReuseIdentifier: "StickerCell")
+        tv.delegate = self
+        tv.dataSource = self
+        //tv.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 88.0, right: 0) // 88
+        tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 88.0, right: 0) // 88
+        tv.backgroundColor = .background
+        tv.alwaysBounceVertical = true
+        tv.keyboardDismissMode = .interactive
+        tv.isDirectionalLockEnabled = true
+        //tv.isPagingEnabled = true
+        tv.isScrollEnabled = true
+        tv.separatorStyle = .none
+        tv.sectionHeaderHeight = 32.0
+        tv.rowHeight = UITableView.automaticDimension
+        //tv.layer.add(transition, forKey: "UITableViewReloadDataAnimationKey")
+        tv.translatesAutoresizingMaskIntoConstraints = false
+        return tv
+    }()
     
     // TitleLabelView
     
@@ -121,7 +136,8 @@ class ChatLogViewController: UIViewController {
     
     lazy var noMessageStateView: ChatEmptyState = {
         let e = ChatEmptyState(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height))
-        e.chatLogViewController = self
+        e.user = self.user
+        e.delegate = self
         return e
     }()
     
@@ -138,6 +154,9 @@ class ChatLogViewController: UIViewController {
         return v
     }()
     
+    let reachability = Reachability()!
+    
+    /*
     lazy var transition : CATransition = {
         let t = CATransition()
         t.type = CATransitionType.push
@@ -146,31 +165,7 @@ class ChatLogViewController: UIViewController {
         t.duration = 0.25
         t.subtype = CATransitionSubtype.fromBottom
         return t
-    }()
-    
-    lazy var tableView : UITableView = {
-        let tv = UITableView.init(frame: CGRect.zero, style: .grouped)
-        tv.register(ChatMessageCell.self, forCellReuseIdentifier: "ChatCell")
-        tv.register(StickerMessageCell.self, forCellReuseIdentifier: "StickerCell")
-        tv.delegate = self
-        tv.dataSource = self
-        tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 64.0, right: 0) // 88
-        tv.backgroundColor = .background
-        tv.sectionHeaderHeight = 32.0
-        tv.alwaysBounceVertical = true
-        tv.keyboardDismissMode = .interactive
-        tv.isDirectionalLockEnabled = true
-        //tv.isPagingEnabled = true
-        tv.isScrollEnabled = true
-        tv.separatorStyle = .none
-        tv.tableFooterView = UIView(frame: CGRect.zero)
-        tv.sectionFooterHeight = 0.0
-        tv.layer.add(transition, forKey: "UITableViewReloadDataAnimationKey")
-        tv.translatesAutoresizingMaskIntoConstraints = false
-        return tv
-    }()
-    
-    let reachability = Reachability()!
+    }()*/
     
     // MARK: - View lifecycle
     
@@ -208,11 +203,15 @@ class ChatLogViewController: UIViewController {
         
         // Handles network connection
         startMonitoringNetwork()
+        
+        // Set up observers for messages & typing
+        observeMessages()
+        observeTyping()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         setupNavigationBarItems()
     }
     
@@ -223,36 +222,33 @@ class ChatLogViewController: UIViewController {
             setupKeyboardObservers()
         }
         
-        // Automatically presents keyboard and scrolls to last message
+        // Automatically presents keyboard if there's no message
+        if dates.isEmpty {
+            chatAccessoryView.inputTextView.becomeFirstResponder()
+        }
+        
+        
+        // TO DO: change this?!
+        
+        // Scrolls to last message
         if dates.count > 0 {
             
-            //reloadChats()
+            let allMessages = listOfMessagesPerDate.flatMap { $1 }
             
-            // Get list of unread messages
-            var hasUnreadMessages = 0
-            
-            for date in dates {
-                for message in listOfMessagesPerDate[date]! {
-                    
-                    if (message.getValue(forField: .receiver) as? String) == self.myID!,
-                        let isRead = message.getValue(forField: .isRead) as? Bool, !isRead {
-                        
-                        let userID = user?.getValue(forField: .id) as! String
-                        let messageID = message.getValue(forField: .id) as? String
-                        NetworkManager.shared.markMessagesAs("read", with: messageID!, from: self.myID!, to: userID) {}
-                        hasUnreadMessages += 1
-                    }
-                }
-            }
-            
-            if hasUnreadMessages != 0 {
+            for message in allMessages {
                 
-                let userID = user?.getValue(forField: .id) as! String
-                self.delegate?.updatesBadgeCount(for: userID)
+                // If I'm the receiver && !isRead
+                if let receiver = message.getValue(forField: .receiver) as? String,
+                    receiver == self.myID!,
+                    let isRead = message.getValue(forField: .isRead) as? Bool,
+                    !isRead {
+                    
+                    NetworkManager.shared.markMessagesAs(messageInfoType.isRead.rawValue, withID: message.getValue(forField: .id) as! String, from: message.getValue(forField: .sender) as! String, to: myID!, onSuccess: nil)
+                }
             }
         }
         
-        observeTyping()
+        // TO DO: change this?!
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -264,8 +260,12 @@ class ChatLogViewController: UIViewController {
         
         // Stop NetworkStatusListener
         reachability.stopNotifier()
+        
+        // Clear all important variables
+        dates.removeAll()
+        listOfMessagesPerDate.removeAll()
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -302,35 +302,6 @@ class ChatLogViewController: UIViewController {
         navigationItem.titleView = nil
     }
     
-    // MARK: - Network
-    
-    private func observeMessages() {
-        
-        let userID = user?.getValue(forField: .id) as! String
-        
-        NetworkManager.shared.observeChatMessages(from: myID!, to: userID) { (mesgDictionary, mesgKey) in
-            
-            let message = Message(dictionary: mesgDictionary, messageID: mesgKey)
-            
-            if let timestamp = message.getValue(forField: .timestamp) as? NSNumber {
-            
-                let timestampSec = timestamp.doubleValue
-                let currentMsgDate = NSDate(timeIntervalSince1970: timestampSec)
-                let dateString = createDateIntervalStringForMessage(from: currentMsgDate)
-                
-                if !(self.dates.contains(dateString)) {
-                    self.dates.append(dateString)
-                    self.listOfMessagesPerDate[dateString] = [message]
-                    
-                } else {
-                    self.listOfMessagesPerDate[dateString]!.append(message)
-                }
-                
-                if self.dates.count > 0 { self.reloadChats() }
-            }
-        }
-    }
-    
     // MARK: - Keyboard-related functions
     
     func setupKeyboardObservers() {
@@ -340,7 +311,7 @@ class ChatLogViewController: UIViewController {
     
     @objc func handleKeyboardDidShow(notification: NSNotification) {
         keyboardDidShow = true
-        reloadChats()
+        //reloadChats()
         
         /*
         guard let userInfo = notification.userInfo,
@@ -415,7 +386,7 @@ class ChatLogViewController: UIViewController {
             
             if let userID = self.user?.getValue(forField: .id) as? String {
                 
-                NetworkManager.shared.deleteChatMessages(from: self.myID!, to: userID, onSuccess: {
+                NetworkManager.shared.deleteUserMessageNode(from: self.myID!, to: userID, onDelete: {
                     
                     self.navigationController?.popViewController(animated: true)
                     self.navigationController?.navigationBar.isHidden = !(self.cameFromUserProfile || self.cameFromSearch) // this is very important!
@@ -451,14 +422,14 @@ class ChatLogViewController: UIViewController {
         }
         set {
             localTyping = newValue
+            let myID = NetworkManager.shared.getUID()
             
             if newValue {
                 let receiverID = (user?.getValue(forField: .id) as? String)!
-                let myID = NetworkManager.shared.getUID()
-                NetworkManager.shared.register(value: receiverID, for: "isTypingTo", in: myID!)
+                NetworkManager.shared.register(value: receiverID, for: userInfoType.isTyping.rawValue, in: myID!)
                 
             } else {
-                NetworkManager.shared.removeData("isTypingTo")
+                NetworkManager.shared.removeData(userInfoType.isTyping.rawValue, in: myID!)
             }
         }
     }
@@ -467,26 +438,35 @@ class ChatLogViewController: UIViewController {
         
         let receiverID = (user?.getValue(forField: .id) as? String)!
         
-        NetworkManager.shared.observeTypingInstances(from: receiverID, onSuccess: {
+        NetworkManager.shared.observeTypingInstances(from: receiverID, onTyping: {
             
             self.chatAccessoryView.isTypingBox.isHidden = false
             self.chatAccessoryView.isTypingLabel.text = (self.user!.getValue(forField: .name) as? String)! + " is typing..."
             
-        }) {
+        }, onNotTyping: {
+            
             self.chatAccessoryView.isTypingBox.isHidden = true
             self.chatAccessoryView.isTypingLabel.text = ""
-        }
+        })
     }
     
     func reloadChats() {
         
-        let lastSection = self.dates.count - 1
-        if let lastMessages = self.listOfMessagesPerDate[self.dates[lastSection]] {
+        tableView.reloadData()
         
-            self.tableView.reloadData()
-            let indexPath = IndexPath(item: lastMessages.count - 1, section: lastSection)
-            self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-        }
+        /*
+        // I need to check this.
+        // Bug: when there's no message, the reloadChats should be called after the message is placed, not before. Otherwise, we won't have dates.count or listOfMessagesPerDate
+        if dates.count > 0 {
+        
+            let lastSection = self.dates.count - 1
+            if let lastMessages = self.listOfMessagesPerDate[self.dates[lastSection]] {
+                
+                self.tableView.reloadData()
+                let indexPath = IndexPath(item: lastMessages.count - 1, section: lastSection)
+                self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+            }
+        }*/
     }
 }
 
@@ -495,45 +475,46 @@ class ChatLogViewController: UIViewController {
 extension ChatLogViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return dates.count
+        return dates.isEmpty ? 1 : dates.count
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
-        let firstMessageInSection = listOfMessagesPerDate[dates[section]]?.first
-        let timestampSec = (firstMessageInSection!.getValue(forField: .timestamp) as? NSNumber)!.doubleValue
-        let currentMsgDate = NSDate(timeIntervalSince1970: timestampSec)
+        if !dates.isEmpty {
+            
+            let v = UIView()
+            v.backgroundColor = .background
+            
+            let firstMessageInSection = listOfMessagesPerDate[dates[section]]?.first
+            let timestampSec = (firstMessageInSection!.getValue(forField: .timestamp) as? NSNumber)!.doubleValue
+            let currentMsgDate = NSDate(timeIntervalSince1970: timestampSec)
+            
+            let l : UILabel = {
+                let l = UILabel()
+                l.text = timestring(from: currentMsgDate)
+                l.backgroundColor = .clear
+                l.textColor = UIColor.secondary.withAlphaComponent(0.5)
+                l.font = UIFont.systemFont(ofSize: Const.captionFontSize)
+                l.textAlignment = .center
+                l.translatesAutoresizingMaskIntoConstraints = false
+                return l
+            }()
+            
+            v.addSubview(l)
+            v.addConstraint(NSLayoutConstraint(item: l, attribute: .centerY, relatedBy: .equal, toItem: v, attribute: .centerY, multiplier: 1.0, constant: 6.0))
+            v.addConstraint(NSLayoutConstraint(item: l, attribute: .centerX, relatedBy: .equal, toItem: v, attribute: .centerX, multiplier: 1.0, constant: 0.0))
+            
+            return v
+        }
         
-        let v = UIView()
-        v.backgroundColor = .background
-        
-        let l : UILabel = {
-            let l = UILabel()
-            l.text = timestring(from: currentMsgDate)
-            l.backgroundColor = .clear
-            l.textColor = UIColor.secondary.withAlphaComponent(0.5)
-            l.font = UIFont.systemFont(ofSize: Const.captionFontSize)
-            l.textAlignment = .center
-            l.translatesAutoresizingMaskIntoConstraints = false
-            return l
-        }()
-        
-        v.addSubview(l)
-        v.addConstraint(NSLayoutConstraint(item: l, attribute: .centerY, relatedBy: .equal, toItem: v, attribute: .centerY, multiplier: 1.0, constant: 6.0))
-        v.addConstraint(NSLayoutConstraint(item: l, attribute: .centerX, relatedBy: .equal, toItem: v, attribute: .centerX, multiplier: 1.0, constant: 0.0))
-        
-        return v
+        return nil
     }
-    
-    /*
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 0.01
-    }*/
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if (dates.count == 0) {
             tableView.backgroundView = noMessageStateView
+            return 0
             
         } else {
             tableView.backgroundView = nil
@@ -578,19 +559,6 @@ extension ChatLogViewController: UITableViewDelegate, UITableViewDataSource {
             return cell
         }
      }
-    
-    /*
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        tableView.deselectRow(at: indexPath, animated: true)
-        
-        tableView.beginUpdates()
-                
-        let cell = tableView.cellForRow(at: indexPath) as! ChatMessageCell
-        //cell.handleTimeShowRequest()
-        
-        tableView.endUpdates()
-    }*/
 }
 
 // MARK: - UserWasReported
@@ -627,10 +595,6 @@ extension ChatLogViewController: ChatAccessoryDelegate {
         isTyping = value
     }
     
-    @objc func sendWave() {
-        sendMessageWith(string: "👋")
-    }
-    
     private func sendMessageWith(string: String) {
         
         let formatter = DateFormatter()
@@ -663,10 +627,21 @@ extension ChatLogViewController: ChatAccessoryDelegate {
     }
 }
 
+// MARK: - ChatEmptyStateDelegate
+
+extension ChatLogViewController: ChatEmptyStateDelegate {
+    
+    func wave() {
+        sendMessageWith(string: "👋")
+    }
+}
+
+// MARK: - CellGestureRecognizerDelegate
+
 extension ChatLogViewController: CellGestureRecognizerDelegate {
     
     func singleTapDetected(in indexPath: IndexPath) {
-        // Nothing here (not implemented in ChatMessageCell
+        // Nothing here (not implemented in ChatMessageCell)
     }
     
     func doubleTapDetected(in indexPath: IndexPath, with message: Message, and love: Bool) {
@@ -756,30 +731,32 @@ extension ChatLogViewController: CellGestureRecognizerDelegate {
     
     func unsend(message: Message) {
         
-        let msgID = message.getValue(forField: .id) as? String
-        let sender = message.getValue(forField: .sender) as? String
-        let receiver = message.getValue(forField: .receiver) as? String
+        let msgID = message.getValue(forField: .id) as! String
+        let sender = message.getValue(forField: .sender) as! String
+        let receiver = message.getValue(forField: .receiver) as! String
         
-        let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: (message.getValue(forField: .timestamp) as? NSNumber)!.doubleValue))
-        var msgArray = listOfMessagesPerDate[dateString]
+        NetworkManager.shared.deleteMessage(with: msgID, from: sender, to: receiver, onDelete: nil)
         
-        if let j = msgArray?.index(of: message) {
+        //let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: (message.getValue(forField: .timestamp) as? NSNumber)!.doubleValue))
+        //var msgArray = listOfMessagesPerDate[dateString]
+        
+        //if let j = msgArray?.index(of: message) {
             
-            NetworkManager.shared.deleteMessage(with: msgID!, from: sender!, to: receiver!) {
+            //NetworkManager.shared.deleteMessage(with: msgID!, from: sender!, to: receiver!) {
                 
                 // Remove msg from listOfMessagesPerDate
-                msgArray?.remove(at: j)
-                self.listOfMessagesPerDate[dateString] = msgArray
+                //msgArray?.remove(at: j)
+                //self.listOfMessagesPerDate[dateString] = msgArray
                 
                 // If listOfMessagesPerDate becomes empty for a specific date, remove the section
-                if msgArray?.count == 0 {
-                    let i = self.dates.index(of: dateString)
-                    self.dates.remove(at: i!)
-                }
+                //if msgArray?.count == 0 {
+                //    let i = self.dates.index(of: dateString)
+                //    self.dates.remove(at: i!)
+                //}
                 
-                self.tableView.reloadData()
-            }
-        }
+                //self.tableView.reloadData()
+            //}
+        //}
     }
 }
 
@@ -828,4 +805,111 @@ extension ChatLogViewController {
             self.disconnectedView.isHidden = true
         })
     }
+}
+
+// MARK: - NetworkManager
+
+extension ChatLogViewController {
+    
+    private func observeMessages() {
+        
+        let partnerID = user?.getValue(forField: .id) as! String
+        let chatID = NetworkManager.shared.childNode(myID!, partnerID)
+        
+        // If there're conversations in Firebase
+        NetworkManager.shared.observeConversation(withID: chatID, onAdd: { (mesg, msgID) in
+            
+            let message = Message(dictionary: mesg, messageID: msgID)
+            
+            let timestamp = message.getValue(forField: .timestamp) as! NSNumber
+            let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: timestamp.doubleValue))
+            
+            if !(self.dates.contains(dateString)) {
+                self.dates.append(dateString)
+                self.listOfMessagesPerDate[dateString] = [message]
+                
+            } else {
+                self.listOfMessagesPerDate[dateString]!.append(message)
+            }
+            
+            self.reloadChats()
+            
+        }, onChange: { (mesg, msgID) in
+            
+            let message = Message(dictionary: mesg, messageID: msgID)
+            
+            let timestamp = message.getValue(forField: .timestamp) as! NSNumber
+            let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: timestamp.doubleValue))
+            
+            if let chatsForDate = self.listOfMessagesPerDate[dateString] {
+                for (index, element) in chatsForDate.enumerated() {
+                    
+                    if (element.getValue(forField: .id) as! String == msgID) {
+                        self.listOfMessagesPerDate[dateString]![index] = message
+                    }
+                }
+            }
+            
+            self.reloadChats()
+            
+        }, onRemove: { (mesg, msgID) in
+            
+            let message = Message(dictionary: mesg, messageID: msgID)
+            
+            let timestamp = message.getValue(forField: .timestamp) as! NSNumber
+            let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: timestamp.doubleValue))
+            
+            if let chatsForDate = self.listOfMessagesPerDate[dateString] {
+                
+                for (index, element) in chatsForDate.enumerated() {
+                    
+                    if (element.getValue(forField: .id) as! String == msgID) {
+                        self.listOfMessagesPerDate[dateString]!.remove(at: index)
+                    }
+                    
+                    if self.listOfMessagesPerDate[dateString]!.isEmpty {
+                        self.listOfMessagesPerDate[dateString] = nil
+                        
+                        let i = self.dates.index(of: dateString)
+                        self.dates.remove(at: i!)
+                    }
+                }
+            }
+            
+            self.reloadChats()
+        })
+        
+        // In case there's a chatID, but no messages
+        //self.tableView.reloadData()
+    }
+    
+    /*
+    private func observeMessages() {
+        
+        let userID = user?.getValue(forField: .id) as! String
+        
+        NetworkManager.shared.observeChatMessages(from: myID!, to: userID) { (mesgDictionary, mesgKey) in
+            
+            let message = Message(dictionary: mesgDictionary, messageID: mesgKey)
+            
+            if let timestamp = message.getValue(forField: .timestamp) as? NSNumber {
+                
+                let timestampSec = timestamp.doubleValue
+                let currentMsgDate = NSDate(timeIntervalSince1970: timestampSec)
+                let dateString = createDateIntervalStringForMessage(from: currentMsgDate)
+                
+                if !(self.dates.contains(dateString)) {
+                    self.dates.append(dateString)
+                    self.listOfMessagesPerDate[dateString] = [message]
+                    
+                } else {
+                    self.listOfMessagesPerDate[dateString]!.append(message)
+                }
+                
+                self.allMessages.append(message)
+                
+                if self.dates.count > 0 { self.reloadChats() }
+            }
+        }
+    }*/
 }

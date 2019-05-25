@@ -357,17 +357,17 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
     
     @objc func backAction(_ sender: UIBarButtonItem) {
         
-        self.navigationController?.popViewController(animated: true)
-        self.navigationController?.navigationBar.isHidden = cameFromCommunity // this is very important!
-        self.dismiss(animated: true, completion: nil)
+        navigationController?.popViewController(animated: true)
+        navigationController?.navigationBar.isHidden = cameFromCommunity // this is very important!
+        dismiss(animated: true, completion: nil)
     }
     
     @objc func showChatLogController() {
         
-        if self.cameFromChat {
+        if cameFromChat {
             
-            self.navigationController?.popViewController(animated: true)
-            self.dismiss(animated: true, completion: nil)
+            navigationController?.popViewController(animated: true)
+            dismiss(animated: true, completion: nil)
         } else {
             
             let chatController = ChatLogViewController()

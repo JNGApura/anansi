@@ -38,7 +38,6 @@ class NetworkManager {
             }
             
             guard let isEmailVerified = self.isEmailVerified() else { return }
-            
             if !isEmailVerified {
                 
                 Auth.auth().currentUser?.sendEmailVerification { (error) in
@@ -68,7 +67,6 @@ class NetworkManager {
                     return
                 }
             }
-            
             onSuccess()
         }
     }
@@ -109,10 +107,7 @@ class NetworkManager {
             try
             // Logs user out
             Auth.auth().signOut()
-            
-            // Sets "isLoggedIn" to false in UserDefaults
             UserDefaults.standard.setLoggedIn(value: false)
-            
             onSuccess()
             
         } catch let logoutError {
@@ -183,7 +178,6 @@ class NetworkManager {
         
         if let uid = getUID() {
             userDatabase.child(uid).observeSingleEvent(of: .value) { (snapshot) in
-            
                 if !snapshot.exists() { // just to be safe
                     onFail()
                     return
@@ -196,13 +190,10 @@ class NetworkManager {
         }
     }
     
-    /// Remove dictionary from database
-    func removeData(_ key: String) {
+    /// Remove data in DB from my UID child
+    func removeData(_ key: String, in uid: String) {
         
-        //let node = [name: value] // [String: Any]
-        if let uid = getUID() {
-            userDatabase.child(uid).child(key).removeValue()
-        }
+        userDatabase.child(uid).child(key).removeValue()
     }
     
     /// Register dictionary into DB database (user or partner)
@@ -214,27 +205,58 @@ class NetworkManager {
                 return
             }
         }
+        
+        if field == userInfoType.isTyping.rawValue {
+            userDatabase.child(id).child(field).onDisconnectRemoveValue()
+        }
     }
     
     /// Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time the data (including any children) changes.
-    //  NOTE: query is ordered by "ranking/views"
-    func fetchUsers(onSuccess: @escaping ([String: Any], String) -> Void){
-        userDatabase.queryOrdered(byChild: "name").observe(.childAdded, with: { (snapshot) in
+    //  NOTE: query is ordered by "name"
+    func fetchUsers(onAdd: (([String: Any], String) -> Void)?,
+                    onChange: (([String: Any], String) -> Void)?,
+                    onRemove: (([String: Any], String) -> Void)?) {
+        
+        DispatchQueue.main.async {
             
-            if !snapshot.exists() { return } // just to be safe
-            
-            if let dictionary = snapshot.value as? [String: Any] {
+            self.userDatabase.observe(.childAdded) { (snapshot) in
                 
-                if dictionary.count > 3 { // NAME, OCCUPATION, LOCATION
-                    onSuccess(dictionary, snapshot.key)
+                if !snapshot.exists() { return }
+                if let user = snapshot.value as? [String: Any] {
+                    
+                    if user.count > 3 { // NAME, OCCUPATION, LOCATION
+                        onAdd?(user, snapshot.key)
+                    }
                 }
             }
-        }, withCancel: nil)
+        
+            self.userDatabase.observe(.childChanged) { (snapshot) in
+                
+                if !snapshot.exists() { return }
+                if let user = snapshot.value as? [String: Any] {
+                    
+                    if user.count > 3 { // NAME, OCCUPATION, LOCATION
+                        onChange?(user, snapshot.key)
+                    }
+                }
+            }
+            
+            self.userDatabase.observe(.childRemoved) { (snapshot) in
+                
+                if !snapshot.exists() { return }
+                if let user = snapshot.value as? [String: Any] {
+                    
+                    if user.count > 3 { // NAME, OCCUPATION, LOCATION
+                        onRemove?(user, snapshot.key)
+                    }
+                }
+            }
+        }
     }
     
     func fetchTrendingUsers(limited limit: UInt, onSuccess: @escaping ([String: Any], String) -> Void){
         
-        userDatabase.queryOrdered(byChild: "ranking/views").queryLimited(toFirst: limit).observe(.value) { (snapshot) in
+        userDatabase.queryOrdered(byChild: "ranking/views").queryLimited(toFirst: limit).observe(.value, with: { (snapshot) in
             
             if let result = snapshot.children.allObjects as? [DataSnapshot] {
                 
@@ -249,7 +271,7 @@ class NetworkManager {
             } else {
                 print("No results")
             }
-        }
+        })
     }
     
     /// Observes single event of user from userDatabase
@@ -258,7 +280,6 @@ class NetworkManager {
         userDatabase.child(userID).observeSingleEvent(of: .value) { (snapshot) in
             
             if !snapshot.exists() { return }
-            
             if let dictionary = snapshot.value as? [String: Any] {
                 
                 if dictionary.count > 3 { // NAME, OCCUPATION, LOCATION
@@ -268,11 +289,12 @@ class NetworkManager {
         }
     }
     
+    /// Fetches user from userDatabase
     func fetchUser(userID: String, onSuccess: @escaping ([String: Any]) -> Void){
         
         userDatabase.child(userID).observe(.value, with: { (snapshot) in
-            if !snapshot.exists() { return }
             
+            if !snapshot.exists() { return }
             if let dictionary = snapshot.value as? [String: Any] {
                 
                 if dictionary.count > 3 { // NAME, OCCUPATION, LOCATION
@@ -282,16 +304,35 @@ class NetworkManager {
         })
     }
     
-    /// Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time the data (including any children) changes.
+    /// Sets a listener for any changes (DataEventType) to userDatabase (asynchronous), triggered every time data is changes.
     //  NOTE: query is ordered by "order"
-    func fetchPartners(onSuccess: @escaping ([String: Any], String) -> Void){
-        partnerDatabase.queryOrdered(byChild: "order").observe(.childAdded, with: { (snapshot) in
-                        
-            if !snapshot.exists() { return } // just to be safe
-            if let dictionary = snapshot.value as? [String: Any] {
-                onSuccess(dictionary, snapshot.key)
+    func fetchPartners(onAdd: @escaping ([String: Any], String) -> Void,
+                       onChange: @escaping ([String: Any], String) -> Void,
+                       onRemove: @escaping ([String: Any], String) -> Void){
+        
+        partnerDatabase.queryOrdered(byChild: "order").observe(.childAdded) { (snapshot) in
+            
+            if !snapshot.exists() { return }
+            if let partner = snapshot.value as? [String: Any] {
+                onAdd(partner, snapshot.key)
             }
-        }, withCancel: nil)
+        }
+        
+        partnerDatabase.queryOrdered(byChild: "order").observe(.childChanged) { (snapshot) in
+            
+            if !snapshot.exists() { return }
+            if let partner = snapshot.value as? [String: Any] {
+                onChange(partner, snapshot.key)
+            }
+        }
+        
+        partnerDatabase.queryOrdered(byChild: "order").observe(.childRemoved) { (snapshot) in
+            
+            if !snapshot.exists() { return }
+            if let partner = snapshot.value as? [String: Any] {
+                onRemove(partner, snapshot.key)
+            }
+        }
     }
     
     /// Updates id's # visualizations (Int) in DB
@@ -309,82 +350,64 @@ class NetworkManager {
     
     
     // MARK: - CHAT MESSAGES
-    // Post chat message in databse
-    func postChatMessageInDB(sender: String, receiver: String, message: [String: Any], onSuccess: @escaping () -> Void) {
-        
-        let childNode: String
-        if sender < receiver { childNode = "\(sender)_\(receiver)" } else { childNode = "\(receiver)_\(sender)" }
-        
-        messagesDatabase.child(childNode).childByAutoId().updateChildValues(message) { (error, ref) in
-            if error != nil {
-                print(error!)
-                return
-            }
 
-            self.userMessagesDatabase.child(sender).updateChildValues([receiver: childNode])
-            self.userMessagesDatabase.child(receiver).updateChildValues([sender: childNode])
+    // Checks if user has conversations in Firebase
+    func observeExistingConversations(from myID: String,
+                                      onAdd: ((String, String) -> Void)?,
+                                      onRemove: ((String, String) -> Void)?,
+                                      noConversations: (() -> Void)?) {
+        
+        userMessagesDatabase.child(myID).observeSingleEvent(of: .value) { (snapshot) in
             
-            onSuccess()
+            if !snapshot.hasChildren() {
+                noConversations?()
+            }
+        }
+        
+        userMessagesDatabase.child(myID).observe(.childAdded) { (snapshot) in
+            
+            if !snapshot.exists() { return }
+            if let chatID = snapshot.value as? String {
+                onAdd?(chatID, snapshot.key)
+            }
+        }
+
+        userMessagesDatabase.child(myID).observe(.childRemoved) { (snapshot) in
+            
+            if !snapshot.exists() { return }
+            if let chatID = snapshot.value as? String {
+                onRemove?(chatID, snapshot.key)
+            }
         }
     }
     
-    // Get list of chat messages from database
-    func observeChatMessages(from myID: String, to userID: String, onSuccess: @escaping ([String: Any], String) -> Void) {
+    // TO DO: CHECK IF THIS IS THE RIGHT WAY TO DO IT
+    // Get list of messages from a conversation
+    func observeConversation(withID chatID: String,
+                             onAdd: (([String: Any], String) -> Void)?,
+                             onChange: (([String: Any], String) -> Void)?,
+                             onRemove: (([String: Any], String) -> Void)?) {
         
-        userMessagesDatabase.child(myID).child(userID).observeSingleEvent(of: .value, with: { (snapshot) in
-                        
-            if let chatID = snapshot.value as? String {
-                
-                self.messagesDatabase.child(chatID).observe(.childAdded, with: { (mesg) in
-                    
-                    guard let dictionary = mesg.value as? [String: Any] else { return }
-                    
-                    guard let msgtxt = dictionary["message"] as? String, msgtxt != "" else { return }
-                    
-                    /*
-                    if let receiver = mesg.ref.value(forKey: "receiver") as? String, receiver == myID {
-                        mesg.ref.updateChildValues(["received" : "true"])
-                    }*/
-                    
-                    onSuccess(dictionary, mesg.key)
-                    
-                }, withCancel: nil)
-            }
+        messagesDatabase.child(chatID).observe(.childAdded) { (dic) in
             
-        }, withCancel: nil)
+            guard let message = dic.value as? [String: Any] else { return }
+            onAdd?(message, dic.key)
+        }
+        
+        messagesDatabase.child(chatID).observe(.childChanged) { (dic) in
+            
+            guard let message = dic.value as? [String: Any] else { return }
+            onChange?(message, dic.key)
+        }
+        
+        messagesDatabase.child(chatID).observe(.childRemoved) { (dic) in
+            
+            guard let message = dic.value as? [String: Any] else { return }
+            onRemove?(message, dic.key)
+        }
     }
     
-    // Checks if user has conversations in Firebase
-    func observeExistingConversations(from myID: String, onSuccess: @escaping () -> Void, onFailure: @escaping () -> Void) {
-        
-        // Check if user-messages exists in databse
-        userMessagesDatabase.observeSingleEvent(of: .value, with: { (snapshot) in
-            
-            if snapshot.hasChild(myID){
-                
-                let childRef = snapshot.ref.child(myID)
-                childRef.observeSingleEvent(of: .value, with: { (snapshot) in
-                    
-                    if snapshot.childrenCount > 0 {
-                        // If there's more than 0 children in message node, then there're conversations in Firebase
-                        onSuccess()
-                        
-                    } else {
-                        // No chats in the messageNode (although there's a userMessage node in Firebase)
-                        // (use-case: when user had 1 conversation, but deleted it)
-                        onFailure()
-                    }
-                })
-                
-            } else{
-                // No user-messages node in Firebase
-                onFailure()
-            }
-        })
-    }
-    
-    // Get list of chats from database
-    func observeChats(from myID: String, onSuccess: @escaping ([String: Any], String) -> Void) {
+    /*func observeChats(from myID: String, onSuccess: @escaping ([String: Any], String) -> Void) {
         
         userMessagesDatabase.child(myID).observe(.childAdded, with: { (snapshot) in
             
@@ -406,36 +429,95 @@ class NetworkManager {
             }, withCancel: nil)
             
             /*
-            self.messagesDatabase.child(chatID).observe(.childRemoved, with: { (mesg) in
+             self.messagesDatabase.child(chatID).observe(.childRemoved, with: { (mesg) in
+             
+             guard let dictionary = mesg.value as? [String: Any] else { return }
+             onSuccess(dictionary, mesg.key)
+             
+             }, withCancel: nil)
+            */
+            
+        }, withCancel: nil)
+    }*/
+    
+    
+    // TO DO: CHECK IF THIS IS THE RIGHT WAY TO DO IT
+    // Get list of chat messages from database
+    func observeChatMessages(from myID: String, to userID: String, onSuccess: @escaping ([String: Any], String) -> Void) {
+        
+        userMessagesDatabase.child(myID).child(userID).observeSingleEvent(of: .value, with: { (snapshot) in
+                        
+            if let chatID = snapshot.value as? String {
                 
-                guard let dictionary = mesg.value as? [String: Any] else { return }
-                onSuccess(dictionary, mesg.key)
-                
-            }, withCancel: nil)*/
+                self.messagesDatabase.child(chatID).observe(.childAdded, with: { (mesg) in
+                    
+                    guard let dictionary = mesg.value as? [String: Any] else { return }
+                    
+                    guard let msgtxt = dictionary["message"] as? String, msgtxt != "" else { return }
+                    
+                    onSuccess(dictionary, mesg.key)
+                    
+                }, withCancel: nil)
+            }
             
         }, withCancel: nil)
     }
+    // ALL GOOD AFTER THIS ONE
+    
+    
+    // Create childnode for userMessages
+    
+    func childNode(_ sender: String, _ receiver: String) -> String {
+        return sender < receiver ? "\(sender)_\(receiver)" : "\(receiver)_\(sender)"
+    }
+    
+    // Create node in userMessages database
+    func createsUserMessageNode(sender: String, receiver: String, onSuccess: (() -> Void)?) {
+        
+        let childNode = self.childNode(sender, receiver)
+        
+        userMessagesDatabase.child(sender).updateChildValues([receiver: childNode])
+        userMessagesDatabase.child(receiver).updateChildValues([sender: childNode])
+        
+        onSuccess?()
+    }
+    
+    // Post chat message in databse
+    func postChatMessageInDB(sender: String, receiver: String, message: [String: Any], onSuccess: (() -> Void)?) {
+        
+        let childNode = self.childNode(sender, receiver)
+        
+        messagesDatabase.child(childNode).childByAutoId().updateChildValues(message) { (error, ref) in
+            if error != nil {
+                print(error!)
+                return
+            }
+            
+            self.userMessagesDatabase.child(sender).updateChildValues([receiver: childNode])
+            self.userMessagesDatabase.child(receiver).updateChildValues([sender: childNode])
+            
+            onSuccess?()
+        }
+    }
     
     // Mark messages as read
-    func markMessagesAs(_ key: String, with messageID: String, from sender: String, to receiver: String, onSuccess: @escaping () -> Void) {
+    func markMessagesAs(_ key: String, withID messageID: String, from sender: String, to receiver: String, onSuccess: (() -> Void)?) {
         
-        let childNode: String
-        if sender < receiver { childNode = "\(sender)_\(receiver)" } else { childNode = "\(receiver)_\(sender)" }
+        let childNode = self.childNode(sender, receiver)
         
         messagesDatabase.child(childNode).child(messageID).updateChildValues([key: "true"]) { (error, ref) in
             if error != nil {
                 print(error!)
                 return
             }
-            onSuccess()
+            onSuccess?()
         }
     }
     
     // Adds reaction to message
     func registerReaction(_ reaction: String, for messageID: String, to sender: String, from receiver: String, onSuccess: @escaping () -> Void) {
         
-        let childNode: String
-        if sender < receiver { childNode = "\(sender)_\(receiver)" } else { childNode = "\(receiver)_\(sender)" }
+        let childNode = self.childNode(sender, receiver)
         
         messagesDatabase.child(childNode).child(messageID).child("hasReaction").updateChildValues([receiver: reaction]) { (error, ref) in
             if error != nil {
@@ -447,36 +529,32 @@ class NetworkManager {
     }
     
     // Is user typing a message
-    func observeTypingInstances(from user: String, onSuccess: @escaping () -> Void, onFail: @escaping () -> Void) {
+    func observeTypingInstances(from userID: String, onTyping: (() -> Void)?, onNotTyping: (() -> Void)?) {
         
-        let myID = getUID()
-        
-        userDatabase.child(user).child("isTypingTo").onDisconnectRemoveValue()
-        
-        fetchUser(userID: user) { (dictionary) in
+        userDatabase.child(userID).child(userInfoType.isTyping.rawValue).observe(.value) { (snapshot) in
             
-            if let chatPartner = dictionary["isTypingTo"] as? String, chatPartner == myID! {
-                onSuccess()
+            if snapshot.exists() {
+                onTyping?()
             } else {
-                onFail()
+                onNotTyping?()
             }
         }
     }
     
     // Delete user-messages from database
-    func deleteChatMessages(from myID: String, to userID: String, onSuccess: @escaping () -> Void) {
+    func deleteUserMessageNode(from myID: String, to userID: String, onDelete: (() -> Void)?) {
         
         userMessagesDatabase.child(myID).child(userID).removeValue { (error, ref) in
             if error != nil {
                 print("Failed to delete conversations: ", error!)
                 return
             }
-            onSuccess()
+            onDelete?()
         }
     }
     
     // Delete / unsend a message from databse
-    func deleteMessage(with msgID: String, from sender: String, to receiver: String, onSuccess: @escaping () -> Void) {
+    func deleteMessage(with msgID: String, from sender: String, to receiver: String, onDelete: (() -> Void)?) {
         
         let childNode: String
         if sender < receiver { childNode = "\(sender)_\(receiver)" } else { childNode = "\(receiver)_\(sender)" }
@@ -486,22 +564,21 @@ class NetworkManager {
                 print("Failed to delete message: ", error!)
                 return
             }
-            onSuccess()
+            onDelete?()
         }
     }
     
     // Removes reaction from message
-    func removeReaction(_ reaction: String, for messageID: String, to sender: String, from receiver: String, onSuccess: @escaping () -> Void) {
+    func removeReaction(_ reaction: String, for messageID: String, to sender: String, from receiver: String, onDelete: (() -> Void)?) {
         
-        let childNode: String
-        if sender < receiver { childNode = "\(sender)_\(receiver)" } else { childNode = "\(receiver)_\(sender)" }
+        let childNode = self.childNode(sender, receiver)
         
         messagesDatabase.child(childNode).child(messageID).child("hasReaction").child(receiver).removeValue { (error, ref) in
             if error != nil {
                 print("Failed to remove reaction: ", error!)
                 return
             }
-            onSuccess()
+            onDelete?()
         }
     }
     

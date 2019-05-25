@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2C07774222878E6600D246F0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2C07774122878E6500D246F0 /* GoogleService-Info.plist */; };
 		2C0777442287C51000D246F0 /* CommunitySearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0777432287C51000D246F0 /* CommunitySearchCell.swift */; };
 		2C07774C228F5DB600D246F0 /* ChatLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C07774B228F5DB500D246F0 /* ChatLogViewController.swift */; };
 		2C0941DC226C772B00A295C1 /* BasicInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0941DB226C772B00A295C1 /* BasicInfoViewController.swift */; };
@@ -25,6 +24,7 @@
 		2C19D028227B628B00275B99 /* PushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C19D027227B628B00275B99 /* PushNotificationManager.swift */; };
 		2C19D02D227BA6FA00275B99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C19D02C227BA6FA00275B99 /* Assets.xcassets */; };
 		2C2841C6202D137100F8EA00 /* SearchEmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2841C5202D137100F8EA00 /* SearchEmptyState.swift */; };
+		2C40E12B22937EA000E957C9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2C40E12A22937E9F00E957C9 /* GoogleService-Info.plist */; };
 		2C42950120269C1900724385 /* UIViewController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C42950020269C1900724385 /* UIViewController+.swift */; };
 		2C584C1D2018714500E17FD3 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C584C1C2018714500E17FD3 /* Header.swift */; };
 		2C5A54EF2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54EE2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift */; };
@@ -122,7 +122,6 @@
 
 /* Begin PBXFileReference section */
 		1C5C16022A37BE4973F0C034 /* Pods-anansiUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-anansiUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-anansiUITests/Pods-anansiUITests.release.xcconfig"; sourceTree = "<group>"; };
-		2C07774122878E6500D246F0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2C0777432287C51000D246F0 /* CommunitySearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitySearchCell.swift; sourceTree = "<group>"; };
 		2C07774B228F5DB500D246F0 /* ChatLogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatLogViewController.swift; sourceTree = "<group>"; };
 		2C0941DB226C772B00A295C1 /* BasicInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicInfoViewController.swift; sourceTree = "<group>"; };
@@ -140,6 +139,7 @@
 		2C19D027227B628B00275B99 /* PushNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationManager.swift; sourceTree = "<group>"; };
 		2C19D02C227BA6FA00275B99 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2C2841C5202D137100F8EA00 /* SearchEmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEmptyState.swift; sourceTree = "<group>"; };
+		2C40E12A22937E9F00E957C9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2C42950020269C1900724385 /* UIViewController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+.swift"; sourceTree = "<group>"; };
 		2C584C1C2018714500E17FD3 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 		2C5A54EE2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UserCommunityCollectionViewCell.swift; path = "../../2.2. User Profile/View/UserCommunityCollectionViewCell.swift"; sourceTree = "<group>"; };
@@ -490,8 +490,8 @@
 				2C87DAD0200CA0BC004F8730 /* Network */,
 				2C70FBC720021793002E97E7 /* AppDelegate.swift */,
 				2C7DE7F0201740D700EEB1F4 /* LaunchScreen.storyboard */,
+				2C40E12A22937E9F00E957C9 /* GoogleService-Info.plist */,
 				2C70FBD520021793002E97E7 /* Info.plist */,
-				2C07774122878E6500D246F0 /* GoogleService-Info.plist */,
 				2CC3EF61201566A500EBC7B2 /* settings.json */,
 				2CEE5F7B20077C4100E86365 /* anansi.entitlements */,
 			);
@@ -947,7 +947,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2CC3EF642015752000EBC7B2 /* settings.json in Resources */,
-				2C07774222878E6600D246F0 /* GoogleService-Info.plist in Resources */,
+				2C40E12B22937EA000E957C9 /* GoogleService-Info.plist in Resources */,
 				2C19D02D227BA6FA00275B99 /* Assets.xcassets in Resources */,
 				2C7DE7F1201740D700EEB1F4 /* LaunchScreen.storyboard in Resources */,
 			);

@@ -12,7 +12,7 @@ class TabBarController: UITabBarController {
 
     // Custom initializers
     
-    var tabList = ["Community", "Connect", "Event"]
+    var tabList = ["Connect", "Community", "Event"]
     
     fileprivate var tabBarViewControllers = [UINavigationController]()
     
@@ -23,7 +23,7 @@ class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        observeMessages()
+        observeExistingConversations()
         fetchImportantInfoFromMyself()
         
         view.backgroundColor = .background
@@ -55,7 +55,6 @@ class TabBarController: UITabBarController {
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     // MARK: TabBar layout (UI)
@@ -72,31 +71,106 @@ class TabBarController: UITabBarController {
     
     // MARK: - Unread bagde for the connect (item = 1)
     
-    var unreadChats = [String]() {
+    var unreadChats = [String : [String]]() {
         didSet {
+            let pos = tabList.index(of: "Connect")
             
-            if unreadChats.count != 0 {
-                tabBar.items![1].badgeValue = "\(unreadChats.count)"
-            } else {
-                tabBar.items![1].badgeValue = nil
+            if let tabitem = tabBar.items {
+                tabitem[pos!].badgeValue = !unreadChats.isEmpty ? "\(unreadChats.count)" : nil
             }
         }
     }
     
-    private func observeMessages() {
+    private func observeExistingConversations() {
         
-        NetworkManager.shared.observeChats(from: myID!, onSuccess: { (mesg, key) in
+        NetworkManager.shared.observeExistingConversations(from: myID!, onAdd: { (chatID, _) in
+            
+            self.observeMessagesFromChat(withID: chatID)
+        
+        }, onRemove: { (chatID, _) in
+            
+            if self.unreadChats[chatID] != nil {
+                self.unreadChats[chatID] = nil
+            }
+            
+        }, noConversations: {
+            
+            self.unreadChats = [:]
+        })
+    }
+    
+    private func observeMessagesFromChat(withID chatID: String) {
+        
+        NetworkManager.shared.observeConversation(withID: chatID, onAdd: { (mesg, key) in
             
             let chat = Message(dictionary: mesg, messageID: key)
             
+            // if I'm the receiver
             if self.myID == chat.getValue(forField: .receiver) as? String,
-                let isRead = chat.getValue(forField: .isRead) as? Bool, !isRead,
-                let chatPartnerID = chat.partnerID(),
-                !self.unreadChats.contains(chatPartnerID) {
+                let isRead = chat.getValue(forField: .isRead) as? Bool,
+                !isRead {
                 
-                self.unreadChats.append(chatPartnerID)
+                if let listOfUnread = self.unreadChats[chatID] {
+                    if !listOfUnread.contains(key) {
+                        self.unreadChats[chatID]!.append(key)
+                    }
+            
+                } else {
+                    self.unreadChats[chatID] = [key]
+                }
             }
             
+        }, onChange: { (mesg, key) in
+            
+            let chat = Message(dictionary: mesg, messageID: key)
+            
+            // listOfUnreadChats only contains messages that I'm the receiver
+            if let listOfUnreadChats = self.unreadChats[chatID],
+                listOfUnreadChats.contains(key) {
+
+                // isRead = true, I remove the unreadchat key from the dictionary
+                if let isRead = chat.getValue(forField: .isRead) as? Bool, isRead {
+                    
+                    let i = listOfUnreadChats.index(of: key)
+                    self.unreadChats[chatID]!.remove(at: i!)
+                    
+                    if self.unreadChats[chatID]!.count == 0 {
+                        self.unreadChats[chatID] = nil
+                    }
+                
+                // isRead = false, I add the unreadchat key to the dictionary
+                } else {
+                    self.unreadChats[chatID]!.append(key)
+                }
+            
+            // If message became unread (for some reason), I need to add it back to unreadChats
+            } else {
+                
+                // If I'm the receiver, of course
+                if self.myID == chat.getValue(forField: .receiver) as? String {
+                    
+                    if self.unreadChats[chatID] != nil {
+                        self.unreadChats[chatID]!.append(key)
+                        
+                    } else {
+                        self.unreadChats[chatID] = [key]
+                    }
+                }
+            }
+            
+        }, onRemove: { (mesg, key) in
+            
+            // listOfUnreadChats only contains messages that I'm the receiver
+            if let listOfUnreadChats = self.unreadChats[chatID],
+                listOfUnreadChats.contains(key) {
+                
+                let i = listOfUnreadChats.index(of: key)
+                self.unreadChats[chatID]!.remove(at: i!)
+                
+                if self.unreadChats[chatID]!.count == 0 {
+                    self.unreadChats[chatID] = nil
+                }
+            }
         })
     }
     

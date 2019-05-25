@@ -11,26 +11,17 @@ import ReachabilitySwift
 
 class ConnectViewController: UIViewController {
     
-    private var users = [User]()
+    private var users = [String : User]()
     
     private var latestChats = [Message]()
     
-    private var userChats = [String : Message]()
+    private var userChats = [String : [Message]]()
     
-    private var areChatLoadings = true
+    private var conversationIDs = [String]()
+        
+    private var areConversationsLoading = true
     
     private var CTA : String!
-            
-    var unreadChats = [String]() {
-        didSet {
-            
-            if unreadChats.count != 0 {
-                tabBarItem.badgeValue = "\(unreadChats.count)"
-            } else {
-                tabBarItem.badgeValue = nil
-            }
-        }
-    }
     
     let myID = NetworkManager.shared.getUID()
     
@@ -128,6 +119,10 @@ class ConnectViewController: UIViewController {
         
         // Handles network reachablibity
         startMonitoringNetwork()
+        
+        // Observe conversations from DB
+        observeUserConversations()
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -154,12 +149,8 @@ class ConnectViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Observe messages from DB
-        observeUserMessages()
-        
         // Placeholder message for empty state (or new chat page)
         CTA = Const.emptystateTitle[Int.random(in: 0 ..< Const.emptystateTitle.count)]
-        tableView.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -170,64 +161,19 @@ class ConnectViewController: UIViewController {
         reachability.stopNotifier()
     }
     
+    // MARK: - Layout
+    
     override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
         
         // Add dropshadow to button
         CTAbutton.layer.shadowColor = UIColor.secondary.withAlphaComponent(0.4).cgColor
         CTAbutton.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
         CTAbutton.layer.shadowRadius = 4.0
         CTAbutton.layer.shadowOpacity = 1.0
-    }
-    
-    // MARK: - Custom functions
-    
-    private func observeUserMessages() {
         
-        // Just to be safe, let's remove all messages' and messagesDictionary's content
-        //chats.removeAll()
-        //messagesDictionary.removeAll()
-        
-        NetworkManager.shared.observeExistingConversations(from: myID!, onSuccess: {
-            
-            // If there're conversations in Firebase
-            NetworkManager.shared.observeChats(from: self.myID!, onSuccess: { (mesg, msgID) in
-                
-                let chat = Message(dictionary: mesg, messageID: msgID)
-                
-                // Replaces message to messagesDictionary (last one = last sent)
-                if let chatPartnerID = chat.partnerID() {
-                    self.userChats[chatPartnerID] = chat
-                    
-                    if self.myID == chat.getValue(forField: .receiver) as? String,
-                        let isRead = chat.getValue(forField: .isRead) as? Bool, !isRead,
-                        !self.unreadChats.contains(chatPartnerID) {
-                        
-                        self.unreadChats.append(chatPartnerID)
-                    }
-                }
-                
-                self.areChatLoadings = false
-                self.reloadChats()
-            })
-            
-        }) {
-            // If there aren't conversations
-            self.areChatLoadings = false
-            self.tableView.reloadData()
-        }
+        headerView.setProfileImage()
     }
-    
-    func reloadChats() {
-       
-        latestChats = Array(userChats.values)
-        latestChats.sort(by: { (A, B) -> Bool in
-            return (A.getValue(forField: .timestamp) as! NSNumber).int32Value > (B.getValue(forField: .timestamp) as! NSNumber).int32Value
-        })
-        
-        tableView.reloadData()
-    }
-    
-    // MARK: - Layout
     
     //*** This is required to fix navigation bar forever disappear on fast backswipe bug.
     override func viewDidLayoutSubviews() {
@@ -238,34 +184,49 @@ class ConnectViewController: UIViewController {
     
     private func setupNavigationBarItems() {
         
-        if let navigationBar = navigationController?.navigationBar {
-            navigationBar.barTintColor = .background
-            navigationBar.isTranslucent = false
-            
-            navigationItem.titleView = nil
-        }
+        navigationController?.navigationBar.barTintColor = .background
+        navigationController?.navigationBar.isTranslucent = false
+        navigationItem.titleView = nil
+        
     }
     
     @objc func navigateToNewChatController() {
         
-        let newChatController = NewChatController(style: .grouped)
-        newChatController.placeholder = CTA
-        newChatController.delegate = self
-        newChatController.hidesBottomBarWhenPushed = true
+        let newchat = NewChatController(style: .grouped)
+        newchat.placeholder = CTA ?? Const.emptystateTitle[0]
+        newchat.delegate = self
+        newchat.hidesBottomBarWhenPushed = true
         
-        let navController = UINavigationController(rootViewController: newChatController)
+        let navController = UINavigationController(rootViewController: newchat)
         navController.modalPresentationStyle = .overFullScreen
         present(navController, animated: true, completion: nil)
     }
     
     @objc func navigateToProfile() {
         
-        let newChatController = ProfileViewController()
-        newChatController.hidesBottomBarWhenPushed = true
+        let profile = ProfileViewController()
+        profile.hidesBottomBarWhenPushed = true
         
-        let navController = UINavigationController(rootViewController: newChatController)
+        let navController = UINavigationController(rootViewController: profile)
         navController.modalPresentationStyle = .overFullScreen
         present(navController, animated: true, completion: nil)
+    }
+    
+    
+    // MARK: - Custom functions
+    
+    func sortConversations() {
+        
+        latestChats = userChats.map { $1.last! }
+        latestChats.sort(by: { (A, B) -> Bool in
+            
+            if let a = A.getValue(forField: .timestamp) as? NSNumber,
+                let b = B.getValue(forField: .timestamp) as? NSNumber {
+                
+                return a.int32Value > b.int32Value
+            }
+            return false
+        })
     }
 }
 
@@ -279,7 +240,10 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if !areChatLoadings {
+        if areConversationsLoading {
+            tableView.backgroundView = spinner
+            
+        } else {
             
             if latestChats.count > 0 {
                 tableView.backgroundView = nil
@@ -287,16 +251,11 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
                 
             } else {
                 let emptystate = ConnectEmptyState(frame: CGRect(x: 0, y: 0, width: self.tableView.bounds.size.width, height: self.tableView.bounds.size.height))
-                emptystate.placeholder = CTA
+                emptystate.placeholder = CTA ?? Const.emptystateTitle[0]
                 tableView.backgroundView = emptystate
-                
-                return 0
             }
-            
-        } else {
-            tableView.backgroundView = spinner
         }
-
+        
         return latestChats.count
     }
     
@@ -306,7 +265,25 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         cell.profileImageView.kf.cancelDownloadTask() // cancel download task, if there's any
         
         let chat = latestChats[indexPath.row]
-        cell.message = chat
+        let partnerID = chat.partnerID()
+        let chatID = NetworkManager.shared.childNode(myID!, partnerID!)
+        
+        if let user = users[chatID] {
+            cell.configure(with: chat, and: user)
+       
+        /*
+        } else {
+            // If there's an issue, fetches user once and stores in users dictionary
+            NetworkManager.shared.fetchUserOnce(userID: partnerID!, onSuccess: { (dic) in
+                
+                let user = User()
+                user.set(dictionary: dic, id: partnerID!)
+                self.users[chatID] = user
+
+                cell.configure(with: chat, and: user)
+                self.observeTyping(from: partnerID!)
+            })*/
+        }
         
         cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
         return cell
@@ -317,13 +294,11 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let chat = latestChats[indexPath.row]
-        guard let receiverID = chat.partnerID() else { return }
+        let partnerID = chat.partnerID()
+        let chatID = NetworkManager.shared.childNode(myID!, partnerID!)
         
-        NetworkManager.shared.fetchUserOnce(userID: receiverID) { (dictionary) in
-            
-            let user = User()
-            user.set(dictionary: dictionary, id: receiverID)
-            self.showChatLogController(user: user)
+        if let user = users[chatID] {
+            showChatLogController(user: user)
         }
     }
     
@@ -346,15 +321,9 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
             
             let chat = self.latestChats[indexPath.row]
             if let receiverID = chat.partnerID() {
-                
-                NetworkManager.shared.deleteChatMessages(from: self.myID!, to: receiverID, onSuccess: {
-                    
-                    self.userChats.removeValue(forKey: receiverID)
-                    self.reloadChats()
-                })
+                NetworkManager.shared.deleteUserMessageNode(from: self.myID!, to: receiverID, onDelete: nil)
             }
         }
-        
         return [delete]
     }
 }
@@ -367,25 +336,14 @@ extension ConnectViewController: StartNewChatDelegate {
         
         let chatController = ChatLogViewController()
         chatController.user = user
-        chatController.delegate = self
         chatController.hidesBottomBarWhenPushed = true
+        navigationController?.navigationBar.isHidden = false
         navigationController?.pushViewController(chatController, animated: true)
     }
     
     func showChatController(user: User) {
-        showChatLogController(user: user)
-    }
-}
-
-// MARK: - UpdatesBadgeCountDelegate
-
-extension ConnectViewController: UpdatesBadgeCountDelegate {
-    
-    func updatesBadgeCount(for userID: String) {
         
-        if let i = unreadChats.index(of: userID) {
-            unreadChats.remove(at: i)
-        }
+        showChatLogController(user: user)
     }
 }
 
@@ -432,6 +390,151 @@ extension ConnectViewController {
             
         }, completion: { (bool) in
             self.disconnectedView.isHidden = true
+        })
+    }
+}
+
+// MARK: - NetworkManager
+
+extension ConnectViewController {
+    
+    private func observeConversations(withID chatID: String) {
+        
+        // If there're conversations in Firebase
+        NetworkManager.shared.observeConversation(withID: chatID, onAdd: { (mesg, msgID) in
+            
+            let chat = Message(dictionary: mesg, messageID: msgID)
+            
+            // THIS IS WHERE I NEED TO CHANGE TO UNLOCK PAGINATION BABY
+            
+            if let listOfMessages = self.userChats[chatID] {
+                
+                if !listOfMessages.contains(chat) {
+                    self.userChats[chatID]!.append(chat)
+                }
+                
+            } else {
+                self.userChats[chatID] = [chat]
+            }
+            
+            // Mark message as delivered, if I'm the receiver & !isDelivered
+            if let receiver = chat.getValue(forField: .receiver) as? String,
+                receiver == self.myID!,
+                let isDelivered = chat.getValue(forField: .isDelivered) as? Bool,
+                !isDelivered {
+                
+                // This will change the current message for the isDelivered key and
+                // trigger the onChange method of the observeConversation function,
+                // so there is no need to add sortConversations() or reloadData()
+                
+                NetworkManager.shared.markMessagesAs(messageInfoType.isDelivered.rawValue, withID: chat.getValue(forField: .id) as! String, from: chat.getValue(forField: .sender) as! String, to: chat.getValue(forField: .receiver) as! String, onSuccess: nil)
+                
+            } else {
+                
+                self.sortConversations() // this is important for table reload
+                self.tableView.reloadData()
+            }
+            
+            self.areConversationsLoading = false
+            
+        }, onChange: { (mesg, msgID) in
+            
+            let chat = Message(dictionary: mesg, messageID: msgID)
+            
+            let chats = self.userChats[chatID]
+            for (index, element) in chats!.enumerated() {
+                
+                if (element.getValue(forField: .id) as? String == msgID) {
+                    self.userChats[chatID]![index] = chat
+                    self.sortConversations() // this is important for table reload
+                }
+            }
+            
+            self.tableView.reloadData()
+            
+        }, onRemove: { (mesg, msgID) in
+            
+            if let listOfMessages = self.userChats[chatID] {
+
+                for (index, element) in listOfMessages.enumerated() {
+                    
+                    if (element.getValue(forField: .id) as? String == msgID) {
+                        self.userChats[chatID]!.remove(at: index)
+
+                        if self.userChats[chatID]!.count == 0 {
+                            
+                            // When UserMessage node is removed, it triggers observeExistingConversations onRemove
+                            let chatPartnerID = element.partnerID()
+                            NetworkManager.shared.deleteUserMessageNode(from: self.myID!, to: chatPartnerID!, onDelete: nil)
+                            
+                        } else {
+                            self.sortConversations() // this is important for table reload
+                        }
+                    }
+                }
+            }
+            
+            self.tableView.reloadData()
+        })
+        
+        // In case there's a chatID, but no messages
+        //self.tableView.reloadData()
+    }
+    
+    private func observeUserConversations() {
+        
+        NetworkManager.shared.observeExistingConversations(from: myID!, onAdd: { (chatID, partnerID) in
+            
+            // Adds messages to userChats dictionary
+            if !self.userChats.keys.contains(chatID) {
+                self.observeConversations(withID: chatID)
+                self.observeTyping(from: partnerID)
+            }
+            
+            // Fetches user once per chatID and stores in users dictionary
+            NetworkManager.shared.fetchUser(userID: partnerID, onSuccess: { (dic) in
+                
+                let user = User()
+                user.set(dictionary: dic, id: partnerID)
+                
+                self.users[chatID] = user
+            })
+            
+        }, onRemove: { (chatID, partnerID) in
+            
+            // Removes conversation from userChats dictionary
+            if self.userChats.keys.contains(chatID) {
+                self.userChats[chatID] = nil
+                
+                if self.userChats.count == 0 {
+                    self.latestChats = []
+                } else {
+                    self.sortConversations()
+                }
+            }
+            
+            // Removes user from users dictionary
+            if self.users.keys.contains(chatID) {
+                self.users[chatID] = nil
+            }
+            
+            self.tableView.reloadData()
+            
+        }, noConversations: {
+            
+            // Triggers empty state
+            self.areConversationsLoading = false
+            self.tableView.reloadData()
+        })
+    }
+    
+    func observeTyping(from userID: String) {
+        
+        NetworkManager.shared.observeTypingInstances(from: userID, onTyping: {
+            self.tableView.reloadData()
+            
+        }, onNotTyping: {
+            self.tableView.reloadData()
         })
     }
 }

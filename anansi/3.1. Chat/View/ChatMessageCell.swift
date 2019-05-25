@@ -286,6 +286,8 @@ class ChatMessageCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        isLoved = false
+        
         msgtxt.text = ""
         
         loveButton.setImage(UIImage(named: "heart-unfilled")!.withRenderingMode(.alwaysTemplate), for: .normal)

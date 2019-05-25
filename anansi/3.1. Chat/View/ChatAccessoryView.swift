@@ -130,7 +130,7 @@ class ChatAccessoryView: UIView {
             isTypingLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea + 8.0),
             isTypingLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
             isTypingLabel.centerYAnchor.constraint(equalTo: isTypingBox.centerYAnchor),
-        ])
+        ])        
     }
     
     required init?(coder aDecoder: NSCoder) {

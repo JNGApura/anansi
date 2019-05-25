@@ -117,12 +117,8 @@ class ConnectViewController: UIViewController {
             CTAbutton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -Const.marginSafeArea + 4.0),
         ])
         
-        // Handles network reachablibity
-        startMonitoringNetwork()
-        
         // Observe conversations from DB
         observeUserConversations()
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -151,6 +147,9 @@ class ConnectViewController: UIViewController {
         
         // Placeholder message for empty state (or new chat page)
         CTA = Const.emptystateTitle[Int.random(in: 0 ..< Const.emptystateTitle.count)]
+        
+        // Handles network reachablibity
+        startMonitoringNetwork()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -159,7 +158,6 @@ class ConnectViewController: UIViewController {
         
         // Stop NetworkStatusListener
         reachability.stopNotifier()
-        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: reachability)
     }
     
     // MARK: - Layout
@@ -271,19 +269,6 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         
         if let user = users[chatID] {
             cell.configure(with: chat, and: user)
-       
-        /*
-        } else {
-            // If there's an issue, fetches user once and stores in users dictionary
-            NetworkManager.shared.fetchUserOnce(userID: partnerID!, onSuccess: { (dic) in
-                
-                let user = User()
-                user.set(dictionary: dic, id: partnerID!)
-                self.users[chatID] = user
-
-                cell.configure(with: chat, and: user)
-                self.observeTyping(from: partnerID!)
-            })*/
         }
         
         cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
@@ -299,7 +284,7 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         let chatID = NetworkManager.shared.childNode(myID!, partnerID!)
         
         if let user = users[chatID] {
-            showChatLogController(user: user)
+            showChatLogController(user: user, and: userChats[chatID]!)
         }
     }
     
@@ -333,10 +318,11 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension ConnectViewController: StartNewChatDelegate {
     
-    @objc func showChatLogController(user: User) {
+    @objc func showChatLogController(user: User, and messages: [Message] = []) {
         
         let chatController = ChatLogViewController()
         chatController.user = user
+        chatController.allMessages = messages
         chatController.hidesBottomBarWhenPushed = true
         navigationController?.navigationBar.isHidden = false
         navigationController?.pushViewController(chatController, animated: true)
@@ -537,20 +523,5 @@ extension ConnectViewController {
         }, onNotTyping: {
             self.tableView.reloadData()
         })
-    }
-}
-
-/// Stuff
-
-class UIDynamicTableView: UITableView {
-    
-    override var intrinsicContentSize: CGSize {
-        self.layoutIfNeeded()
-        return CGSize(width: UIView.noIntrinsicMetric, height: self.contentSize.height)
-    }
-    
-    override func reloadData() {
-        super.reloadData()
-        self.invalidateIntrinsicContentSize()
     }
 }

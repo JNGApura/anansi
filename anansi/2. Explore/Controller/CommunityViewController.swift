@@ -144,14 +144,15 @@ class CommunityViewController: UIViewController {
         currentIndex = 0
         let indexPath = IndexPath.init(item: currentIndex, section: 0)
         collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
-        
-        // Handles network reachablibity
-        startMonitoringNetwork()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         setupNavigationBarItems()
+        
+        // Handles network reachablibity
+        startMonitoringNetwork()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -180,7 +181,6 @@ class CommunityViewController: UIViewController {
         
         // Stop NetworkStatusListener
         reachability.stopNotifier()
-        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: reachability)
     }
     
     //*** This is required to fix navigation bar forever disappear on fast backswipe bug.

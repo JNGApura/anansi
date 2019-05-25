@@ -259,6 +259,8 @@ class StickerMessageCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        isLoved = false
+        
         loveButton.setImage(UIImage(named: "heart-unfilled")!.withRenderingMode(.alwaysTemplate), for: .normal)
         loveButton.imageView?.tintColor = .tertiary
         

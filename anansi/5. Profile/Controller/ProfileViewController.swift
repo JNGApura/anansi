@@ -368,6 +368,9 @@ class ProfileViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         viewDidDisappear(animated)
         
+        // Revert everything back to normal
+        (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .clear
+        
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.title = ""
         

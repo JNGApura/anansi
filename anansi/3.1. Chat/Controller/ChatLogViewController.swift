@@ -12,7 +12,7 @@ import ReachabilitySwift
 
 class ChatLogViewController: UIViewController {
     
-    var keyboardDidShow = false
+    var keyboardIsActive = false
     
     var cameFromUserProfile = false
     
@@ -49,7 +49,6 @@ class ChatLogViewController: UIViewController {
             
             // User information in navigation bar
             userNameLabel.text = (user?.getValue(forField: .name) as? String)!
-            
             if let userImage = user?.getValue(forField: .profileImageURL) as? String {
                 userImageView.setImage(with: userImage)
             } else {
@@ -66,14 +65,34 @@ class ChatLogViewController: UIViewController {
         }
     }
     
+    var allMessages = [Message]() {
+        didSet {
+            
+            if !allMessages.isEmpty {
+                for message in allMessages {
+                    
+                    let timestamp = message.getValue(forField: .timestamp) as! NSNumber
+                    let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: timestamp.doubleValue))
+                    
+                    if !(dates.contains(dateString)) {
+                        dates.append(dateString)
+                        listOfMessagesPerDate[dateString] = [message]
+                    } else {
+                        listOfMessagesPerDate[dateString]!.append(message)
+                    }
+                }
+            }
+        }
+    }
+    
     lazy var tableView : UITableView = {
         let tv = UITableView.init(frame: CGRect.zero, style: .grouped)
         tv.register(ChatMessageCell.self, forCellReuseIdentifier: "ChatCell")
         tv.register(StickerMessageCell.self, forCellReuseIdentifier: "StickerCell")
         tv.delegate = self
         tv.dataSource = self
-        //tv.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 88.0, right: 0) // 88
-        tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0) // 88
+        tv.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 58.0, right: 0)
+        tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 44.0, right: 0)
         
         tv.backgroundColor = .yellow
         
@@ -89,6 +108,18 @@ class ChatLogViewController: UIViewController {
         tv.translatesAutoresizingMaskIntoConstraints = false
         return tv
     }()
+    var tableViewBottomAnchor: NSLayoutConstraint?
+    
+    /*
+     lazy var transition : CATransition = {
+     let t = CATransition()
+     t.type = CATransitionType.push
+     t.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+     t.fillMode = CAMediaTimingFillMode.forwards
+     t.duration = 0.25
+     t.subtype = CATransitionSubtype.fromBottom
+     return t
+     }()*/
     
     // TitleLabelView
     
@@ -125,9 +156,9 @@ class ChatLogViewController: UIViewController {
     
     // Accessory view
     
-   // override var inputAccessoryView: UIView {
-   //     return chatAccessoryView
-   // }
+    override var inputAccessoryView: UIView {
+        return chatAccessoryView
+    }
     override var canBecomeFirstResponder: Bool { return true }
     
     lazy var chatAccessoryView: ChatAccessoryView = {
@@ -144,8 +175,9 @@ class ChatLogViewController: UIViewController {
     }()
     
     // Disconnection
-    let disconnectedView : UILabel = {
+    lazy var disconnectedView : UILabel = {
         let v = UILabel()
+        //v.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 32.0)
         v.text = "No internet connection"
         v.textColor = .primary
         v.font = UIFont.boldSystemFont(ofSize: 14.0)
@@ -158,17 +190,6 @@ class ChatLogViewController: UIViewController {
     
     let reachability = Reachability()!
     
-    /*
-    lazy var transition : CATransition = {
-        let t = CATransition()
-        t.type = CATransitionType.push
-        t.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-        t.fillMode = CAMediaTimingFillMode.forwards
-        t.duration = 0.25
-        t.subtype = CATransitionSubtype.fromBottom
-        return t
-    }()*/
-    
     // MARK: - View lifecycle
     
     override func viewDidLoad() {
@@ -176,6 +197,10 @@ class ChatLogViewController: UIViewController {
         self.hideKeyboardWhenTappedAround()
         
         view.backgroundColor = .background
+        
+        // Set up observers for messages & typing
+        observeMessages()
+        observeTyping()
 
         // Custom views / constraints
         titleLabelView.setCustomSpacing(Const.marginEight, after: userImageView)
@@ -188,7 +213,7 @@ class ChatLogViewController: UIViewController {
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            //tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
             disconnectedView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -32.0),
             disconnectedView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -203,70 +228,56 @@ class ChatLogViewController: UIViewController {
             userNameLabel.centerYAnchor.constraint(equalTo: userImageView.centerYAnchor),
         ])
         
-        // Handles network connection
-        startMonitoringNetwork()
-        
-        // Set up observers for messages & typing
-        observeMessages()
-        observeTyping()
+        tableViewBottomAnchor = tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0.0)
+        tableViewBottomAnchor?.isActive = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         setupNavigationBarItems()
+        
+        // Handles network connection
+        startMonitoringNetwork()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        // 1. Setup keyboard observers
         if !hasBeenBlocked {
             setupKeyboardObservers()
         }
         
-        // Automatically presents keyboard if there's no message
+        // 2. Automatically presents keyboard if there's no message
         if dates.isEmpty {
             chatAccessoryView.inputTextView.becomeFirstResponder()
-        }
         
-        
-        // TO DO: change this?!
-        
-        // Scrolls to last message
-        if dates.count > 0 {
+        // If there're messages, mark them as Read
+        } else {
             
             let allMessages = listOfMessagesPerDate.flatMap { $1 }
-            
             for message in allMessages {
                 
                 // If I'm the receiver && !isRead
-                if let receiver = message.getValue(forField: .receiver) as? String,
-                    receiver == self.myID!,
-                    let isRead = message.getValue(forField: .isRead) as? Bool,
-                    !isRead {
+                if let receiver = message.getValue(forField: .receiver) as? String, receiver == self.myID!,
+                    let isRead = message.getValue(forField: .isRead) as? Bool, !isRead {
                     
                     NetworkManager.shared.markMessagesAs(messageInfoType.isRead.rawValue, withID: message.getValue(forField: .id) as! String, from: message.getValue(forField: .sender) as! String, to: myID!, onSuccess: nil)
                 }
             }
         }
-        
-        // TO DO: change this?!
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if keyboardDidShow {
+        if keyboardIsActive {
             chatAccessoryView.inputTextView.resignFirstResponder()
         }
         
         // Stop NetworkStatusListener
         reachability.stopNotifier()
-        NotificationCenter.default.removeObserver(self, name: ReachabilityChangedNotification, object: reachability)
-        
-        // Clear all important variables
-        dates.removeAll()
-        listOfMessagesPerDate.removeAll()
     }
 
     override func didReceiveMemoryWarning() {
@@ -308,36 +319,65 @@ class ChatLogViewController: UIViewController {
     // MARK: - Keyboard-related functions
     
     func setupKeyboardObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handlekeyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardDidHide), name: UIResponder.keyboardDidHideNotification, object: nil)
     }
     
-    @objc func handleKeyboardDidShow(notification: NSNotification) {
-        keyboardDidShow = true
+    @objc func handlekeyboardDidShow(notification: NSNotification) {
         
-        view.layoutIfNeeded()
+        keyboardIsActive = true
         
-        /*
         guard let userInfo = notification.userInfo,
             let keyboardEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         
         let keyboardHeight = keyboardEndFrame.height
-        let screenHeight = view.frame.height
+        let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
         
-        //let distanceToBottom = screenHeight - (cellMaxY + tableView.frame.origin.y - scrollView.contentOffset.y)
-        let collapseSpace = keyboardHeight //- distanceToBottom
+        let collapseSpace = keyboardHeight - (inputAccessoryView.frame.size.height + bottomPadding)
         
         if collapseSpace < 0 { return }
-        //tableView.frame.origin.y -= collapseSpace
-        view.layoutIfNeeded()*/
+        
+        tableViewBottomAnchor?.constant = -collapseSpace
+        view.layoutIfNeeded()
+        
+        reloadChats()
     }
     
     @objc func handleKeyboardDidHide() {
-        keyboardDidShow = false
+
+        keyboardIsActive = false
+        
+        tableViewBottomAnchor?.constant = 0
+        
+        UIView.animate(withDuration: 0.2, animations: {
+            self.view.layoutIfNeeded()
+        }, completion: nil)
     }
     
     @objc override func dismissKeyboard() {
         chatAccessoryView.inputTextView.resignFirstResponder()
+    }
+    
+    func reloadChats() {
+        
+        //tableView.reloadData()
+        
+        // I need to check this.
+        // Bug: when there's no message, the reloadChats should be called after the message is placed, not before. Otherwise, we won't have dates.count or listOfMessagesPerDate
+        if dates.count > 0 {
+            
+            let lastSection = self.dates.count - 1
+            if let lastMessages = self.listOfMessagesPerDate[self.dates[lastSection]] {
+                
+                tableView.reloadData()
+                let indexPath = IndexPath(item: lastMessages.count - 1, section: lastSection)
+                tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+            }
+            
+            DispatchQueue.main.async {
+                self.view.layoutIfNeeded()
+            }
+        }
     }
     
     // MARK: - Custom functions
@@ -411,13 +451,13 @@ class ChatLogViewController: UIViewController {
     }
     
     @objc func backAction(_ sender: UIBarButtonItem) {
+        
+        navigationController?.navigationBar.isHidden = !(cameFromUserProfile || cameFromSearch) // this is very important!
+        navigationController?.navigationBar.isTranslucent = true
+        navigationController?.view.backgroundColor = .background
+        
         navigationController?.popViewController(animated: true)
-        
-        self.navigationController?.navigationBar.isHidden = !(cameFromUserProfile || cameFromSearch) // this is very important!
-        self.navigationController?.navigationBar.isTranslucent = true
-        self.navigationController?.view.backgroundColor = .background
-        
-        self.dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
     var isTyping: Bool {
@@ -445,32 +485,13 @@ class ChatLogViewController: UIViewController {
         NetworkManager.shared.observeTypingInstances(from: receiverID, onTyping: {
             
             self.chatAccessoryView.isTypingBox.isHidden = false
-            self.chatAccessoryView.isTypingLabel.text = (self.user!.getValue(forField: .name) as? String)! + " is typing..."
+            self.chatAccessoryView.isTypingLabel.text = self.firstname + " is typing..."
             
         }, onNotTyping: {
             
             self.chatAccessoryView.isTypingBox.isHidden = true
             self.chatAccessoryView.isTypingLabel.text = ""
         })
-    }
-    
-    func reloadChats() {
-        
-        tableView.reloadData()
-        
-        /*
-        // I need to check this.
-        // Bug: when there's no message, the reloadChats should be called after the message is placed, not before. Otherwise, we won't have dates.count or listOfMessagesPerDate
-        if dates.count > 0 {
-        
-            let lastSection = self.dates.count - 1
-            if let lastMessages = self.listOfMessagesPerDate[self.dates[lastSection]] {
-                
-                self.tableView.reloadData()
-                let indexPath = IndexPath(item: lastMessages.count - 1, section: lastSection)
-                self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-            }
-        }*/
     }
 }
 
@@ -516,7 +537,7 @@ extension ChatLogViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if (dates.count == 0) {
+        if dates.isEmpty {
             tableView.backgroundView = noMessageStateView
             return 0
             
@@ -740,27 +761,6 @@ extension ChatLogViewController: CellGestureRecognizerDelegate {
         let receiver = message.getValue(forField: .receiver) as! String
         
         NetworkManager.shared.deleteMessage(with: msgID, from: sender, to: receiver, onDelete: nil)
-        
-        //let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: (message.getValue(forField: .timestamp) as? NSNumber)!.doubleValue))
-        //var msgArray = listOfMessagesPerDate[dateString]
-        
-        //if let j = msgArray?.index(of: message) {
-            
-            //NetworkManager.shared.deleteMessage(with: msgID!, from: sender!, to: receiver!) {
-                
-                // Remove msg from listOfMessagesPerDate
-                //msgArray?.remove(at: j)
-                //self.listOfMessagesPerDate[dateString] = msgArray
-                
-                // If listOfMessagesPerDate becomes empty for a specific date, remove the section
-                //if msgArray?.count == 0 {
-                //    let i = self.dates.index(of: dateString)
-                //    self.dates.remove(at: i!)
-                //}
-                
-                //self.tableView.reloadData()
-            //}
-        //}
     }
 }
 
@@ -827,13 +827,18 @@ extension ChatLogViewController {
             
             let timestamp = message.getValue(forField: .timestamp) as! NSNumber
             let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: timestamp.doubleValue))
-            
+
             if !(self.dates.contains(dateString)) {
                 self.dates.append(dateString)
                 self.listOfMessagesPerDate[dateString] = [message]
                 
             } else {
-                self.listOfMessagesPerDate[dateString]!.append(message)
+                
+                // this is necessary, because I'm sending all my messages from ConnectViewController here and I don't want duplicates
+                let messageKeysForDate = self.listOfMessagesPerDate[dateString]!.map { $0.getValue(forField: .id) as! String }
+                if !messageKeysForDate.contains(msgID) {
+                    self.listOfMessagesPerDate[dateString]!.append(message)
+                }
             }
             
             self.reloadChats()
@@ -886,34 +891,4 @@ extension ChatLogViewController {
         // In case there's a chatID, but no messages
         //self.tableView.reloadData()
     }
-    
-    /*
-    private func observeMessages() {
-        
-        let userID = user?.getValue(forField: .id) as! String
-        
-        NetworkManager.shared.observeChatMessages(from: myID!, to: userID) { (mesgDictionary, mesgKey) in
-            
-            let message = Message(dictionary: mesgDictionary, messageID: mesgKey)
-            
-            if let timestamp = message.getValue(forField: .timestamp) as? NSNumber {
-                
-                let timestampSec = timestamp.doubleValue
-                let currentMsgDate = NSDate(timeIntervalSince1970: timestampSec)
-                let dateString = createDateIntervalStringForMessage(from: currentMsgDate)
-                
-                if !(self.dates.contains(dateString)) {
-                    self.dates.append(dateString)
-                    self.listOfMessagesPerDate[dateString] = [message]
-                    
-                } else {
-                    self.listOfMessagesPerDate[dateString]!.append(message)
-                }
-                
-                self.allMessages.append(message)
-                
-                if self.dates.count > 0 { self.reloadChats() }
-            }
-        }
-    }*/
 }

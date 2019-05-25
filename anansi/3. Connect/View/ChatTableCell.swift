@@ -173,7 +173,8 @@ class ChatTableCell: UITableViewCell {
         }
         
         // Sets message box
-        if let isTyping = user.getValue(forField: .isTyping) as? String, isTyping == self.myID! {
+        if let isTyping = user.getValue(forField: .isTyping) as? String,
+            isTyping == myID! {
         
             self.lastMessage.text = user.label(forField: .isTyping)
             self.timeLabel.text = ""
@@ -187,7 +188,7 @@ class ChatTableCell: UITableViewCell {
                 sender == myID {
                 
                 displayMessage += "You: "
-                            
+                
                 // If chatPartner has seen my message, I display his/her profile picture in a small icon
                 if let isRead = message.getValue(forField: .isRead) as? Bool {
                     

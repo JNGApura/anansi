@@ -33,7 +33,11 @@ extension UILabel {
     }
     
     public var requiredHeight: CGFloat {
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 262 - Const.marginEight * 4.0, height: CGFloat.greatestFiniteMagnitude))
+        
+        // Fuck iPhone 5
+        let maxWidth : CGFloat = Display.typeIsLike == .iphone5 ? 232.0 : 280.0
+        
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: maxWidth - Const.marginEight * 4.0, height: CGFloat.greatestFiniteMagnitude))
         label.numberOfLines = 0
         label.lineBreakMode = NSLineBreakMode.byWordWrapping
         label.font = font

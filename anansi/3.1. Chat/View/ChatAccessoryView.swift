@@ -31,7 +31,7 @@ class ChatAccessoryView: UIView {
     
     let borderView : UIView = {
         let v = UIView()
-        v.backgroundColor = .clear
+        v.backgroundColor = .background
         v.layer.borderColor = UIColor.tertiary.cgColor
         v.layer.borderWidth = 1.5
         v.layer.cornerRadius = 22.0

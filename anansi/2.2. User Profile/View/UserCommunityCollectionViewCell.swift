@@ -51,6 +51,7 @@ class UserCommunityCollectionViewCell: UICollectionViewCell {
         tv.separatorStyle = .none
         tv.rowHeight = UITableView.automaticDimension
         tv.estimatedRowHeight = 96
+        tv.contentInset.top = -1 * 44.0
         return tv
     }()
 
@@ -79,6 +80,20 @@ class UserCommunityCollectionViewCell: UICollectionViewCell {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // Shows searchbar when pulled down
+    func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
+        
+        if scrollView.contentOffset.y < 0 {
+            UIView.animate(withDuration: 0.25, animations: {
+                self.tableView.contentInset.top = 0
+            })
+        } else if scrollView.contentOffset.y > 44.0 {
+            UIView.animate(withDuration: 0.25, animations: {
+                self.tableView.contentInset.top = -1 * 44.0
+            })
+        }
     }
 }
 

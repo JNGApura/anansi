@@ -57,6 +57,7 @@ class StickerMessageCell: UITableViewCell {
         sv.axis = .horizontal
         sv.distribution = .fill
         sv.alignment = .leading
+        sv.isHidden = true
         sv.translatesAutoresizingMaskIntoConstraints = false
         return sv
     }()

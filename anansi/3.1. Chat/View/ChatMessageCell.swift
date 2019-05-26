@@ -63,6 +63,7 @@ class ChatMessageCell: UITableViewCell {
         sv.axis = .horizontal
         sv.distribution = .fill
         sv.alignment = .leading
+        sv.isHidden = true
         sv.translatesAutoresizingMaskIntoConstraints = false
         return sv
     }()
@@ -94,7 +95,6 @@ class ChatMessageCell: UITableViewCell {
         i.layer.masksToBounds = true
         i.clipsToBounds = true
         i.contentMode = .scaleAspectFit
-        //i.isHidden = true
         i.translatesAutoresizingMaskIntoConstraints = false
         return i
     }()

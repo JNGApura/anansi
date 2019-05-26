@@ -231,7 +231,8 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
     // MARK: Custom functions
     
     @objc func backAction(_ sender: UIBarButtonItem) {
-        navigationController?.popViewController(animated: true)
+        
+        navigationController?.fadeBack()
     }
     
     @objc func submitFeedback(_ sender: UIButton){
@@ -259,7 +260,7 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
         NetworkManager.shared.register(value: currentTime, for: "blockedUsers/\(String(describing: guiltyID!))", in: myID!)
  
         // Returns to chatController
-        navigationController?.popViewController(animated: true)
+        navigationController?.fadeBack()
         delegate?.userWasReported(user: user!)
     }
     

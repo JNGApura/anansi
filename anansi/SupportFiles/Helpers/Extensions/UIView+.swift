@@ -93,6 +93,20 @@ extension UIView {
         
         self.layer.add(a, forKey: "position")
     }
+    
+    func dropShadow(scale: Bool = true) {
+        
+        layer.masksToBounds = false
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.2
+        layer.shadowOffset = CGSize(width: -3, height: 1)
+        layer.shadowRadius = 3
+        
+        layer.shadowPath = UIBezierPath(rect: bounds).cgPath
+        layer.shouldRasterize = true
+        layer.rasterizationScale = scale ? UIScreen.main.scale : 1
+        
+    }
 }
 
 extension UIViewController {

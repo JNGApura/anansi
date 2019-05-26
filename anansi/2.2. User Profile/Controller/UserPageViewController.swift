@@ -368,13 +368,16 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             
             navigationController?.popViewController(animated: true)
             dismiss(animated: true, completion: nil)
+            
         } else {
             
-            let chatController = ChatLogViewController()
+            let chatController = ChatLogViewController(style: .grouped)
             chatController.user = user
             chatController.cameFromUserProfile = true
             chatController.hidesBottomBarWhenPushed = true
-            navigationController?.pushViewController(chatController, animated: true)
+            
+            navigationController?.view.dropShadow()
+            navigationController?.fadeTo(chatController)
         }
     }
     

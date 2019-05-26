@@ -11,6 +11,9 @@ import ReachabilitySwift
 
 class ConnectViewController: UIViewController {
     
+    var presentTransition: UIViewControllerAnimatedTransitioning?
+    var dismissTransition: UIViewControllerAnimatedTransitioning?
+    
     private var users = [String : User]()
     
     private var latestChats = [Message]()
@@ -186,7 +189,6 @@ class ConnectViewController: UIViewController {
         navigationController?.navigationBar.barTintColor = .background
         navigationController?.navigationBar.isTranslucent = false
         navigationItem.titleView = nil
-        
     }
     
     @objc func navigateToNewChatController() {
@@ -320,12 +322,14 @@ extension ConnectViewController: StartNewChatDelegate {
     
     @objc func showChatLogController(user: User, and messages: [Message] = []) {
         
-        let chatController = ChatLogViewController()
+        let chatController = ChatLogViewController(style: .grouped)
         chatController.user = user
         chatController.allMessages = messages
         chatController.hidesBottomBarWhenPushed = true
+        
+        navigationController?.view.dropShadow()
         navigationController?.navigationBar.isHidden = false
-        navigationController?.pushViewController(chatController, animated: true)
+        navigationController?.fadeTo(chatController)
     }
     
     func showChatController(user: User) {

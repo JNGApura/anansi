@@ -27,6 +27,7 @@
 		2C40E12B22937EA000E957C9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2C40E12A22937E9F00E957C9 /* GoogleService-Info.plist */; };
 		2C42950120269C1900724385 /* UIViewController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C42950020269C1900724385 /* UIViewController+.swift */; };
 		2C462B6F2299C82F00005BBD /* UITableView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C462B6E2299C82F00005BBD /* UITableView+.swift */; };
+		2C462B71229AEEC900005BBD /* UINavigationController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C462B70229AEEC900005BBD /* UINavigationController+.swift */; };
 		2C584C1D2018714500E17FD3 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C584C1C2018714500E17FD3 /* Header.swift */; };
 		2C5A54EF2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54EE2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift */; };
 		2C5A54F62043593A006DB37A /* PartnerPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54F52043593A006DB37A /* PartnerPageViewController.swift */; };
@@ -143,6 +144,7 @@
 		2C40E12A22937E9F00E957C9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2C42950020269C1900724385 /* UIViewController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+.swift"; sourceTree = "<group>"; };
 		2C462B6E2299C82F00005BBD /* UITableView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+.swift"; sourceTree = "<group>"; };
+		2C462B70229AEEC900005BBD /* UINavigationController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+.swift"; sourceTree = "<group>"; };
 		2C584C1C2018714500E17FD3 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 		2C5A54EE2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UserCommunityCollectionViewCell.swift; path = "../../2.2. User Profile/View/UserCommunityCollectionViewCell.swift"; sourceTree = "<group>"; };
 		2C5A54F52043593A006DB37A /* PartnerPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartnerPageViewController.swift; sourceTree = "<group>"; };
@@ -433,6 +435,7 @@
 				2CBE2EC020351967009E5268 /* UIView+.swift */,
 				2C7F6F0D202595C1008AB0CD /* UserDefaults+.swift */,
 				2C462B6E2299C82F00005BBD /* UITableView+.swift */,
+				2C462B70229AEEC900005BBD /* UINavigationController+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1117,6 +1120,7 @@
 				2C42950120269C1900724385 /* UIViewController+.swift in Sources */,
 				2C07774C228F5DB600D246F0 /* ChatLogViewController.swift in Sources */,
 				2C5A5500204D207C006DB37A /* ReportConfirmationView.swift in Sources */,
+				2C462B71229AEEC900005BBD /* UINavigationController+.swift in Sources */,
 				2C87DACF200CA072004F8730 /* Classes.swift in Sources */,
 				2C7F6F1A2025D902008AB0CD /* ChatAccessoryView.swift in Sources */,
 				2C698900202ADDEA00F6B4A8 /* LandingController.swift in Sources */,

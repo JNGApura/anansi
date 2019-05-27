@@ -20,12 +20,12 @@ class NetworkManager {
     
     // Databases
     private let userDatabase = Database.database().reference().child("users")
-    private let messagesDatabase = Database.database().reference().child("messages")
     private let userMessagesDatabase = Database.database().reference().child("users-messages")
+    private let isTypingDatabase = Database.database().reference().child("users-istyping")
+    private let messagesDatabase = Database.database().reference().child("messages")
     private let partnerDatabase = Database.database().reference().child("partners")
     private let feedbackDatabase = Database.database().reference().child("feedback")
  
-    
     // MARK: Sign-up / Log-in functions
     
     /// Handles login communication with firebase (Auth)
@@ -204,10 +204,6 @@ class NetworkManager {
                 print(error!.localizedDescription)
                 return
             }
-        }
-        
-        if field == userInfoType.isTyping.rawValue {
-            userDatabase.child(id).child(field).onDisconnectRemoveValue()
         }
     }
     
@@ -479,19 +475,6 @@ class NetworkManager {
         }
     }
     
-    // Is user typing a message
-    func observeTypingInstances(from userID: String, onTyping: (() -> Void)?, onNotTyping: (() -> Void)?) {
-        
-        userDatabase.child(userID).child(userInfoType.isTyping.rawValue).observe(.value) { (snapshot) in
-            
-            if snapshot.exists() {
-                onTyping?()
-            } else {
-                onNotTyping?()
-            }
-        }
-    }
-    
     // Delete user-messages from database
     func deleteUserMessageNode(from myID: String, to userID: String, onDelete: (() -> Void)?) {
         
@@ -533,17 +516,43 @@ class NetworkManager {
         }
     }
     
+    // MARK: - ISTYPING DATABASE
     
-    // MARK: - ANALYTICS Events
-    
-    func logEvent(name: String, parameters: [String : Any]?) {
+    // Create typing instance
+    func createTypingInstance(from userID: String, to partnerID: String, onSucess: (() -> Void)?) {
         
-        Analytics.logEvent(name, parameters: parameters)
+        isTypingDatabase.child(userID).updateChildValues(["isTypingTo" : partnerID] as [String : Any]) { (error, userDatabase) in
+            if error != nil {
+                print(error!.localizedDescription)
+                return
+            }
+        }
+        
+        isTypingDatabase.child(userID).onDisconnectRemoveValue()
+    }
+    
+    // Remove typing instance
+    func removeTypingInstance(from userID: String, onSucess: (() -> Void)?) {
+        
+        isTypingDatabase.child(userID).removeValue()
+    }
+    
+    // Is user typing a message?
+    func observeTypingInstances(from userID: String, onTyping: ((String) -> Void)?, onNotTyping: (() -> Void)?) {
+        
+        isTypingDatabase.child(userID).child("isTypingTo").observe(.value) { (snapshot) in
+            
+            if snapshot.exists() {
+                onTyping?(snapshot.value as! String)
+            } else {
+                onNotTyping?()
+            }
+        }
     }
     
     
     // MARK: - FEEDBACK DATABASE
-
+    
     /// Reports user and stores in DB with reporter ID
     func reportsUserWithMessage(post: [String: Any]) {
         
@@ -555,6 +564,15 @@ class NetworkManager {
         
         feedbackDatabase.child("issues").childByAutoId().setValue(post)
     }
+    
+    
+    // MARK: - ANALYTICS Events
+    
+    func logEvent(name: String, parameters: [String : Any]?) {
+        
+        Analytics.logEvent(name, parameters: parameters)
+    }
+    
 }
 
 // Fetches data from JSON file

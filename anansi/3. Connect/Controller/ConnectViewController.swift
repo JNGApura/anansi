@@ -26,6 +26,8 @@ class ConnectViewController: UIViewController {
     
     private var CTA : String!
     
+    private var typingPartner = String()
+    
     let myID = NetworkManager.shared.getUID()
     
     lazy var headerView : Header = {
@@ -267,10 +269,11 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         
         let chat = latestChats[indexPath.row]
         let partnerID = chat.partnerID()
+        let isTyping = (myID! == typingPartner)
         let chatID = NetworkManager.shared.childNode(myID!, partnerID!)
         
         if let user = users[chatID] {
-            cell.configure(with: chat, and: user)
+            cell.configure(with: chat, from: user, and: isTyping)
         }
         
         cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
@@ -521,10 +524,14 @@ extension ConnectViewController {
     
     func observeTyping(from userID: String) {
         
-        NetworkManager.shared.observeTypingInstances(from: userID, onTyping: {
+        NetworkManager.shared.observeTypingInstances(from: userID, onTyping: { (partnerID) in
+            
+            self.typingPartner = partnerID
             self.tableView.reloadData()
             
         }, onNotTyping: {
+            
+            self.typingPartner = String()
             self.tableView.reloadData()
         })
     }

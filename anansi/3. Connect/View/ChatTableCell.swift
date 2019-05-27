@@ -155,7 +155,7 @@ class ChatTableCell: UITableViewCell {
     }
     
     
-    func configure(with message: Message, and user: User) {
+    func configure(with message: Message, from user: User, and isTyping : Bool) {
         
         //self.message = message
         
@@ -173,10 +173,9 @@ class ChatTableCell: UITableViewCell {
         }
         
         // Sets message box
-        if let isTyping = user.getValue(forField: .isTyping) as? String,
-            isTyping == myID! {
+        if isTyping {
         
-            self.lastMessage.text = user.label(forField: .isTyping)
+            self.lastMessage.text = "is typing..."
             self.timeLabel.text = ""
             
         } else {

@@ -565,10 +565,10 @@ extension ChatLogViewController {
             
             if newValue {
                 let receiverID = (user?.getValue(forField: .id) as? String)!
-                NetworkManager.shared.register(value: receiverID, for: userInfoType.isTyping.rawValue, in: myID!)
+                NetworkManager.shared.createTypingInstance(from: myID!, to: receiverID, onSucess: nil)
                 
             } else {
-                NetworkManager.shared.removeData(userInfoType.isTyping.rawValue, in: myID!)
+                NetworkManager.shared.removeTypingInstance(from: myID!, onSucess: nil)
             }
         }
     }
@@ -577,10 +577,12 @@ extension ChatLogViewController {
         
         let receiverID = (user?.getValue(forField: .id) as? String)!
         
-        NetworkManager.shared.observeTypingInstances(from: receiverID, onTyping: {
+        NetworkManager.shared.observeTypingInstances(from: receiverID, onTyping: { (partnerID) in
             
-            self.chatAccessoryView.isTypingBox.isHidden = false
-            self.chatAccessoryView.isTypingLabel.text = self.firstname + " is typing..."
+            if partnerID == self.myID {
+                self.chatAccessoryView.isTypingBox.isHidden = false
+                self.chatAccessoryView.isTypingLabel.text = self.firstname + " is typing..."
+            }
             
         }, onNotTyping: {
             

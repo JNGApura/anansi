@@ -526,6 +526,7 @@ class NetworkManager {
                 print(error!.localizedDescription)
                 return
             }
+            onSucess?()
         }
         
         isTypingDatabase.child(userID).onDisconnectRemoveValue()
@@ -534,7 +535,13 @@ class NetworkManager {
     // Remove typing instance
     func removeTypingInstance(from userID: String, onSucess: (() -> Void)?) {
         
-        isTypingDatabase.child(userID).removeValue()
+        isTypingDatabase.child(userID).removeValue { (error, ref) in
+            if error != nil {
+                print(error!.localizedDescription)
+                return
+            }
+            onSucess?()
+        }
     }
     
     // Is user typing a message?

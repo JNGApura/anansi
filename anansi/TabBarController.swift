@@ -51,6 +51,9 @@ class TabBarController: UITabBarController {
                 
         // Remove label to tab bar items
         removeTabBarItemText()
+        
+        // Set offline alert shown variable to false (reachability)
+        UserDefaults.standard.setOfflineAlertShown(value: false)
     }
     
     override func didReceiveMemoryWarning() {
@@ -160,15 +163,23 @@ class TabBarController: UITabBarController {
             
         }, onRemove: { (mesg, key) in
             
+            print("I'm here")
+            
             // listOfUnreadChats only contains messages that I'm the receiver
             if let listOfUnreadChats = self.unreadChats[chatID],
                 listOfUnreadChats.contains(key) {
                 
+                print("Yes, I've most past the conditions")
+                
                 let i = listOfUnreadChats.index(of: key)
                 self.unreadChats[chatID]!.remove(at: i!)
                 
+                print("I've removed an unread chat at position \(i!)")
+                
                 if self.unreadChats[chatID]!.count == 0 {
                     self.unreadChats[chatID] = nil
+                    
+                    print("Upss, it seems unread chats for \(chatID) are decimated! (Marvel fan joke)")
                 }
             }
         })

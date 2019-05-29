@@ -35,6 +35,7 @@ class ConnectViewController: UIViewController {
         hv.setTitleName(name: "Connect")
         hv.setProfileImage()
         hv.profileButton.addTarget(self, action: #selector(navigateToProfile), for: .touchUpInside)
+        hv.alertButton.addTarget(self, action: #selector(showOfflineAlert), for: .touchUpInside)
         hv.backgroundColor = .background
         hv.translatesAutoresizingMaskIntoConstraints = false
         return hv
@@ -362,7 +363,7 @@ extension ConnectViewController {
         }
         
         if reachability.isReachable {
-            DispatchQueue.main.async { self.disconnectedView.isHidden = true }
+            DispatchQueue.main.async { self.hideAlert() }
         } else {
             DispatchQueue.main.async { self.showAlert() }
         }
@@ -370,21 +371,27 @@ extension ConnectViewController {
     
     func showAlert() {
         
-        self.disconnectedView.isHidden = false
+        headerView.showAlertButton()
         
-        UIView.animate(withDuration: 0.5, animations: {
-            self.disconnectedView.transform = CGAffineTransform(translationX: 0, y: 32.0)
-        })
+        if !UserDefaults.standard.offlineAlertWasShown() {
+            UserDefaults.standard.setOfflineAlertShown(value: true)
+            showOfflineAlert()
+        }
     }
     
     func hideAlert() {
         
-        UIView.animate(withDuration: 0.5, animations: {
-            self.disconnectedView.transform = .identity
-            
-        }, completion: { (bool) in
-            self.disconnectedView.isHidden = true
-        })
+        headerView.hideAlertButton()
+        
+        UserDefaults.standard.setOfflineAlertShown(value: false)
+    }
+    
+    @objc func showOfflineAlert() {
+        
+        let alert = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you check your data or wifi connection?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "On it!", style: .default , handler: nil))
+        
+        present(alert, animated: true, completion: nil)
     }
 }
 

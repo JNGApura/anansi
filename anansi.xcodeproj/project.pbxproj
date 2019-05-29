@@ -536,7 +536,6 @@
 			children = (
 				2C2841D0202D1B8C00F8EA00 /* Controller */,
 				2CEE5EC8228495A600ACC42C /* View */,
-				2CEE5EC9228495B300ACC42C /* Model */,
 			);
 			path = "2. Explore";
 			sourceTree = "<group>";
@@ -609,13 +608,6 @@
 				2CF6CB27228503B30050A053 /* TrendingCommunityCollectionViewCell.swift */,
 			);
 			path = View;
-			sourceTree = "<group>";
-		};
-		2CEE5EC9228495B300ACC42C /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		2CEE5ECA228495E000ACC42C /* Model */ = {

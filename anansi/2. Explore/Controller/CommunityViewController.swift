@@ -53,6 +53,7 @@ class CommunityViewController: UIViewController {
         hv.setTitleName(name: "Community")
         hv.setProfileImage()
         hv.profileButton.addTarget(self, action: #selector(navigateToProfile), for: .touchUpInside)
+        hv.alertButton.addTarget(self, action: #selector(showOfflineAlert), for: .touchUpInside)
         hv.backgroundColor = .background
         hv.translatesAutoresizingMaskIntoConstraints = false
         return hv
@@ -399,11 +400,50 @@ extension CommunityViewController {
     
     func startMonitoringNetwork() {
         
+        reachability.whenUnreachable = { reachability in
+            DispatchQueue.main.async { self.showAlert() }
+        }
+        
+        reachability.whenReachable = { reachability in
+            DispatchQueue.main.async { self.hideAlert() }
+        }
+        
         do {
             try reachability.startNotifier()
         } catch {
             print("Unable to start notifier")
         }
+        
+        if reachability.isReachable {
+            DispatchQueue.main.async { self.hideAlert() }
+        } else {
+            DispatchQueue.main.async { self.showAlert() }
+        }
+    }
+    
+    func showAlert() {
+        
+        headerView.showAlertButton()
+        
+        if !UserDefaults.standard.offlineAlertWasShown() {
+            UserDefaults.standard.setOfflineAlertShown(value: true)
+            showOfflineAlert()
+        }
+    }
+    
+    func hideAlert() {
+        
+        headerView.hideAlertButton()
+        
+        UserDefaults.standard.setOfflineAlertShown(value: false)
+    }
+    
+    @objc func showOfflineAlert() {
+        
+        let alert = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you check your data or wifi connection?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "On it!", style: .default , handler: nil))
+        
+        present(alert, animated: true, completion: nil)
     }
 }
 

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ReachabilitySwift
 
 class EventViewController: UIViewController {
     
@@ -40,6 +41,7 @@ class EventViewController: UIViewController {
         hv.setTitleName(name: "Event")
         hv.setProfileImage()
         hv.profileButton.addTarget(self, action: #selector(navigateToProfile), for: .touchUpInside)
+        hv.alertButton.addTarget(self, action: #selector(showOfflineAlert), for: .touchUpInside)
         hv.backgroundColor = .background
         hv.translatesAutoresizingMaskIntoConstraints = false
         return hv
@@ -69,6 +71,9 @@ class EventViewController: UIViewController {
         cv.allowsSelection = false;
         return cv
     }()
+    
+    let reachability = Reachability()!
+    
     
     // MARK: - View lifecycle
     
@@ -126,6 +131,9 @@ class EventViewController: UIViewController {
         super.viewWillAppear(animated)
         
         setupNavigationBarItems()
+        
+        // Handles network reachablibity
+        startMonitoringNetwork()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -151,6 +159,9 @@ class EventViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.navigationController?.setNavigationBarHidden(false, animated: false)
+        
+        // Stop NetworkStatusListener
+        reachability.stopNotifier()
     }
     
     //*** This is required to fix navigation bar forever disappear on fast backswipe bug.
@@ -357,6 +368,59 @@ extension EventViewController: DirectionsButtonDelegate {
         let alert = UIAlertController(title: "Let's get you movin' 🚗", message: "You've successfuly copied \(Const.kaptenPromoCode). Open Kapten's app and apply the promocode to enjoy 5€ off your first ride.", preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "Got it!", style: .default , handler: nil))
+        
+        present(alert, animated: true, completion: nil)
+    }
+}
+
+// MARK: - NetworkStatusListener | Handles network reachability
+
+extension EventViewController {
+    
+    func startMonitoringNetwork() {
+        
+        reachability.whenUnreachable = { reachability in
+            DispatchQueue.main.async { self.showAlert() }
+        }
+        
+        reachability.whenReachable = { reachability in
+            DispatchQueue.main.async { self.hideAlert() }
+        }
+        
+        do {
+            try reachability.startNotifier()
+        } catch {
+            print("Unable to start notifier")
+        }
+        
+        if reachability.isReachable {
+            DispatchQueue.main.async { self.hideAlert() }
+        } else {
+            DispatchQueue.main.async { self.showAlert() }
+        }
+    }
+    
+    func showAlert() {
+        
+        headerView.showAlertButton()
+        
+        if !UserDefaults.standard.offlineAlertWasShown() {
+            UserDefaults.standard.setOfflineAlertShown(value: true)
+            showOfflineAlert()
+        }
+    }
+    
+    func hideAlert() {
+        
+        headerView.hideAlertButton()
+        
+        UserDefaults.standard.setOfflineAlertShown(value: false)
+    }
+    
+    @objc func showOfflineAlert() {
+        
+        let alert = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you please check your Wifi or Cellular data?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "On it!", style: .default , handler: nil))
         
         present(alert, animated: true, completion: nil)
     }

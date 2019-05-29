@@ -37,6 +37,18 @@ class Header : UIView {
         return b
     }()
     
+    let alertButton: UIButton = {
+        let b = UIButton()
+        b.setImage(UIImage(named: "alert")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        b.tintColor = .primary
+        b.backgroundColor = .background
+        b.layer.cornerRadius = 12.0
+        b.layer.masksToBounds = true
+        b.translatesAutoresizingMaskIntoConstraints = false
+        b.isHidden = true
+        return b
+    }()
+    
     let actionButton: UIButton = {
         let b = UIButton()
         b.tintColor = .secondary
@@ -52,7 +64,7 @@ class Header : UIView {
         super.init(frame: frame)
         
         // Add headerTitle and headerBottomBorder subviews
-        [headerTitle, bottomLine, profileButton, actionButton].forEach { addSubview($0) }
+        [headerTitle, bottomLine, alertButton, profileButton, actionButton].forEach { addSubview($0) }
         
         // Adds layout constraints
         NSLayoutConstraint.activate([
@@ -64,6 +76,11 @@ class Header : UIView {
             
             headerTitle.bottomAnchor.constraint(equalTo: bottomLine.topAnchor, constant: -4.0),
             headerTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea),
+            
+            alertButton.centerYAnchor.constraint(equalTo: headerTitle.centerYAnchor),
+            alertButton.leadingAnchor.constraint(equalTo: headerTitle.trailingAnchor, constant: Const.marginEight),
+            alertButton.widthAnchor.constraint(equalToConstant: 24.0),
+            alertButton.heightAnchor.constraint(equalToConstant: 24.0),
             
             profileButton.centerYAnchor.constraint(equalTo: headerTitle.centerYAnchor),
             profileButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
@@ -107,6 +124,7 @@ class Header : UIView {
         self.backgroundColor = color
     }
     
+    // Sets profile image, if available
     func setProfileImage() {
         
         if let myProfileImage = UserDefaults.standard.value(forKey: userInfoType.profileImageURL.rawValue) as? String {
@@ -118,6 +136,15 @@ class Header : UIView {
             profileButton.setImage(UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal), for: .normal)
             profileButton.setBackgroundImage(UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal), for: .normal)
         }
+    }
+    
+    // Handles alert button
+    func showAlertButton() {
+        alertButton.isHidden = false
+    }
+    
+    func hideAlertButton() {
+        alertButton.isHidden = true
     }
 }
 
@@ -148,11 +175,11 @@ class ProfileHeader : UIView {
     }()
     
     private let headerBottomBorder: UIView = {
-        let view = UIView()
-        view.isOpaque = true
-        view.backgroundColor = .primary
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
+        let v = UIView()
+        v.isOpaque = true
+        v.backgroundColor = .primary
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
     }()
     
     private let occupation: UILabel = {

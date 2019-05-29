@@ -64,6 +64,11 @@ extension UserDefaults {
         synchronize()
     }
     
+    func setOfflineAlertShown(value: Bool) {
+        set(value, forKey: "wasOfflineAlertShown")
+        synchronize()
+    }
+    
     func isCommunityOnboarded() -> Bool {
         return bool(forKey: "isCommunityOnboarded")
     }
@@ -78,6 +83,10 @@ extension UserDefaults {
     
     func isProfileOnboarded() -> Bool {
         return bool(forKey: "isProfileOnboarded")
+    }
+    
+    func offlineAlertWasShown() -> Bool {
+        return bool(forKey: "wasOfflineAlertShown")
     }
     
 }

@@ -371,7 +371,7 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
             
             self.hideLoadingInButton()
             
-            let alertController = UIAlertController(title: "No internet connection", message: "It seems you are not connected to the internet. Please enable Wifi or Cellular data, and try again.", preferredStyle: .alert)
+            let alertController = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you please check your Wifi or Cellular data?", preferredStyle: .alert)
             let ok = UIAlertAction(title: "Got it!", style: .default, handler: nil)
             alertController.addAction(ok)
             present(alertController, animated: true, completion: nil)
@@ -611,7 +611,7 @@ extension SignUpController: NetworkStatusListener {
             }
             
             // Presents an alert to the user informing the network is unreachable
-            let alertController = UIAlertController(title: "No internet connection", message: "It seems you are not connected to the internet. Please enable Wifi or Cellular data, and try again.", preferredStyle: .alert)
+            let alertController = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you please check your Wifi or Cellular data?", preferredStyle: .alert)
             let ok = UIAlertAction(title: "Got it!", style: .default, handler: nil)
             alertController.addAction(ok)
             present(alertController, animated: true, completion: nil)

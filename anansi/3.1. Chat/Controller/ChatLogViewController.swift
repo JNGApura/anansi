@@ -163,7 +163,6 @@ class ChatLogViewController: UITableViewController {
         return v
     }()
     
-    let reachability = Reachability()!
     
     // MARK: - View lifecycle
     
@@ -203,9 +202,6 @@ class ChatLogViewController: UITableViewController {
         super.viewWillAppear(animated)
 
         setupNavigationBarItems()
-        
-        // Handles network connection
-        startMonitoringNetwork()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -252,9 +248,6 @@ class ChatLogViewController: UITableViewController {
         if keyboardIsActive {
             chatAccessoryView.inputTextView.resignFirstResponder()
         }
-        
-        // Stop NetworkStatusListener
-        reachability.stopNotifier()
     }
 
     override func didReceiveMemoryWarning() {
@@ -767,53 +760,6 @@ extension ChatLogViewController: CellGestureRecognizerDelegate {
         let receiver = message.getValue(forField: .receiver) as! String
         
         NetworkManager.shared.deleteMessage(with: msgID, from: sender, to: receiver, onDelete: nil)
-    }
-}
-
-// MARK: - NetworkStatusListener | Handles network reachability
-
-extension ChatLogViewController {
-        
-    func startMonitoringNetwork() {
-        
-        reachability.whenUnreachable = { reachability in
-            DispatchQueue.main.async { self.showAlert() }
-        }
-        
-        reachability.whenReachable = { reachability in
-            DispatchQueue.main.async { self.hideAlert() }
-        }
-        
-        do {
-            try reachability.startNotifier()
-        } catch {
-            print("Unable to start notifier")
-        }
-        
-        if reachability.isReachable {
-            DispatchQueue.main.async { self.disconnectedView.isHidden = true }
-        } else {
-            DispatchQueue.main.async { self.showAlert() }
-        }
-    }
-    
-    func showAlert() {
-        
-        self.disconnectedView.isHidden = false
-        
-        UIView.animate(withDuration: 0.5, animations: {
-            self.disconnectedView.transform = CGAffineTransform(translationX: 0, y: 32.0)
-        })
-    }
-    
-    func hideAlert() {
-        
-        UIView.animate(withDuration: 0.5, animations: {
-            self.disconnectedView.transform = .identity
-            
-        }, completion: { (bool) in
-            self.disconnectedView.isHidden = true
-        })
     }
 }
 

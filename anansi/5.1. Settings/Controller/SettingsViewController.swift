@@ -154,9 +154,8 @@ class SettingsViewController: UIViewController {
         // When network is unreachable
         if !ReachabilityManager.shared.reachability.isReachable {
             
-            let alertController = UIAlertController(title: "No internet connection", message: "It seems you are not connected to the internet. Please enable Wifi or Cellular data, and try again.", preferredStyle: .alert)
-            
-            alertController.addAction(UIAlertAction(title: "Got it!", style: .default, handler: nil))
+            let alertController = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you please check your Wifi or Cellular data?", preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "On it!", style: .default, handler: nil))
             
             present(alertController, animated: true, completion: nil)
             

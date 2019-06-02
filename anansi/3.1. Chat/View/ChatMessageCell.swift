@@ -202,7 +202,7 @@ class ChatMessageCell: UITableViewCell {
     
     // MARK: - Custom functions
     
-    func config(message: Message, isIncoming: Bool, isLast: Bool, with imgURL: String) {
+    func config(message: Message, isIncoming: Bool, showStatus: Bool, with imgURL: String) {
         
         self.message = message
         self.isIncoming = isIncoming
@@ -245,7 +245,7 @@ class ChatMessageCell: UITableViewCell {
             }
             
             // If messages are read, only show msgstatus in the last message
-            msgstatus.isHidden = isLast ? false : true
+            msgstatus.isHidden = !showStatus
         }
         
         // Recipient's love button

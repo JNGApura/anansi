@@ -97,6 +97,8 @@ class ConnectViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.view.backgroundColor = .background
+        
         // Sets up UI
         [tableView, disconnectedView, headerView, CTAbutton].forEach { view.addSubview($0) }
         
@@ -331,9 +333,8 @@ extension ConnectViewController: StartNewChatDelegate {
         chatController.allMessages = messages
         chatController.hidesBottomBarWhenPushed = true
         
-        navigationController?.view.dropShadow()
-        navigationController?.navigationBar.isHidden = false
-        navigationController?.fadeTo(chatController)
+        navigationController?.navigationBar.isTranslucent = true
+        navigationController?.pushViewController(chatController, animated: true)
     }
     
     func showChatController(user: User) {
@@ -428,7 +429,7 @@ extension ConnectViewController {
                 // trigger the onChange method of the observeConversation function,
                 // so there is no need to add sortConversations() or reloadData()
                 
-                NetworkManager.shared.markMessagesAs(messageInfoType.isDelivered.rawValue, withID: chat.getValue(forField: .id) as! String, from: chat.getValue(forField: .sender) as! String, to: chat.getValue(forField: .receiver) as! String, onSuccess: nil)
+                NetworkManager.shared.markMessagesAs(messageInfoType.isDelivered.rawValue, withID: msgID, from: chat.getValue(forField: .sender) as! String, to: self.myID!, onSuccess: nil)
                 
             } else {
                 

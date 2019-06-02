@@ -255,7 +255,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             self.backgroundImage.applyGradient(withColours: [.primary, .primary], gradientOrientation: .vertical)
         }
         
-        self.tableView.reloadData()
+        tableView.reloadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -291,6 +291,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewWillDisappear(_ animated: Bool) {
         viewDidDisappear(animated)
+        
         navigationItem.titleView?.isHidden = true
     }
     
@@ -359,16 +360,16 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
     @objc func backAction(_ sender: UIBarButtonItem) {
         
         navigationController?.popViewController(animated: true)
+        navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.isHidden = cameFromCommunity // this is very important!
-        dismiss(animated: true, completion: nil)
     }
     
     @objc func showChatLogController() {
         
         if cameFromChat {
             
+            navigationController?.navigationBar.isTranslucent = false
             navigationController?.popViewController(animated: true)
-            dismiss(animated: true, completion: nil)
             
         } else {
             
@@ -377,8 +378,8 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             chatController.cameFromUserProfile = true
             chatController.hidesBottomBarWhenPushed = true
             
-            navigationController?.view.dropShadow()
-            navigationController?.fadeTo(chatController)
+            navigationController?.navigationBar.isTranslucent = false
+            navigationController?.pushViewController(chatController, animated: true)
         }
     }
     

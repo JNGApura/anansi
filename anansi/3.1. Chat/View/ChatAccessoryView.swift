@@ -63,27 +63,11 @@ class ChatAccessoryView: UIView {
         tf.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
         tf.textColor = .secondary
         tf.placeholder = ""
+        tf.contentInset = UIEdgeInsets(top: 0, left: 2.0, bottom: 0, right: 4.0)
         tf.isScrollEnabled = false
         tf.delegate = self
         tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
-    }()
-    
-    let isTypingBox : UIView = {
-        let v = UIView()
-        v.backgroundColor = .background
-        v.isHidden = true
-        v.translatesAutoresizingMaskIntoConstraints = false
-        return v
-    }()
-    
-    let isTypingLabel : UILabel = {
-        let l = UILabel()
-        l.text = ""
-        l.textColor = .secondary
-        l.font = UIFont.boldSystemFont(ofSize: Const.captionFontSize)
-        l.translatesAutoresizingMaskIntoConstraints = false
-        return l
     }()
     
     override init(frame: CGRect) {
@@ -101,8 +85,7 @@ class ChatAccessoryView: UIView {
         visualEffectView.backgroundColor = UIColor(white: 1.0, alpha: 0.9)
         
         // Add subviews
-        [visualEffectView, isTypingBox, sendButton, borderView, inputTextView].forEach { addSubview($0)}
-        isTypingBox.addSubview(isTypingLabel)
+        [visualEffectView, sendButton, borderView, inputTextView].forEach { addSubview($0)}
         
         // Add layout constraints
         NSLayoutConstraint.activate([
@@ -122,14 +105,6 @@ class ChatAccessoryView: UIView {
             inputTextView.bottomAnchor.constraint(equalTo: borderView.bottomAnchor, constant: -2.0),
             inputTextView.trailingAnchor.constraint(equalTo: borderView.trailingAnchor, constant: -Const.marginEight),
             
-            isTypingBox.leadingAnchor.constraint(equalTo: leadingAnchor),
-            isTypingBox.trailingAnchor.constraint(equalTo: trailingAnchor),
-            isTypingBox.bottomAnchor.constraint(equalTo: inputTextView.topAnchor, constant: -Const.marginEight / 2.0),
-            isTypingBox.heightAnchor.constraint(equalToConstant: 20.0),
-            
-            isTypingLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea + 8.0),
-            isTypingLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
-            isTypingLabel.centerYAnchor.constraint(equalTo: isTypingBox.centerYAnchor),
         ])        
     }
     

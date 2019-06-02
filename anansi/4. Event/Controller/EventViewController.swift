@@ -293,7 +293,6 @@ extension EventViewController: ShowSpeakerDetailedPageDelegate {
         
         let speakerDetailed = SpeakerCardDetailedController()
         speakerDetailed.scheduleData = data
-        speakerDetailed.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: navigationController, action: nil)
         
         self.navigationController?.pushViewController(speakerDetailed, animated: true)
     }

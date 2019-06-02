@@ -244,8 +244,6 @@ class SpeakerCardDetailedController: UIViewController, UIScrollViewDelegate {
     @objc func backAction(_ sender: UIBarButtonItem) {
         
         navigationController?.popViewController(animated: true)
-        self.navigationController?.navigationBar.isHidden = true // this is very important!
-        self.dismiss(animated: true, completion: nil)
+        navigationController?.navigationBar.isHidden = true // this is very important!
     }
 }
-

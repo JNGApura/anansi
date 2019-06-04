@@ -12,7 +12,7 @@ protocol InterestListDelegate {
     func interestListWasSaved(list: [String])
 }
 
-class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class InterestsViewController: UIViewController, UIScrollViewDelegate {
     
     // Custom initializers
     
@@ -25,6 +25,15 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
         }
     }
     var countInterests : Int = 0
+    
+    lazy var topbar: TopBar = {
+        let b = TopBar()
+        b.setTitle(name: "Interests")
+        b.backgroundColor = .background
+        b.backButton.addTarget(self, action: #selector(backAction), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
 
     lazy var scrollView : UIScrollView = {
         let sv = UIScrollView()
@@ -95,7 +104,7 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
     }()
     
     lazy var selectedInterestsLabel: UILabel = {
-        let l = UILabel(frame: CGRect(x: 0, y: 0, width: 48.0, height: 20.0))
+        let l = UILabel()
         l.text = "\(countInterests) / 7 "
         l.font = UIFont.boldSystemFont(ofSize: Const.footnoteFontSize)
         l.textColor = .secondary
@@ -103,8 +112,12 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
         l.clipsToBounds = true
         l.backgroundColor = .tertiary
         l.textAlignment = .center
+        l.translatesAutoresizingMaskIntoConstraints = false
         return l
     }()
+    
+    lazy var barHeight : CGFloat = (navigationController?.navigationBar.frame.height)!
+    let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     // MARK: View Lifecycle
     
@@ -113,25 +126,54 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         view.backgroundColor = .background
         
-        // Sets up navigation bar
-        setupNavigationBarItems()
-        
         // Sets left aligned layout for the collectionView
         let layout = UICollectionViewAlignedLayout()
         layout.layoutDirection = .left
         collectionView.setCollectionViewLayout(layout, animated: true)
         
         // Sets up UI
-        view.addSubview(scrollView)
-        
+        [topbar, selectedInterestsLabel, scrollView].forEach { view.addSubview($0) }
         scrollView.addSubview(contentView)
         [screenTitle, screenDescription, collectionView, buttonBackground, saveButton].forEach { contentView.addSubview($0) }
+        
+        // Needs to be in viewDidLoad
+        interestCollectionViewHeightAnchor = collectionView.heightAnchor.constraint(equalToConstant: 0.0)
+        interestCollectionViewHeightAnchor?.isActive = true
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        setupNavigationBarItems()
+        
+        // Sets height = contentSize.height for the collectionView
+        interestCollectionViewHeightAnchor?.constant = collectionView.contentSize.height
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        
+        // Navigation Bar was hidden in viewDidAppear
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    // MARK: Layout
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        topbar.setStatusBarHeight(with: statusBarHeight)
+        topbar.setNavigationBarHeight(with: barHeight)
         
         NSLayoutConstraint.activate([
             
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.topAnchor.constraint(equalTo: topbar.bottomAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
             contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
@@ -163,55 +205,24 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
             saveButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Const.marginSafeArea),
             saveButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Const.marginSafeArea),
             saveButton.heightAnchor.constraint(equalToConstant: 40.0),
+            
+            topbar.topAnchor.constraint(equalTo: view.topAnchor),
+            topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            
+            selectedInterestsLabel.centerYAnchor.constraint(equalTo: topbar.bottomAnchor, constant: -barHeight / 2.0),
+            selectedInterestsLabel.trailingAnchor.constraint(equalTo: topbar.trailingAnchor, constant: -Const.marginEight * 2.0),
+            selectedInterestsLabel.widthAnchor.constraint(equalToConstant: 48.0),
+            selectedInterestsLabel.heightAnchor.constraint(equalToConstant: 20.0),
         ])
-        
-        interestCollectionViewHeightAnchor = collectionView.heightAnchor.constraint(equalToConstant: 0.0)
-        interestCollectionViewHeightAnchor?.isActive = true
-        
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        // Sets height = contentSize.height for the collectionView
-        interestCollectionViewHeightAnchor?.constant = collectionView.contentSize.height
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
-    // MARK: Layout
     
     private func setupNavigationBarItems() {
         
-        if let navigationBar = navigationController?.navigationBar {
-            navigationBar.barTintColor = .background
-            navigationBar.isTranslucent = false
-            
-            let titleLabel : UILabel = {
-                let l = UILabel()
-                l.text = "Interests"
-                l.textColor = .secondary
-                l.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-                return l
-            }()
-            
-            navigationItem.titleView = titleLabel
-            
-            let backButton: UIButton = {
-                let b = UIButton(type: .system)
-                b.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
-                b.frame = CGRect(x: 0, y: 0, width: 24.0, height: 24.0)
-                b.tintColor = .primary
-                b.translatesAutoresizingMaskIntoConstraints = false
-                b.addTarget(self, action: #selector(backAction), for: .touchUpInside)
-                return b
-            }()
-            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
-            
-            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: selectedInterestsLabel)
-        }
+        //navigationItem.titleView = nil
+        //navigationItem.setHidesBackButton(true, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
 
     // MARK: Custom functions
@@ -219,9 +230,7 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
     @objc func backAction(_ sender: UIBarButtonItem) {
         
         if countInterests <= 7 {
-            
             navigationController?.popViewController(animated: true)
-            dismiss(animated: true, completion: nil)
         }
     }
     
@@ -249,8 +258,13 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate, UICollect
         return NSString(string: text).boundingRect(with: size, options: options, attributes:
             [NSAttributedString.Key.font: UIFont.systemFont(ofSize: Const.calloutFontSize)], context: nil)
     }
-        
-    // MARK: UICollectionViewDelegate
+    
+}
+
+
+// MARK: UICollectionViewDelegate
+
+extension InterestsViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return Const.interests.count

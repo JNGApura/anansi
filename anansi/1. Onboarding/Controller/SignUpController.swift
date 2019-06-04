@@ -120,7 +120,7 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
         b.setTitle("Terms", for: .normal)
         b.setTitleColor(.secondary, for: .normal)
         b.titleLabel?.font = UIFont.boldSystemFont(ofSize: Const.footnoteFontSize)
-        b.addTarget(self, action: #selector(navigateToTerms), for: .touchUpInside)
+        b.addTarget(self, action: #selector(navigateToPrivacy), for: .touchUpInside)
         b.translatesAutoresizingMaskIntoConstraints = false
         b.isHidden = true
         return b
@@ -289,15 +289,6 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
         }
             
         hideLoadingInButton()
-    }
-    
-    @objc func navigateToTerms() {
-        
-        // About - Terms & Conditions
-        let termsPage = AboutPageView(id: "terms")
-        let navController = UINavigationController(rootViewController: termsPage)
-        navController.modalPresentationStyle = .overFullScreen
-        present(navController, animated: true, completion: nil)
     }
     
     @objc func navigateToPrivacy() {

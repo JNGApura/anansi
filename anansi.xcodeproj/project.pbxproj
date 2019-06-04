@@ -27,7 +27,6 @@
 		2C40E12B22937EA000E957C9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2C40E12A22937E9F00E957C9 /* GoogleService-Info.plist */; };
 		2C42950120269C1900724385 /* UIViewController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C42950020269C1900724385 /* UIViewController+.swift */; };
 		2C462B6F2299C82F00005BBD /* UITableView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C462B6E2299C82F00005BBD /* UITableView+.swift */; };
-		2C462B71229AEEC900005BBD /* UINavigationController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C462B70229AEEC900005BBD /* UINavigationController+.swift */; };
 		2C584C1D2018714500E17FD3 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C584C1C2018714500E17FD3 /* Header.swift */; };
 		2C5A54EF2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54EE2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift */; };
 		2C5A54F62043593A006DB37A /* PartnerPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54F52043593A006DB37A /* PartnerPageViewController.swift */; };
@@ -35,6 +34,7 @@
 		2C5A54FC204CC019006DB37A /* SearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54FB204CC019006DB37A /* SearchTableViewController.swift */; };
 		2C5A54FE204D138F006DB37A /* ReportAbuseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54FD204D138F006DB37A /* ReportAbuseController.swift */; };
 		2C5A5500204D207C006DB37A /* ReportConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A54FF204D207C006DB37A /* ReportConfirmationView.swift */; };
+		2C5BF2B022A460C500B3D4F9 /* TopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5BF2AF22A460C500B3D4F9 /* TopBar.swift */; };
 		2C6924FA226DE1A30007496A /* InterestsUserTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6924F9226DE1A30007496A /* InterestsUserTableCell.swift */; };
 		2C6924FC226DEB590007496A /* InterestProfileEmptyTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6924FB226DEB590007496A /* InterestProfileEmptyTableCell.swift */; };
 		2C6988FC202A83C600F6B4A8 /* ChatEmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6988FB202A83C600F6B4A8 /* ChatEmptyState.swift */; };
@@ -80,11 +80,10 @@
 		2CBE2EC3203525C2009E5268 /* GradientCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBE2EC2203525C2009E5268 /* GradientCell.swift */; };
 		2CC3C8FA203E608900D70190 /* BottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC3C8F9203E608900D70190 /* BottomSheetView.swift */; };
 		2CC3EF642015752000EBC7B2 /* settings.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CC3EF61201566A500EBC7B2 /* settings.json */; };
-		2CC3EF68201577B900EBC7B2 /* AboutPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC3EF67201577B900EBC7B2 /* AboutPage.swift */; };
-		2CC3EF6A201577DD00EBC7B2 /* AboutPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC3EF69201577DD00EBC7B2 /* AboutPageView.swift */; };
 		2CCE51FD20060E4A00DFC9B1 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE51FC20060E4A00DFC9B1 /* Constants.swift */; };
 		2CCE520B20061CB300DFC9B1 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */; };
 		2CD55AD62033EFA100299926 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD55AD52033EFA100299926 /* ProfileViewController.swift */; };
+		2CDB3D9A22A2B131009F0AB7 /* TypingMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB3D9922A2B131009F0AB7 /* TypingMessageCell.swift */; };
 		2CDD28572019C77900AB1F32 /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDD28562019C77900AB1F32 /* ChatMessageCell.swift */; };
 		2CDD2859201AB27300AB1F32 /* ChatTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDD2858201AB27200AB1F32 /* ChatTableCell.swift */; };
 		2CDF6B072042422200CC3B92 /* CommunityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF6B062042422200CC3B92 /* CommunityViewController.swift */; };
@@ -144,7 +143,6 @@
 		2C40E12A22937E9F00E957C9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2C42950020269C1900724385 /* UIViewController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+.swift"; sourceTree = "<group>"; };
 		2C462B6E2299C82F00005BBD /* UITableView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+.swift"; sourceTree = "<group>"; };
-		2C462B70229AEEC900005BBD /* UINavigationController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+.swift"; sourceTree = "<group>"; };
 		2C584C1C2018714500E17FD3 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 		2C5A54EE2042BF2C006DB37A /* UserCommunityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UserCommunityCollectionViewCell.swift; path = "../../2.2. User Profile/View/UserCommunityCollectionViewCell.swift"; sourceTree = "<group>"; };
 		2C5A54F52043593A006DB37A /* PartnerPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartnerPageViewController.swift; sourceTree = "<group>"; };
@@ -152,6 +150,7 @@
 		2C5A54FB204CC019006DB37A /* SearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewController.swift; sourceTree = "<group>"; };
 		2C5A54FD204D138F006DB37A /* ReportAbuseController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportAbuseController.swift; sourceTree = "<group>"; };
 		2C5A54FF204D207C006DB37A /* ReportConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportConfirmationView.swift; sourceTree = "<group>"; };
+		2C5BF2AF22A460C500B3D4F9 /* TopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBar.swift; sourceTree = "<group>"; };
 		2C66D1BA200C946900146296 /* IQKeyboardManagerSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = IQKeyboardManagerSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C6924F9226DE1A30007496A /* InterestsUserTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestsUserTableCell.swift; sourceTree = "<group>"; };
 		2C6924FB226DEB590007496A /* InterestProfileEmptyTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestProfileEmptyTableCell.swift; sourceTree = "<group>"; };
@@ -202,11 +201,10 @@
 		2CBE2EC2203525C2009E5268 /* GradientCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientCell.swift; sourceTree = "<group>"; };
 		2CC3C8F9203E608900D70190 /* BottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
 		2CC3EF61201566A500EBC7B2 /* settings.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
-		2CC3EF67201577B900EBC7B2 /* AboutPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPage.swift; sourceTree = "<group>"; };
-		2CC3EF69201577DD00EBC7B2 /* AboutPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPageView.swift; sourceTree = "<group>"; };
 		2CCE51FC20060E4A00DFC9B1 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2CCE520A20061CB300DFC9B1 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		2CD55AD52033EFA100299926 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		2CDB3D9922A2B131009F0AB7 /* TypingMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingMessageCell.swift; sourceTree = "<group>"; };
 		2CDD28562019C77900AB1F32 /* ChatMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
 		2CDD2858201AB27200AB1F32 /* ChatTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableCell.swift; sourceTree = "<group>"; };
 		2CDF6B062042422200CC3B92 /* CommunityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityViewController.swift; sourceTree = "<group>"; };
@@ -435,7 +433,6 @@
 				2CBE2EC020351967009E5268 /* UIView+.swift */,
 				2C7F6F0D202595C1008AB0CD /* UserDefaults+.swift */,
 				2C462B6E2299C82F00005BBD /* UITableView+.swift */,
-				2C462B70229AEEC900005BBD /* UINavigationController+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -590,10 +587,10 @@
 		2CEE5EC72284951D00ACC42C /* AccessoryViews */ = {
 			isa = PBXGroup;
 			children = (
-				2CEE5ED4228496E400ACC42C /* About-TO BE DELETED */,
 				2C584C1C2018714500E17FD3 /* Header.swift */,
 				2CEBB14A22601A8B00821896 /* PageSelector.swift */,
 				2C198AAC204015F300CFC705 /* TabSelector.swift */,
+				2C5BF2AF22A460C500B3D4F9 /* TopBar.swift */,
 			);
 			path = AccessoryViews;
 			sourceTree = "<group>";
@@ -685,15 +682,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		2CEE5ED4228496E400ACC42C /* About-TO BE DELETED */ = {
-			isa = PBXGroup;
-			children = (
-				2CC3EF67201577B900EBC7B2 /* AboutPage.swift */,
-				2CC3EF69201577DD00EBC7B2 /* AboutPageView.swift */,
-			);
-			path = "About-TO BE DELETED";
-			sourceTree = "<group>";
-		};
 		2CEE5ED5228498DE00ACC42C /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -745,6 +733,7 @@
 				2C6988FB202A83C600F6B4A8 /* ChatEmptyState.swift */,
 				2CDD28562019C77900AB1F32 /* ChatMessageCell.swift */,
 				2C0DD5E022922EAF00188DA2 /* StickerMessageCell.swift */,
+				2CDB3D9922A2B131009F0AB7 /* TypingMessageCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1091,8 +1080,8 @@
 				2C6924FC226DEB590007496A /* InterestProfileEmptyTableCell.swift in Sources */,
 				2C7F6F0E202595C1008AB0CD /* UserDefaults+.swift in Sources */,
 				2C7F6F02202594AC008AB0CD /* UICollectionView+.swift in Sources */,
-				2CC3EF6A201577DD00EBC7B2 /* AboutPageView.swift in Sources */,
 				2C0777442287C51000D246F0 /* CommunitySearchCell.swift in Sources */,
+				2C5BF2B022A460C500B3D4F9 /* TopBar.swift in Sources */,
 				2CBE2EC3203525C2009E5268 /* GradientCell.swift in Sources */,
 				2C5A54FA204BAA26006DB37A /* SpeakerCardDetailedController.swift in Sources */,
 				2CF6CB28228503B30050A053 /* TrendingCommunityCollectionViewCell.swift in Sources */,
@@ -1105,6 +1094,7 @@
 				2C19D028227B628B00275B99 /* PushNotificationManager.swift in Sources */,
 				2C7F6F182025967C008AB0CD /* CustomButtons.swift in Sources */,
 				2CEE5F7A2007619300E86365 /* NetworkManager.swift in Sources */,
+				2CDB3D9A22A2B131009F0AB7 /* TypingMessageCell.swift in Sources */,
 				2CBE2EC120351967009E5268 /* UIView+.swift in Sources */,
 				2C79C8F920382A5B00FFCF70 /* InterestsViewController.swift in Sources */,
 				2C6D401B2287894F00FCF1F6 /* UserTableCell.swift in Sources */,
@@ -1112,7 +1102,6 @@
 				2C42950120269C1900724385 /* UIViewController+.swift in Sources */,
 				2C07774C228F5DB600D246F0 /* ChatLogViewController.swift in Sources */,
 				2C5A5500204D207C006DB37A /* ReportConfirmationView.swift in Sources */,
-				2C462B71229AEEC900005BBD /* UINavigationController+.swift in Sources */,
 				2C87DACF200CA072004F8730 /* Classes.swift in Sources */,
 				2C7F6F1A2025D902008AB0CD /* ChatAccessoryView.swift in Sources */,
 				2C698900202ADDEA00F6B4A8 /* LandingController.swift in Sources */,
@@ -1125,7 +1114,6 @@
 				2C5A54FE204D138F006DB37A /* ReportAbuseController.swift in Sources */,
 				2CD55AD62033EFA100299926 /* ProfileViewController.swift in Sources */,
 				2C79C8FB20383AEB00FFCF70 /* InterestCell.swift in Sources */,
-				2CC3EF68201577B900EBC7B2 /* AboutPage.swift in Sources */,
 				2CC3C8FA203E608900D70190 /* BottomSheetView.swift in Sources */,
 				2C7F6F0C2025959F008AB0CD /* UILabel+.swift in Sources */,
 				2C584C1D2018714500E17FD3 /* Header.swift in Sources */,

@@ -101,17 +101,8 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         return ssv
     }()
     
-    //override var canBecomeFirstResponder: Bool { return true }
-    
-    /*lazy var keyboardAccessoryView: KeyboardAccessoryView = {
-        let kv = KeyboardAccessoryView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50.0))
-        kv.textview = feedbackTextBox
-        return kv
-    }()
-    
-    override var inputAccessoryView: UIView {
-        return keyboardAccessoryView
-    }*/
+    lazy var barHeight : CGFloat = (navigationController?.navigationBar.frame.height)!
+    let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     // Class initializer
     
@@ -368,7 +359,7 @@ class FeedbackPageView: UIViewController, UIScrollViewDelegate, UITextViewDelega
         
         if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
             
-            let textBoxRelativeMaxY = feedbackTextBox.frame.maxY + feedbackTextBox.frame.height
+            let textBoxRelativeMaxY = feedbackTextBox.frame.maxY + feedbackTextBox.frame.height + barHeight
             let screenHeight = view.frame.height
             
             let offsetY = (screenHeight - textBoxRelativeMaxY - 16)

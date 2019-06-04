@@ -130,15 +130,18 @@ class EventViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        setupNavigationBarItems()
+        // This is important, because I'm using a fake navigation bar
+        navigationController?.setNavigationBarHidden(true, animated: true)
         
         // Handles network reachablibity
         startMonitoringNetwork()
+        
+        // Enables swipe to pop
+        swipeToPop()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
         
         if !UserDefaults.standard.isEventOnboarded() {
             
@@ -156,34 +159,30 @@ class EventViewController: UIViewController {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        self.navigationController?.setNavigationBarHidden(false, animated: false)
-        
-        // Stop NetworkStatusListener
-        reachability.stopNotifier()
-    }
-    
-    //*** This is required to fix navigation bar forever disappear on fast backswipe bug.
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
-        
-        headerView.setProfileImage()
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+                
+        // Stop NetworkStatusListener
+        reachability.stopNotifier()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        
+        // Navigation Bar was hidden in viewDidAppear
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
     // MARK: - Layout
     
-    private func setupNavigationBarItems() {
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         
-        navigationController?.view.backgroundColor = .background
-        navigationController?.navigationBar.isTranslucent = false
-        //navigationItem.titleView = titleLabelView
+        headerView.setProfileImage()
     }
     
     // MARK: - Custom functions
@@ -211,9 +210,6 @@ extension EventViewController: UICollectionViewDataSource, UICollectionViewDeleg
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         switch indexPath.item {
-        /*case 1:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: challengeIdentifier, for: indexPath) as! EventChallengeCollectionViewCell
-            return cell*/
         
         case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: locationIdentifier, for: indexPath) as! EventLocationCollectionViewCell
@@ -294,12 +290,13 @@ extension EventViewController: ShowSpeakerDetailedPageDelegate {
         let speakerDetailed = SpeakerCardDetailedController()
         speakerDetailed.scheduleData = data
         
-        self.navigationController?.pushViewController(speakerDetailed, animated: true)
+        navigationController?.pushViewController(speakerDetailed, animated: true)
     }
     
     func showUserPageWith(id: String) {
         
         NetworkManager.shared.fetchUserOnce(userID: id) { (dictionary) in
+            
             let user = User()
             user.set(dictionary: dictionary, id: id)
             
@@ -422,5 +419,14 @@ extension EventViewController {
         alert.addAction(UIAlertAction(title: "On it!", style: .default , handler: nil))
         
         present(alert, animated: true, completion: nil)
+    }
+}
+
+extension EventViewController: UIGestureRecognizerDelegate {
+    
+    func swipeToPop() {
+        
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
+        navigationController?.interactivePopGestureRecognizer?.delegate = self;
     }
 }

@@ -150,10 +150,14 @@ class CommunityViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        setupNavigationBarItems()
+        // This is important, because I'm using a fake navigation bar
+        navigationController?.setNavigationBarHidden(true, animated: true)
         
         // Handles network reachablibity
         startMonitoringNetwork()
+        
+        // Enables swipe to pop
+        swipeToPop()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -178,18 +182,16 @@ class CommunityViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.navigationController?.setNavigationBarHidden(false, animated: false)
         
         // Stop NetworkStatusListener
         reachability.stopNotifier()
     }
     
-    //*** This is required to fix navigation bar forever disappear on fast backswipe bug.
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
         
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        headerView.setProfileImage()
+        // Navigation Bar was hidden in viewDidAppear
+        navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
     override func didReceiveMemoryWarning() {
@@ -198,11 +200,10 @@ class CommunityViewController: UIViewController {
     
     // MARK: - Layout
     
-    private func setupNavigationBarItems() {
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         
-        navigationController?.view.backgroundColor = .background
-        navigationController?.navigationBar.isTranslucent = false
-        //navigationItem.titleView = titleLabelView
+        headerView.setProfileImage()
     }
     
     // MARK: - Custom functions
@@ -356,7 +357,6 @@ extension CommunityViewController: ShowUserProfileDelegate {
         let userProfile = UserPageViewController()
         userProfile.user = user
         userProfile.cameFromCommunity = true
-        userProfile.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: navigationController, action: nil)
         
         navigationController?.pushViewController(userProfile, animated: true)
     }
@@ -368,7 +368,7 @@ extension CommunityViewController: ShowSearchDelegate {
 
     func showSearchController() {
         
-        let searchController = SearchTableViewController(style: .grouped)
+        let searchController = SearchTableViewController()
         searchController.users = usersDictionary.values.flatMap { $0 }
         searchController.trendingUsers = trendingUsers
         searchController.hidesBottomBarWhenPushed = true
@@ -388,9 +388,8 @@ extension CommunityViewController: ShowPartnerPageDelegate {
         let partnerPageController = PartnerPageViewController()
         partnerPageController.partner = partner
         partnerPageController.cameFromCommunity = true
-        partnerPageController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: navigationController, action: nil)
         
-        self.navigationController?.pushViewController(partnerPageController, animated: true)
+        navigationController?.pushViewController(partnerPageController, animated: true)
     }
 }
 
@@ -638,5 +637,13 @@ extension CommunityViewController {
             }
         })
     }
+}
+
+extension CommunityViewController: UIGestureRecognizerDelegate {
     
+    func swipeToPop() {
+        
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
+        navigationController?.interactivePopGestureRecognizer?.delegate = self;
+    }
 }

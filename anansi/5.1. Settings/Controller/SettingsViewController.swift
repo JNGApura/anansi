@@ -31,12 +31,13 @@ class SettingsViewController: UIViewController {
         }
     }
     
-    let titleLabel : UILabel = {
-        let l = UILabel()
-        l.text = "Settings"
-        l.textColor = .secondary
-        l.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        return l
+    lazy var topbar: TopBar = {
+        let b = TopBar()
+        b.setTitle(name: "Settings")
+        b.backgroundColor = .background
+        b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
     }()
     
     lazy var tableView : UITableView = {
@@ -53,22 +54,19 @@ class SettingsViewController: UIViewController {
         t.showsVerticalScrollIndicator = false
         return t
     }()
-
+    
+    lazy var barHeight : CGFloat = (navigationController?.navigationBar.frame.height)!
+    let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupNavigationBarItems()
+        view.backgroundColor = .background
         
-        view.addSubview(tableView)
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
+        // Adds subviews
+        [topbar, tableView].forEach { view.addSubview($0) }
         
         // Fetches data from settings.JSON
         if let data = dataFromFile("settings") {
@@ -83,31 +81,45 @@ class SettingsViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: false)
+        super.viewDidAppear(true)
+        
+        setupNavigationBarItems()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        
+        // Navigation Bar was hidden in viewDidAppear
+        navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
     // MARK: Layout
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        topbar.setStatusBarHeight(with: statusBarHeight)
+        topbar.setNavigationBarHeight(with: barHeight)
+        
+        NSLayoutConstraint.activate([
+            
+            topbar.topAnchor.constraint(equalTo: view.topAnchor),
+            topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            
+            tableView.topAnchor.constraint(equalTo: topbar.bottomAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        ])
+    }
+    
     private func setupNavigationBarItems() {
         
-        if let navigationBar = navigationController?.navigationBar {
-            navigationBar.barTintColor = .background
-            navigationBar.isTranslucent = false
-            
-            navigationItem.titleView = titleLabel
-            
-            let backButton: UIButton = {
-                let b = UIButton(type: .system)
-                b.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
-                b.frame = CGRect(x: 0, y: 0, width: 24.0, height: 24.0)
-                b.tintColor = .primary
-                b.translatesAutoresizingMaskIntoConstraints = false
-                b.addTarget(self, action: #selector(back), for: .touchUpInside)
-                return b
-            }()
-            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
-        }
+        //navigationItem.titleView = nil
+        //navigationItem.setHidesBackButton(true, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     // MARK: Custom functions
@@ -127,24 +139,21 @@ class SettingsViewController: UIViewController {
         if identifier == "feedback" {
             let controller = FeedbackPagesViewController() // PageViewController for "Give us feedback"
             controller.user = user
-            self.navigationController?.pushViewController(controller, animated: true)
+            
+            navigationController?.pushViewController(controller, animated: true)
             
         } else if identifier == "basicInfo" {
             let controller = BasicInfoViewController() // PageViewController for editing basic information
             controller.user = user
             controller.delegate = self
-            self.navigationController?.pushViewController(controller, animated: true)
             
-        } else {
-            let controller = AboutPageView(id: identifier) // About Pages
-            self.navigationController?.pushViewController(controller, animated: true)
+            navigationController?.pushViewController(controller, animated: true)
         }
     }
     
     @objc func back() {
         
         navigationController?.popViewController(animated: true)
-        dismiss(animated: true, completion: nil)
     }
     
     // MARK: - Logout

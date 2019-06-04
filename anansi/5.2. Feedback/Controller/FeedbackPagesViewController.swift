@@ -14,32 +14,37 @@ class FeedbackPagesViewController: UIPageViewController {
     fileprivate lazy var feedbackPages: [FeedbackPage] = {
         return [
             FeedbackPage(title: "What do you think of our app?",
-                         description: "We'd love to know how's been your experience, so far. You can tell us anything, no hard feelings!",
+                         description: "We'd love to know how your experience has been so far. Tell us anything, no hard feelings!",
                          buttonLabelFirst: "Lovin' it!",
                          buttonLabelSecond: "Uh, take me back"),
-            FeedbackPage(title: "Glad to hear it!",
-                         description: "Could you rate us? It helps us do more of what you love, and we'd really appreciate it.",
+            FeedbackPage(title: "Glad to hear it! 😍",
+                         description: "Could you rate us? It helps us do more of what you love, and we would really appreciate it!",
                          buttonLabelFirst: "Rate TEDxULisboa",
                          buttonLabelSecond: "No, thanks"),
-            FeedbackPage(title: "We're sorry to hear that!",
+            FeedbackPage(title: "We're sorry to hear that! 😔",
                          description: "Could you let us know why you aren't satisfied with the app?",
                          buttonLabelFirst: "Submit feedback",
                          buttonLabelSecond: "No, thanks"),
-            FeedbackPage(title: "You got it!",
-                         description: "Thank you for letting us know! Your feedback is important to us, and it'll help us improve this app for you. Meanwhile, please continue spreading ideas!",
+            FeedbackPage(title: "You got it! 🤗",
+                         description: "Your feedback is important to us and will help us improve TEDxULisboa's app. Thank you!",
                          buttonLabelSecond: "Take me back")
         ]
     }()
     
     var user: User?
     
-    let titleLabel : UILabel = {
-        let l = UILabel()
-        l.text = "Feedback"
-        l.textColor = .secondary
-        l.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        return l
+    lazy var topbar: TopBar = {
+        let b = TopBar()
+        b.setTitle(name: "Feedback")
+        b.backgroundColor = .background
+        b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
     }()
+    
+    lazy var barHeight : CGFloat = (navigationController?.navigationBar.frame.height)!
+    let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
+    
     
     // Initialization (to programatically change transition style to .scroll)
     
@@ -56,8 +61,9 @@ class FeedbackPagesViewController: UIPageViewController {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         
-        // Sets up navigation bar
-        setupNavigationBarItems()
+        // Adds subviews
+        [topbar].forEach { view.addSubview($0) }
+        view.backgroundColor = .background
         
         // Sets initial view controller as FeedbackPage [0]
         let identifier = 0
@@ -69,7 +75,18 @@ class FeedbackPagesViewController: UIPageViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(completionPage), name: NSNotification.Name(rawValue: "feedbackSubmitted"), object: nil)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        
+        setupNavigationBarItems()
+    }
+    
     override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        
+        // Navigation Bar was hidden in viewDidAppear
+        navigationController?.setNavigationBarHidden(false, animated: true)
+        
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -79,22 +96,33 @@ class FeedbackPagesViewController: UIPageViewController {
     
     // MARK: Layout
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        topbar.setStatusBarHeight(with: statusBarHeight)
+        topbar.setNavigationBarHeight(with: barHeight)
+        
+        NSLayoutConstraint.activate([
+            
+            topbar.topAnchor.constraint(equalTo: view.topAnchor),
+            topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            
+        ])
+    }
+    
     private func setupNavigationBarItems() {
         
-        let navigationBar = navigationController?.navigationBar
-        navigationBar!.barTintColor = .background
-        navigationBar!.isTranslucent = false
-        
-        navigationItem.titleView = titleLabel
-        
-        // Adds custom leftBarButton
-        let backButton = UIBarButtonItem(image: UIImage(named:"back")?.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action:#selector(backAction(_:)))
-        navigationItem.leftBarButtonItem = backButton
+        //navigationItem.titleView = nil
+        //navigationItem.setHidesBackButton(true, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     // MARK: User Interaction
     
-    @objc func backAction(_ sender: UIBarButtonItem) {
+    @objc func back() {
+        
         navigationController?.popViewController(animated: true)
     }
     

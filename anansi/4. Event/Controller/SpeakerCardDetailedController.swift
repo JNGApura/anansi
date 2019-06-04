@@ -41,7 +41,7 @@ class SpeakerCardDetailedController: UIViewController, UIScrollViewDelegate {
     var scheduleData : ScheduleData? {
         didSet {
             
-            titleLabelView.text = scheduleData?.title
+            topbar.setTitle(name: scheduleData!.title)
             
             talkTitle.text = scheduleData!.description
             bioDescription.text = speakerDescriptions[scheduleData!.imageURL]
@@ -51,6 +51,19 @@ class SpeakerCardDetailedController: UIViewController, UIScrollViewDelegate {
             NetworkManager.shared.logEvent(name: "\(String(describing: scheduleData!.imageURL))_tap", parameters: nil)
         }
     }
+    
+    // NavBar
+    
+    lazy var topbar: TopBar = {
+        let b = TopBar()
+        b.setTitle(name: "Speaker")
+        b.backgroundColor = .clear
+        b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+    
+    // View
     
     lazy var scrollView : UIScrollView = {
         let sv = UIScrollView()
@@ -72,15 +85,6 @@ class SpeakerCardDetailedController: UIViewController, UIScrollViewDelegate {
         //v.mask?.contentMode = .scaleToFill
         v.translatesAutoresizingMaskIntoConstraints = false
         return v
-    }()
-    
-    let titleLabelView: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.textColor = .secondary
-        label.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        label.text = "placeholder"
-        return label
     }()
     
     let bioLabel : UILabel = {
@@ -147,19 +151,59 @@ class SpeakerCardDetailedController: UIViewController, UIScrollViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Sets up navigation bar
-        setupNavigationBarItems()
+        view.backgroundColor = .background
         
         // Sets up UI
-        view.addSubview(scrollView)
+        [scrollView, backgroundImage, topbar].forEach { view.addSubview($0) }
         scrollView.addSubview(contentView)
-        [backgroundImage, bioLabel, bioDescription, talkLabel, talkTitle, speakerPic].forEach { contentView.addSubview($0)}
+        [bioLabel, bioDescription, talkLabel, talkTitle, speakerPic].forEach { contentView.addSubview($0)}
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        
+        setupNavigationBarItems()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        
+        // Navigation Bar was hidden in viewDidAppear
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    // MARK: Layout
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        topbar.setStatusBarHeight(with: statusBarHeight)
+        topbar.setNavigationBarHeight(with: barHeight)
+        
+        DispatchQueue.main.async {
+            self.backgroundImage.applyGradient(withColours:
+                [UIColor.primary.withAlphaComponent(0.1), .clear], gradientOrientation: .vertical)
+        }
         
         NSLayoutConstraint.activate([
             
+            // Navbar
+            
+            topbar.topAnchor.constraint(equalTo: view.topAnchor),
+            topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            
+            // View
+            
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.topAnchor.constraint(equalTo: topbar.bottomAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
@@ -167,7 +211,7 @@ class SpeakerCardDetailedController: UIViewController, UIScrollViewDelegate {
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             
-            backgroundImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: -(barHeight + statusBarHeight)),
+            backgroundImage.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             backgroundImage.widthAnchor.constraint(equalTo: view.widthAnchor),
             backgroundImage.heightAnchor.constraint(equalTo: view.heightAnchor),
@@ -193,57 +237,19 @@ class SpeakerCardDetailedController: UIViewController, UIScrollViewDelegate {
             speakerPic.widthAnchor.constraint(equalToConstant: view.frame.height * 0.3),
             speakerPic.heightAnchor.constraint(equalToConstant: view.frame.height * 0.3),
         ])
-        
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        navigationController?.navigationBar.isTranslucent = true
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        navigationController?.navigationBar.isTranslucent = false
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
-    // MARK: Layout
-
-    override func viewDidLayoutSubviews() {
-        
-        DispatchQueue.main.async {
-            self.backgroundImage.applyGradient(withColours:
-                [UIColor.primary.withAlphaComponent(0.1), .clear], gradientOrientation: .vertical)
-        }
     }
     
     private func setupNavigationBarItems() {
-                
-        navigationItem.titleView = titleLabelView
         
-        // Adds custom leftBarButton
-        let backButton: UIButton = {
-            let b = UIButton(type: .system)
-            b.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
-            b.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
-            b.tintColor = .primary
-            b.addTarget(self, action: #selector(backAction(_:)), for: .touchUpInside)
-            return b
-        }()
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+        //navigationItem.titleView = nil
+        //navigationItem.setHidesBackButton(true, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     // MARK: Custom functions
     
-    @objc func backAction(_ sender: UIBarButtonItem) {
+    @objc func back() {
         
         navigationController?.popViewController(animated: true)
-        navigationController?.navigationBar.isHidden = true // this is very important!
     }
 }

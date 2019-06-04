@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BasicInfoViewController: UIViewController, UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource {
+class BasicInfoViewController: UIViewController, UIScrollViewDelegate {
     
     // Data
     var delegate: SettingsViewController?
@@ -27,14 +27,18 @@ class BasicInfoViewController: UIViewController, UIScrollViewDelegate, UITableVi
     
     let fields: [userInfoType] = [.name, .occupation, .location]
     
-    // Custom initializers
-    let titleLabel : UILabel = {
-        let l = UILabel()
-        l.text = "Basic information"
-        l.textColor = .secondary
-        l.font = UIFont.boldSystemFont(ofSize: Const.bodyFontSize)
-        return l
+    // Navbar
+    
+    lazy var topbar: TopBar = {
+        let b = TopBar()
+        b.setTitle(name: "Basic information")
+        b.backgroundColor = .background
+        b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
     }()
+    
+    // View
     
     lazy var scrollView: UIScrollView = {
         let v = UIScrollView()
@@ -93,23 +97,52 @@ class BasicInfoViewController: UIViewController, UIScrollViewDelegate, UITableVi
         return ai
     }()
     
+    lazy var barHeight : CGFloat = (navigationController?.navigationBar.frame.height)!
+    let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
+    
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .background
-        
-        setupNavigationBarItems()
-        
+    
         hideKeyboardWhenTappedAround()
         
         // Add subviews to view
-        view.addSubview(scrollView)
+        [topbar, scrollView].forEach { view.addSubview($0) }
         [profileImage, activityIndicator, addPictureButton, tableView].forEach { scrollView.addSubview($0)}
         
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        
+        setupNavigationBarItems()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        
+        // Navigation Bar was hidden in viewDidAppear
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    // MARK: - Layout
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        topbar.setStatusBarHeight(with: statusBarHeight)
+        topbar.setNavigationBarHeight(with: barHeight)
+        
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            
+            scrollView.topAnchor.constraint(equalTo: topbar.bottomAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -121,7 +154,7 @@ class BasicInfoViewController: UIViewController, UIScrollViewDelegate, UITableVi
             
             activityIndicator.centerXAnchor.constraint(equalTo: profileImage.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor),
-
+            
             addPictureButton.trailingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 4.0),
             addPictureButton.bottomAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: 4.0),
             addPictureButton.widthAnchor.constraint(equalToConstant: 36.0),
@@ -130,42 +163,28 @@ class BasicInfoViewController: UIViewController, UIScrollViewDelegate, UITableVi
             tableView.topAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: 32.0),
             tableView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             tableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            // Nav bar
+            
+            topbar.topAnchor.constraint(equalTo: view.topAnchor),
+            topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+    
         ])
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(true)
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
-    // Sets up navigation bar
-    func setupNavigationBarItems() {
+    private func setupNavigationBarItems() {
         
-        navigationController?.view.backgroundColor = .background
-        navigationController?.hidesBarsOnSwipe = false
-        navigationController?.navigationBar.isTranslucent = false
-        
-        navigationItem.titleView = titleLabel
-        
-        let backButton: UIButton = {
-            let b = UIButton(type: .system)
-            b.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
-            b.frame = CGRect(x: 0, y: 0, width: 24.0, height: 24.0)
-            b.tintColor = .primary
-            b.translatesAutoresizingMaskIntoConstraints = false
-            b.addTarget(self, action: #selector(backToSettings(_:)), for: .touchUpInside)
-            return b
-        }()
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+        //navigationItem.titleView = nil
+        //navigationItem.setHidesBackButton(true, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     // MARK: Custom functions
     
-    @objc func backToSettings(_ sender: UIBarButtonItem) {
+    @objc func back() {
         
         self.navigationController?.popViewController(animated: true)
         dismiss(animated: true) {
@@ -180,8 +199,13 @@ class BasicInfoViewController: UIViewController, UIScrollViewDelegate, UITableVi
         
         present(alert, animated: true, completion: nil)
     }
-    
-    // MARK: TableViewDelegate
+
+}
+
+
+// MARK: TableViewDelegate
+
+extension BasicInfoViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return fields.count

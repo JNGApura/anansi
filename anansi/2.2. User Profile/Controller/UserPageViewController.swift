@@ -21,20 +21,30 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
     var userInterests = [String]()
     var myInterests = [String]()
     
+    var isNavigationBarHidden : Bool = false
+    
     var user: User? {
         didSet {
+            
+            //
+            setupNavigationBarItems()
             
             sections.removeAll()
             sectionDataToDisplay.removeAll()
             iconForContactSection.removeAll()
                         
             if let profileImageURL = user?.getValue(forField: .profileImageURL) as? String {
+                
                 headerView.profileImage.setImage(with: profileImageURL)
             } else {
+                
                 headerView.profileImage.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
             }
             
             if let name = user?.getValue(forField: .name) as? String {
+                topbar.setTitle(name: name)
+                topbar.titleLabel.alpha = 0.0
+                
                 headerView.setTitleName(name: name)
                 
                 if let firstName = name.components(separatedBy: " ").first {
@@ -119,6 +129,19 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
+    // NavBar
+    
+    lazy var topbar: TopBar = {
+        let b = TopBar()
+        b.setTitle(name: "")
+        b.backgroundColor = .clear
+        b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+    
+    // View
+    
     lazy var scrollView : UIScrollView = {
         let sv = UIScrollView()
         sv.delegate = self
@@ -202,68 +225,30 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupNavigationBarItems()
+        view.backgroundColor = .background
         
         // Sets up UI
-        view.addSubview(scrollView)
+        [scrollView, topbar].forEach { view.addSubview($0) }
         scrollView.addSubview(contentView)
         [backgroundImage, headerView, newChatButton, tableView].forEach { contentView.addSubview($0)}
         
-        NSLayoutConstraint.activate([
-            
-            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            
-            backgroundImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: -(barHeight + statusBarHeight)),
-            backgroundImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            backgroundImage.widthAnchor.constraint(equalTo: view.widthAnchor),
-            backgroundImage.heightAnchor.constraint(equalToConstant: 374.0),
-            
-            headerView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            headerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            headerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 214.0),
-            
-            newChatButton.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: Const.marginSafeArea),
-            newChatButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Const.marginSafeArea),
-            newChatButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Const.marginSafeArea),
-            newChatButton.heightAnchor.constraint(equalToConstant: 40.0),
-            
-            tableView.topAnchor.constraint(equalTo: newChatButton.bottomAnchor, constant: Const.marginEight),
-            tableView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            tableView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16.0),
-        ])
-        
-        tableView.reloadData()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        // I need dispatchQueue because I was getting EXC_BAD_ACCESS code (probably I was adding this when the view was not ready yet)
-        DispatchQueue.main.async {
-            
-            // Sets gradients for backgroundImage and progressBarView
-            self.backgroundImage.applyGradient(withColours: [.primary, .primary], gradientOrientation: .vertical)
-        }
-        
-        tableView.reloadData()
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        setupNavigationBarItems()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        setupNavigationBarItems()
+        isNavigationBarHidden = true
         
         // Updates ranking
         if let id = user?.getValue(forField: .id) as? String {
@@ -289,42 +274,80 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        viewDidDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
         
-        navigationItem.titleView?.isHidden = true
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
+        // Navigation Bar was hidden in viewDidAppear
+        navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
     // MARK: Layout
     
-    // Sets up navigation bar
-    func setupNavigationBarItems() {
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        topbar.setLargerBackButton()
+        topbar.setStatusBarHeight(with: statusBarHeight)
+        topbar.setNavigationBarHeight(with: barHeight)
+        
+        NSLayoutConstraint.activate([
+            
+            // Navbar
+            
+            topbar.topAnchor.constraint(equalTo: view.topAnchor),
+            topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            
+            // View
+            
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            
+            backgroundImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: -statusBarHeight),
+            backgroundImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            backgroundImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            backgroundImage.heightAnchor.constraint(equalToConstant: 374.0),
+            
+            headerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: statusBarHeight),
+            headerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            headerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: 214.0),
+            
+            newChatButton.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: Const.marginSafeArea),
+            newChatButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Const.marginSafeArea),
+            newChatButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Const.marginSafeArea),
+            newChatButton.heightAnchor.constraint(equalToConstant: 40.0),
+            
+            tableView.topAnchor.constraint(equalTo: newChatButton.bottomAnchor, constant: Const.marginEight),
+            tableView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            tableView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Const.marginEight * 4.0),
+            
+        ])
+        
+        DispatchQueue.main.async {
+            
+            // Sets gradients for backgroundImage
+            self.backgroundImage.applyGradient(withColours: [.primary, .primary], gradientOrientation: .vertical)
+            
+            self.tableView.reloadData()
+            self.tableView.layoutIfNeeded()
+        }
+    }
     
-        navigationController?.navigationBar.isTranslucent = true
-        navigationController?.view.backgroundColor = .background
-        navigationController?.hidesBarsOnSwipe = false
+    private func setupNavigationBarItems() {
         
-        navigationItem.titleView?.isHidden = false
-        navigationItem.titleView?.alpha = 0.0
-        navigationItem.title = ""
-        
-        let backButton: UIButton = {
-            let button = UIButton(type: .system)
-            button.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
-            button.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
-            button.tintColor = .primary
-            button.backgroundColor = .background
-            button.layer.cornerRadius = Const.navButtonHeight / 2.0
-            button.layer.masksToBounds = true
-            button.addTarget(self, action: #selector(backAction(_:)), for: .touchUpInside)
-            return button
-        }()
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+        //navigationItem.titleView = nil
+        //navigationItem.setHidesBackButton(true, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
         
     // MARK: Custom functions
@@ -357,28 +380,23 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    @objc func backAction(_ sender: UIBarButtonItem) {
+    @objc func back() {
         
         navigationController?.popViewController(animated: true)
-        navigationController?.navigationBar.isTranslucent = false
-        navigationController?.navigationBar.isHidden = cameFromCommunity // this is very important!
     }
     
     @objc func showChatLogController() {
         
-        if cameFromChat {
-            
-            navigationController?.navigationBar.isTranslucent = false
+        if cameFromChat {            
             navigationController?.popViewController(animated: true)
             
         } else {
             
-            let chatController = ChatLogViewController(style: .grouped)
+            let chatController = ChatLogViewController()
             chatController.user = user
             chatController.cameFromUserProfile = true
             chatController.hidesBottomBarWhenPushed = true
             
-            navigationController?.navigationBar.isTranslucent = false
             navigationController?.pushViewController(chatController, animated: true)
         }
     }
@@ -535,17 +553,37 @@ extension UserPageViewController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
-        let topDistance = barHeight + statusBarHeight
+        let topDistance : CGFloat = statusBarHeight //+ barHeight
         let offsetY : CGFloat = scrollView.contentOffset.y
         
-        // Zooms out image when scrolled down
-        if  offsetY + topDistance < 0 {
-            let zoomRatio = (-(offsetY + topDistance) * 0.0065) + 1.0
-            backgroundImage.transform = CGAffineTransform(scaleX: zoomRatio, y: zoomRatio)
+        // When going from chat to userProfile, the background image flickers (zooms in and out)
+        // because of the navigation bar, so I need to set a variable to allow scrolling only
+        // after I know the navigation bar has been hidden
+        
+        if isNavigationBarHidden {
+        
+            // Zooms out image when scrolled down
+            if  offsetY + topDistance < 0 {
+                let zoomRatio = (-(offsetY + topDistance) * 0.0065) + 1.0
+                backgroundImage.transform = CGAffineTransform(scaleX: zoomRatio, y: zoomRatio)
+                
+                topbar.statusbar.alpha = 0.0
+                topbar.navigationbar.alpha = 0.0
+                topbar.titleLabel.alpha = 0.0
+                
+            } else {
+                
+                let delta = headerView.profileImage.frame.maxY == 0.0 ? 1.0 : (headerView.profileImage.frame.maxY - (offsetY + topDistance)) / headerView.profileImage.frame.maxY
+                
+                topbar.statusbar.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
+                topbar.navigationbar.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
+                topbar.titleLabel.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
+                
+                backgroundImage.transform = CGAffineTransform.identity
+            }
             
-        } else {
-            backgroundImage.transform = CGAffineTransform.identity
+            backgroundImage.layoutIfNeeded()
         }
-        backgroundImage.layoutIfNeeded()
     }
+    
 }

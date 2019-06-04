@@ -30,13 +30,15 @@ class PartnerPageViewController: UIViewController {
             if let picURL = partner?.getValue(forField: .profileImageURL) as? String {
                 
                 headerView.profileImage.setImage(with: picURL)
-
             } else {
                 
                 headerView.profileImage.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
             }
             
             if let name = partner?.getValue(forField: .name) as? String {
+                topbar.setTitle(name: name)
+                topbar.titleLabel.alpha = 0.0
+                
                 headerView.setTitleName(name: name)
             }
             
@@ -92,14 +94,25 @@ class PartnerPageViewController: UIViewController {
                 
                 partnerCard.setTitle((" " + type + Const.mapPartner[type]! + " Partner").uppercased(), for: .normal)
                 partnerCard.backgroundColor = Const.typeColor[type]
-                
-                arrowsImage.tintColor = Const.typeColor[type]
             }
             
             tableView.reloadData()
             tableView.layoutIfNeeded()
         }
     }
+    
+    // NavBar
+    
+    lazy var topbar: TopBar = {
+        let b = TopBar()
+        b.setTitle(name: "")
+        b.backgroundColor = .clear
+        b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+    
+    // View
     
     lazy var scrollView : UIScrollView = {
         let sv = UIScrollView()
@@ -117,19 +130,12 @@ class PartnerPageViewController: UIViewController {
     }()
     
     // Cover
+    
     lazy var backgroundImage: GradientView = {
         let v = GradientView()
         v.mask = UIImageView(image: UIImage(named: "cover-partners")?.withRenderingMode(.alwaysTemplate))
         v.translatesAutoresizingMaskIntoConstraints = false
         return v
-    }()
-    
-    lazy var arrowsImage: UIImageView = {
-        let i = UIImageView()
-        i.image = UIImage(named: "arrows")?.withRenderingMode(.alwaysTemplate)
-        i.contentMode = .scaleAspectFit
-        i.translatesAutoresizingMaskIntoConstraints = false
-        return i
     }()
     
     // Header
@@ -186,11 +192,10 @@ class PartnerPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupNavigationBarItems()
-        
-        view.addSubview(scrollView)
+        // Set up the UI
+        [scrollView, topbar].forEach { view.addSubview($0) }
         scrollView.addSubview(contentView)
-        [backgroundImage, arrowsImage, headerView, partnerCard, tableView].forEach { contentView.addSubview($0)}
+        [backgroundImage, headerView, partnerCard, tableView].forEach { contentView.addSubview($0)}
         
         NSLayoutConstraint.activate([
             
@@ -204,16 +209,12 @@ class PartnerPageViewController: UIViewController {
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             
-            backgroundImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: -(barHeight + statusBarHeight)),
+            backgroundImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: -statusBarHeight),
             backgroundImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             backgroundImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             backgroundImage.heightAnchor.constraint(equalToConstant: 374.0),
             
-            arrowsImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Const.marginSafeArea),
-            arrowsImage.bottomAnchor.constraint(equalTo: headerView.bottomAnchor),
-            arrowsImage.heightAnchor.constraint(equalToConstant: 44.0),
-            
-            headerView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            headerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: statusBarHeight),
             headerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             headerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 214.0),
@@ -234,8 +235,59 @@ class PartnerPageViewController: UIViewController {
         ])
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+            self.tableView.layoutIfNeeded()
+        }
+        
+        super.viewWillAppear(animated)
+        
+        setupNavigationBarItems()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        setupNavigationBarItems()
+        
+        // Logs partner visualizations
+        if let id = partner?.getValue(forField: .id) as? String {
+            NetworkManager.shared.logEvent(name: "partner_\(String(describing: id))_tap", parameters: nil)
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        
+        // Navigation Bar was hidden in viewDidAppear
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    // MARK: Layout
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        topbar.setLargerBackButton()
+        topbar.setStatusBarHeight(with: statusBarHeight)
+        topbar.setNavigationBarHeight(with: barHeight)
+        
+        NSLayoutConstraint.activate([
+            
+            // Navbar
+            
+            topbar.topAnchor.constraint(equalTo: view.topAnchor),
+            topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            
+        ])
         
         // I need dispatchQueue because I was getting EXC_BAD_ACCESS code (probably I was adding this when the view was not ready yet)
         DispatchQueue.main.async {
@@ -247,62 +299,15 @@ class PartnerPageViewController: UIViewController {
                 self.backgroundImage.applyGradient(withColours: [.primary, .primary], gradientOrientation: .vertical)
             }
         }
+        
+        tableView.reloadData()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    private func setupNavigationBarItems() {
         
-        self.navigationController?.navigationBar.isTranslucent = true // Sets Nav bar to translucent
-        
-        // Sets up call-to-action view
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-            self.tableView.layoutIfNeeded()
-        }
-        
-        super.viewWillAppear(animated)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        // Logs partner visualizations
-        if let id = partner?.getValue(forField: .id) as? String {
-            NetworkManager.shared.logEvent(name: "partner_\(String(describing: id))_tap", parameters: nil)
-        }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        viewDidDisappear(animated)
-        navigationItem.titleView?.isHidden = true
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
-    // MARK: Layout
-    
-    func setupNavigationBarItems() {
-        
-        navigationController?.navigationBar.isTranslucent = true
-        navigationController?.view.backgroundColor = .background
-        navigationController?.hidesBarsOnSwipe = false
-        
-        navigationItem.title = ""
-        
-        let backButton: UIButton = {
-            let button = UIButton(type: .system)
-            button.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
-            button.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
-            button.tintColor = .primary
-            button.backgroundColor = .background
-            button.layer.cornerRadius = Const.navButtonHeight / 2.0
-            button.layer.masksToBounds = true
-            button.addTarget(self, action: #selector(backAction(_:)), for: .touchUpInside)
-            return button
-        }()
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+        //navigationItem.titleView = nil
+        //navigationItem.setHidesBackButton(true, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     // MARK: Custom functions
@@ -317,11 +322,9 @@ class PartnerPageViewController: UIViewController {
         }
     }
     
-    @objc func backAction(_ sender: UIBarButtonItem) {
+    @objc func back() {
 
-        self.navigationController?.popViewController(animated: true)
-        self.navigationController?.navigationBar.isHidden = cameFromCommunity // this is very important!
-        self.dismiss(animated: true, completion: nil)
+        navigationController?.popViewController(animated: true)
     }
 }
 
@@ -452,7 +455,7 @@ extension PartnerPageViewController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
-        let topDistance = barHeight + statusBarHeight
+        let topDistance : CGFloat = statusBarHeight //+ barHeight
         let offsetY : CGFloat = scrollView.contentOffset.y
         
         // Zooms out image when scrolled down
@@ -460,9 +463,21 @@ extension PartnerPageViewController: UIScrollViewDelegate {
             let zoomRatio = (-(offsetY + topDistance) * 0.0065) + 1.0
             backgroundImage.transform = CGAffineTransform(scaleX: zoomRatio, y: zoomRatio)
             
+            topbar.statusbar.alpha = 0.0
+            topbar.navigationbar.alpha = 0.0
+            topbar.titleLabel.alpha = 0.0
+            
         } else {
+            
+            let delta = headerView.profileImage.frame.maxY == 0.0 ? 1.0 : (headerView.profileImage.frame.maxY - (offsetY + topDistance)) / headerView.profileImage.frame.maxY
+            
+            topbar.statusbar.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
+            topbar.navigationbar.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
+            topbar.titleLabel.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
+            
             backgroundImage.transform = CGAffineTransform.identity
         }
+        
         backgroundImage.layoutIfNeeded()
     }
 }
@@ -475,7 +490,6 @@ extension PartnerPageViewController: ShowUserProfileDelegate {
         
         let userProfile = UserPageViewController()
         userProfile.user = user
-        userProfile.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: navigationController, action: nil)
         
         navigationController?.pushViewController(userProfile, animated: true)
     }

@@ -74,6 +74,48 @@ class ProfileViewController: UIViewController {
         return l
     }()
     
+    // Fake status & navigation bar
+    let fakeStatusBar : UIView = {
+        let v = UIView()
+        v.backgroundColor = .background
+        v.alpha = 0.0
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
+    
+    let fakeNavigationBar : UIView = {
+        let v = UIView()
+        v.backgroundColor = .clear
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
+    
+    lazy var dismissButton: UIButton = {
+        let b = UIButton()
+        b.setImage(UIImage(named: "close")!.withRenderingMode(.alwaysTemplate), for: .normal)
+        b.contentMode = .scaleAspectFit
+        b.tintColor = .secondary
+        b.backgroundColor = UIColor.tertiary.withAlphaComponent(0.4)
+        b.layer.cornerRadius = 16.0
+        b.layer.masksToBounds = true
+        b.addTarget(self, action: #selector(dismissViewController), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+    
+    lazy var settingsButton: UIButton = {
+        let b = UIButton()
+        b.setImage(UIImage(named: "settings")!.withRenderingMode(.alwaysTemplate), for: .normal)
+        b.contentMode = .scaleAspectFit
+        b.tintColor = .secondary
+        b.backgroundColor = UIColor.tertiary.withAlphaComponent(0.4)
+        b.layer.cornerRadius = 16.0
+        b.layer.masksToBounds = true
+        b.addTarget(self, action: #selector(navigateToSettingsViewController), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+    
     // Cover
     lazy var backgroundImage: GradientView = {
         let v = GradientView()
@@ -191,18 +233,26 @@ class ProfileViewController: UIViewController {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         
-        (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .clear
         view.backgroundColor = .background
         
         // Fetches meeee!
         fetchMe()
         
         // Sets up UI
-        view.addSubview(scrollView)
-        view.addSubview(buttonListBackground)
-        scrollView.addSubview(contentView)
+        [scrollView, buttonListBackground, fakeStatusBar, fakeNavigationBar, settingsButton, dismissButton].forEach { view.addSubview($0) }
         
+        scrollView.addSubview(contentView)
         [backgroundImage, headerView, achievementView, tableView].forEach { contentView.addSubview($0)}
+        
+        [ratingIcon, titleAchievement, privateToYouLabel, progressBarView, progressLeftView, checkIcon].forEach { achievementView.addSubview($0) }
+        
+        // This needs to happen when view loads
+        checkIconLeadingAnchor = checkIcon.leadingAnchor.constraint(equalTo: progressBarView.leadingAnchor)
+        checkIconLeadingAnchor?.isActive = true
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         
         NSLayoutConstraint.activate([
             
@@ -216,37 +266,54 @@ class ProfileViewController: UIViewController {
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             
-            backgroundImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: -statusBarHeight),
+            backgroundImage.topAnchor.constraint(equalTo: contentView.topAnchor),
             backgroundImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             backgroundImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             backgroundImage.heightAnchor.constraint(equalToConstant: 374.0),
             
-            headerView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            headerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: statusBarHeight),
             headerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             headerView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 214.0),
-        
+            
             achievementView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: Const.marginSafeArea),
             achievementView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             achievementView.widthAnchor.constraint(equalTo: contentView.widthAnchor, constant: -Const.marginSafeArea * 2.0),
             achievementView.heightAnchor.constraint(equalToConstant: 112.0),
-
+            
             tableView.topAnchor.constraint(equalTo: achievementView.bottomAnchor, constant: Const.marginEight),
             tableView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             tableView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            buttonListBackground.topAnchor.constraint(equalTo: view.topAnchor, constant: statusBarHeight + 5.0),
-            buttonListBackground.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Const.marginEight * 2.0),
+            // STATUS & NAVIGATION BAR
+            
+            fakeStatusBar.topAnchor.constraint(equalTo: view.topAnchor),
+            fakeStatusBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            fakeStatusBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            fakeStatusBar.heightAnchor.constraint(equalToConstant: statusBarHeight),
+            
+            fakeNavigationBar.topAnchor.constraint(equalTo: fakeStatusBar.bottomAnchor),
+            fakeNavigationBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            fakeNavigationBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            fakeNavigationBar.heightAnchor.constraint(equalToConstant: barHeight),
+            
+            settingsButton.centerYAnchor.constraint(equalTo: fakeNavigationBar.centerYAnchor),
+            settingsButton.trailingAnchor.constraint(equalTo: dismissButton.leadingAnchor, constant: -Const.marginEight * 2.0),
+            settingsButton.heightAnchor.constraint(equalTo: settingsButton.widthAnchor),
+            settingsButton.widthAnchor.constraint(equalToConstant: 32.0),
+
+            dismissButton.centerYAnchor.constraint(equalTo: fakeNavigationBar.centerYAnchor),
+            dismissButton.trailingAnchor.constraint(equalTo: fakeNavigationBar.trailingAnchor, constant: -Const.marginEight * 2.0),
+            dismissButton.heightAnchor.constraint(equalTo: dismissButton.widthAnchor),
+            dismissButton.widthAnchor.constraint(equalToConstant: 32.0),
+            
+            buttonListBackground.centerYAnchor.constraint(equalTo: fakeNavigationBar.centerYAnchor),
+            buttonListBackground.trailingAnchor.constraint(equalTo: fakeNavigationBar.trailingAnchor, constant: -Const.marginEight * 2.0),
             buttonListBackground.widthAnchor.constraint(equalToConstant: 80.0),
             buttonListBackground.heightAnchor.constraint(equalToConstant: 34.0),
-        ])
-        
-        // CALL-TO-ACTION VIEW
-        
-        [ratingIcon, titleAchievement, privateToYouLabel, progressBarView, progressLeftView, checkIcon].forEach { achievementView.addSubview($0) }
-        
-        NSLayoutConstraint.activate([
+            
+            // CALL TO ACTION
             
             ratingIcon.topAnchor.constraint(equalTo: achievementView.topAnchor, constant: Const.marginSafeArea / 2.0),
             ratingIcon.trailingAnchor.constraint(equalTo: achievementView.trailingAnchor, constant: -Const.marginSafeArea / 2.0),
@@ -278,14 +345,7 @@ class ProfileViewController: UIViewController {
             progressLeftView.trailingAnchor.constraint(equalTo: checkIcon.centerXAnchor),
             progressLeftView.heightAnchor.constraint(equalToConstant: 22.0),
         ])
-        
-        checkIconLeadingAnchor = checkIcon.leadingAnchor.constraint(equalTo: progressBarView.leadingAnchor)
-        checkIconLeadingAnchor?.isActive = true
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
+
         // I need dispatchQueue because I was getting EXC_BAD_ACCESS code (probably I was adding this when the view was not ready yet)
         DispatchQueue.main.async {
             
@@ -293,58 +353,21 @@ class ProfileViewController: UIViewController {
             self.backgroundImage.applyGradient(withColours: [.primary, .primary], gradientOrientation: .vertical)
         }
                 
-        self.tableView.reloadData()
+        tableView.reloadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if let navigationBar = navigationController?.navigationBar {
-            navigationBar.barTintColor = .clear
-            navigationBar.isTranslucent = true
-            
-            navigationItem.titleView = nil
-
-            let dismissButton: UIButton = {
-                let b = UIButton()
-                b.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
-                b.setImage(UIImage(named: "close")!.withRenderingMode(.alwaysTemplate), for: .normal)
-                b.contentMode = .scaleAspectFit
-                b.tintColor = .secondary
-                b.backgroundColor = UIColor.tertiary.withAlphaComponent(0.4)
-                b.layer.cornerRadius = 16.0
-                b.layer.masksToBounds = true
-                b.addTarget(self, action: #selector(dismissViewController), for: .touchUpInside)
-                return b
-            }()
-            
-            let settingsButton: UIButton = {
-                let b = UIButton()
-                b.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
-                b.setImage(UIImage(named: "settings")!.withRenderingMode(.alwaysTemplate), for: .normal)
-                b.contentMode = .scaleAspectFit
-                b.tintColor = .secondary
-                b.backgroundColor = UIColor.tertiary.withAlphaComponent(0.4)
-                b.layer.cornerRadius = 16.0
-                b.layer.masksToBounds = true
-                b.addTarget(self, action: #selector(navigateToSettingsViewController), for: .touchUpInside)
-                return b
-            }()
-            
-            let middleSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-            middleSpace.width = 16.0
-            
-            navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: dismissButton), middleSpace, UIBarButtonItem(customView: settingsButton)]
-        }
+        // This is important, because I'm using a fake navigation bar
+        navigationController?.setNavigationBarHidden(true, animated: true)
         
-        // Fetch meeee!
-        //fetchMe()
+        // Enables swipe to pop
+        swipeToPop()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: false)
         
         if !UserDefaults.standard.isProfileOnboarded() {
             
@@ -366,15 +389,16 @@ class ProfileViewController: UIViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        viewDidDisappear(animated)
-        
-        // Revert everything back to normal
-        (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .clear
-        
-        navigationController?.setNavigationBarHidden(false, animated: false)
-        navigationItem.title = ""
-        
+        super.viewDidDisappear(animated)
+
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        
+        // Navigation Bar was hidden in viewWillAppear
+        navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
     override func didReceiveMemoryWarning() {
@@ -449,7 +473,6 @@ class ProfileViewController: UIViewController {
 
         view.endEditing(true)
         
-        navigationController?.popViewController(animated: true)
         dismiss(animated: true, completion: nil)
     }
     
@@ -457,7 +480,7 @@ class ProfileViewController: UIViewController {
         
         let settingsController = SettingsViewController()
         settingsController.user = user
-        
+
         navigationController?.pushViewController(settingsController, animated: true)
     }
     
@@ -792,29 +815,32 @@ extension ProfileViewController: UIScrollViewDelegate {
         // If keyboard is active, ignore scroll UI changes
         if keyboardIsActive { return }
         
-        let topDistance = barHeight + statusBarHeight
+        let topDistance = statusBarHeight // + barHeight
         let offsetY : CGFloat = scrollView.contentOffset.y
         
         // Zooms out image when scrolled down
         if  offsetY + topDistance < 0 {
             let zoomRatio = (-(offsetY + topDistance) * 0.0065) + 1.0
             backgroundImage.transform = CGAffineTransform(scaleX: zoomRatio, y: zoomRatio)
-            
-            (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .clear
+            fakeStatusBar.alpha = 0.0
             
         } else {
             
-            let alpha = -offsetY/topDistance
-            if alpha <= 1.0 {
-                (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = UIColor.background.withAlphaComponent(1.0 - alpha)
-
-            } else {
-                (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .background
-            }
-
+            let delta = headerView.profileImage.frame.maxY == 0.0 ? 1.0 : (headerView.profileImage.frame.maxY - (offsetY + topDistance)) / headerView.profileImage.frame.maxY
+            
+            fakeStatusBar.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
             backgroundImage.transform = CGAffineTransform.identity
         }
         
         backgroundImage.layoutIfNeeded()
+    }
+}
+
+extension ProfileViewController: UIGestureRecognizerDelegate {
+    
+    func swipeToPop() {
+        
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
+        navigationController?.interactivePopGestureRecognizer?.delegate = self;
     }
 }

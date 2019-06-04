@@ -26,6 +26,19 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
         }
     }
     
+    // Navbar
+    
+    lazy var topbar: TopBar = {
+        let b = TopBar()
+        b.setTitle(name: "")
+        b.backgroundColor = .background
+        b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+    
+    // View
+    
     private lazy var scrollView: UIScrollView = {
         let sv = UIScrollView()
         sv.backgroundColor = .background
@@ -105,7 +118,7 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
     private let secondButton : TertiaryButton = {
         let p = TertiaryButton()
         p.setTitle("Cancel", for: .normal)
-        p.addTarget(self, action: #selector(backAction), for: .touchUpInside)
+        p.addTarget(self, action: #selector(back), for: .touchUpInside)
         return p
     }()
     
@@ -125,24 +138,72 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
         return bgv
     }()
     
+    lazy var barHeight : CGFloat = (navigationController?.navigationBar.frame.height)!
+    let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
+    
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         hideKeyboardWhenTappedAround()
         
-        setupNavigationBarItems()
-        
-        view.addSubview(scrollView)
+        [topbar, scrollView].forEach { view.addSubview($0) }
         [groupedView, buttonGroupView].forEach { scrollView.addSubview($0) }
         [pageTitle, pageDescription, abuseOptionsTable, feedbackTextView].forEach { groupedView.addSubview($0) }
         [firstButton, secondButton, hiddenButton].forEach { buttonGroupView.addSubview($0) }
         
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        
+        setupNavigationBarItems()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Creates keyboard-specific notification observers, so that we can track when the keyboard is presented or is hidden
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        
+        // Navigation Bar was hidden in viewDidAppear
+        navigationController?.setNavigationBarHidden(false, animated: true)
+        
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: Layout
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        topbar.setStatusBarHeight(with: statusBarHeight)
+        topbar.setNavigationBarHeight(with: barHeight)
+        
         NSLayoutConstraint.activate([
+            
+            // Navbar
+            
+            topbar.topAnchor.constraint(equalTo: view.topAnchor),
+            topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            
+            // View
             
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.topAnchor.constraint(equalTo: topbar.bottomAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             groupedView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: view.frame.size.height / 4),
@@ -179,7 +240,7 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
             firstButton.centerXAnchor.constraint(equalTo: buttonGroupView.centerXAnchor),
             firstButton.widthAnchor.constraint(equalTo: buttonGroupView.widthAnchor),
             firstButton.heightAnchor.constraint(equalToConstant: 48.0),
-
+            
             secondButton.topAnchor.constraint(equalTo: firstButton.bottomAnchor, constant: 4.0),
             secondButton.centerXAnchor.constraint(equalTo: buttonGroupView.centerXAnchor),
             secondButton.widthAnchor.constraint(equalTo: buttonGroupView.widthAnchor),
@@ -192,47 +253,18 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
         ])
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        // Creates keyboard-specific notification observers, so that we can track when the keyboard is presented or is hidden
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    // MARK: Layout
-    
     private func setupNavigationBarItems() {
         
-        navigationController?.view.backgroundColor = .background
-        navigationController?.navigationBar.isTranslucent = false
-        
-        let backButton: UIButton = {
-            let b = UIButton(type: .system)
-            b.setImage(UIImage(named: "back")!.withRenderingMode(.alwaysTemplate), for: .normal)
-            b.frame = CGRect(x: 0, y: 0, width: Const.navButtonHeight, height: Const.navButtonHeight)
-            b.tintColor = .primary
-            b.addTarget(self, action: #selector(backAction), for: .touchUpInside)
-            return b
-        }()
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+        //navigationItem.titleView = nil
+        //navigationItem.setHidesBackButton(true, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     // MARK: Custom functions
     
-    @objc func backAction(_ sender: UIBarButtonItem) {
+    @objc func back() {
         
-        navigationController?.fadeBack()
+        navigationController?.popViewController(animated: true)
     }
     
     @objc func submitFeedback(_ sender: UIButton){
@@ -260,7 +292,6 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
         NetworkManager.shared.register(value: currentTime, for: "blockedUsers/\(String(describing: guiltyID!))", in: myID!)
  
         // Returns to chatController
-        navigationController?.fadeBack()
         delegate?.userWasReported(user: user!)
     }
     
@@ -290,7 +321,7 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
         
         if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
             
-            let textBoxRelativeMaxY = feedbackTextView.frame.maxY + groupedView.frame.origin.y
+            let textBoxRelativeMaxY = feedbackTextView.frame.maxY + groupedView.frame.origin.y + barHeight + statusBarHeight
             let screenHeight = view.frame.height
             
             let offsetY = (screenHeight - textBoxRelativeMaxY - 16)

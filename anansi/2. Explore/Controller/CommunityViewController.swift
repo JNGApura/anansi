@@ -356,7 +356,6 @@ extension CommunityViewController: ShowUserProfileDelegate {
         
         let userProfile = UserPageViewController()
         userProfile.user = user
-        userProfile.cameFromCommunity = true
         
         navigationController?.pushViewController(userProfile, animated: true)
     }
@@ -371,7 +370,6 @@ extension CommunityViewController: ShowSearchDelegate {
         let searchController = SearchTableViewController()
         searchController.users = usersDictionary.values.flatMap { $0 }
         searchController.trendingUsers = trendingUsers
-        searchController.hidesBottomBarWhenPushed = true
         
         let navController = UINavigationController(rootViewController: searchController)
         navController.modalPresentationStyle = .overFullScreen
@@ -387,7 +385,6 @@ extension CommunityViewController: ShowPartnerPageDelegate {
         
         let partnerPageController = PartnerPageViewController()
         partnerPageController.partner = partner
-        partnerPageController.cameFromCommunity = true
         
         navigationController?.pushViewController(partnerPageController, animated: true)
     }

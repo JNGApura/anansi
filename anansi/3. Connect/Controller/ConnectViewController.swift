@@ -9,7 +9,7 @@
 import UIKit
 import ReachabilitySwift
 
-class ConnectViewController: ViewController {
+class ConnectViewController: UIViewController {
     
     var presentTransition: UIViewControllerAnimatedTransitioning?
     var dismissTransition: UIViewControllerAnimatedTransitioning?
@@ -98,7 +98,6 @@ class ConnectViewController: ViewController {
         super.viewDidLoad()
         
         self.view.backgroundColor = .background
-        self.hidesNavigationBarWhenPushed = false
         
         // Sets up UI
         [tableView, disconnectedView, headerView, CTAbutton].forEach { view.addSubview($0) }
@@ -276,6 +275,18 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         
         if let user = users[chatID] {
             cell.configure(with: chat, from: user, and: isTyping)
+            
+        } else {
+            
+            // Fetches user once for the specific chatID and stores in users dictionary
+            NetworkManager.shared.fetchUserOnce(userID: partnerID!, onSuccess: { (dic) in
+                
+                let user = User()
+                user.set(dictionary: dic, id: partnerID!)
+                
+                self.users[chatID] = user
+                cell.configure(with: chat, from: user, and: isTyping)
+            })
         }
         
         cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
@@ -332,7 +343,6 @@ extension ConnectViewController: StartNewChatDelegate {
         chatController.allMessages = messages
         chatController.hidesBottomBarWhenPushed = true
                 
-        //navigationController?.navigationBar.isTranslucent = true
         navigationController?.pushViewController(chatController, animated: true)
     }
     
@@ -541,259 +551,6 @@ extension ConnectViewController {
             self.typingPartner = String()
             self.tableView.reloadData()
         })
-    }
-}
-
-
-
-open class NavigationController: UINavigationController {
-    
-    // MARK: - Types
-    
-    private typealias TransitionCompletion = (() -> Void)
-    
-    // MARK: - Vars
-    
-    private var _navigationBar: NavigationBar {
-        return navigationBar as! NavigationBar
-    }
-    
-    private var transitionCompletions = [UIViewController: TransitionCompletion]()
-    
-    // MARK: - Constructors
-    
-    init() {
-        super.init(navigationBarClass: NavigationBar.self, toolbarClass: nil)
-    }
-    
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-    }
-    
-    // MARK: -
-    
-    override init(rootViewController: UIViewController) {
-        super.init(navigationBarClass: NavigationBar.self, toolbarClass: nil)
-        viewControllers = [rootViewController]
-        commonInit()
-    }
-    
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        commonInit()
-    }
-    
-    private func commonInit() {
-        delegate = self
-        if let viewController = viewControllers.first as? ViewController, viewController.hidesNavigationBarWhenPushed {
-            forceHideNavigationBar()
-        }
-    }
-    
-    // MARK: - Methods
-    
-    override open func pushViewController(_ viewController: UIViewController, animated: Bool) {
-        let currentViewController = viewControllers.last
-        
-        if let currentViewController = currentViewController as? ViewController,
-            let viewController = viewController as? ViewController,
-            isNavigationBarHidden == false {
-            if currentViewController.hidesNavigationBarWhenPushed == false && viewController.hidesNavigationBarWhenPushed == true {
-                let fakeNavigationBar = addFakeNavigationBar(to: currentViewController)
-                currentViewController.fakeNavigationBar = fakeNavigationBar
-                _navigationBar.isBackgroundViewHidden = true
-            } else if currentViewController.hidesNavigationBarWhenPushed == true && viewController.hidesNavigationBarWhenPushed == false {
-                let fakeNavigationBar = _navigationBar.copyNavigationBar()
-                
-                viewController.viewWillAppearNavigationBarUpdatesBlock = { [weak self] in
-                    guard let strongSelf = self else { return }
-                    viewController.view.addSubview(fakeNavigationBar)
-                    strongSelf.layout(fakeNavigationBar: fakeNavigationBar, within: viewController)
-                }
-                
-                setTransitionCompletion(for: viewController) { [weak self] in
-                    fakeNavigationBar.removeFromSuperview()
-                    self?._navigationBar.isBackgroundViewHidden = false
-                }
-            }
-        }
-        super.pushViewController(viewController, animated: true)
-    }
-    
-    @discardableResult override open func popViewController(animated: Bool) -> UIViewController? {
-        if viewControllers.count > 1 {
-            if let currentViewController = viewControllers.last as? ViewController,
-                let previousViewController = viewControllers[viewControllers.count - 2] as? ViewController {
-                return pop(from: currentViewController, to: previousViewController, animated: animated)
-            }
-        }
-        return super.popViewController(animated: animated)
-    }
-    
-    @discardableResult override open func popToRootViewController(animated: Bool) -> [UIViewController]? {
-        if viewControllers.count > 1 {
-            if let currentViewController = viewControllers.last as? ViewController,
-                let previousViewController = viewControllers.first as? ViewController {
-                return [pop(from: currentViewController, to: previousViewController, animated: animated)]
-            }
-        }
-        return super.popToRootViewController(animated: animated)
-    }
-    
-    fileprivate func pop(from currentViewController: ViewController, to previousViewController: ViewController, animated: Bool) -> UIViewController {
-        if currentViewController.hidesNavigationBarWhenPushed == true && previousViewController.hidesNavigationBarWhenPushed == false {
-            setTransitionCompletion(for: previousViewController) { [weak self] in
-                previousViewController.fakeNavigationBar?.removeFromSuperview()
-                previousViewController.fakeNavigationBar = nil
-                self?._navigationBar.isBackgroundViewHidden = false
-            }
-        } else if currentViewController.hidesNavigationBarWhenPushed == false && previousViewController.hidesNavigationBarWhenPushed == true {
-            let fakeNavigationBar = addFakeNavigationBar(to: currentViewController)
-            _navigationBar.isBackgroundViewHidden = true
-            currentViewController.viewWillAppearNavigationBarUpdatesBlock = { [weak self] in
-                self?._navigationBar.isBackgroundViewHidden = false
-                fakeNavigationBar.removeFromSuperview()
-            }
-        }
-        super.popToViewController(previousViewController, animated: animated)
-        return currentViewController
-    }
-    
-    // MARK: -
-    
-    override open func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
-        super.setNavigationBarHidden(hidden, animated: animated)
-        if let viewController = visibleViewController as? ViewController, viewController.hidesNavigationBarWhenPushed && hidden == false {
-            forceHideNavigationBar()
-        }
-    }
-    
-    private func setTransitionCompletion(for viewController: UIViewController, completion: @escaping TransitionCompletion) {
-        transitionCompletions[viewController] = completion
-    }
-    
-    private func forceHideNavigationBar() {
-        _navigationBar.isBackgroundViewHidden = true
-    }
-    
-    private func addFakeNavigationBar(to viewController: ViewController) -> NavigationBar {
-        let fakeNavigationBar = _navigationBar.copyNavigationBar()
-        viewController.view.addSubview(fakeNavigationBar)
-        layout(fakeNavigationBar: fakeNavigationBar, within: viewController)
-        return fakeNavigationBar
-    }
-    
-    private func layout(fakeNavigationBar: NavigationBar, within viewController: UIViewController) {
-        var rect = navigationBar.frame
-        rect = navigationBar.superview?.convert(rect, to: viewController.view) ?? rect
-        fakeNavigationBar.frame = rect
-        fakeNavigationBar.height = rect.origin.y + rect.height
-    }
-}
-
-// MARK: - UINavigationControllerDelegate
-
-extension NavigationController: UINavigationControllerDelegate {
-    public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        if let transitionCompletion = transitionCompletions[viewController] {
-            transitionCompletion()
-            transitionCompletions.removeValue(forKey: viewController)
-        }
-    }
-    
-    public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-    }
-}
-
-
-open class NavigationBar: UINavigationBar {
-    
-    // MARK: - Vars
-    
-    var height: CGFloat?
-    
-    private var backgroundView: UIView? {
-        return value(forKey: "_backgroundView") as? UIView
-    }
-    
-    var isBackgroundViewHidden = false {
-        didSet {
-            backgroundView?.isHidden = isBackgroundViewHidden
-        }
-    }
-    
-    // MARK: - Constructors
-    
-    override public init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        commonInit()
-    }
-    
-    private func commonInit() {
-        backgroundView?.addObserver(self, forKeyPath: "hidden", options: .new, context: nil)
-    }
-    
-    // MARK: -
-    
-    deinit {
-        backgroundView?.removeObserver(self, forKeyPath: "hidden")
-    }
-    
-    // MARK: - Methods
-    
-    override open func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if backgroundView?.isHidden != isBackgroundViewHidden {
-            backgroundView?.isHidden = isBackgroundViewHidden
-        }
-    }
-    
-    func copyNavigationBar() -> NavigationBar {
-        let navigationBar = NavigationBar()
-        navigationBar.barStyle = barStyle
-        navigationBar.isTranslucent = isTranslucent
-        navigationBar.tintColor = tintColor
-        navigationBar.barTintColor = barTintColor
-        navigationBar.setBackgroundImage(backgroundImage(for: .default), for: .default)
-        navigationBar.setBackgroundImage(backgroundImage(for: .compact), for: .compact)
-        navigationBar.setBackgroundImage(backgroundImage(for: .defaultPrompt), for: .defaultPrompt)
-        navigationBar.setBackgroundImage(backgroundImage(for: .compactPrompt), for: .compactPrompt)
-        navigationBar.shadowImage = shadowImage?.copy() as? UIImage
-        navigationBar.prefersLargeTitles = prefersLargeTitles
-        return navigationBar
-    }
-    
-    // MARK: - Layout
-    
-    override open func layoutSubviews() {
-        super.layoutSubviews()
-        
-        if let height = height {
-            backgroundView?.frame.origin.y = bounds.height - height
-            backgroundView?.frame.size.height = height
-        }
-    }
-}
-
-open class ViewController: UIViewController {
-    
-    // MARK: - Vars
-    
-    open var hidesNavigationBarWhenPushed = false
-    var viewWillAppearNavigationBarUpdatesBlock: (() -> Void)?
-    
-    var fakeNavigationBar: NavigationBar?
-    
-    // MARK: - Lifecycle
-    
-    override open func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        viewWillAppearNavigationBarUpdatesBlock?()
-        viewWillAppearNavigationBarUpdatesBlock = nil
     }
 }
 

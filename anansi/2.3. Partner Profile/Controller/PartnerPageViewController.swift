@@ -12,8 +12,7 @@ import SafariServices
 class PartnerPageViewController: UIViewController {
     
     // Custom initializers
-    var cameFromCommunity: Bool = false
-
+    
     var sections = [String]()
     
     var sectionDataToDisplay = [Int : [String]]()

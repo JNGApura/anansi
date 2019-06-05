@@ -302,8 +302,6 @@ extension EventViewController: ShowSpeakerDetailedPageDelegate {
             
             let userProfile = UserPageViewController()
             userProfile.user = user
-            userProfile.cameFromCommunity = true
-            userProfile.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: self.navigationController, action: nil)
             
             self.navigationController?.pushViewController(userProfile, animated: true)
         }

@@ -12,7 +12,6 @@ import SafariServices
 class UserPageViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     // Custom initializers
-    var cameFromCommunity: Bool = false
     var cameFromChat: Bool = false
     
     var sections = [String]()

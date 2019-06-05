@@ -8,10 +8,10 @@
 
 import UIKit
 
-class SearchTableViewController: ViewController {
+class SearchTableViewController: UIViewController {
     
     private let identifier = "SearchCell"
-    
+
     var suggestedSections = [String]()
     
     var filteredUsers = [User]()
@@ -186,12 +186,11 @@ class SearchTableViewController: ViewController {
     
     func showProfileController(user: User) {
         
-        let profileController = UserPageViewController()
-        profileController.user = user
-        profileController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: navigationController, action: nil)
+        let userController = UserPageViewController()
+        userController.user = user
         searchController.searchBar.resignFirstResponder()
         
-        navigationController?.pushViewController(profileController, animated: true)
+        navigationController?.pushViewController(userController, animated: true)
     }
     
     // MARK : KEYBOARD-related functions

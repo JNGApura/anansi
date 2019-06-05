@@ -54,6 +54,14 @@ class TabBarController: UITabBarController {
         
         // Set offline alert shown variable to false (reachability)
         UserDefaults.standard.setOfflineAlertShown(value: false)
+        
+        // Requests notifications, if we haven't asked before
+        if !PushNotificationManager.shared.hasSeenPushNotificationRequest() {
+            
+            PushNotificationManager.shared.registerForPushNotifications {
+                PushNotificationManager.shared.updateFirestorePushTokenIfNeeded()
+            }
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -78,8 +86,15 @@ class TabBarController: UITabBarController {
         didSet {
             let pos = tabList.index(of: "Connect")
             
+            print(unreadChats)
+            
             if let tabitem = tabBar.items {
+                
+                // Tabitem badge
                 tabitem[pos!].badgeValue = !unreadChats.isEmpty ? "\(unreadChats.count)" : nil
+                
+                // Icon badge
+                UIApplication.shared.applicationIconBadgeNumber = !unreadChats.isEmpty ? unreadChats.count : 0
             }
         }
     }
@@ -114,6 +129,7 @@ class TabBarController: UITabBarController {
                 !isRead {
                 
                 if let listOfUnread = self.unreadChats[chatID] {
+                    
                     if !listOfUnread.contains(key) {
                         self.unreadChats[chatID]!.append(key)
                     }
@@ -127,54 +143,32 @@ class TabBarController: UITabBarController {
             
             let chat = Message(dictionary: mesg, messageID: key)
             
-            // listOfUnreadChats only contains messages that I'm the receiver
+            // Note: listOfUnreadChats only contains messages that I'm the receiver
             if let listOfUnreadChats = self.unreadChats[chatID],
-                listOfUnreadChats.contains(key) {
-
-                // isRead = true, I remove the unreadchat key from the dictionary
-                if let isRead = chat.getValue(forField: .isRead) as? Bool, isRead {
-                    
-                    let i = listOfUnreadChats.index(of: key)
-                    self.unreadChats[chatID]!.remove(at: i!)
-                    
-                    if self.unreadChats[chatID]!.count == 0 {
-                        self.unreadChats[chatID] = nil
-                    }
+                listOfUnreadChats.contains(key),
+                let isRead = chat.getValue(forField: .isRead) as? Bool,
+                isRead{
                 
-                // isRead = false, I add the unreadchat key to the dictionary
-                } else {
-                    self.unreadChats[chatID]!.append(key)
-                }
-            
-            // If message became unread (for some reason), I need to add it back to unreadChats
-            } else {
+                let i = listOfUnreadChats.index(of: key)
+                self.unreadChats[chatID]!.remove(at: i!)
                 
-                // If I'm the receiver, of course
-                if self.myID == chat.getValue(forField: .receiver) as? String {
-                    
-                    if self.unreadChats[chatID] != nil {
-                        self.unreadChats[chatID]!.append(key)
-                        
-                    } else {
-                        self.unreadChats[chatID] = [key]
-                    }
+                if self.unreadChats[chatID]!.count == 0 {
+                    self.unreadChats[chatID] = nil
                 }
             }
             
         }, onRemove: { (mesg, key) in
             
-            print("I'm here")
-            
-            // listOfUnreadChats only contains messages that I'm the receiver
+            // Note: listOfUnreadChats only contains messages that I'm the receiver
             if let listOfUnreadChats = self.unreadChats[chatID],
                 listOfUnreadChats.contains(key) {
                 
-                print("Yes, I've most past the conditions")
+                print("Removed message was an unread message")
                 
                 let i = listOfUnreadChats.index(of: key)
                 self.unreadChats[chatID]!.remove(at: i!)
                 
-                print("I've removed an unread chat at position \(i!)")
+                print("Unread message at position \(i!) was removed")
                 
                 if self.unreadChats[chatID]!.count == 0 {
                     self.unreadChats[chatID] = nil

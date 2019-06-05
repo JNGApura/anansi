@@ -20,22 +20,71 @@ class PushNotificationManager: NSObject, MessagingDelegate, UNUserNotificationCe
         
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (isGranted, err) in
             if err != nil {
-                // something here
+                print(err.debugDescription)
+                
             } else {
                 UNUserNotificationCenter.current().delegate = self
                 Messaging.messaging().delegate = self
+                
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
                 
                 onSuccess()
             }
         }
     }
-        
+    
+    // Updates Firestore push token
     func updateFirestorePushTokenIfNeeded() {
         
         if let token = Messaging.messaging().fcmToken {
             let myID = NetworkManager.shared.getUID()
             NetworkManager.shared.register(value: token, for: "tokenID", in: myID!)
         }
+    }
+    
+    // Boolean whether the user has seen a notification request
+    func hasSeenPushNotificationRequest() -> Bool {
+        
+        var hasSeen = false
+        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+            
+            if settings.authorizationStatus != .notDetermined {
+                hasSeen = true
+            }
+        }
+        
+        return hasSeen
+    }
+    
+    // Boolean whether the user has authorized for notifications
+    func isRegisteredForNotifications() -> Bool {
+        
+        var isRegistered = false
+        UNUserNotificationCenter.current().getNotificationSettings(completionHandler: { settings in
+            
+            switch settings.authorizationStatus {
+                
+            case .notDetermined:
+                // Authorization request has not been made yet
+                isRegistered = false
+                
+            case .denied:
+                // User has denied authorization
+                isRegistered = false
+
+            case .authorized:
+                // User has given authorization.
+                isRegistered = true
+                
+            case .provisional:
+                // User has given authorization for non-interruptive notifications
+                isRegistered = true
+            }
+        })
+        
+        return isRegistered
     }
     
     // Messaging

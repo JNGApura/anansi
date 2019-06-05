@@ -12,6 +12,8 @@ import ReachabilitySwift
 
 class ChatLogViewController: UIViewController {
     
+    var isOnPage = false
+    
     var keyboardIsActive = false
     
     var cameFromUserProfile = false
@@ -147,7 +149,9 @@ class ChatLogViewController: UIViewController {
     lazy var topbar: TopBar = {
         let b = TopBar()
         b.setTitle(name: "")
-        b.backgroundColor = .clear
+        b.backgroundColor = .background
+        b.statusbar.alpha = 1.0
+        b.navigationbar.alpha = 1.0
         b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
         b.setActionButton(with: UIImage(named: "info")!.withRenderingMode(.alwaysTemplate))
         b.actionButton.addTarget(self, action: #selector(showActionSheet), for: .touchUpInside)
@@ -185,16 +189,17 @@ class ChatLogViewController: UIViewController {
     
     lazy var disconnectedView : UILabel = {
         let v = UILabel()
-        //v.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 32.0)
         v.text = "No internet connection"
-        v.textColor = .primary
+        v.textColor = .background
         v.font = UIFont.boldSystemFont(ofSize: 14.0)
         v.textAlignment = .center
-        v.backgroundColor = .background
+        v.backgroundColor = .primary
         v.isHidden = true
         v.translatesAutoresizingMaskIntoConstraints = false
         return v
     }()
+    
+    let reachability = Reachability()!
     
     lazy var barHeight : CGFloat = (self.navigationController?.navigationBar.frame.height)!
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
@@ -209,7 +214,7 @@ class ChatLogViewController: UIViewController {
         view.backgroundColor = .background
         
         // Sets up UI
-        [tableView, topbar, titleLabelView, disconnectedView].forEach { view.addSubview($0) }
+        [tableView, disconnectedView, topbar, titleLabelView].forEach { view.addSubview($0) }
         titleLabelView.setCustomSpacing(Const.marginEight, after: userImageView)
         
         // Set up observers for messages & typing
@@ -221,12 +226,18 @@ class ChatLogViewController: UIViewController {
         super.viewWillAppear(animated)
 
         setupNavigationBarItems()
+        
+        // Handles network reachablibity
+        startMonitoringNetwork()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         setupNavigationBarItems()
+        
+        // 0. Set isOnPage as true
+        isOnPage = true
         
         // 1. Setup keyboard observers
         if !hasBeenBlocked {
@@ -271,6 +282,9 @@ class ChatLogViewController: UIViewController {
         if keyboardIsActive {
             chatAccessoryView.inputTextView.resignFirstResponder()
         }
+        
+        // Stop NetworkStatusListener
+        reachability.stopNotifier()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -280,6 +294,9 @@ class ChatLogViewController: UIViewController {
         navigationController?.setNavigationBarHidden(false, animated: true)
         
         chatAccessoryView.inputTextView.endEditing(true)
+        
+        // Set isOnPage as false
+        isOnPage = false
     }
 
     override func didReceiveMemoryWarning() {
@@ -310,10 +327,10 @@ class ChatLogViewController: UIViewController {
             
             userNameLabel.centerYAnchor.constraint(equalTo: userImageView.centerYAnchor),
             
-            //disconnectedView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -32.0),
-            //disconnectedView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            //disconnectedView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            //disconnectedView.heightAnchor.constraint(equalToConstant: 32.0),
+            disconnectedView.topAnchor.constraint(equalTo: topbar.bottomAnchor, constant: -32.0),
+            disconnectedView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            disconnectedView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            disconnectedView.heightAnchor.constraint(equalToConstant: 32.0),
             
             // View
             
@@ -528,8 +545,6 @@ extension ChatLogViewController {
         
         if cameFromUserProfile {
             
-            navigationController?.navigationBar.isTranslucent = true
-            navigationController?.view.backgroundColor = .background
             navigationController?.popViewController(animated: true)
                         
         } else {
@@ -587,9 +602,6 @@ extension ChatLogViewController {
     
     @objc func back() {
         
-        //navigationController?.navigationBar.isHidden = !(cameFromUserProfile || cameFromSearch)
-        //navigationController?.navigationBar.isTranslucent = true
-        //navigationController?.view.backgroundColor = .background
         navigationController?.popViewController(animated: true)
     }
     
@@ -850,10 +862,9 @@ extension ChatLogViewController {
                 }
                 
                 // If I'm the receiver && !isRead, marks the message as read
-                if let receiver = message.getValue(forField: .receiver) as? String,
-                    receiver == self.myID!,
-                    let isRead = message.getValue(forField: .isRead) as? Bool,
-                    !isRead {
+                if self.isOnPage,
+                    let receiver = message.getValue(forField: .receiver) as? String, receiver == self.myID!,
+                    let isRead = message.getValue(forField: .isRead) as? Bool, !isRead {
                     
                     NetworkManager.shared.markMessagesAs(messageInfoType.isRead.rawValue, withID: msgID, from: message.getValue(forField: .sender) as! String, to: self.myID!, onSuccess: nil)
                 }
@@ -908,5 +919,52 @@ extension ChatLogViewController {
         
         // In case there's a chatID, but no messages
         //self.tableView.reloadData()
+    }
+}
+
+// MARK: - NetworkStatusListener | Handles network reachability
+
+extension ChatLogViewController {
+    
+    func startMonitoringNetwork() {
+        
+        reachability.whenUnreachable = { reachability in
+            DispatchQueue.main.async { self.showAlert() }
+        }
+        
+        reachability.whenReachable = { reachability in
+            DispatchQueue.main.async { self.hideAlert() }
+        }
+        
+        do {
+            try reachability.startNotifier()
+        } catch {
+            print("Unable to start notifier")
+        }
+        
+        if reachability.isReachable {
+            DispatchQueue.main.async { self.hideAlert() }
+        } else {
+            DispatchQueue.main.async { self.showAlert() }
+        }
+    }
+    
+    func showAlert() {
+        
+        disconnectedView.isHidden = false
+        
+        UIView.animate(withDuration: 0.5, animations: {
+            self.disconnectedView.transform = CGAffineTransform(translationX: 0, y: 32.0)
+        })
+    }
+    
+    func hideAlert() {
+        
+        UIView.animate(withDuration: 0.5, animations: {
+            self.disconnectedView.transform = .identity
+            
+        }, completion: { (bool) in
+            self.disconnectedView.isHidden = true
+        })
     }
 }

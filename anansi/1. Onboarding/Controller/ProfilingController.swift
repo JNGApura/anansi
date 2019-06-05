@@ -216,6 +216,11 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         // Creates keyboard-specific notification observers, so that we can track when the keyboard is presented or is hidden
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        // Requests notifications, if we haven't asked before
+        PushNotificationManager.shared.registerForPushNotifications {
+            PushNotificationManager.shared.updateFirestorePushTokenIfNeeded()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {

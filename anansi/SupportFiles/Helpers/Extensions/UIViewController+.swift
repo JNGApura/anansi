@@ -11,9 +11,9 @@ import UIKit
 extension UIViewController {
 
     // Close iOS Keyboard by touching anywhere in the viewController
-    func hideKeyboardWhenTappedAround() {
+    func hideKeyboardWhenTappedAround(cancelsTouches : Bool = false) {
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
-        tap.cancelsTouchesInView = false
+        tap.cancelsTouchesInView = cancelsTouches
         view.addGestureRecognizer(tap)
     }
     

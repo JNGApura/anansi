@@ -56,12 +56,13 @@ class TopBar : UIView {
     }()
     
     // Action button is hidden by default
-    let actionButton: UIButton = {
+    lazy var actionButton: UIButton = {
         let b = UIButton()
         b.tintColor = .secondary
         b.backgroundColor = .background
         b.layer.cornerRadius = 16.0
         b.layer.masksToBounds = true
+        b.clipsToBounds = true
         b.translatesAutoresizingMaskIntoConstraints = false
         b.isHidden = true
         return b
@@ -94,7 +95,7 @@ class TopBar : UIView {
             
             actionButton.trailingAnchor.constraint(equalTo: navigationbar.trailingAnchor, constant: -(Const.marginEight * 2.0)),
             actionButton.centerYAnchor.constraint(equalTo: navigationbar.centerYAnchor),
-            actionButton.heightAnchor.constraint(equalTo: backButton.widthAnchor),
+            actionButton.heightAnchor.constraint(equalTo: actionButton.widthAnchor),
             actionButton.widthAnchor.constraint(equalToConstant: 32.0),
         ])
     }
@@ -146,14 +147,13 @@ class TopBar : UIView {
         actionButton.setImage(image, for: .normal)
         actionButton.tintColor = .secondary
         actionButton.isHidden = false
+    }
+    
+    // Sets modal style
+    func setModalStyle() {
         
-        actionButton.removeConstraints(self.backButton.constraints)
+        backButton.isHidden = true
         
-        NSLayoutConstraint.activate([
-            actionButton.trailingAnchor.constraint(equalTo: navigationbar.trailingAnchor, constant: -(Const.marginEight * 2.0)),
-            actionButton.centerYAnchor.constraint(equalTo: navigationbar.centerYAnchor),
-            actionButton.heightAnchor.constraint(equalTo: backButton.widthAnchor),
-            actionButton.widthAnchor.constraint(equalToConstant: Const.navButtonHeight),
-        ])
+        actionButton.backgroundColor = UIColor.tertiary.withAlphaComponent(0.4)
     }
 }

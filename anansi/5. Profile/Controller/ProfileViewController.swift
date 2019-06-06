@@ -50,6 +50,8 @@ class ProfileViewController: UIViewController {
         }
     }
     
+    // View
+    
     lazy var scrollView : UIScrollView = {
         let sv = UIScrollView()
         sv.delegate = self
@@ -74,31 +76,17 @@ class ProfileViewController: UIViewController {
         return l
     }()
     
-    // Fake status & navigation bar
-    let fakeStatusBar : UIView = {
-        let v = UIView()
-        v.backgroundColor = .background
-        v.alpha = 0.0
-        v.translatesAutoresizingMaskIntoConstraints = false
-        return v
-    }()
+    // Nav bar
     
-    let fakeNavigationBar : UIView = {
-        let v = UIView()
-        v.backgroundColor = .clear
-        v.translatesAutoresizingMaskIntoConstraints = false
-        return v
-    }()
+    var previousAlpha : CGFloat = 0.0
     
-    lazy var dismissButton: UIButton = {
-        let b = UIButton()
-        b.setImage(UIImage(named: "close")!.withRenderingMode(.alwaysTemplate), for: .normal)
-        b.contentMode = .scaleAspectFit
-        b.tintColor = .secondary
-        b.backgroundColor = UIColor.tertiary.withAlphaComponent(0.4)
-        b.layer.cornerRadius = 16.0
-        b.layer.masksToBounds = true
-        b.addTarget(self, action: #selector(dismissViewController), for: .touchUpInside)
+    lazy var topbar: TopBar = {
+        let b = TopBar()
+        b.setTitle(name: "Profile")
+        b.backgroundColor = .clear
+        b.setModalStyle()
+        b.actionButton.addTarget(self, action: #selector(dismissViewController), for: .touchUpInside)
+        b.setActionButton(with: UIImage(named: "close")!.withRenderingMode(.alwaysTemplate))
         b.translatesAutoresizingMaskIntoConstraints = false
         return b
     }()
@@ -115,6 +103,9 @@ class ProfileViewController: UIViewController {
         b.translatesAutoresizingMaskIntoConstraints = false
         return b
     }()
+    
+    lazy var barHeight : CGFloat = (self.navigationController?.navigationBar.frame.height)!
+    let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     // Cover
     lazy var backgroundImage: GradientView = {
@@ -224,14 +215,17 @@ class ProfileViewController: UIViewController {
         return tv
     }()
     
-    lazy var barHeight : CGFloat = (self.navigationController?.navigationBar.frame.height)!
-    let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
+    // Tap to dismiss keyboard
+    lazy var tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
+
     
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.hideKeyboardWhenTappedAround()
+
+        // Adds tap to dismiss keyboard
+        view.addGestureRecognizer(tap)
         
         view.backgroundColor = .background
         
@@ -239,8 +233,7 @@ class ProfileViewController: UIViewController {
         fetchMe()
         
         // Sets up UI
-        [scrollView, buttonListBackground, fakeStatusBar, fakeNavigationBar, settingsButton, dismissButton].forEach { view.addSubview($0) }
-        
+        [scrollView, topbar, settingsButton].forEach { view.addSubview($0) }
         scrollView.addSubview(contentView)
         [backgroundImage, headerView, achievementView, tableView].forEach { contentView.addSubview($0)}
         
@@ -251,8 +244,14 @@ class ProfileViewController: UIViewController {
         checkIconLeadingAnchor?.isActive = true
     }
     
+    // MARK: Layout
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        topbar.setLargerBackButton()
+        topbar.setStatusBarHeight(with: statusBarHeight)
+        topbar.setNavigationBarHeight(with: barHeight)
         
         NSLayoutConstraint.activate([
             
@@ -288,30 +287,15 @@ class ProfileViewController: UIViewController {
             
             // STATUS & NAVIGATION BAR
             
-            fakeStatusBar.topAnchor.constraint(equalTo: view.topAnchor),
-            fakeStatusBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            fakeStatusBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            fakeStatusBar.heightAnchor.constraint(equalToConstant: statusBarHeight),
+            topbar.topAnchor.constraint(equalTo: view.topAnchor),
+            topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
             
-            fakeNavigationBar.topAnchor.constraint(equalTo: fakeStatusBar.bottomAnchor),
-            fakeNavigationBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            fakeNavigationBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            fakeNavigationBar.heightAnchor.constraint(equalToConstant: barHeight),
-            
-            settingsButton.centerYAnchor.constraint(equalTo: fakeNavigationBar.centerYAnchor),
-            settingsButton.trailingAnchor.constraint(equalTo: dismissButton.leadingAnchor, constant: -Const.marginEight * 2.0),
+            settingsButton.centerYAnchor.constraint(equalTo: topbar.navigationbar.centerYAnchor),
+            settingsButton.trailingAnchor.constraint(equalTo: topbar.actionButton.leadingAnchor, constant: -Const.marginEight * 2.0),
             settingsButton.heightAnchor.constraint(equalTo: settingsButton.widthAnchor),
             settingsButton.widthAnchor.constraint(equalToConstant: 32.0),
-
-            dismissButton.centerYAnchor.constraint(equalTo: fakeNavigationBar.centerYAnchor),
-            dismissButton.trailingAnchor.constraint(equalTo: fakeNavigationBar.trailingAnchor, constant: -Const.marginEight * 2.0),
-            dismissButton.heightAnchor.constraint(equalTo: dismissButton.widthAnchor),
-            dismissButton.widthAnchor.constraint(equalToConstant: 32.0),
-            
-            buttonListBackground.centerYAnchor.constraint(equalTo: fakeNavigationBar.centerYAnchor),
-            buttonListBackground.trailingAnchor.constraint(equalTo: fakeNavigationBar.trailingAnchor, constant: -Const.marginEight * 2.0),
-            buttonListBackground.widthAnchor.constraint(equalToConstant: 80.0),
-            buttonListBackground.heightAnchor.constraint(equalToConstant: 34.0),
             
             // CALL TO ACTION
             
@@ -345,14 +329,14 @@ class ProfileViewController: UIViewController {
             progressLeftView.trailingAnchor.constraint(equalTo: checkIcon.centerXAnchor),
             progressLeftView.heightAnchor.constraint(equalToConstant: 22.0),
         ])
-
+        
         // I need dispatchQueue because I was getting EXC_BAD_ACCESS code (probably I was adding this when the view was not ready yet)
         DispatchQueue.main.async {
             
             // Sets gradients for backgroundImage and progressBarView
             self.backgroundImage.applyGradient(withColours: [.primary, .primary], gradientOrientation: .vertical)
         }
-                
+        
         tableView.reloadData()
     }
     
@@ -472,7 +456,6 @@ class ProfileViewController: UIViewController {
     @objc func dismissViewController() {
 
         view.endEditing(true)
-        
         dismiss(animated: true, completion: nil)
     }
     
@@ -481,6 +464,7 @@ class ProfileViewController: UIViewController {
         let settingsController = SettingsViewController()
         settingsController.user = user
 
+        view.endEditing(true)
         navigationController?.pushViewController(settingsController, animated: true)
     }
     
@@ -492,18 +476,19 @@ class ProfileViewController: UIViewController {
         interestController.selectedInterests = interests
         interestController.delegate = self
         
+        view.endEditing(true)
         navigationController?.pushViewController(interestController, animated: true)
     }
+    
+    var collapseSpace : CGFloat = 0
     
     @objc func keyboardWillShow(notification: NSNotification) {
         
         guard let userInfo = notification.userInfo,
             let keyboardEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         
-        keyboardIsActive = true
         let keyboardHeight = keyboardEndFrame.height
-        let screenHeight = view.frame.height
-                
+        
         if activeField != nil {
             
             var section : Int = 0, row : Int = 0
@@ -514,37 +499,44 @@ class ProfileViewController: UIViewController {
                 }
             }
             
-            var cellMaxY : CGFloat
+            let cell = [.sharedEmail, .website, .linkedin].contains(activeField) ? tableView.cellForRow(at: IndexPath(row: row, section: section)) as! TextFieldTableCell :
+                tableView.cellForRow(at: IndexPath(row: row, section: section)) as! TextViewTableCell
             
-            if [.sharedEmail, .website, .linkedin].contains(activeField) {
-                let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! TextFieldTableCell
-                cellMaxY = cell.frame.maxY
-                
-            } else {
-                let cell = tableView.cellForRow(at: IndexPath(row: row, section: section)) as! TextViewTableCell
-                cellMaxY = cell.frame.maxY
-            }
-
-            let distanceToBottom = screenHeight - (cellMaxY + tableView.frame.origin.y - scrollView.contentOffset.y)
-            let collapseSpace = keyboardHeight - distanceToBottom
+            let cellRealOrigin = tableView.convert(cell.frame.origin, to: self.view)
+            let distanceCellKeyboard = keyboardHeight - (view.frame.maxY - (cell.frame.height + cellRealOrigin.y))
             
             if collapseSpace < 0 { return }
-            scrollView.frame.origin.y -= collapseSpace
+            
+            collapseSpace = distanceCellKeyboard
+            scrollView.setContentOffset(CGPoint(x: 0, y: scrollView.contentOffset.y + distanceCellKeyboard), animated: true)
             view.layoutIfNeeded()
             
-            (UIApplication.shared.value(forKey: "statusBar") as? UIView)!.backgroundColor = .background
+            keyboardIsActive = true
+            
+            // Adds tapToDismissKeyboard gesture
+            if view.gestureRecognizers != nil,
+                !(view.gestureRecognizers!.contains(tap)) {
+                view.addGestureRecognizer(tap)
+            }
         }
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
         
-        keyboardIsActive = false
-        
         UIView.animate(withDuration: 0.2, animations: {
-            //self.scrollView.frame.origin.y = 0
+            self.scrollView.setContentOffset(CGPoint(x: 0, y: self.scrollView.contentOffset.y - self.collapseSpace), animated: true)
             self.tableView.reloadData()
             self.view.layoutIfNeeded()
-        })        
+        })
+        
+        collapseSpace = 0
+        keyboardIsActive = false
+        
+        // Removes tapToDismissKeyboard gesture
+        if view.gestureRecognizers != nil,
+            view.gestureRecognizers!.contains(tap) {
+            view.removeGestureRecognizer(tap)
+        }
     }
 }
 
@@ -661,7 +653,6 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         let field = (fields[sectionType]?[indexPath.row])!
         
         if field == .interests, (tableView.cellForRow(at: indexPath) as? InterestProfileEmptyTableCell != nil) {
-            
             navigateToInterestsViewController()
         }
     }
@@ -813,7 +804,7 @@ extension ProfileViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         // If keyboard is active, ignore scroll UI changes
-        if keyboardIsActive { return }
+        //if keyboardIsActive { return }
         
         let topDistance = statusBarHeight // + barHeight
         let offsetY : CGFloat = scrollView.contentOffset.y
@@ -822,13 +813,19 @@ extension ProfileViewController: UIScrollViewDelegate {
         if  offsetY + topDistance < 0 {
             let zoomRatio = (-(offsetY + topDistance) * 0.0065) + 1.0
             backgroundImage.transform = CGAffineTransform(scaleX: zoomRatio, y: zoomRatio)
-            fakeStatusBar.alpha = 0.0
+            
+            topbar.statusbar.alpha = 0.0
+            topbar.navigationbar.alpha = 0.0
+            topbar.titleLabel.alpha = 0.0
             
         } else {
             
             let delta = headerView.profileImage.frame.maxY == 0.0 ? 1.0 : (headerView.profileImage.frame.maxY - (offsetY + topDistance)) / headerView.profileImage.frame.maxY
+                        
+            topbar.statusbar.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
+            topbar.navigationbar.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
+            topbar.titleLabel.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
             
-            fakeStatusBar.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
             backgroundImage.transform = CGAffineTransform.identity
         }
         

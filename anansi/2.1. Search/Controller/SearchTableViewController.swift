@@ -135,7 +135,6 @@ class SearchTableViewController: UIViewController {
         
         searchString = searchController.searchBar.text // Stores searchString
         
-        navigationController?.setNavigationBarHidden(false, animated: true)
         searchController.searchBar.isHidden = true
         
         NotificationCenter.default.removeObserver(self)
@@ -145,7 +144,9 @@ class SearchTableViewController: UIViewController {
         super.viewWillDisappear(animated)
         
         searchController.isActive = false
-        searchController.searchBar.endEditing(true)        
+        searchController.searchBar.endEditing(true)
+        
+        navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
     override func viewDidLayoutSubviews() {

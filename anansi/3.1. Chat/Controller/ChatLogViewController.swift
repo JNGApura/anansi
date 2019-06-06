@@ -150,8 +150,9 @@ class ChatLogViewController: UIViewController {
         let b = TopBar()
         b.setTitle(name: "")
         b.backgroundColor = .background
-        b.statusbar.alpha = 1.0
-        b.navigationbar.alpha = 1.0
+        b.alpha(with: 1.0)
+        b.titleLabel.alpha = 0.0
+        b.bottomLine.alpha = 0.0
         b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
         b.setActionButton(with: UIImage(named: "info")!.withRenderingMode(.alwaysTemplate))
         b.actionButton.addTarget(self, action: #selector(showActionSheet), for: .touchUpInside)

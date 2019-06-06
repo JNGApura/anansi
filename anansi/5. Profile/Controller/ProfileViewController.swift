@@ -85,6 +85,7 @@ class ProfileViewController: UIViewController {
         b.setTitle(name: "Profile")
         b.backgroundColor = .clear
         b.setModalStyle()
+        b.alpha(with: 0)
         b.actionButton.addTarget(self, action: #selector(dismissViewController), for: .touchUpInside)
         b.setActionButton(with: UIImage(named: "close")!.withRenderingMode(.alwaysTemplate))
         b.translatesAutoresizingMaskIntoConstraints = false
@@ -804,7 +805,7 @@ extension ProfileViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         // If keyboard is active, ignore scroll UI changes
-        //if keyboardIsActive { return }
+        // if keyboardIsActive { return }
         
         let topDistance = statusBarHeight // + barHeight
         let offsetY : CGFloat = scrollView.contentOffset.y
@@ -814,17 +815,14 @@ extension ProfileViewController: UIScrollViewDelegate {
             let zoomRatio = (-(offsetY + topDistance) * 0.0065) + 1.0
             backgroundImage.transform = CGAffineTransform(scaleX: zoomRatio, y: zoomRatio)
             
-            topbar.statusbar.alpha = 0.0
-            topbar.navigationbar.alpha = 0.0
-            topbar.titleLabel.alpha = 0.0
+            topbar.alpha(with: 0.0)
             
         } else {
             
             let delta = headerView.profileImage.frame.maxY == 0.0 ? 1.0 : (headerView.profileImage.frame.maxY - (offsetY + topDistance)) / headerView.profileImage.frame.maxY
-                        
-            topbar.statusbar.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
-            topbar.navigationbar.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
-            topbar.titleLabel.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
+            let alpha = delta <= 1.0 ? 1.0 - delta : 1.0
+                
+            topbar.alpha(with: alpha)
             
             backgroundImage.transform = CGAffineTransform.identity
         }

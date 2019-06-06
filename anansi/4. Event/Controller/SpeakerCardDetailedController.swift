@@ -58,6 +58,8 @@ class SpeakerCardDetailedController: UIViewController, UIScrollViewDelegate {
         let b = TopBar()
         b.setTitle(name: "Speaker")
         b.backgroundColor = .clear
+        b.alpha(with: 0)
+        b.titleLabel.alpha = 1.0
         b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
         b.translatesAutoresizingMaskIntoConstraints = false
         return b

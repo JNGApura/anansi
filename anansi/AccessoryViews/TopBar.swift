@@ -25,7 +25,6 @@ class TopBar : UIView {
     lazy var statusbar : UIView = {
         let v = UIView()
         v.backgroundColor = .background
-        v.alpha = 0.0
         v.translatesAutoresizingMaskIntoConstraints = false
         return v
     }()
@@ -33,7 +32,6 @@ class TopBar : UIView {
     lazy var navigationbar : UIView = {
         let v = UIView()
         v.backgroundColor = .background
-        v.alpha = 0.0
         v.translatesAutoresizingMaskIntoConstraints = false
         return v
     }()
@@ -55,7 +53,7 @@ class TopBar : UIView {
         return b
     }()
     
-    // Action button is hidden by default
+    // Note: Action button is hidden by default
     lazy var actionButton: UIButton = {
         let b = UIButton()
         b.tintColor = .secondary
@@ -68,11 +66,18 @@ class TopBar : UIView {
         return b
     }()
     
+    let bottomLine : UIView = {
+        let v = UIView()
+        v.backgroundColor = .tertiary
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         // Add headerTitle and headerBottomBorder subviews
-        [statusbar, navigationbar, titleLabel, backButton, actionButton].forEach { addSubview($0) }
+        [statusbar, navigationbar, bottomLine, titleLabel, backButton, actionButton].forEach { addSubview($0) }
         
         // Adds layout constraints
         NSLayoutConstraint.activate([
@@ -97,6 +102,12 @@ class TopBar : UIView {
             actionButton.centerYAnchor.constraint(equalTo: navigationbar.centerYAnchor),
             actionButton.heightAnchor.constraint(equalTo: actionButton.widthAnchor),
             actionButton.widthAnchor.constraint(equalToConstant: 32.0),
+            
+            bottomLine.bottomAnchor.constraint(equalTo: navigationbar.bottomAnchor),
+            bottomLine.leadingAnchor.constraint(equalTo: navigationbar.leadingAnchor),
+            bottomLine.trailingAnchor.constraint(equalTo: navigationbar.trailingAnchor),
+            bottomLine.heightAnchor.constraint(equalToConstant: 0.75),
+            
         ])
     }
     
@@ -155,5 +166,14 @@ class TopBar : UIView {
         backButton.isHidden = true
         
         actionButton.backgroundColor = UIColor.tertiary.withAlphaComponent(0.4)
+    }
+    
+    // Handles status, navigation, bottomline and titleview alpha values
+    func alpha(with alpha: CGFloat) {
+        
+        statusbar.alpha = alpha
+        navigationbar.alpha = alpha
+        bottomLine.alpha = alpha
+        titleLabel.alpha = alpha
     }
 }

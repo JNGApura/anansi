@@ -42,7 +42,6 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             
             if let name = user?.getValue(forField: .name) as? String {
                 topbar.setTitle(name: name)
-                topbar.titleLabel.alpha = 0.0
                 
                 headerView.setTitleName(name: name)
                 
@@ -134,6 +133,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         let b = TopBar()
         b.setTitle(name: "")
         b.backgroundColor = .clear
+        b.alpha(with: 0)
         b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
         b.translatesAutoresizingMaskIntoConstraints = false
         return b
@@ -566,18 +566,15 @@ extension UserPageViewController: UIScrollViewDelegate {
                 let zoomRatio = (-(offsetY + topDistance) * 0.0065) + 1.0
                 backgroundImage.transform = CGAffineTransform(scaleX: zoomRatio, y: zoomRatio)
                 
-                topbar.statusbar.alpha = 0.0
-                topbar.navigationbar.alpha = 0.0
-                topbar.titleLabel.alpha = 0.0
+                topbar.alpha(with: 0)
                 
             } else {
                 
                 let delta = headerView.profileImage.frame.maxY == 0.0 ? 1.0 : (headerView.profileImage.frame.maxY - (offsetY + topDistance)) / headerView.profileImage.frame.maxY
+                let alpha = delta <= 1.0 ? 1.0 - delta : 1.0
                 
-                topbar.statusbar.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
-                topbar.navigationbar.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
-                topbar.titleLabel.alpha = delta <= 1.0 ? 1.0 - delta : 1.0
-                
+                topbar.alpha(with: alpha)
+
                 backgroundImage.transform = CGAffineTransform.identity
             }
             

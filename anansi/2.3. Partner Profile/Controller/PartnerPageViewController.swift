@@ -184,7 +184,6 @@ class PartnerPageViewController: UIViewController {
         return tv
     }()
     
-    lazy var barHeight : CGFloat = (self.navigationController?.navigationBar.frame.height)!
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     // MARK: View Lifecycle
@@ -243,26 +242,15 @@ class PartnerPageViewController: UIViewController {
         }
         
         super.viewWillAppear(animated)
-        
-        setupNavigationBarItems()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        setupNavigationBarItems()
-        
         // Logs partner visualizations
         if let id = partner?.getValue(forField: .id) as? String {
             NetworkManager.shared.logEvent(name: "partner_\(String(describing: id))_tap", parameters: nil)
         }
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(true)
-        
-        // Navigation Bar was hidden in viewDidAppear
-        navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
     override func didReceiveMemoryWarning() {
@@ -276,7 +264,7 @@ class PartnerPageViewController: UIViewController {
         
         topbar.setLargerBackButton()
         topbar.setStatusBarHeight(with: statusBarHeight)
-        topbar.setNavigationBarHeight(with: barHeight)
+        topbar.setNavigationBarHeight(with: Const.barHeight)
         
         NSLayoutConstraint.activate([
             
@@ -285,7 +273,7 @@ class PartnerPageViewController: UIViewController {
             topbar.topAnchor.constraint(equalTo: view.topAnchor),
             topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            topbar.heightAnchor.constraint(equalToConstant: Const.barHeight + statusBarHeight),
             
         ])
         
@@ -301,13 +289,6 @@ class PartnerPageViewController: UIViewController {
         }
         
         tableView.reloadData()
-    }
-    
-    private func setupNavigationBarItems() {
-        
-        //navigationItem.titleView = nil
-        //navigationItem.setHidesBackButton(true, animated: true)
-        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     // MARK: Custom functions
@@ -416,10 +397,10 @@ extension PartnerPageViewController: UITableViewDelegate, UITableViewDataSource 
         
         if sections[section] == "Contact information" {
             
-            if URLstring.contains("linkedin.com/") {
+            if URLstring.contains("linkedin.com/"),
+                let URLrange = URLstring.range(of: "linkedin.com/company/") {
                 
-                let companyID = URLstring[URLstring.range(of: "linkedin.com/company/")!.upperBound...]
-                if let url = URL(string: "linkedin://company/\(companyID)") {
+                if let url = URL(string: "linkedin://company/\(URLstring[URLrange.upperBound...])") {
                     
                     UIApplication.shared.open(url, options: [:]) { (result) in
                         if !result {

@@ -37,12 +37,12 @@ class FeedbackPagesViewController: UIPageViewController {
         let b = TopBar()
         b.setTitle(name: "Feedback")
         b.backgroundColor = .background
+        b.hidesBottomLine()
         b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
         b.translatesAutoresizingMaskIntoConstraints = false
         return b
     }()
     
-    lazy var barHeight : CGFloat = (navigationController?.navigationBar.frame.height)!
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     
@@ -75,18 +75,9 @@ class FeedbackPagesViewController: UIPageViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(completionPage), name: NSNotification.Name(rawValue: "feedbackSubmitted"), object: nil)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(true)
-        
-        setupNavigationBarItems()
-    }
-    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(true)
-        
-        // Navigation Bar was hidden in viewDidAppear
-        navigationController?.setNavigationBarHidden(false, animated: true)
-        
+
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -100,23 +91,16 @@ class FeedbackPagesViewController: UIPageViewController {
         super.viewWillLayoutSubviews()
         
         topbar.setStatusBarHeight(with: statusBarHeight)
-        topbar.setNavigationBarHeight(with: barHeight)
+        topbar.setNavigationBarHeight(with: Const.barHeight)
         
         NSLayoutConstraint.activate([
             
             topbar.topAnchor.constraint(equalTo: view.topAnchor),
             topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            topbar.heightAnchor.constraint(equalToConstant: Const.barHeight + statusBarHeight),
             
         ])
-    }
-    
-    private func setupNavigationBarItems() {
-        
-        //navigationItem.titleView = nil
-        //navigationItem.setHidesBackButton(true, animated: true)
-        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     // MARK: User Interaction

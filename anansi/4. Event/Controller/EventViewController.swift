@@ -129,15 +129,9 @@ class EventViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // This is important, because I'm using a fake navigation bar
-        navigationController?.setNavigationBarHidden(true, animated: true)
-        
+ 
         // Handles network reachablibity
         startMonitoringNetwork()
-        
-        // Enables swipe to pop
-        swipeToPop()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -159,10 +153,6 @@ class EventViewController: UIViewController {
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
                 
@@ -170,11 +160,8 @@ class EventViewController: UIViewController {
         reachability.stopNotifier()
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(true)
-        
-        // Navigation Bar was hidden in viewDidAppear
-        navigationController?.setNavigationBarHidden(false, animated: true)
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
     }
     
     // MARK: - Layout
@@ -417,14 +404,5 @@ extension EventViewController {
         alert.addAction(UIAlertAction(title: "On it!", style: .default , handler: nil))
         
         present(alert, animated: true, completion: nil)
-    }
-}
-
-extension EventViewController: UIGestureRecognizerDelegate {
-    
-    func swipeToPop() {
-        
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
-        navigationController?.interactivePopGestureRecognizer?.delegate = self;
     }
 }

@@ -30,6 +30,7 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate {
         let b = TopBar()
         b.setTitle(name: "Interests")
         b.backgroundColor = .background
+        b.hidesBottomLine()
         b.backButton.addTarget(self, action: #selector(backAction), for: .touchUpInside)
         b.translatesAutoresizingMaskIntoConstraints = false
         return b
@@ -116,7 +117,6 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate {
         return l
     }()
     
-    lazy var barHeight : CGFloat = (navigationController?.navigationBar.frame.height)!
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     // MARK: View Lifecycle
@@ -144,17 +144,8 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        setupNavigationBarItems()
-        
         // Sets height = contentSize.height for the collectionView
         interestCollectionViewHeightAnchor?.constant = collectionView.contentSize.height
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(true)
-        
-        // Navigation Bar was hidden in viewDidAppear
-        navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
     override func didReceiveMemoryWarning() {
@@ -167,7 +158,7 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate {
         super.viewDidLayoutSubviews()
         
         topbar.setStatusBarHeight(with: statusBarHeight)
-        topbar.setNavigationBarHeight(with: barHeight)
+        topbar.setNavigationBarHeight(with: Const.barHeight)
         
         NSLayoutConstraint.activate([
             
@@ -209,20 +200,13 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate {
             topbar.topAnchor.constraint(equalTo: view.topAnchor),
             topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            topbar.heightAnchor.constraint(equalToConstant: Const.barHeight + statusBarHeight),
             
-            selectedInterestsLabel.centerYAnchor.constraint(equalTo: topbar.bottomAnchor, constant: -barHeight / 2.0),
+            selectedInterestsLabel.centerYAnchor.constraint(equalTo: topbar.bottomAnchor, constant: -Const.barHeight / 2.0),
             selectedInterestsLabel.trailingAnchor.constraint(equalTo: topbar.trailingAnchor, constant: -Const.marginEight * 2.0),
             selectedInterestsLabel.widthAnchor.constraint(equalToConstant: 48.0),
             selectedInterestsLabel.heightAnchor.constraint(equalToConstant: 20.0),
         ])
-    }
-    
-    private func setupNavigationBarItems() {
-        
-        //navigationItem.titleView = nil
-        //navigationItem.setHidesBackButton(true, animated: true)
-        navigationController?.setNavigationBarHidden(true, animated: true)
     }
 
     // MARK: Custom functions

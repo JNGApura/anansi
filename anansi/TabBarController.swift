@@ -41,6 +41,7 @@ class TabBarController: UITabBarController {
             vc.title = item
             
             let nc = UINavigationController(rootViewController: vc)
+            nc.navigationBar.isHidden = true
             tabBarViewControllers.append(nc)
         }
         viewControllers = tabBarViewControllers

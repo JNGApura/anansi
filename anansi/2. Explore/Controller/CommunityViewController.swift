@@ -149,20 +149,13 @@ class CommunityViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // This is important, because I'm using a fake navigation bar
-        navigationController?.setNavigationBarHidden(true, animated: true)
-        
+
         // Handles network reachablibity
         startMonitoringNetwork()
-        
-        // Enables swipe to pop
-        swipeToPop()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
         
         if !UserDefaults.standard.isCommunityOnboarded() {
             
@@ -185,13 +178,6 @@ class CommunityViewController: UIViewController {
         
         // Stop NetworkStatusListener
         reachability.stopNotifier()
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(true)
-        
-        // Navigation Bar was hidden in viewDidAppear
-        navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
     override func didReceiveMemoryWarning() {
@@ -633,14 +619,5 @@ extension CommunityViewController {
                 }
             }
         })
-    }
-}
-
-extension CommunityViewController: UIGestureRecognizerDelegate {
-    
-    func swipeToPop() {
-        
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
-        navigationController?.interactivePopGestureRecognizer?.delegate = self;
     }
 }

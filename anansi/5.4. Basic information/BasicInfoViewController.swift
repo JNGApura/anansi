@@ -33,6 +33,7 @@ class BasicInfoViewController: UIViewController, UIScrollViewDelegate {
         let b = TopBar()
         b.setTitle(name: "Basic information")
         b.backgroundColor = .background
+        b.hidesBottomLine()
         b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
         b.translatesAutoresizingMaskIntoConstraints = false
         return b
@@ -97,7 +98,6 @@ class BasicInfoViewController: UIViewController, UIScrollViewDelegate {
         return ai
     }()
     
-    lazy var barHeight : CGFloat = (navigationController?.navigationBar.frame.height)!
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     // MARK: View Lifecycle
@@ -115,19 +115,6 @@ class BasicInfoViewController: UIViewController, UIScrollViewDelegate {
         
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(true)
-        
-        setupNavigationBarItems()
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(true)
-        
-        // Navigation Bar was hidden in viewDidAppear
-        navigationController?.setNavigationBarHidden(false, animated: true)
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -138,7 +125,7 @@ class BasicInfoViewController: UIViewController, UIScrollViewDelegate {
         super.viewWillLayoutSubviews()
         
         topbar.setStatusBarHeight(with: statusBarHeight)
-        topbar.setNavigationBarHeight(with: barHeight)
+        topbar.setNavigationBarHeight(with: Const.barHeight)
         
         NSLayoutConstraint.activate([
             
@@ -170,16 +157,9 @@ class BasicInfoViewController: UIViewController, UIScrollViewDelegate {
             topbar.topAnchor.constraint(equalTo: view.topAnchor),
             topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            topbar.heightAnchor.constraint(equalToConstant: Const.barHeight + statusBarHeight),
     
         ])
-    }
-    
-    private func setupNavigationBarItems() {
-        
-        //navigationItem.titleView = nil
-        //navigationItem.setHidesBackButton(true, animated: true)
-        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     // MARK: Custom functions
@@ -328,7 +308,7 @@ extension BasicInfoViewController: UIImagePickerControllerDelegate, UINavigation
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        //print("Image picker was canceled")
+
         dismiss(animated: true, completion: nil)
     }
 }

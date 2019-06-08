@@ -12,7 +12,7 @@ protocol StartNewChatDelegate {
     func showChatController(user: User)
 }
 
-class NewChatController: UITableViewController {
+class NewChatController: UIViewController {
     
     var delegate: StartNewChatDelegate?
     
@@ -39,99 +39,127 @@ class NewChatController: UITableViewController {
         sc.hidesNavigationBarDuringPresentation = false
         sc.obscuresBackgroundDuringPresentation = false
         sc.dimsBackgroundDuringPresentation = false
-        sc.definesPresentationContext = true
         sc.delegate = self
         sc.searchBar.delegate = self
-        sc.searchBar.setImage(UIImage(named: "plus")!.withRenderingMode(.alwaysTemplate), for: .search, state: .normal)
+        sc.searchBar.setImage(UIImage(named: "Connect")!.withRenderingMode(.alwaysTemplate), for: .search, state: .normal)
         sc.searchBar.barTintColor = .secondary // color of text field background
         sc.searchBar.tintColor = .secondary // color of bar button items
         sc.searchBar.backgroundColor = .background // color of box surrounding text field
         sc.searchBar.setBackgroundImage(UIImage(), for: .top, barMetrics: .default)
         sc.searchBar.searchBarStyle = .minimal
-        sc.searchBar.translatesAutoresizingMaskIntoConstraints = false
         return sc
     }()
     
-    var searchWasCanceled = false
+    let searchBarAttributes:[NSAttributedString.Key:Any] = [
+        NSAttributedString.Key.foregroundColor  :   UIColor.primary,
+        NSAttributedString.Key.font             :   UIFont.systemFont(ofSize: Const.calloutFontSize)
+    ]
+    
+    lazy var tableView : UITableView = {
+        let tv = UITableView(frame: .zero, style: .grouped)
+        tv.register(SearchTableCell.self, forCellReuseIdentifier: "SearchCell")
+        tv.delegate = self
+        tv.dataSource = self
+        tv.backgroundColor = .background
+        tv.alwaysBounceVertical = true
+        tv.separatorStyle = .none
+        tv.rowHeight = 60.0
+        tv.estimatedRowHeight = 60.0
+        tv.sectionHeaderHeight = 28.0
+        tv.estimatedSectionHeaderHeight = 28.0
+        tv.translatesAutoresizingMaskIntoConstraints = false
+        return tv
+    }()
+    
     var searchString: String!
     
     // Creates empty state for collectionView
-    lazy var emptyState = SearchEmptyState(frame: CGRect(x: 0, y: 0, width: self.tableView.bounds.width, height: self.tableView.bounds.height))
+    lazy var emptyState = SearchEmptyState(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height))
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.register(SearchTableCell.self, forCellReuseIdentifier: "SearchCell")
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.backgroundColor = .background
-        tableView.alwaysBounceVertical = true
-        tableView.contentInset = UIEdgeInsets(top: 16.0, left: 0, bottom: 0, right: 0)
-        tableView.separatorStyle = .none
-        tableView.rowHeight = 60.0
-        tableView.estimatedRowHeight = 60.0
-        tableView.sectionHeaderHeight = 20.0
-        tableView.estimatedSectionHeaderHeight = 20.0
+        // Navigation bar is hidden for the entire stack!
+        navigationController?.navigationBar.isHidden = true
         
-        let attributes:[NSAttributedString.Key:Any] = [
-            NSAttributedString.Key.foregroundColor : UIColor.primary,
-            NSAttributedString.Key.font : UIFont.systemFont(ofSize: Const.bodyFontSize)
-        ]
-        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes(attributes, for: .normal)
+        view.backgroundColor = .background
         
-        navigationItem.titleView = searchController.searchBar
+        // Fetches users
+        fetchUsers()
+        fetchTrendingUsers()
+
+        // Set up UI
+        [tableView].forEach { view.addSubview($0) }
+        tableView.tableHeaderView = searchController.searchBar
         
-        searchController.isActive = true
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self)
-        
-        // Stores searchString before de-activating SearchController
-        searchString = searchController.searchBar.text
-        
-        searchController.isActive = false
-        searchController.searchBar.endEditing(true)
-        
-        // Reverts to translucent
-        navigationController?.navigationBar.isTranslucent = true
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        DispatchQueue.main.async {
-            self.searchController.searchBar.becomeFirstResponder()
-        }
+        // By defining PresentationContext to true, the search controller stays in this view controller
+        self.definesPresentationContext = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Becomes white
-        navigationController?.navigationBar.barTintColor = .background
-        navigationController?.navigationBar.isTranslucent = false
-        
         if searchString != nil {
             searchController.searchBar.text = searchString
         }
         
-        // Sets notifications for keyboard
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
         // Fetches necessary information
         fetchMyInterests()
         fetchRecentlyViewedUsers()
-        fetchUsers()
-        fetchTrendingUsers()
+        
+        // Sets notifications for keyboard
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        searchController.isActive = true
+        
+        DispatchQueue.main.async {            
+            self.tableView.reloadData()
+            self.tableView.layoutIfNeeded()
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        searchString = searchController.searchBar.text // Stores searchString
+        
+        searchController.isActive = false
+        
+        DispatchQueue.main.async {
+            self.searchController.searchBar.endEditing(true)
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes(searchBarAttributes, for: .normal)
+        
+        NSLayoutConstraint.activate([
+            
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        ])
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+
     
     // MARK: - Network
     
@@ -173,6 +201,7 @@ class NewChatController: UITableViewController {
         })
     }
     
+    
     // MARK : KEYBOARD-related functions
     
     @objc func keyboardWillHide() {
@@ -187,10 +216,13 @@ class NewChatController: UITableViewController {
             view.layoutIfNeeded() // Forces the layout of the subtree animation block and then captures all of the frame changes
         }
     }
+}
+
+// MARK: UITableViewDelegate
+
+extension NewChatController: UITableViewDelegate, UITableViewDataSource {
     
-    // MARK: UITableViewDelegate
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         
         if !searchBarIsEmpty() && filteredUsers.count == 0 {
             tableView.backgroundView = emptyState
@@ -207,7 +239,7 @@ class NewChatController: UITableViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
         if searchBarIsEmpty() {
             return suggestedSections[section]
@@ -216,7 +248,7 @@ class NewChatController: UITableViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         
         guard let header = view as? UITableViewHeaderFooterView else { return }
         
@@ -225,7 +257,7 @@ class NewChatController: UITableViewController {
         header.textLabel?.frame = header.frame
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if searchBarIsEmpty() {
             let listOfUsers = filteredSuggestions[suggestedSections[section]]
@@ -236,7 +268,7 @@ class NewChatController: UITableViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "SearchCell", for: indexPath) as! SearchTableCell
         cell.profileImageView.kf.cancelDownloadTask() // cancel download task, if there's any
@@ -263,7 +295,7 @@ class NewChatController: UITableViewController {
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         searchController.searchBar.resignFirstResponder()
         tableView.deselectRow(at: indexPath, animated: true)
@@ -286,20 +318,26 @@ class NewChatController: UITableViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "SearchCell") as! SearchTableCell
         cell.profileImageView.kf.cancelDownloadTask()
     }
-    
-    // MARK: - UIScrollViewDelegate
+}
+
+
+// MARK: - UIScrollViewDelegate
+
+extension NewChatController: UIScrollViewDelegate {
     
     // this delegate is called when the scrollView (i.e your UITableView) will start scrolling
-    override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         searchController.searchBar.resignFirstResponder()
     }
 }
+
+
+// MARK: - UISearchControllerDelegate
 
 extension NewChatController: UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
     

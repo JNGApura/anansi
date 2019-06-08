@@ -32,6 +32,7 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
         let b = TopBar()
         b.setTitle(name: "")
         b.backgroundColor = .background
+        b.hidesBottomLine()
         b.backButton.addTarget(self, action: #selector(back), for: .touchUpInside)
         b.translatesAutoresizingMaskIntoConstraints = false
         return b
@@ -138,7 +139,6 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
         return bgv
     }()
     
-    lazy var barHeight : CGFloat = (navigationController?.navigationBar.frame.height)!
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     // MARK: View Lifecycle
@@ -159,12 +159,6 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
         // Dispose of any resources that can be recreated.
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(true)
-        
-        setupNavigationBarItems()
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -175,10 +169,7 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(true)
-        
-        // Navigation Bar was hidden in viewDidAppear
-        navigationController?.setNavigationBarHidden(false, animated: true)
-        
+
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -188,7 +179,7 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
         super.viewWillLayoutSubviews()
         
         topbar.setStatusBarHeight(with: statusBarHeight)
-        topbar.setNavigationBarHeight(with: barHeight)
+        topbar.setNavigationBarHeight(with: Const.barHeight)
         
         NSLayoutConstraint.activate([
             
@@ -197,7 +188,7 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
             topbar.topAnchor.constraint(equalTo: view.topAnchor),
             topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            topbar.heightAnchor.constraint(equalToConstant: Const.barHeight + statusBarHeight),
             
             // View
             
@@ -251,13 +242,6 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
             hiddenButton.widthAnchor.constraint(equalTo: buttonGroupView.widthAnchor),
             hiddenButton.heightAnchor.constraint(equalToConstant: 48.0),
         ])
-    }
-    
-    private func setupNavigationBarItems() {
-        
-        //navigationItem.titleView = nil
-        //navigationItem.setHidesBackButton(true, animated: true)
-        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     // MARK: Custom functions
@@ -321,7 +305,7 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
         
         if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
             
-            let textBoxRelativeMaxY = feedbackTextView.frame.maxY + groupedView.frame.origin.y + barHeight + statusBarHeight
+            let textBoxRelativeMaxY = feedbackTextView.frame.maxY + groupedView.frame.origin.y + Const.barHeight + statusBarHeight
             let screenHeight = view.frame.height
             
             let offsetY = (screenHeight - textBoxRelativeMaxY - 16)

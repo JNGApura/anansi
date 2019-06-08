@@ -48,6 +48,8 @@ struct Const {
     static let buttonHeight: CGFloat = 48
     /// UINavigation button height
     static let navButtonHeight: CGFloat = 38
+    /// Topbar height
+    static let barHeight : CGFloat = 44.0
     
     ///
     static let timeDateHeightChatCells : CGFloat = 22.0

@@ -19,14 +19,9 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
     var iconForContactSection = [String]()    
     var userInterests = [String]()
     var myInterests = [String]()
-    
-    var isNavigationBarHidden : Bool = false
-    
+        
     var user: User? {
         didSet {
-            
-            //
-            setupNavigationBarItems()
             
             sections.removeAll()
             sectionDataToDisplay.removeAll()
@@ -216,7 +211,6 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         return tv
     }()
 
-    lazy var barHeight : CGFloat = (self.navigationController?.navigationBar.frame.height)!
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     // MARK: View Lifecycle
@@ -237,17 +231,8 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         super.didReceiveMemoryWarning()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        setupNavigationBarItems()
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        setupNavigationBarItems()
-        isNavigationBarHidden = true
         
         // Updates ranking
         if let id = user?.getValue(forField: .id) as? String {
@@ -273,13 +258,6 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(true)
-        
-        // Navigation Bar was hidden in viewDidAppear
-        navigationController?.setNavigationBarHidden(false, animated: true)
-    }
-    
     // MARK: Layout
     
     override func viewDidLayoutSubviews() {
@@ -287,7 +265,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         
         topbar.setLargerBackButton()
         topbar.setStatusBarHeight(with: statusBarHeight)
-        topbar.setNavigationBarHeight(with: barHeight)
+        topbar.setNavigationBarHeight(with: Const.barHeight)
         
         NSLayoutConstraint.activate([
             
@@ -296,7 +274,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             topbar.topAnchor.constraint(equalTo: view.topAnchor),
             topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            topbar.heightAnchor.constraint(equalToConstant: Const.barHeight + statusBarHeight),
             
             // View
             
@@ -340,13 +318,6 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             self.tableView.reloadData()
             self.tableView.layoutIfNeeded()
         }
-    }
-    
-    private func setupNavigationBarItems() {
-        
-        //navigationItem.titleView = nil
-        //navigationItem.setHidesBackButton(true, animated: true)
-        navigationController?.setNavigationBarHidden(true, animated: true)
     }
         
     // MARK: Custom functions
@@ -509,23 +480,23 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
                 
             } else {
                 
-                var profileID = String()
-                
-                if URLstring.contains("linkedin.com/in") {
-                    profileID = String(URLstring[URLstring.range(of: "linkedin.com/in/")!.upperBound...])
+                if URLstring.contains("linkedin.com/in"),
+                    let URLrange = URLstring.range(of: "linkedin.com/in/") {
+                    
+                    let profileID = String(URLstring[URLrange.upperBound...])
+                    if let url = URL(string: "linkedin://profile/\(profileID)") {
+                        
+                        UIApplication.shared.open(url, options: [:]) { (result) in
+                            if !result {
+                                self.openURLfromStringInWebViewer(string: "https://\(URLstring)")
+                            }
+                        }
+                        return
+                    }
                     
                 } else {
-                    profileID = URLstring
-                }
                     
-                if let url = URL(string: "linkedin://profile/\(profileID)") {
-                    
-                    UIApplication.shared.open(url, options: [:]) { (result) in
-                        if !result {
-                            self.openURLfromStringInWebViewer(string: "https://\(URLstring)")
-                        }
-                    }
-                    return
+                    openURLfromStringInWebViewer(string: "https://\(URLstring)")
                 }
             }
         }
@@ -555,31 +526,24 @@ extension UserPageViewController: UIScrollViewDelegate {
         let topDistance : CGFloat = statusBarHeight //+ barHeight
         let offsetY : CGFloat = scrollView.contentOffset.y
         
-        // When going from chat to userProfile, the background image flickers (zooms in and out)
-        // because of the navigation bar, so I need to set a variable to allow scrolling only
-        // after I know the navigation bar has been hidden
-        
-        if isNavigationBarHidden {
-        
-            // Zooms out image when scrolled down
-            if  offsetY + topDistance < 0 {
-                let zoomRatio = (-(offsetY + topDistance) * 0.0065) + 1.0
-                backgroundImage.transform = CGAffineTransform(scaleX: zoomRatio, y: zoomRatio)
-                
-                topbar.alpha(with: 0)
-                
-            } else {
-                
-                let delta = headerView.profileImage.frame.maxY == 0.0 ? 1.0 : (headerView.profileImage.frame.maxY - (offsetY + topDistance)) / headerView.profileImage.frame.maxY
-                let alpha = delta <= 1.0 ? 1.0 - delta : 1.0
-                
-                topbar.alpha(with: alpha)
-
-                backgroundImage.transform = CGAffineTransform.identity
-            }
+        // Zooms out image when scrolled down
+        if  offsetY + topDistance < 0 {
+            let zoomRatio = (-(offsetY + topDistance) * 0.0065) + 1.0
+            backgroundImage.transform = CGAffineTransform(scaleX: zoomRatio, y: zoomRatio)
             
-            backgroundImage.layoutIfNeeded()
+            topbar.alpha(with: 0)
+            
+        } else {
+            
+            let delta = headerView.profileImage.frame.maxY == 0.0 ? 1.0 : (headerView.profileImage.frame.maxY - (offsetY + topDistance)) / headerView.profileImage.frame.maxY
+            let alpha = delta <= 1.0 ? 1.0 - delta : 1.0
+            
+            topbar.alpha(with: alpha)
+            
+            backgroundImage.transform = CGAffineTransform.identity
         }
+        
+        backgroundImage.layoutIfNeeded()
     }
     
 }

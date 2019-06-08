@@ -176,4 +176,10 @@ class TopBar : UIView {
         bottomLine.alpha = alpha
         titleLabel.alpha = alpha
     }
+    
+    // Hides bottom line
+    func hidesBottomLine() {
+        
+        bottomLine.isHidden = true
+    }
 }

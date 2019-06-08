@@ -29,7 +29,6 @@ class SearchTableViewController: UIViewController {
         sc.hidesNavigationBarDuringPresentation = false
         sc.obscuresBackgroundDuringPresentation = false
         sc.dimsBackgroundDuringPresentation = false
-        sc.definesPresentationContext = true
         sc.delegate = self
         sc.searchBar.delegate = self
         sc.searchBar.placeholder = "Search for attendees"
@@ -46,15 +45,6 @@ class SearchTableViewController: UIViewController {
         NSAttributedString.Key.foregroundColor  :   UIColor.primary,
         NSAttributedString.Key.font             :   UIFont.systemFont(ofSize: Const.calloutFontSize)
     ]
-    
-    lazy var topbar: TopBar = {
-        let b = TopBar()
-        b.setTitle(name: "")
-        b.backgroundColor = .background
-        b.backButton.isHidden = true
-        b.translatesAutoresizingMaskIntoConstraints = false
-        return b
-    }()
     
     lazy var tableView : UITableView = {
         let tv = UITableView(frame: .zero, style: .grouped)
@@ -73,15 +63,15 @@ class SearchTableViewController: UIViewController {
     }()
     
     var searchString: String!
-    
-    lazy var barHeight : CGFloat = (navigationController?.navigationBar.frame.height)!
-    let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
-    
+        
     // Creates empty state for tableView
     lazy var emptyState = SearchEmptyState(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height))
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Navigation bar is hidden for the entire stack!
+        navigationController?.navigationBar.isHidden = true
         
         view.backgroundColor = .background
         
@@ -91,15 +81,13 @@ class SearchTableViewController: UIViewController {
         // Set up UI
         [tableView].forEach { view.addSubview($0) }
         tableView.tableHeaderView = searchController.searchBar
-        //navigationItem.titleView
         
+        // By defining PresentationContext to true, the search controller stays in this view controller
+        self.definesPresentationContext = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(true, animated: true)
-        searchController.searchBar.isHidden = false
         
         if searchString != nil {
             searchController.searchBar.text = searchString
@@ -108,9 +96,6 @@ class SearchTableViewController: UIViewController {
         // Fetches necessary information
         fetchMyInterests()
         fetchRecentlyViewedUsers()
-        
-        // Enables swipe to pop
-        swipeToPop()
         
         // Sets notifications for keyboard
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -123,8 +108,6 @@ class SearchTableViewController: UIViewController {
         searchController.isActive = true
         
         DispatchQueue.main.async {
-            self.searchController.searchBar.becomeFirstResponder()
-            
             self.tableView.reloadData()
             self.tableView.layoutIfNeeded()
         }
@@ -135,18 +118,17 @@ class SearchTableViewController: UIViewController {
         
         searchString = searchController.searchBar.text // Stores searchString
         
-        searchController.searchBar.isHidden = true
+        searchController.isActive = false
         
-        NotificationCenter.default.removeObserver(self)
+        DispatchQueue.main.async {
+            self.searchController.searchBar.endEditing(true)
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        searchController.isActive = false
-        searchController.searchBar.endEditing(true)
-        
-        navigationController?.setNavigationBarHidden(false, animated: true)
+        NotificationCenter.default.removeObserver(self)
     }
     
     override func viewDidLayoutSubviews() {
@@ -189,7 +171,6 @@ class SearchTableViewController: UIViewController {
         
         let userController = UserPageViewController()
         userController.user = user
-        searchController.searchBar.resignFirstResponder()
         
         navigationController?.pushViewController(userController, animated: true)
     }
@@ -289,7 +270,6 @@ extension SearchTableViewController: UITableViewDelegate, UITableViewDataSource 
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        searchController.searchBar.resignFirstResponder()
         tableView.deselectRow(at: indexPath, animated: true)
         
         let section = suggestedSections[indexPath.section]
@@ -451,14 +431,5 @@ extension SearchTableViewController: UISearchResultsUpdating, UISearchController
     // Returns true if the text is empty or nil
     func searchBarIsEmpty() -> Bool {
         return searchController.searchBar.text?.isEmpty ?? true
-    }
-}
-
-extension SearchTableViewController: UIGestureRecognizerDelegate {
-    
-    func swipeToPop() {
-        
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
-        navigationController?.interactivePopGestureRecognizer?.delegate = self;
     }
 }

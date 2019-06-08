@@ -21,7 +21,6 @@ class ProfileViewController: UIViewController {
     var activeField : userInfoType! = nil
     var currentIndexPath : IndexPath!
     
-    var keyboardIsActive : Bool = false
     var estimatedHeightForTextView : CGFloat? = nil
     
     var user: User? {
@@ -105,7 +104,6 @@ class ProfileViewController: UIViewController {
         return b
     }()
     
-    lazy var barHeight : CGFloat = (self.navigationController?.navigationBar.frame.height)!
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     // Cover
@@ -218,15 +216,18 @@ class ProfileViewController: UIViewController {
     
     // Tap to dismiss keyboard
     lazy var tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
-
     
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Adds tap to dismiss keyboard
-        view.addGestureRecognizer(tap)
+        
+        // Navigation bar is hidden for the entire stack!
+        navigationController?.navigationBar.isHidden = true
+        
+        // Adds tapToDismissKeyboard gesture
+        //view.addGestureRecognizer(tap)
+        print("hello")
         
         view.backgroundColor = .background
         
@@ -244,6 +245,39 @@ class ProfileViewController: UIViewController {
         checkIconLeadingAnchor = checkIcon.leadingAnchor.constraint(equalTo: progressBarView.leadingAnchor)
         checkIconLeadingAnchor?.isActive = true
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if !UserDefaults.standard.isProfileOnboarded() {
+            
+            // Presents bottom sheet
+            let controller = BottomSheetView()
+            controller.setContent(title: "Your Profile",
+                                  description: "This is were your profile lives. Add info about yourself so other attendees can easily find and recognize you.")
+            controller.setIcon(image: UIImage(named: "Profile")!.withRenderingMode(.alwaysTemplate))
+            controller.modalPresentationStyle = .overFullScreen
+            controller.modalTransitionStyle = .crossDissolve
+            present(controller, animated: true, completion: nil)
+            
+            // Sets CommunityOnboarded to true
+            UserDefaults.standard.setProfileOnboarded(value: true)
+        }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
     
     // MARK: Layout
     
@@ -252,7 +286,7 @@ class ProfileViewController: UIViewController {
         
         topbar.setLargerBackButton()
         topbar.setStatusBarHeight(with: statusBarHeight)
-        topbar.setNavigationBarHeight(with: barHeight)
+        topbar.setNavigationBarHeight(with: Const.barHeight)
         
         NSLayoutConstraint.activate([
             
@@ -291,7 +325,7 @@ class ProfileViewController: UIViewController {
             topbar.topAnchor.constraint(equalTo: view.topAnchor),
             topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            topbar.heightAnchor.constraint(equalToConstant: Const.barHeight + statusBarHeight),
             
             settingsButton.centerYAnchor.constraint(equalTo: topbar.navigationbar.centerYAnchor),
             settingsButton.trailingAnchor.constraint(equalTo: topbar.actionButton.leadingAnchor, constant: -Const.marginEight * 2.0),
@@ -339,55 +373,6 @@ class ProfileViewController: UIViewController {
         }
         
         tableView.reloadData()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        // This is important, because I'm using a fake navigation bar
-        navigationController?.setNavigationBarHidden(true, animated: true)
-        
-        // Enables swipe to pop
-        swipeToPop()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        if !UserDefaults.standard.isProfileOnboarded() {
-            
-            // Presents bottom sheet
-            let controller = BottomSheetView()
-            controller.setContent(title: "Your Profile",
-                                  description: "This is were your profile lives. Add info about yourself so other attendees can easily find and recognize you.")
-            controller.setIcon(image: UIImage(named: "Profile")!.withRenderingMode(.alwaysTemplate))
-            controller.modalPresentationStyle = .overFullScreen
-            controller.modalTransitionStyle = .crossDissolve
-            present(controller, animated: true, completion: nil)
-            
-            // Sets CommunityOnboarded to true
-            UserDefaults.standard.setProfileOnboarded(value: true)
-        }
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(true)
-        
-        // Navigation Bar was hidden in viewWillAppear
-        navigationController?.setNavigationBarHidden(false, animated: true)
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
     }
     
     // MARK: Network
@@ -509,16 +494,15 @@ class ProfileViewController: UIViewController {
             if collapseSpace < 0 { return }
             
             collapseSpace = distanceCellKeyboard
-            scrollView.setContentOffset(CGPoint(x: 0, y: scrollView.contentOffset.y + distanceCellKeyboard), animated: true)
+            scrollView.setContentOffset(CGPoint(x: 0, y: scrollView.contentOffset.y + distanceCellKeyboard), animated: false)
             view.layoutIfNeeded()
             
-            keyboardIsActive = true
-            
             // Adds tapToDismissKeyboard gesture
-            if view.gestureRecognizers != nil,
-                !(view.gestureRecognizers!.contains(tap)) {
+            if view.gestureRecognizers == nil || (view.gestureRecognizers != nil && !view.gestureRecognizers!.contains(tap)) {
                 view.addGestureRecognizer(tap)
             }
+            
+            scrollView.isScrollEnabled = false
         }
     }
     
@@ -530,14 +514,14 @@ class ProfileViewController: UIViewController {
             self.view.layoutIfNeeded()
         })
         
-        collapseSpace = 0
-        keyboardIsActive = false
-        
         // Removes tapToDismissKeyboard gesture
         if view.gestureRecognizers != nil,
             view.gestureRecognizers!.contains(tap) {
             view.removeGestureRecognizer(tap)
         }
+        
+        collapseSpace = 0
+        scrollView.isScrollEnabled = true
     }
 }
 
@@ -804,9 +788,6 @@ extension ProfileViewController: UIScrollViewDelegate {
         
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
-        // If keyboard is active, ignore scroll UI changes
-        // if keyboardIsActive { return }
-        
         let topDistance = statusBarHeight // + barHeight
         let offsetY : CGFloat = scrollView.contentOffset.y
         
@@ -828,14 +809,5 @@ extension ProfileViewController: UIScrollViewDelegate {
         }
         
         backgroundImage.layoutIfNeeded()
-    }
-}
-
-extension ProfileViewController: UIGestureRecognizerDelegate {
-    
-    func swipeToPop() {
-        
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
-        navigationController?.interactivePopGestureRecognizer?.delegate = self;
     }
 }

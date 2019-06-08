@@ -132,23 +132,15 @@ class ConnectViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // This is important, because I'm using a fake navigation bar
-        navigationController?.setNavigationBarHidden(true, animated: true)
-        
         // Handles network reachablibity
         startMonitoringNetwork()
         
         // Placeholder message for empty state (or new chat page)
         CTA = Const.emptystateTitle[Int.random(in: 0 ..< Const.emptystateTitle.count)]
-        
-        // Enables swipe to pop
-        swipeToPop()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(true, animated: false)
         
         if !UserDefaults.standard.isConnectOnboarded() {
             
@@ -173,13 +165,6 @@ class ConnectViewController: UIViewController {
         reachability.stopNotifier()
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(true)
-        
-        // Navigation Bar was hidden in viewDidAppear
-        navigationController?.setNavigationBarHidden(false, animated: true)
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -196,7 +181,7 @@ class ConnectViewController: UIViewController {
     
     @objc func navigateToNewChatController() {
         
-        let newchat = NewChatController(style: .grouped)
+        let newchat = NewChatController()
         newchat.placeholder = CTA ?? Const.emptystateTitle[0]
         newchat.delegate = self
         newchat.hidesBottomBarWhenPushed = true
@@ -551,14 +536,5 @@ extension ConnectViewController {
             self.typingPartner = String()
             self.tableView.reloadData()
         })
-    }
-}
-
-extension ConnectViewController: UIGestureRecognizerDelegate {
-    
-    func swipeToPop() {
-        
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
-        navigationController?.interactivePopGestureRecognizer?.delegate = self;
     }
 }

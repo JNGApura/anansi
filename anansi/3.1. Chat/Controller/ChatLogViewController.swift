@@ -202,7 +202,6 @@ class ChatLogViewController: UIViewController {
     
     let reachability = Reachability()!
     
-    lazy var barHeight : CGFloat = (self.navigationController?.navigationBar.frame.height)!
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     
@@ -225,8 +224,6 @@ class ChatLogViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        setupNavigationBarItems()
         
         // Handles network reachablibity
         startMonitoringNetwork()
@@ -234,8 +231,6 @@ class ChatLogViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        setupNavigationBarItems()
         
         // 0. Set isOnPage as true
         isOnPage = true
@@ -290,10 +285,7 @@ class ChatLogViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(true)
-        
-        // Navigation Bar was hidden in viewDidAppear
-        navigationController?.setNavigationBarHidden(false, animated: true)
-        
+
         chatAccessoryView.inputTextView.endEditing(true)
         
         // Set isOnPage as false
@@ -310,7 +302,7 @@ class ChatLogViewController: UIViewController {
         super.viewDidLayoutSubviews()
         
         topbar.setStatusBarHeight(with: statusBarHeight)
-        topbar.setNavigationBarHeight(with: barHeight)
+        topbar.setNavigationBarHeight(with: Const.barHeight)
         
         NSLayoutConstraint.activate([
             
@@ -319,7 +311,7 @@ class ChatLogViewController: UIViewController {
             topbar.topAnchor.constraint(equalTo: view.topAnchor),
             topbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topbar.heightAnchor.constraint(equalToConstant: barHeight + statusBarHeight),
+            topbar.heightAnchor.constraint(equalToConstant: Const.barHeight + statusBarHeight),
             
             userImageView.centerYAnchor.constraint(equalTo: topbar.navigationbar.centerYAnchor),
             userImageView.leadingAnchor.constraint(equalTo: topbar.backButton.trailingAnchor, constant: Const.marginEight * 2.0),

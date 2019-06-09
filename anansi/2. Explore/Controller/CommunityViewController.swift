@@ -340,9 +340,7 @@ extension CommunityViewController: ShowUserProfileDelegate {
     
     func showUserProfileController(user: User) {
         
-        let userProfile = UserPageViewController()
-        userProfile.user = user
-        
+        let userProfile = UserPageViewController(user: user)
         navigationController?.pushViewController(userProfile, animated: true)
     }
 }
@@ -369,9 +367,7 @@ extension CommunityViewController: ShowPartnerPageDelegate {
     
     func showPartnerPageController(partner: Partner) {
         
-        let partnerPageController = PartnerPageViewController()
-        partnerPageController.partner = partner
-        
+        let partnerPageController = PartnerPageViewController(partner: partner)
         navigationController?.pushViewController(partnerPageController, animated: true)
     }
 }

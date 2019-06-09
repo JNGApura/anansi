@@ -323,11 +323,8 @@ extension ConnectViewController: StartNewChatDelegate {
     
     @objc func showChatLogController(user: User, and messages: [Message] = []) {
         
-        let chatController = ChatLogViewController()
-        chatController.user = user
-        chatController.allMessages = messages
+        let chatController = ChatLogViewController(user: user, messages: messages)
         chatController.hidesBottomBarWhenPushed = true
-                
         navigationController?.pushViewController(chatController, animated: true)
     }
     

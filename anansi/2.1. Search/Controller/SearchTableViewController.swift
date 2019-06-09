@@ -169,9 +169,7 @@ class SearchTableViewController: UIViewController {
     
     func showProfileController(user: User) {
         
-        let userController = UserPageViewController()
-        userController.user = user
-        
+        let userController = UserPageViewController(user: user)        
         navigationController?.pushViewController(userController, animated: true)
     }
     

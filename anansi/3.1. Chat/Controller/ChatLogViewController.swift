@@ -44,50 +44,9 @@ class ChatLogViewController: UIViewController {
     
     private var partnerIsTyping = false
     
-    var user: User? {
-        didSet {
-            
-            var fullname = ((user?.getValue(forField: .name) as? String)!).components(separatedBy: " ")
-            firstname = fullname.removeFirst()
-            chatAccessoryView.placeholderText = "Message \(firstname)"
-            
-            // User information in navigation bar
-            userNameLabel.text = (user?.getValue(forField: .name) as? String)!
-            if let userImage = user?.getValue(forField: .profileImageURL) as? String {
-                userImageView.setImage(with: userImage)
-            } else {
-                userImageView.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
-            }
-            
-            // Hides chatAcessoryView if user is blocked
-            if let blockedDic = user?.getValue(forField: .blockedUsers) as? [String: String] {
-                
-                if blockedDic.index(forKey: myID!) != nil {
-                    hasBeenBlocked = true
-                }
-            }
-        }
-    }
+    var user: User
+    var allMessages: [Message]
     
-    var allMessages = [Message]() {
-        didSet {
-            
-            if !allMessages.isEmpty {
-                for message in allMessages {
-                    
-                    let timestamp = message.getValue(forField: .timestamp) as! NSNumber
-                    let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: timestamp.doubleValue))
-                    
-                    if !(dates.contains(dateString)) {
-                        dates.append(dateString)
-                        listOfMessagesPerDate[dateString] = [message]
-                    } else {
-                        listOfMessagesPerDate[dateString]!.append(message)
-                    }
-                }
-            }
-        }
-    }
     
     // TitleLabelView
     
@@ -205,6 +164,19 @@ class ChatLogViewController: UIViewController {
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
     
+    // MARK: - Init
+    
+    init(user: User, messages: [Message]) {
+        self.user = user
+        self.allMessages = messages
+        super.init(nibName:nil, bundle:nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
     // MARK: - View lifecycle
     
     override func viewDidLoad() {
@@ -220,6 +192,10 @@ class ChatLogViewController: UIViewController {
         // Set up observers for messages & typing
         observeMessages()
         observeTyping()
+        
+        // Config view controller
+        setUser()
+        setMessages()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -335,11 +311,47 @@ class ChatLogViewController: UIViewController {
         ])
     }
     
-    private func setupNavigationBarItems() {
+    // MARK: - Custom functions
+    
+    func setUser() {
         
-        //navigationItem.titleView = nil
-        //navigationItem.setHidesBackButton(true, animated: true)
-        navigationController?.setNavigationBarHidden(true, animated: true)
+        var fullname = ((user.getValue(forField: .name) as? String)!).components(separatedBy: " ")
+        firstname = fullname.removeFirst()
+        chatAccessoryView.placeholderText = "Message \(firstname)"
+        
+        // User information in navigation bar
+        userNameLabel.text = (user.getValue(forField: .name) as? String)!
+        if let userImage = user.getValue(forField: .profileImageURL) as? String {
+            userImageView.setImage(with: userImage)
+        } else {
+            userImageView.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
+        }
+        
+        // Hides chatAcessoryView if user is blocked
+        if let blockedDic = user.getValue(forField: .blockedUsers) as? [String: String] {
+            
+            if blockedDic.index(forKey: myID!) != nil {
+                hasBeenBlocked = true
+            }
+        }
+    }
+    
+    func setMessages() {
+        
+        if !allMessages.isEmpty {
+            for message in allMessages {
+                
+                let timestamp = message.getValue(forField: .timestamp) as! NSNumber
+                let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: timestamp.doubleValue))
+                
+                if !(dates.contains(dateString)) {
+                    dates.append(dateString)
+                    listOfMessagesPerDate[dateString] = [message]
+                } else {
+                    listOfMessagesPerDate[dateString]!.append(message)
+                }
+            }
+        }
     }
 }
 
@@ -421,7 +433,7 @@ extension ChatLogViewController: UITableViewDelegate, UITableViewDataSource {
             // Get all the info needed
             let date = dates[indexPath.section]
             let message = listOfMessagesPerDate[date]![indexPath.row]
-            let usrimg = user?.getValue(forField: .profileImageURL) as? String ?? ""
+            let usrimg = user.getValue(forField: .profileImageURL) as? String ?? ""
             
             var isIncoming = false, showStatus = false
             
@@ -542,8 +554,7 @@ extension ChatLogViewController {
                         
         } else {
             
-            let controller = UserPageViewController()
-            controller.user = user
+            let controller = UserPageViewController(user: user)
             controller.cameFromChat = true
             navigationController?.pushViewController(controller, animated: true)
         }
@@ -577,7 +588,7 @@ extension ChatLogViewController {
         
         let deleteChat = UIAlertAction(title: "Delete conversation", style: .destructive, handler: { (action) -> Void in
             
-            if let userID = self.user?.getValue(forField: .id) as? String {
+            if let userID = self.user.getValue(forField: .id) as? String {
                 
                 NetworkManager.shared.deleteUserMessageNode(from: self.myID!, to: userID, onDelete: {
                     self.back()
@@ -607,7 +618,7 @@ extension ChatLogViewController {
             let myID = NetworkManager.shared.getUID()
             
             if newValue {
-                let receiverID = (user?.getValue(forField: .id) as? String)!
+                let receiverID = (user.getValue(forField: .id) as? String)!
                 NetworkManager.shared.createTypingInstance(from: myID!, to: receiverID, onSucess: nil)
                 
             } else {
@@ -618,7 +629,7 @@ extension ChatLogViewController {
     
     func observeTyping() {
         
-        let receiverID = (user?.getValue(forField: .id) as? String)!
+        let receiverID = (user.getValue(forField: .id) as? String)!
         
         NetworkManager.shared.observeTypingInstances(from: receiverID, onTyping: { (partnerID) in
             
@@ -703,7 +714,7 @@ extension ChatLogViewController: ChatAccessoryDelegate {
         let currentTime = formatter.string(from: Date())
         
         let myID = NetworkManager.shared.getUID()
-        let userID = user?.getValue(forField: .id) as! String
+        let userID = user.getValue(forField: .id) as! String
         
         let message : [String: Any] = [messageInfoType.timestamp.rawValue: currentTime, messageInfoType.text.rawValue: string, messageInfoType.isSent.rawValue: "false", messageInfoType.isDelivered.rawValue: "false", messageInfoType.isRead.rawValue: "false", messageInfoType.sender.rawValue: myID!, messageInfoType.receiver.rawValue: userID]
         
@@ -830,7 +841,7 @@ extension ChatLogViewController {
     
     private func observeMessages() {
         
-        let partnerID = user?.getValue(forField: .id) as! String
+        let partnerID = user.getValue(forField: .id) as! String
         let chatID = NetworkManager.shared.childNode(myID!, partnerID)
         
         // If there're conversations in Firebase

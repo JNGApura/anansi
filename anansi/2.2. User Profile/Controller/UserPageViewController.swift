@@ -20,107 +20,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
     var userInterests = [String]()
     var myInterests = [String]()
         
-    var user: User? {
-        didSet {
-            
-            sections.removeAll()
-            sectionDataToDisplay.removeAll()
-            iconForContactSection.removeAll()
-                        
-            if let profileImageURL = user?.getValue(forField: .profileImageURL) as? String {
-                
-                headerView.profileImage.setImage(with: profileImageURL)
-            } else {
-                
-                headerView.profileImage.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
-            }
-            
-            if let name = user?.getValue(forField: .name) as? String {
-                topbar.setTitle(name: name)
-                
-                headerView.setTitleName(name: name)
-                
-                if let firstName = name.components(separatedBy: " ").first {
-                    newChatButton.setTitle(" Say hi to \(firstName)", for: .normal)
-                }
-            }
-            
-            if let occupation = user?.getValue(forField: .occupation) as? String { headerView.setOccupation(occupation) }
-            
-            if let location = user?.getValue(forField: .location) as? String { headerView.setLocation("From " + location) }
-            
-            if let bio = user?.getValue(forField: .bio) as? String {
-                
-                sections.append("About")
-                let index = sections.count - 1
-                sectionDataToDisplay[index] = [bio]
-            }
-            
-            if let interests = user?.getValue(forField: .interests) as? [String] {
-                
-                sections.append("Let's talk about")
-                let index = sections.count - 1
-                sectionDataToDisplay[index] = ["interests are presented here"]
-                userInterests = interests.sorted()
-                
-                fetchMyInterests()
-            }
-            
-            if let title = user?.getValue(forField: .tedTitle) as? String {
-                
-                sections.append("Favorite TED talk")
-                let index = sections.count - 1
-                sectionDataToDisplay[index] = [title]
-            }
-            
-            if let email = user?.getValue(forField: .sharedEmail) as? String {
-                
-                if !sections.contains("Let's keep in touch") { sections.append("Let's keep in touch") }
-                
-                let index = sections.count - 1
-                
-                if sectionDataToDisplay[index] == nil {
-                    sectionDataToDisplay[index] = [email]
-                } else {
-                    sectionDataToDisplay[index]?.append(email)
-                }
-                
-                iconForContactSection.append("email")
-            }
-            
-            if let website = user?.getValue(forField: .website) as? String {
-                
-                if !sections.contains("Let's keep in touch") { sections.append("Let's keep in touch") }
-
-                let index = sections.count - 1
-                
-                if sectionDataToDisplay[index] == nil {
-                    sectionDataToDisplay[index] = [website]
-                } else {
-                    sectionDataToDisplay[index]?.append(website)
-                }
-                
-                iconForContactSection.append("website")
-            }
-            
-            if let linkedin = user?.getValue(forField: .linkedin) as? String {
-                
-                if !sections.contains("Let's keep in touch") { sections.append("Let's keep in touch") }
-
-                let index = sections.count - 1
-                
-                if sectionDataToDisplay[index] == nil {
-                    sectionDataToDisplay[index] = [linkedin]
-                } else {
-                    sectionDataToDisplay[index]?.append(linkedin)
-                }
-                
-                iconForContactSection.append("linkedin")
-            }
-            
-            self.tableView.reloadData()
-        }
-    }
+    var user: User
     
     // NavBar
     
@@ -213,6 +113,17 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
 
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
+    // MARK: Init
+    
+    init(user: User) {
+        self.user = user
+        super.init(nibName:nil, bundle:nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
@@ -220,11 +131,11 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         
         view.backgroundColor = .background
         
-        // Sets up UI
         [scrollView, topbar].forEach { view.addSubview($0) }
         scrollView.addSubview(contentView)
         [backgroundImage, headerView, newChatButton, tableView].forEach { contentView.addSubview($0)}
         
+        configUserPage()
     }
     
     override func didReceiveMemoryWarning() {
@@ -235,14 +146,14 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         super.viewDidAppear(animated)
         
         // Updates ranking
-        if let id = user?.getValue(forField: .id) as? String {
+        if let id = user.getValue(forField: .id) as? String {
             NetworkManager.shared.updatesUserViews(id: id)
         }
         
         // Adds user to recently viewed
         if var recentlyViewed = UserDefaults.standard.value(forKey: "recentlyViewedIDs") as? [String] {
             
-            let userID = user?.getValue(forField: .id) as! String
+            let userID = user.getValue(forField: .id) as! String
             
             if let i = recentlyViewed.index(of: userID) { recentlyViewed.remove(at: i) }
             recentlyViewed.insert(userID, at: 0)
@@ -252,7 +163,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             
         } else {
             
-            let userID = user?.getValue(forField: .id) as! String
+            let userID = user.getValue(forField: .id) as! String
             UserDefaults.standard.set([userID], forKey: "recentlyViewedIDs")
             UserDefaults.standard.synchronize()
         }
@@ -322,6 +233,102 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         
     // MARK: Custom functions
     
+    private func configUserPage() {
+        
+        if let profileImageURL = user.getValue(forField: .profileImageURL) as? String {
+            
+            headerView.profileImage.setImage(with: profileImageURL)
+        } else {
+            
+            headerView.profileImage.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
+        }
+        
+        if let name = user.getValue(forField: .name) as? String {
+            topbar.setTitle(name: name)
+            
+            headerView.setTitleName(name: name)
+            
+            if let firstName = name.components(separatedBy: " ").first {
+                newChatButton.setTitle(" Say hi to \(firstName)", for: .normal)
+            }
+        }
+        
+        if let occupation = user.getValue(forField: .occupation) as? String { headerView.setOccupation(occupation) }
+        
+        if let location = user.getValue(forField: .location) as? String { headerView.setLocation("From " + location) }
+        
+        if let bio = user.getValue(forField: .bio) as? String {
+            
+            sections.append("About")
+            let index = sections.count - 1
+            sectionDataToDisplay[index] = [bio]
+        }
+        
+        if let interests = user.getValue(forField: .interests) as? [String] {
+            
+            sections.append("Let's talk about")
+            let index = sections.count - 1
+            sectionDataToDisplay[index] = ["interests are presented here"]
+            userInterests = interests.sorted()
+            
+            fetchMyInterests()
+        }
+        
+        if let title = user.getValue(forField: .tedTitle) as? String {
+            
+            sections.append("Favorite TED talk")
+            let index = sections.count - 1
+            sectionDataToDisplay[index] = [title]
+        }
+        
+        if let email = user.getValue(forField: .sharedEmail) as? String {
+            
+            if !sections.contains("Let's keep in touch") { sections.append("Let's keep in touch") }
+            
+            let index = sections.count - 1
+            
+            if sectionDataToDisplay[index] == nil {
+                sectionDataToDisplay[index] = [email]
+            } else {
+                sectionDataToDisplay[index]?.append(email)
+            }
+            
+            iconForContactSection.append("email")
+        }
+        
+        if let website = user.getValue(forField: .website) as? String {
+            
+            if !sections.contains("Let's keep in touch") { sections.append("Let's keep in touch") }
+            
+            let index = sections.count - 1
+            
+            if sectionDataToDisplay[index] == nil {
+                sectionDataToDisplay[index] = [website]
+            } else {
+                sectionDataToDisplay[index]?.append(website)
+            }
+            
+            iconForContactSection.append("website")
+        }
+        
+        if let linkedin = user.getValue(forField: .linkedin) as? String {
+            
+            if !sections.contains("Let's keep in touch") { sections.append("Let's keep in touch") }
+            
+            let index = sections.count - 1
+            
+            if sectionDataToDisplay[index] == nil {
+                sectionDataToDisplay[index] = [linkedin]
+            } else {
+                sectionDataToDisplay[index]?.append(linkedin)
+            }
+            
+            iconForContactSection.append("linkedin")
+        }
+        
+        tableView.reloadData()
+    }
+    
     private func fetchMyInterests() {
         
         if let interests = UserDefaults.standard.value(forKey: userInfoType.interests.rawValue) as? [String] {
@@ -362,8 +369,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             
         } else {
             
-            let chatController = ChatLogViewController()
-            chatController.user = user
+            let chatController = ChatLogViewController(user: user, messages: [])
             chatController.cameFromUserProfile = true
             chatController.hidesBottomBarWhenPushed = true
             

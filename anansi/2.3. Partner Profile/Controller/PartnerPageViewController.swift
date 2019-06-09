@@ -19,86 +19,7 @@ class PartnerPageViewController: UIViewController {
     
     var iconForContactSection = [String]()
     
-    var partner: Partner? {
-        didSet {
-            
-            sections.removeAll()
-            sectionDataToDisplay.removeAll()
-            iconForContactSection.removeAll()
-            
-            if let picURL = partner?.getValue(forField: .profileImageURL) as? String {
-                
-                headerView.profileImage.setImage(with: picURL)
-            } else {
-                
-                headerView.profileImage.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
-            }
-            
-            if let name = partner?.getValue(forField: .name) as? String {
-                topbar.setTitle(name: name)
-                topbar.titleLabel.alpha = 0.0
-                
-                headerView.setTitleName(name: name)
-            }
-            
-            if let field = partner?.getValue(forField: .field) as? String  {
-                headerView.setOccupation(field)
-            }
-            
-            if let location = partner?.getValue(forField: .location) as? String  {
-                headerView.setLocation(location)
-            }
-            
-            if let about = partner?.getValue(forField: .about) as? String  {
-                sections.append((partner?.label(forField: .about))!)
-                let index = sections.count - 1
-                sectionDataToDisplay[index] = [about]
-            }
-            
-            if (partner?.getValue(forField: .employees) as? [String]) != nil {
-                sections.append((partner?.label(forField: .employees))!)
-                let index = sections.count - 1
-                sectionDataToDisplay[index] = ["employees are presented here"]
-            }
-            
-            if let website = partner?.getValue(forField: .website) as? String {
-                if !sections.contains("Contact information") { sections.append("Contact information") }
-
-                let index = sections.count - 1
-                
-                if sectionDataToDisplay[index] == nil {
-                    sectionDataToDisplay[index] = [website]
-                } else {
-                    sectionDataToDisplay[index]?.append(website)
-                }
-                
-                iconForContactSection.append("website")
-            }
-            
-            if let linkedin = partner?.getValue(forField: .linkedin) as? String {
-                if !sections.contains("Contact information") { sections.append("Contact information") }
-                
-                let index = sections.count - 1
-                
-                if sectionDataToDisplay[index] == nil {
-                    sectionDataToDisplay[index] = [linkedin]
-                } else {
-                    sectionDataToDisplay[index]?.append(linkedin)
-                }
-                
-                iconForContactSection.append("linkedin")
-            }
-            
-            if let type = partner?.getValue(forField: .type) as? String {
-                
-                partnerCard.setTitle((" " + type + Const.mapPartner[type]! + " Partner").uppercased(), for: .normal)
-                partnerCard.backgroundColor = Const.typeColor[type]
-            }
-            
-            tableView.reloadData()
-            tableView.layoutIfNeeded()
-        }
-    }
+    var partner: Partner
     
     // NavBar
     
@@ -186,6 +107,19 @@ class PartnerPageViewController: UIViewController {
     
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
+    
+    // MARK: Init
+    
+    init(partner: Partner) {
+        self.partner = partner
+        super.init(nibName:nil, bundle:nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
     // MARK: View Lifecycle
     
     override func viewDidLoad() {
@@ -195,6 +129,8 @@ class PartnerPageViewController: UIViewController {
         [scrollView, topbar].forEach { view.addSubview($0) }
         scrollView.addSubview(contentView)
         [backgroundImage, headerView, partnerCard, tableView].forEach { contentView.addSubview($0)}
+        
+        configPartnerPage()
         
         NSLayoutConstraint.activate([
             
@@ -248,7 +184,7 @@ class PartnerPageViewController: UIViewController {
         super.viewDidAppear(animated)
         
         // Logs partner visualizations
-        if let id = partner?.getValue(forField: .id) as? String {
+        if let id = partner.getValue(forField: .id) as? String {
             NetworkManager.shared.logEvent(name: "partner_\(String(describing: id))_tap", parameters: nil)
         }
     }
@@ -281,7 +217,7 @@ class PartnerPageViewController: UIViewController {
         DispatchQueue.main.async {
             
             // Sets gradients for backgroundImage and progressBarView
-            if let type = self.partner?.getValue(forField: .type) as? String {
+            if let type = self.partner.getValue(forField: .type) as? String {
                 self.backgroundImage.applyGradient(withColours: [Const.typeColor[type] ?? .primary, Const.typeColor[type] ?? .primary], gradientOrientation: .vertical)
             } else {
                 self.backgroundImage.applyGradient(withColours: [.primary, .primary], gradientOrientation: .vertical)
@@ -292,6 +228,81 @@ class PartnerPageViewController: UIViewController {
     }
     
     // MARK: Custom functions
+    
+    private func configPartnerPage() {
+        
+        if let picURL = partner.getValue(forField: .profileImageURL) as? String {
+            
+            headerView.profileImage.setImage(with: picURL)
+        } else {
+            
+            headerView.profileImage.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
+        }
+        
+        if let name = partner.getValue(forField: .name) as? String {
+            topbar.setTitle(name: name)
+            topbar.titleLabel.alpha = 0.0
+            
+            headerView.setTitleName(name: name)
+        }
+        
+        if let field = partner.getValue(forField: .field) as? String  {
+            headerView.setOccupation(field)
+        }
+        
+        if let location = partner.getValue(forField: .location) as? String  {
+            headerView.setLocation(location)
+        }
+        
+        if let about = partner.getValue(forField: .about) as? String  {
+            sections.append(partner.label(forField: .about))
+            let index = sections.count - 1
+            sectionDataToDisplay[index] = [about]
+        }
+        
+        if (partner.getValue(forField: .employees) as? [String]) != nil {
+            sections.append(partner.label(forField: .employees))
+            let index = sections.count - 1
+            sectionDataToDisplay[index] = ["employees are presented here"]
+        }
+        
+        if let website = partner.getValue(forField: .website) as? String {
+            if !sections.contains("Contact information") { sections.append("Contact information") }
+            
+            let index = sections.count - 1
+            
+            if sectionDataToDisplay[index] == nil {
+                sectionDataToDisplay[index] = [website]
+            } else {
+                sectionDataToDisplay[index]?.append(website)
+            }
+            
+            iconForContactSection.append("website")
+        }
+        
+        if let linkedin = partner.getValue(forField: .linkedin) as? String {
+            if !sections.contains("Contact information") { sections.append("Contact information") }
+            
+            let index = sections.count - 1
+            
+            if sectionDataToDisplay[index] == nil {
+                sectionDataToDisplay[index] = [linkedin]
+            } else {
+                sectionDataToDisplay[index]?.append(linkedin)
+            }
+            
+            iconForContactSection.append("linkedin")
+        }
+        
+        if let type = partner.getValue(forField: .type) as? String {
+            
+            partnerCard.setTitle((" " + type + Const.mapPartner[type]! + " Partner").uppercased(), for: .normal)
+            partnerCard.backgroundColor = Const.typeColor[type]
+        }
+        
+        tableView.reloadData()
+        tableView.layoutIfNeeded()
+    }
     
     private func openURLfromStringInWebViewer(string : String) {
         
@@ -358,7 +369,7 @@ extension PartnerPageViewController: UITableViewDelegate, UITableViewDataSource 
         if sections[section] == "Get in touch with" {
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "EmployeeCell", for: indexPath) as! EmployeeTableCell
-            let employeeList = (partner?.getValue(forField: .employees) as? [String])!
+            let employeeList = (partner.getValue(forField: .employees) as? [String])!
             
             cell.delegate = self
             cell.usersIDList = employeeList
@@ -466,9 +477,7 @@ extension PartnerPageViewController: ShowUserProfileDelegate {
     
     func showUserProfileController(user: User) {
         
-        let userProfile = UserPageViewController()
-        userProfile.user = user
-        
+        let userProfile = UserPageViewController(user: user)
         navigationController?.pushViewController(userProfile, animated: true)
     }
 }

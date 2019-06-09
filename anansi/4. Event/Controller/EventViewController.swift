@@ -287,9 +287,7 @@ extension EventViewController: ShowSpeakerDetailedPageDelegate {
             let user = User()
             user.set(dictionary: dictionary, id: id)
             
-            let userProfile = UserPageViewController()
-            userProfile.user = user
-            
+            let userProfile = UserPageViewController(user: user)
             self.navigationController?.pushViewController(userProfile, animated: true)
         }
     }

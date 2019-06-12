@@ -255,7 +255,6 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         
         let chat = latestChats[indexPath.row]
         let partnerID = chat.partnerID()
-        //let isTyping = (myID! == typingPartner)
         let chatID = NetworkManager.shared.childNode(myID!, partnerID!)
         
         if let user = users[chatID] {

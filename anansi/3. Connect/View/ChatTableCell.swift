@@ -178,6 +178,11 @@ class ChatTableCell: UITableViewCell {
             self.lastMessage.text = "is typing..."
             self.timeLabel.text = ""
             
+            // If I have unread messages, I display the unread badge
+            if let isRead = message.getValue(forField: .isRead) as? Bool {
+                self.badge.isHidden = isRead
+            }
+            
         } else {
             
             var displayMessage = String()
@@ -190,24 +195,22 @@ class ChatTableCell: UITableViewCell {
                 
                 // If chatPartner has seen my message, I display his/her profile picture in a small icon
                 if let isRead = message.getValue(forField: .isRead) as? Bool {
-                    
                     self.hasReadImage.isHidden = !isRead
                 }
                 
             } else {
                 // If I received the message and haven't read, I display the unread badge
                 if let isRead = message.getValue(forField: .isRead) as? Bool {
-                    
                     self.badge.isHidden = isRead
                     
+                    /* // Previously, I was using a bold system font to highlight unread messages
                     if isRead {
                         lastMessage.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
                         timeLabel.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
-                        
                     } else {
                         lastMessage.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
                         timeLabel.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
-                    }
+                    }*/
                 }
             }
             

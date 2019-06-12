@@ -18,7 +18,7 @@ class ChatAccessoryView: UIView {
     // this is needed so that the inputAccesoryView is properly sized from the auto layout constraints
     // actual value is not important
     override var intrinsicContentSize: CGSize {
-        return CGSize.zero
+        return .zero
     }
     
     var delegate: ChatAccessoryDelegate?
@@ -75,7 +75,6 @@ class ChatAccessoryView: UIView {
         
         // UI
         isOpaque = false
-        tintColor = .primary
         autoresizingMask = .flexibleHeight
         
         // Blur effect

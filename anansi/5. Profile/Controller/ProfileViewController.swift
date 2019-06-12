@@ -225,10 +225,6 @@ class ProfileViewController: UIViewController {
         // Navigation bar is hidden for the entire stack!
         navigationController?.navigationBar.isHidden = true
         
-        // Adds tapToDismissKeyboard gesture
-        //view.addGestureRecognizer(tap)
-        print("hello")
-        
         view.backgroundColor = .background
         
         // Fetches meeee!
@@ -501,6 +497,8 @@ class ProfileViewController: UIViewController {
             if view.gestureRecognizers == nil || (view.gestureRecognizers != nil && !view.gestureRecognizers!.contains(tap)) {
                 view.addGestureRecognizer(tap)
             }
+            
+            print(keyboardHeight)
             
             scrollView.isScrollEnabled = false
         }

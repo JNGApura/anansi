@@ -75,6 +75,7 @@ class SearchTableViewController: UIViewController {
         
         view.backgroundColor = .background
         
+        // Fetches necessary information
         fetchMyInterests()
         fetchRecentlyViewedUsers()
         
@@ -94,7 +95,6 @@ class SearchTableViewController: UIViewController {
         }
         
         // Fetches necessary information
-        fetchMyInterests()
         fetchRecentlyViewedUsers()
         
         // Sets notifications for keyboard

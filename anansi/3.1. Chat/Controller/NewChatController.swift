@@ -84,7 +84,9 @@ class NewChatController: UIViewController {
         
         view.backgroundColor = .background
         
-        // Fetches users
+        // Fetches necessary information
+        fetchMyInterests()
+        fetchRecentlyViewedUsers()
         fetchUsers()
         fetchTrendingUsers()
 
@@ -102,11 +104,7 @@ class NewChatController: UIViewController {
         if searchString != nil {
             searchController.searchBar.text = searchString
         }
-        
-        // Fetches necessary information
-        fetchMyInterests()
-        fetchRecentlyViewedUsers()
-        
+
         // Sets notifications for keyboard
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)

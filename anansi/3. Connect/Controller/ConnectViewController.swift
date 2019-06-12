@@ -26,7 +26,7 @@ class ConnectViewController: UIViewController {
     
     private var CTA : String!
     
-    private var typingPartner = String()
+    private var typingUserID = String()
     
     let myID = NetworkManager.shared.getUID()
     
@@ -255,10 +255,12 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         
         let chat = latestChats[indexPath.row]
         let partnerID = chat.partnerID()
-        let isTyping = (myID! == typingPartner)
+        //let isTyping = (myID! == typingPartner)
         let chatID = NetworkManager.shared.childNode(myID!, partnerID!)
         
         if let user = users[chatID] {
+            
+            let isTyping = (user.getValue(forField: .id) as! String) == typingUserID
             cell.configure(with: chat, from: user, and: isTyping)
             
         } else {
@@ -268,8 +270,9 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
                 
                 let user = User()
                 user.set(dictionary: dic, id: partnerID!)
-                
                 self.users[chatID] = user
+                
+                let isTyping = (user.getValue(forField: .id) as! String) == self.typingUserID
                 cell.configure(with: chat, from: user, and: isTyping)
             })
         }
@@ -323,7 +326,7 @@ extension ConnectViewController: StartNewChatDelegate {
     
     @objc func showChatLogController(user: User, and messages: [Message] = []) {
         
-        let chatController = ChatLogViewController(user: user, messages: messages)
+        let chatController = ChatViewController(user: user, messages: messages)
         chatController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(chatController, animated: true)
     }
@@ -523,14 +526,16 @@ extension ConnectViewController {
     
     func observeTyping(from userID: String) {
         
-        NetworkManager.shared.observeTypingInstances(from: userID, onTyping: { (partnerID) in
+        NetworkManager.shared.observeTypingInstances(from: userID, onTyping: { (typingPartnerID) in
             
-            self.typingPartner = partnerID
-            self.tableView.reloadData()
+            if typingPartnerID == self.myID! {
+                self.typingUserID = userID //the user is typing to me
+                self.tableView.reloadData()
+            }
             
         }, onNotTyping: {
             
-            self.typingPartner = String()
+            self.typingUserID = String()
             self.tableView.reloadData()
         })
     }

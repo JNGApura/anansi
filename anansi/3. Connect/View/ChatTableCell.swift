@@ -10,9 +10,13 @@ import UIKit
 
 class ChatTableCell: UITableViewCell {
     
+    // MARK: Custom initializers
+    
+    public private(set) var isAnimating: Bool = false
+    
     let myID = NetworkManager.shared.getUID()
     
-    var message : Message?
+    //var message : Message?
     
     let profileImageView: UIImageView = {
         let i = UIImageView()
@@ -24,15 +28,15 @@ class ChatTableCell: UITableViewCell {
         return i
     }()
     
-    lazy var badge : UIView = {
-        let v = UIView()
-        v.backgroundColor = .primary
-        v.layer.cornerRadius = 14.0 / 2
-        v.layer.masksToBounds = true
-        v.clipsToBounds = true
-        v.isHidden = true
-        v.translatesAutoresizingMaskIntoConstraints = false
-        return v
+    let readbadge: UIImageView = {
+        let i = UIImageView()
+        i.contentMode = .scaleAspectFill
+        i.layer.cornerRadius = 14.0 / 2
+        i.layer.masksToBounds = true
+        i.clipsToBounds = true
+        i.isHidden = true
+        i.translatesAutoresizingMaskIntoConstraints = false
+        return i
     }()
     
     let name: UILabel = {
@@ -81,17 +85,6 @@ class ChatTableCell: UITableViewCell {
         return sv
     }()
     
-    let hasReadImage: UIImageView = {
-        let i = UIImageView()
-        i.contentMode = .scaleAspectFill
-        i.layer.cornerRadius = 14.0 / 2
-        i.layer.masksToBounds = true
-        i.clipsToBounds = true
-        i.isHidden = true
-        i.translatesAutoresizingMaskIntoConstraints = false
-        return i
-    }()
-    
     let separator: UIView = {
         let v = UIView()
         v.backgroundColor = .tertiary
@@ -99,14 +92,58 @@ class ChatTableCell: UITableViewCell {
         return v
     }()
     
+    // isTyping indicator (UI)
+    
+    let bubble: UIView = {
+        let bv = UIView()
+        bv.layer.borderWidth = 2
+        bv.layer.borderColor = UIColor.init(red: 245/255.0, green: 245/255.0, blue: 248/255.0, alpha: 1.0).cgColor //UIColor.tertiary.withAlphaComponent(0.5).cgColor
+        bv.layer.cornerRadius = 8
+        bv.layer.masksToBounds = true
+        bv.clipsToBounds = true
+        bv.backgroundColor = UIColor.init(red: 245/255.0, green: 245/255.0, blue: 248/255.0, alpha: 1.0)
+        bv.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        bv.translatesAutoresizingMaskIntoConstraints = false
+        return bv
+    }()
+    
+    let dots : [UIView] = [UIView(), UIView(), UIView()]
+    
+    lazy var typingIndicator: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.alignment = .center
+        sv.distribution = .fillEqually
+        sv.translatesAutoresizingMaskIntoConstraints = false
+        return sv
+    }()
+    
+    // MARK: - Init
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         
+        // Add typing subviews
+        for dot in dots {
+            
+            dot.layer.cornerRadius = 3.0
+            dot.clipsToBounds = true
+            dot.backgroundColor = .lightGray
+            dot.translatesAutoresizingMaskIntoConstraints = false
+            
+            dot.widthAnchor.constraint(equalTo: dot.heightAnchor).isActive = true
+            dot.widthAnchor.constraint(equalToConstant: 6.0).isActive = true
+            
+            typingIndicator.addArrangedSubview(dot)
+            typingIndicator.setCustomSpacing(4.0, after: dot)
+        }
+        
+        bubble.addSubview(typingIndicator)
         [lastMessage, timeLabel].forEach { bottomStackView.addArrangedSubview($0) }
         [name, bottomStackView].forEach { stackView.addArrangedSubview($0) }
         stackView.setCustomSpacing(Const.marginEight / 4.0, after: name)
         
-        [profileImageView, stackView, hasReadImage, badge, separator].forEach { addSubview($0) }
+        [profileImageView, stackView, readbadge, bubble, separator].forEach { addSubview($0) }
         
         NSLayoutConstraint.activate([
             profileImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight * 2.0),
@@ -122,15 +159,18 @@ class ChatTableCell: UITableViewCell {
             stackView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Const.marginEight * 2.0),
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -42.0),
             
-            hasReadImage.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
-            hasReadImage.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
-            hasReadImage.heightAnchor.constraint(equalToConstant: 14.0),
-            hasReadImage.widthAnchor.constraint(equalToConstant: 14.0),
+            readbadge.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
+            readbadge.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginSafeArea),
+            readbadge.heightAnchor.constraint(equalToConstant: 14.0),
+            readbadge.widthAnchor.constraint(equalToConstant: 14.0),
             
-            badge.centerYAnchor.constraint(equalTo: hasReadImage.centerYAnchor),
-            badge.centerXAnchor.constraint(equalTo: hasReadImage.centerXAnchor),
-            badge.heightAnchor.constraint(equalToConstant: 14.0),
-            badge.widthAnchor.constraint(equalToConstant: 14.0),
+            bubble.topAnchor.constraint(equalTo: bottomStackView.topAnchor),
+            bubble.leadingAnchor.constraint(equalTo: bottomStackView.leadingAnchor),
+            bubble.bottomAnchor.constraint(equalTo: bottomStackView.bottomAnchor),
+            bubble.widthAnchor.constraint(equalToConstant: 42.0),
+            
+            typingIndicator.centerXAnchor.constraint(equalTo: bubble.centerXAnchor),
+            typingIndicator.centerYAnchor.constraint(equalTo: bubble.centerYAnchor),
             
             separator.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
             separator.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -151,7 +191,8 @@ class ChatTableCell: UITableViewCell {
         timeLabel.text = ""
         
         profileImageView.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
-        hasReadImage.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
+        
+        readbadge.isHidden = true
     }
     
     
@@ -159,65 +200,88 @@ class ChatTableCell: UITableViewCell {
         
         //self.message = message
         
+        // Display message
+        var displayMessage = String()
+        
         // User name
-        self.name.text = user.getValue(forField: .name) as? String
+        name.text = user.getValue(forField: .name) as? String
         
         // Sets user's profile image
         if let imageURL = (user.getValue(forField: .profileImageURL) as? String) {
             profileImageView.setImage(with: imageURL)
-            hasReadImage.setImage(with: imageURL)
             
         } else {
             profileImageView.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
-            hasReadImage.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
         }
         
+        // Logic for unreads & reads
+        if let isRead = message.getValue(forField: .isRead) as? Bool,
+            let sender = message.getValue(forField: .sender) as? String {
+            
+            // If it's read and I'm the sender, show badge with user's profile image
+            if isRead && sender == myID {
+                
+                readbadge.isHidden = false
+                
+                // Set user's profile image
+                if let imageURL = (user.getValue(forField: .profileImageURL) as? String) {
+                    readbadge.setImage(with: imageURL)
+                    readbadge.backgroundColor = .clear
+                    
+                } else {
+                    readbadge.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
+                    readbadge.backgroundColor = .clear
+                }
+            } else if !isRead && sender != myID {
+                
+                readbadge.isHidden = false
+                readbadge.image = nil
+                readbadge.backgroundColor = .primary
+
+            } else {
+                
+                readbadge.isHidden = true
+                readbadge.image = nil               // reset
+                readbadge.backgroundColor = .clear  // reset
+            }
+        }
+    
         // Sets message box
         if isTyping {
-        
-            self.lastMessage.text = "is typing..."
-            self.timeLabel.text = ""
             
-            // If I have unread messages, I display the unread badge
-            if let isRead = message.getValue(forField: .isRead) as? Bool {
-                self.badge.isHidden = isRead
+            // Sets up UI
+            bubble.isHidden = false
+            lastMessage.isHidden = true
+            timeLabel.isHidden = true
+            
+            // Starts isTyping animation
+            if !isAnimating {
+                startAnimating()
+                
+            } else {
+                stopAnimating()
+                startAnimating()
             }
             
         } else {
             
-            var displayMessage = String()
+            // Sets up UI
+            bubble.isHidden = true
+            lastMessage.isHidden = false
+            timeLabel.isHidden = false
             
+            // Stops isTyping animation
+            if isAnimating { stopAnimating() }
+
             // Sender
-            if let sender = message.getValue(forField: .sender) as? String,
-                sender == myID {
-                
+            if let sender = message.getValue(forField: .sender) as? String, sender == myID {
                 displayMessage += "You: "
-                
-                // If chatPartner has seen my message, I display his/her profile picture in a small icon
-                if let isRead = message.getValue(forField: .isRead) as? Bool {
-                    self.hasReadImage.isHidden = !isRead
-                }
-                
-            } else {
-                // If I received the message and haven't read, I display the unread badge
-                if let isRead = message.getValue(forField: .isRead) as? Bool {
-                    self.badge.isHidden = isRead
-                    
-                    /* // Previously, I was using a bold system font to highlight unread messages
-                    if isRead {
-                        lastMessage.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
-                        timeLabel.font = UIFont.systemFont(ofSize: Const.subheadFontSize)
-                    } else {
-                        lastMessage.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
-                        timeLabel.font = UIFont.boldSystemFont(ofSize: Const.subheadFontSize)
-                    }*/
-                }
             }
             
             // Message
             if let message = message.getValue(forField: .text) as? String {
                 
-                if message == ":compass:" {
+                if message == Const.stickerString {
                     displayMessage += "🧭"
                 } else {
                     displayMessage += message
@@ -229,6 +293,43 @@ class ChatTableCell: UITableViewCell {
             if let seconds = (message.getValue(forField: .timestamp) as? NSNumber)?.doubleValue {
                 timeLabel.text = " · " + createDateIntervalString(from: NSDate(timeIntervalSince1970: seconds))
             }
+        }
+    }
+    
+    
+    // MARK: - Animation API
+    
+    /// The `CABasicAnimation` applied when `isFadeEnabled` is TRUE
+    open var opacityAnimationLayer: CABasicAnimation {
+        let animation = CABasicAnimation(keyPath: "opacity")
+        animation.fromValue = 1
+        animation.toValue = 0.5
+        animation.duration = 0.66
+        animation.repeatCount = .infinity
+        animation.autoreverses = true
+        return animation
+    }
+    
+    /// Sets the state of the `TypingIndicator` to animating and applies animation layers
+    open func startAnimating() {
+        defer { isAnimating = true }
+        guard !isAnimating else { return }
+        var delay: TimeInterval = 0
+        for dot in typingIndicator.subviews {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                guard let `self` = self else { return }
+                dot.layer.add(self.opacityAnimationLayer, forKey: "opacity")
+            }
+            delay += 0.33
+        }
+    }
+    
+    /// Sets the state of the `TypingIndicator` to not animating and removes animation layers
+    open func stopAnimating() {
+        defer { isAnimating = false }
+        guard isAnimating else { return }
+        typingIndicator.subviews.forEach {
+            $0.layer.removeAnimation(forKey: "opacity")
         }
     }
 }

@@ -14,7 +14,7 @@ protocol CellGestureRecognizerDelegate: class {
     func longPressDetected(in indexPath: IndexPath, with message: Message, from sender: UILongPressGestureRecognizer)
 }
 
-class ChatMessageCell: UITableViewCell {
+class ChatMessageCell: RevealableCollectionViewCell {
     
     // MARK: Custom initializers
     
@@ -126,13 +126,11 @@ class ChatMessageCell: UITableViewCell {
     
     // MARK: Cell init
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        selectionStyle = .none
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         
         // Fuck iPhone 5
-        let maxWidth : CGFloat = Display.typeIsLike == .iphone5 ? 232.0 : 280.0
+        let maxWidth : CGFloat = Display.typeIsLike == .iphone5 ? 228.0 : 275.0
         
         // Add subviews
         [loveReaction, badgeReaction].forEach { reactionStackView.addArrangedSubview($0) }
@@ -154,9 +152,9 @@ class ChatMessageCell: UITableViewCell {
             msgtxt.bottomAnchor.constraint(equalTo: bubble.bottomAnchor, constant: -Const.marginEight),
             msgtxt.leadingAnchor.constraint(equalTo: bubble.leadingAnchor, constant: Const.marginEight * 2.0),
             msgtxt.trailingAnchor.constraint(equalTo: bubble.trailingAnchor, constant: -Const.marginEight * 2.0),
-            
+                        
             msgstatus.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight / 2.0),
-            msgstatus.bottomAnchor.constraint(equalTo: bubble.bottomAnchor),
+            msgstatus.bottomAnchor.constraint(equalTo: bubble.bottomAnchor, constant: 2.0),
             msgstatus.widthAnchor.constraint(equalToConstant: 16.0),
             msgstatus.heightAnchor.constraint(equalToConstant: 16.0),
             
@@ -213,7 +211,7 @@ class ChatMessageCell: UITableViewCell {
             msgtxt.textColor = isIncoming ? .secondary : .background
             messageLabelHeightAnchor?.constant = msgtxt.requiredHeight
         }
-        
+                
         // Bubbles!
         bubble.backgroundColor = isIncoming ? UIColor.tertiary.withAlphaComponent(0.5) : .primary
         bubble.layer.borderColor = isIncoming ? UIColor.tertiary.withAlphaComponent(0.5).cgColor : UIColor.primary.cgColor
@@ -231,7 +229,7 @@ class ChatMessageCell: UITableViewCell {
             msgstatus.image = UIImage(named: "message-notsent")!.withRenderingMode(.alwaysOriginal)
             
         } else if isSent && !isDelivered {
-            msgstatus.image = UIImage(named: "message-sent")!.withRenderingMode(.alwaysOriginal) // change this image!
+            msgstatus.image = UIImage(named: "message-sent")!.withRenderingMode(.alwaysOriginal)
             
         } else if isDelivered && !isRead {
             msgstatus.image = UIImage(named: "message-delivered")!.withRenderingMode(.alwaysOriginal)

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TypingMessageCell: UITableViewCell {
+class TypingMessageCell: UICollectionViewCell {
 
     // MARK: Custom initializers
     
@@ -29,24 +29,6 @@ class TypingMessageCell: UITableViewCell {
         return bv
     }()
     
-    let cornerBubble: UIView = {
-        let bv = UIView()
-        bv.backgroundColor = UIColor.init(red: 245/255.0, green: 245/255.0, blue: 248/255.0, alpha: 1.0)
-        bv.layer.cornerRadius = 7.0
-        bv.clipsToBounds = true
-        bv.translatesAutoresizingMaskIntoConstraints = false
-        return bv
-    }()
-    
-    let tinyBubble: UIView = {
-        let bv = UIView()
-        bv.backgroundColor = UIColor.init(red: 245/255.0, green: 245/255.0, blue: 248/255.0, alpha: 1.0)
-        bv.layer.cornerRadius = 4.0
-        bv.clipsToBounds = true
-        bv.translatesAutoresizingMaskIntoConstraints = false
-        return bv
-    }()
-    
     let dots : [UIView] = [UIView(), UIView(), UIView()]
     
     lazy var typingIndicator: UIStackView = {
@@ -60,11 +42,9 @@ class TypingMessageCell: UITableViewCell {
     
     // MARK: Cell init
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        selectionStyle = .none
-        
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+                
         // Add subviews
         for dot in dots {
             
@@ -80,24 +60,14 @@ class TypingMessageCell: UITableViewCell {
             typingIndicator.setCustomSpacing(4.0, after: dot)
         }
 
-        [tinyBubble, cornerBubble, bubble, typingIndicator].forEach { addSubview($0) }
+        [bubble, typingIndicator].forEach { addSubview($0) } //tinyBubble, cornerBubble,
         
         // Add layout constraints to subviews
         NSLayoutConstraint.activate([
-            
-            tinyBubble.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4.0),
-            tinyBubble.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight + 5.0),
-            tinyBubble.heightAnchor.constraint(equalTo: tinyBubble.widthAnchor),
-            tinyBubble.widthAnchor.constraint(equalToConstant: 8.0),
-            
-            cornerBubble.leadingAnchor.constraint(equalTo: tinyBubble.trailingAnchor, constant: -Const.marginEight / 4.0),
-            cornerBubble.bottomAnchor.constraint(equalTo: tinyBubble.topAnchor, constant: Const.marginEight / 4.0),
-            cornerBubble.heightAnchor.constraint(equalTo: cornerBubble.widthAnchor),
-            cornerBubble.widthAnchor.constraint(equalToConstant: 14.0),
 
             bubble.topAnchor.constraint(equalTo: topAnchor, constant: 3.0),
-            bubble.leadingAnchor.constraint(equalTo: cornerBubble.centerXAnchor, constant: -Const.marginEight / 2.0),
-            bubble.bottomAnchor.constraint(equalTo: cornerBubble.centerYAnchor, constant: 6.0),
+            bubble.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginEight * 2.75),
+            bubble.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3.0),
             bubble.widthAnchor.constraint(equalToConstant: 64.0),
             bubble.heightAnchor.constraint(equalToConstant: 40.0),
             

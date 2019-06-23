@@ -8,7 +8,7 @@
 
 import UIKit
 
-class StickerMessageCell: UITableViewCell {
+class StickerMessageCell: RevealableCollectionViewCell {
 
     // MARK: Custom initializers
     
@@ -114,11 +114,9 @@ class StickerMessageCell: UITableViewCell {
     
     // MARK: Cell init
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        selectionStyle = .none
-        
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+                
         // Add subviews
         [loveReaction, badgeReaction].forEach { reactionStackView.addArrangedSubview($0) }
         reactionStackView.setCustomSpacing(Const.marginEight * 0.5, after: loveReaction)
@@ -144,7 +142,7 @@ class StickerMessageCell: UITableViewCell {
             msgImg.widthAnchor.constraint(equalToConstant: 64.0),
             
             msgstatus.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.marginEight / 2.0),
-            msgstatus.bottomAnchor.constraint(equalTo: bubble.bottomAnchor),
+            msgstatus.bottomAnchor.constraint(equalTo: bubble.bottomAnchor, constant: 2.0),
             msgstatus.widthAnchor.constraint(equalToConstant: 16.0),
             msgstatus.heightAnchor.constraint(equalToConstant: 16.0),
             

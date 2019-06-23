@@ -1,5 +1,5 @@
 //
-//  TabSelector.swift
+//  PageSelectorCell.swift
 //  anansi
 //
 //  Created by João Nuno Gaspar Apura on 23/02/2018.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TabSelector: UICollectionViewCell {
+class PageSelectorCell: UICollectionViewCell {
     
     let tabBackground: UIView = {
         let v = UIView()

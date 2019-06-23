@@ -1,5 +1,5 @@
 //
-//  CustomClasses.swift
+//  DateString.swift
 //  anansi
 //
 //  Created by João Nuno Gaspar Apura on 15/01/2018.
@@ -7,17 +7,6 @@
 //
 
 import UIKit
-
-// To iterate enums (for partner and user models)
-func iterateEnum<T: Hashable>(_: T.Type) -> AnyIterator<T> {
-    var i = 0
-    return AnyIterator {
-        let next = withUnsafeBytes(of: &i) { $0.load(as: T.self) }
-        if next.hashValue != i { return nil }
-        i += 1
-        return next
-    }
-}
 
 // Creates time string (week, day, hour, minute) for Connect tab
 func createDateIntervalString(from date: NSDate) -> String {
@@ -58,15 +47,15 @@ func createDateIntervalStringForMessage(from date: NSDate) -> String {
     let components = calendar.dateComponents([.year, .weekOfYear, .day, .hour, .minute], from: date as Date, to: Date())
     var dateIntervalString = ""
     
-    if components.weekOfYear! >= 1 {
+    if components.weekOfYear! > 1 {
         dateIntervalString += "\(components.weekOfYear!)w"
     }
     
-    if components.day! >= 1 {
+    if components.day! > 1 {
         dateIntervalString += "\(components.day!)d"
     }
     
-    if components.hour! >= 1 {
+    if components.hour! > 1 {
         dateIntervalString += "\(components.hour!)h"
     }
     
@@ -101,6 +90,18 @@ func timestring(from date: NSDate) -> String {
     } else {
         formatter.dateFormat = "HH:mm"
     }
+    
+    return formatter.string(from: date as Date)
+}
+
+func getTimeString(from date: NSDate) -> String {
+    
+    let formatter = DateFormatter()
+    formatter.timeZone = TimeZone.current
+    formatter.dateStyle = .medium
+    formatter.dateFormat = "hh:mm a"
+    formatter.amSymbol = "AM"
+    formatter.pmSymbol = "PM"
     
     return formatter.string(from: date as Date)
 }

@@ -78,8 +78,11 @@ struct Const {
     static let emptystateSubtitle = ["Share your ideas by connecting with other attendees",
                                      "Be the change you want to see in the world",
                                      "Start meaningful discussions with other attendees"]
+    
+    // Sticker string
+    static let stickerString = ":compass:"
 
-    /// Color gradient mapping structure
+    // Color gradient mapping structure
     static let colorGradient : [Int:[UIColor]] = [0 : [.orange, .magenta],
                                                   1 : [.magenta, .cyan],
                                                   2 : [UIColor.init(red: 74/255.0, green: 144/255.0, blue: 226/255.0, alpha: 1.0), UIColor.init(red: 80/255.0, green: 227/255.0, blue: 194/255.0, alpha: 1.0)],

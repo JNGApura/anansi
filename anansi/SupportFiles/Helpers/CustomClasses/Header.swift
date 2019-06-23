@@ -127,7 +127,7 @@ class Header : UIView {
     // Sets profile image, if available
     func setProfileImage() {
         
-        if let myProfileImage = UserDefaults.standard.value(forKey: userInfoType.profileImageURL.rawValue) as? String {
+        if let myProfileImage = userDefaults.string(for: userInfoType.profileImageURL.rawValue) {
 
             profileButton.kf.setImage(with: URL(string: myProfileImage), for: .normal, placeholder: UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal))
             profileButton.kf.setBackgroundImage(with: URL(string: myProfileImage), for: .normal, placeholder: UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal))

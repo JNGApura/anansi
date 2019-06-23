@@ -1,5 +1,5 @@
 //
-//  CustomButtons.swift
+//  Buttons.swift
 //  anansi
 //
 //  Created by João Nuno Gaspar Apura on 02/02/2018.

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PageControlWithBars: UIStackView {
+class PageControl: UIStackView {
     
     var numberOfPages : Int = 0 {
         didSet {

@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol PageSelectorDelegate {
+protocol PageSelectorDelegate: class {
     func pageSelectorDidSelectItemAt(selector: PageSelector, index: Int)
 }
 
@@ -21,14 +21,14 @@ class PageSelector: UIView {
         }
     }
     
-    var selectorDelegate: PageSelectorDelegate?
+    weak var selectorDelegate: PageSelectorDelegate?
     
     let identifier = "selectorCell"
     
     lazy var collectionView : UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.register(TabSelector.self, forCellWithReuseIdentifier: identifier)
+        cv.register(PageSelectorCell.self, forCellWithReuseIdentifier: identifier)
         layout.scrollDirection = .horizontal
         cv.showsHorizontalScrollIndicator = false
         cv.delegate = self
@@ -63,8 +63,7 @@ extension PageSelector: UICollectionViewDelegateFlowLayout, UICollectionViewDele
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! TabSelector
-        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! PageSelectorCell
         cell.tabIcon.image = UIImage(named: tabList[indexPath.item])?.withRenderingMode(.alwaysTemplate)
         cell.tabTitle.text = tabList[indexPath.item]
         
@@ -87,7 +86,6 @@ extension PageSelector: UICollectionViewDelegateFlowLayout, UICollectionViewDele
         let estimatedRect = NSString.init(string: str).boundingRect(with: hypotheticalSize, options: options, attributes: [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: Const.bodyFontSize)], context: nil)
         
         return CGSize(width: estimatedRect.size.width + 12.0 + 42.0, height: collectionView.bounds.height - 12.0)
-        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {

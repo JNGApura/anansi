@@ -19,7 +19,7 @@ class PartnerCommunityCollectionViewController: UICollectionViewCell {
     
     let identifier = "PartnerTableCell"
     
-    var delegate: ShowPartnerPageDelegate?
+    weak var delegate: ShowPartnerPageDelegate?
     
     var partnerSections = [String]()
     var partnersInEachSection = [String : [Partner]]() {

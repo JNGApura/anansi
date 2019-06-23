@@ -162,7 +162,7 @@ class SearchTableViewController: UIViewController {
     
     private func fetchRecentlyViewedUsers() {
         
-        if let recentlyViewed = UserDefaults.standard.value(forKey: "recentlyViewedIDs") as? [String] {
+        if let recentlyViewed = userDefaults.stringList(for: userDefaults.recentlyViewedIDs) {
             myRecentViewIDs = recentlyViewed
         }
     }

@@ -26,7 +26,7 @@ class SpeakerCardDetailedController: UIViewController, UIScrollViewDelegate {
          
          "speaker-ana" : "Political Science student at ISCSP, she is a human rights activist. At TEDxULisboa, Ana is going to talk about wardrobes, how to get out of them, and the best way to be ourselves.",
          
-         "speaker-goncalo" : " Documentary photographer, decided to follow his passion for photography to give voice to those who don't have it. With focus on human right issues, Gonçalo has worked as a freelancer in multiple countries to witness and spread the injustices in the world.",
+         "speaker-goncalo" : "Documentary photographer, decided to follow his passion for photography to give voice to those who don't have it. With focus on human right issues, Gonçalo has worked as a freelancer in multiple countries to witness and spread the injustices in the world.",
          
          "speaker-nuno" : "Survivor of bone cancer, Nuno amputated his left leg. Despite his disability, today he continues to practice sports and gymnastics and motivates others in similar situations. Nuno is coming to TEDxULisboa to show how he keeps his motivation high!",
          
@@ -158,7 +158,10 @@ class SpeakerCardDetailedController: UIViewController, UIScrollViewDelegate {
         [scrollView, backgroundImage, topbar].forEach { view.addSubview($0) }
         scrollView.addSubview(contentView)
         [bioLabel, bioDescription, talkLabel, talkTitle, speakerPic].forEach { contentView.addSubview($0)}
-        
+    }
+    
+    deinit {
+        print("SpeakerCard: memory is freee")
     }
     
     override func didReceiveMemoryWarning() {

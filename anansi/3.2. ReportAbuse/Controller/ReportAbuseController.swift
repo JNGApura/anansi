@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol UserWasReported {
+protocol UserWasReported: class {
     func userWasReported(user: User)
 }
 
@@ -18,9 +18,9 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
     let abuseOptions = ["Inappropriate messages", "Feels like spam", "Other"] // "Inappropriate photos",
     let abuseOptionIcon = ["inappropriate-message", "robot", "edit"] //"inappropriate-photo",
     
-    var delegate: UserWasReported?
+    weak var delegate: UserWasReported?
     
-    var user: User? {
+    weak var user: User? {
         didSet {
             pageDescription.text = "Why are you reporting " + (user?.getValue(forField: .name) as? String)! + "?"
         }

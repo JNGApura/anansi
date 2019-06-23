@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol InterestListDelegate {
+protocol InterestListDelegate: class {
     func interestListWasSaved(list: [String])
 }
 
@@ -16,7 +16,7 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate {
     
     // Custom initializers
     
-    var delegate: InterestListDelegate?
+    weak var delegate: InterestListDelegate?
     
     var selectedInterests : [String]! {
         didSet {

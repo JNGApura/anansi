@@ -13,7 +13,7 @@ extension UILabel {
     
     func formatTextWithLineSpacing(lineSpacing: CGFloat = 0.0, lineHeightMultiple: CGFloat = 0.0, hyphenation: Float = 1.0, alignment: NSTextAlignment = .natural) {
         
-        guard let labelText = self.text else { return }
+        guard let labelText = text else { return }
         
         let style = NSMutableParagraphStyle()
         style.lineSpacing = lineSpacing
@@ -22,14 +22,14 @@ extension UILabel {
         style.alignment = alignment
         
         let text : NSMutableAttributedString
-        if let labelattributedText = self.attributedText {
+        if let labelattributedText = attributedText {
             text = NSMutableAttributedString(attributedString: labelattributedText)
         } else {
             text = NSMutableAttributedString(string: labelText)
         }
         
         text.addAttribute(NSAttributedString.Key.paragraphStyle, value:style, range: NSMakeRange(0, text.length))
-        self.attributedText = text
+        attributedText = text
     }
     
     public var requiredHeight: CGFloat {

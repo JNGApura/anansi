@@ -25,7 +25,7 @@ class EventScheduleCollectionViewCell: UICollectionViewCell {
     
     // Custom Initializers
     
-    var delegate: ShowSpeakerDetailedPageDelegate?
+    weak var delegate: ShowSpeakerDetailedPageDelegate?
     
     let sectionTitle : [String] = ["09:00 Check-in", "10:00 Session 1: South", "12:00 Lunch break", "13:30 Session 2: East", "15:00 Coffee-break", "16:30 Session 3: West", "18:00 Closing remarks"]
     

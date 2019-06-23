@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol DirectionsButtonDelegate {
+protocol DirectionsButtonDelegate: class {
     func didTapForDirections(bool: Bool)
     func didCopyPromoCode(with promoCode: String)
 }
@@ -17,7 +17,7 @@ class EventLocationCollectionViewCell: UICollectionViewCell {
     
     // Custom Initializers
 
-    var delegate: DirectionsButtonDelegate?
+    weak var delegate: DirectionsButtonDelegate?
     
     let identifier = "LocationTableCell"
     

@@ -13,7 +13,7 @@ class EmployeeTableCell: UITableViewCell, UITableViewDelegate, UITableViewDataSo
     // Create question label
     let identifier = "EmployeeTableCell"
     
-    var delegate: ShowUserProfileDelegate?
+    weak var delegate: ShowUserProfileDelegate?
     
     var users : [User] = [] {
         didSet {

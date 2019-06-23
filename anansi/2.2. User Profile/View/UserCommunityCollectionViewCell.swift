@@ -20,8 +20,8 @@ class UserCommunityCollectionViewCell: UICollectionViewCell {
     
     // Custom Initializers
         
-    var profileDelegate: ShowUserProfileDelegate?
-    var searchDelegate: ShowSearchDelegate?
+    weak var profileDelegate: ShowUserProfileDelegate?
+    weak var searchDelegate: ShowSearchDelegate?
     
     private var areUsersLoading = true
     

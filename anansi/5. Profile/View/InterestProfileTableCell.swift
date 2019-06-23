@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol ShowsInterestSelectorDelegate {
+protocol ShowsInterestSelectorDelegate: class {
     func didTapToShowInterestSelector()
 }
 
@@ -17,7 +17,7 @@ class InterestProfileTableCell: UITableViewCell {
     // Create question label
     let collectionCellIdentifier = "InterestCell"
     
-    var delegate: ShowsInterestSelectorDelegate!
+    weak var delegate: ShowsInterestSelectorDelegate!
     
     var myInterests : [String]? {
         didSet{

@@ -11,9 +11,9 @@ import UIKit
 class BasicInfoViewController: UIViewController, UIScrollViewDelegate {
     
     // Data
-    var delegate: SettingsViewController?
+    weak var delegate: SettingsViewController?
     
-    var user : User? {
+    weak var user : User? {
         didSet {
             
             if let imageURL = user?.getValue(forField: .profileImageURL) as? String {
@@ -285,22 +285,33 @@ extension BasicInfoViewController: UIImagePickerControllerDelegate, UINavigation
             
             NetworkManager.shared.removesImageFromStorage(folder: folder) {
                 
-                NetworkManager.shared.storesImageInStorage(folder: folder, image: image) { (imageURL) in
-                    
-                    NetworkManager.shared.register(value: imageURL, for: "profileImageURL", in: uid)
-                    
-                    // The following is not necessary since I'm fetching everything when we're back to profile
-                    // self.user?.setValue(value: imageURL, for: .profileImageURL)
-                    
-                    self.activityIndicator.isHidden = true
-                    self.activityIndicator.stopAnimating()
-                    self.profileImage.alpha = 1.0
-                    
-                    self.profileImage.contentMode = .scaleAspectFill
-                    self.profileImage.image = image
-                    self.user?.setValue(value: imageURL, for: .profileImageURL)
-                    self.user?.saveInDisk(value: imageURL, for: .profileImageURL)
-                }
+                NetworkManager.shared.storesImageInStorage(folder: "profile_images", image: image,
+                    onSuccess: { [weak self] (imageURL) in
+                                                            
+                        NetworkManager.shared.register(value: imageURL, for: "profileImageURL", in: uid)
+                        
+                        // The following is not necessary since I'm fetching everything when we're back to profile
+                        // self.user?.setValue(value: imageURL, for: .profileImageURL)
+                        
+                        self?.activityIndicator.isHidden = true
+                        self?.activityIndicator.stopAnimating()
+                        self?.profileImage.alpha = 1.0
+                        
+                        self?.profileImage.contentMode = .scaleAspectFill
+                        self?.profileImage.image = image
+                        
+                        self?.user?.setValue(value: imageURL, for: .profileImageURL)
+                        self?.user?.saveInDisk(value: imageURL, for: .profileImageURL)
+                                                            
+                    }, onFailure: { [weak self] in
+                        
+                        self?.activityIndicator.isHidden = true
+                        self?.activityIndicator.stopAnimating()
+                        self?.profileImage.alpha = 1.0
+                        
+                        self?.profileImage.contentMode = .scaleAspectFill
+                        self?.profileImage.image = image
+                })
             }
         }
         

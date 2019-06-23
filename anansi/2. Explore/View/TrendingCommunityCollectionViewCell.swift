@@ -12,7 +12,7 @@ class TrendingCommunityCollectionViewCell: UICollectionViewCell {
     
     // Custom Initializers
     
-    var delegate: ShowUserProfileDelegate?
+    weak var delegate: ShowUserProfileDelegate?
     weak var communityViewController: CommunityViewController?
     
     var users = [User]() {
@@ -58,7 +58,7 @@ class TrendingCommunityCollectionViewCell: UICollectionViewCell {
     
     @objc func fetchTrendingUsers() {
         
-        if !(communityViewController!.reachability.isReachable) {
+        if ConnectionManager.shared.currentConnectivityStatus != .connected {
             let attributes = [NSAttributedString.Key.foregroundColor: UIColor.primary]
             refreshControl.attributedTitle = NSAttributedString(string: "No internet connection 😳", attributes: attributes)
         } else {

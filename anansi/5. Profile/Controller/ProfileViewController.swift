@@ -245,19 +245,16 @@ class ProfileViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if !UserDefaults.standard.isProfileOnboarded() {
+        if !userDefaults.bool(for: userDefaults.isProfileOnboarded) {
             
             // Presents bottom sheet
-            let controller = BottomSheetView()
-            controller.setContent(title: "Your Profile",
-                                  description: "This is were your profile lives. Add info about yourself so other attendees can easily find and recognize you.")
-            controller.setIcon(image: UIImage(named: "Profile")!.withRenderingMode(.alwaysTemplate))
+            let controller = BottomSheetView(title: "Your Profile", description: "This is were your profile lives. Add info about yourself so other attendees can easily find and recognize you.", image: UIImage(named: "Profile")!.withRenderingMode(.alwaysTemplate))
             controller.modalPresentationStyle = .overFullScreen
             controller.modalTransitionStyle = .crossDissolve
             present(controller, animated: true, completion: nil)
             
             // Sets CommunityOnboarded to true
-            UserDefaults.standard.setProfileOnboarded(value: true)
+            userDefaults.updateObject(for: userDefaults.isProfileOnboarded, with: true)
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -266,7 +263,7 @@ class ProfileViewController: UIViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+        super.viewWillDisappear(animated)
 
         NotificationCenter.default.removeObserver(self)
     }
@@ -383,7 +380,7 @@ class ProfileViewController: UIViewController {
             self.user = me
             
             // If interests are NOT on disk, save them
-            if (UserDefaults.standard.value(forKey: userInfoType.interests.rawValue) == nil) {
+            if (userDefaults.stringList(for: userInfoType.interests.rawValue) == nil) {
                 
                 if let interests = me.getValue(forField: .interests) as? [String] {
                     me.saveInDisk(value: interests, for: .interests)
@@ -391,7 +388,7 @@ class ProfileViewController: UIViewController {
             }
             
             // If profile image is NOT on disk, save it
-            if (UserDefaults.standard.value(forKey: userInfoType.profileImageURL.rawValue) == nil) {
+            if (userDefaults.string(for: userInfoType.profileImageURL.rawValue) == nil) {
                 
                 if let profileImageURL = me.getValue(forField: .profileImageURL) as? String {
                     me.saveInDisk(value: profileImageURL, for: .profileImageURL)
@@ -498,7 +495,7 @@ class ProfileViewController: UIViewController {
                 view.addGestureRecognizer(tap)
             }
             
-            print(keyboardHeight)
+            //print(keyboardHeight)
             
             scrollView.isScrollEnabled = false
         }

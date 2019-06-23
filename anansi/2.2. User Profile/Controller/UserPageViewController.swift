@@ -151,21 +151,18 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         // Adds user to recently viewed
-        if var recentlyViewed = UserDefaults.standard.value(forKey: "recentlyViewedIDs") as? [String] {
+        if var recentlyViewed = userDefaults.stringList(for: userDefaults.recentlyViewedIDs) {
             
             let userID = user.getValue(forField: .id) as! String
             
             if let i = recentlyViewed.index(of: userID) { recentlyViewed.remove(at: i) }
             recentlyViewed.insert(userID, at: 0)
-            
-            UserDefaults.standard.set(recentlyViewed, forKey: "recentlyViewedIDs")
-            UserDefaults.standard.synchronize()
+            userDefaults.updateObject(for: userDefaults.recentlyViewedIDs, with: recentlyViewed)
             
         } else {
             
             let userID = user.getValue(forField: .id) as! String
-            UserDefaults.standard.set([userID], forKey: "recentlyViewedIDs")
-            UserDefaults.standard.synchronize()
+            userDefaults.updateObject(for: userDefaults.recentlyViewedIDs, with: [userID])
         }
     }
     
@@ -247,10 +244,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             topbar.setTitle(name: name)
             
             headerView.setTitleName(name: name)
-            
-            if let firstName = name.components(separatedBy: " ").first {
-                newChatButton.setTitle(" Say hi to \(firstName)", for: .normal)
-            }
+            newChatButton.setTitle(" Say hi to \(user.firstname)", for: .normal)
         }
         
         if let occupation = user.getValue(forField: .occupation) as? String { headerView.setOccupation(occupation) }
@@ -331,7 +325,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
     
     private func fetchMyInterests() {
         
-        if let interests = UserDefaults.standard.value(forKey: userInfoType.interests.rawValue) as? [String] {
+        if let interests = userDefaults.stringList(for: userInfoType.interests.rawValue) {
             myInterests = interests
         }
     }
@@ -369,7 +363,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             
         } else {
             
-            let chatController = ChatLogViewController(user: user, messages: [])
+            let chatController = ChatViewController(user: user, messages: [])
             chatController.cameFromUserProfile = true
             chatController.hidesBottomBarWhenPushed = true
             

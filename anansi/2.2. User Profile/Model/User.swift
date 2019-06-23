@@ -98,9 +98,7 @@ class User: NSObject {
     }
     
     func saveInDisk(value: Any, for field: userInfoType) {
-        
-        UserDefaults.standard.set(value, forKey: field.rawValue)
-        UserDefaults.standard.synchronize()
+        userDefaults.updateObject(for: field.rawValue, with: value)
     }
     
     // Sets value for field
@@ -259,5 +257,33 @@ class User: NSObject {
         self.linkedin = nil
         self.blockedUsers = nil
         self.ranking = nil
+    }
+    
+    // To iterate enums (for user model)
+    func iterateEnum<T: Hashable>(_: T.Type) -> AnyIterator<T> {
+        var i = 0
+        return AnyIterator {
+            let next = withUnsafeBytes(of: &i) { $0.load(as: T.self) }
+            if next.hashValue != i { return nil }
+            i += 1
+            return next
+        }
+    }
+}
+
+extension User { // local only
+    
+    var firstname : String {
+        
+        guard let name = name else { return "" }
+        guard let firstname = name.components(separatedBy: " ").first else { return "" }
+        return firstname
+        
+    }
+    
+    var nameFirstLetter : String {
+        
+        guard let name = name else { return "" }
+        return String(name[name.startIndex]).uppercased()
     }
 }

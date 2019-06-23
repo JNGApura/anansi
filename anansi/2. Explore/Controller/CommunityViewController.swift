@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import ReachabilitySwift
 
 class CommunityViewController: UIViewController {
 
@@ -85,7 +84,9 @@ class CommunityViewController: UIViewController {
         return cv
     }()
     
-    let reachability = Reachability()!
+    deinit {
+        print("Memory is freeee")
+    }
         
     // MARK: - View lifecycle
     
@@ -146,38 +147,36 @@ class CommunityViewController: UIViewController {
         let indexPath = IndexPath.init(item: currentIndex, section: 0)
         collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        // Handles network reachablibity
-        startMonitoringNetwork()
+    
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if !UserDefaults.standard.isCommunityOnboarded() {
+        if !userDefaults.bool(for: userDefaults.isCommunityOnboarded) {
             
             // Presents bottom sheet
-            let controller = BottomSheetView()
-            controller.setContent(title: "Community",
-                                  description: "Discover your friends and other attendees here. Check their profile and find out what they’re into.")
-            controller.setIcon(image: UIImage(named: "Community")!.withRenderingMode(.alwaysTemplate))
+            let controller = BottomSheetView(title: "Community", description: "Discover your friends and other attendees here. Check their profile and find out what they’re into.", image: UIImage(named: "Community")!.withRenderingMode(.alwaysTemplate))
             controller.modalPresentationStyle = .overFullScreen
             controller.modalTransitionStyle = .crossDissolve
             present(controller, animated: true, completion: nil)
             
             // Sets CommunityOnboarded to true
-            UserDefaults.standard.setCommunityOnboarded(value: true)
+            userDefaults.updateObject(for: userDefaults.isCommunityOnboarded, with: true)
         }
+        
+        // Handles network connectivity
+        startMonitorConnectivity()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+        super.viewWillDisappear(animated)
         
-        // Stop NetworkStatusListener
-        reachability.stopNotifier()
+        // Handles network connectivity
+        stopMonitorConnectivity()
     }
     
     override func didReceiveMemoryWarning() {
@@ -372,59 +371,6 @@ extension CommunityViewController: ShowPartnerPageDelegate {
     }
 }
 
-// MARK: - NetworkStatusListener | Handles network reachability
-
-extension CommunityViewController {
-    
-    func startMonitoringNetwork() {
-        
-        reachability.whenUnreachable = { reachability in
-            DispatchQueue.main.async { self.showAlert() }
-        }
-        
-        reachability.whenReachable = { reachability in
-            DispatchQueue.main.async { self.hideAlert() }
-        }
-        
-        do {
-            try reachability.startNotifier()
-        } catch {
-            print("Unable to start notifier")
-        }
-        
-        if reachability.isReachable {
-            DispatchQueue.main.async { self.hideAlert() }
-        } else {
-            DispatchQueue.main.async { self.showAlert() }
-        }
-    }
-    
-    func showAlert() {
-        
-        headerView.showAlertButton()
-        
-        if !UserDefaults.standard.offlineAlertWasShown() {
-            UserDefaults.standard.setOfflineAlertShown(value: true)
-            showOfflineAlert()
-        }
-    }
-    
-    func hideAlert() {
-        
-        headerView.hideAlertButton()
-        
-        UserDefaults.standard.setOfflineAlertShown(value: false)
-    }
-    
-    @objc func showOfflineAlert() {
-        
-        let alert = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you check your data or wifi connection?", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "On it!", style: .default , handler: nil))
-        
-        present(alert, animated: true, completion: nil)
-    }
-}
-
 // MARK: Network calls
 
 extension CommunityViewController {
@@ -615,5 +561,43 @@ extension CommunityViewController {
                 }
             }
         })
+    }
+}
+
+// MARK: - ConnectionManager
+
+extension CommunityViewController {
+    
+    func startMonitorConnectivity() {
+        
+        NetworkManager.shared.setOnlineObserver(onConnected: { [weak self] in
+            DispatchQueue.main.async { self?.hideAlert() }
+        }, onDisconnected: { [weak self] in
+            DispatchQueue.main.async { self?.showAlert() }
+        })
+    }
+    
+    func stopMonitorConnectivity() {
+        NetworkManager.shared.removeOnlineObserver()
+    }
+    
+    func showAlert() {
+        
+        headerView.showAlertButton()
+        
+        if !userDefaults.bool(for: userDefaults.wasOfflineAlertShown) {
+            userDefaults.updateObject(for: userDefaults.wasOfflineAlertShown, with: true)
+            showOfflineAlert()
+        }
+    }
+    
+    func hideAlert() {
+        
+        headerView.hideAlertButton()
+        userDefaults.updateObject(for: userDefaults.wasOfflineAlertShown, with: false)
+    }
+    
+    @objc func showOfflineAlert() {
+        showConnectionAlertFor(controller: self)
     }
 }

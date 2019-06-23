@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import ReachabilitySwift
 
 class EventViewController: UIViewController {
     
@@ -72,9 +71,6 @@ class EventViewController: UIViewController {
         return cv
     }()
     
-    let reachability = Reachability()!
-    
-    
     // MARK: - View lifecycle
     
     override func viewDidLoad() {
@@ -127,37 +123,38 @@ class EventViewController: UIViewController {
         collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
     }
     
+    deinit {
+        print("EventViewController:  Memory is freeee")
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
- 
-        // Handles network reachablibity
-        startMonitoringNetwork()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if !UserDefaults.standard.isEventOnboarded() {
+        if !userDefaults.bool(for: userDefaults.isEventOnboarded) {
             
             // Presents bottom sheet
-            let controller = BottomSheetView()
-            controller.setContent(title: "Event",
-                                  description: "Check this page regularly for updates on our event schedule and speaker lineup.")
-            controller.setIcon(image: UIImage(named: "Event")!.withRenderingMode(.alwaysTemplate))
+            let controller = BottomSheetView(title: "Event", description: "Check this page regularly for updates on our event schedule and speaker lineup.", image: UIImage(named: "Event")!.withRenderingMode(.alwaysTemplate))
             controller.modalPresentationStyle = .overFullScreen
             controller.modalTransitionStyle = .crossDissolve
             present(controller, animated: true, completion: nil)
             
             // Sets CommunityOnboarded to true
-            UserDefaults.standard.setEventOnboarded(value: true)
+            userDefaults.updateObject(for: userDefaults.isEventOnboarded, with: true)
         }
+        
+        // Handles network connectivity
+        startMonitorConnectivity()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-                
-        // Stop NetworkStatusListener
-        reachability.stopNotifier()
+        super.viewWillDisappear(animated)
+
+        // Handles network connectivity
+        stopMonitorConnectivity()
     }
     
     override func didReceiveMemoryWarning() {
@@ -282,13 +279,13 @@ extension EventViewController: ShowSpeakerDetailedPageDelegate {
     
     func showUserPageWith(id: String) {
         
-        NetworkManager.shared.fetchUserOnce(userID: id) { (dictionary) in
+        NetworkManager.shared.fetchUserOnce(userID: id) { [weak self] (dictionary) in
             
             let user = User()
             user.set(dictionary: dictionary, id: id)
             
             let userProfile = UserPageViewController(user: user)
-            self.navigationController?.pushViewController(userProfile, animated: true)
+            self?.navigationController?.pushViewController(userProfile, animated: true)
         }
     }
 }
@@ -298,93 +295,37 @@ extension EventViewController: ShowSpeakerDetailedPageDelegate {
 extension EventViewController: DirectionsButtonDelegate {
     
     func didTapForDirections(bool: Bool) {
-        
-        let alert = UIAlertController(title: "Address", message: "Please choose an option below:", preferredStyle: .actionSheet)
-        
-        // Open Apple Maps
-        alert.addAction(UIAlertAction(title: "Open in Apple Maps", style: .default , handler:{ (UIAlertAction)in
-            
-            if let url = URL(string: "http://maps.apple.com/maps?saddr=&daddr=\(Const.addressLatitude),\(Const.addressLongitude)") {
-                UIApplication.shared.open(url, options: [:])
-            } else {
-                NSLog("Can't use maps://");
-            }
-            
-        }))
-        
-        // Open Google Maps
-        alert.addAction(UIAlertAction(title: "Open in Google Maps", style: .default , handler:{ (UIAlertAction)in
-            
-            if let url = URL(string: "comgooglemaps://?saddr=&daddr=\(Const.addressLatitude),\(Const.addressLongitude)") {
-                UIApplication.shared.open(url, options: [:])
-                
-            } else {
-                if let url = URL(string: "https://maps.google.com/?q=@\(Const.addressLatitude),\(Const.addressLongitude)"){
-                    UIApplication.shared.open(url, options: [:])
-                    
-                } else {
-                    NSLog("Can't use Google Maps");
-                }
-            }
-        }))
-        
-        // Copy address
-        alert.addAction(UIAlertAction(title: "Copy address", style: .default , handler:{ (UIAlertAction) in
-            
-            let pasteboard = UIPasteboard.general
-            pasteboard.string = Const.addressULisboa
-            
-        }))
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        
-        present(alert, animated: true, completion: nil)
+        showDirectionsAlertFor(controller: self)
     }
     
-    
     func didCopyPromoCode(with promoCode: String) {
-    
-        let alert = UIAlertController(title: "Let's get you movin' 🚗", message: "You've successfuly copied \(Const.kaptenPromoCode). Open Kapten's app and apply the promocode to enjoy 5€ off your first ride.", preferredStyle: .alert)
-        
-        alert.addAction(UIAlertAction(title: "Got it!", style: .default , handler: nil))
-        
-        present(alert, animated: true, completion: nil)
+        showKaptenAlertFor(controller: self)
     }
 }
 
-// MARK: - NetworkStatusListener | Handles network reachability
+// MARK: - ConnectionManager
 
 extension EventViewController {
+
+    func startMonitorConnectivity() {
+        
+        NetworkManager.shared.setOnlineObserver(onConnected: { [weak self] in
+            DispatchQueue.main.async { self?.hideAlert() }
+        }, onDisconnected: { [weak self] in
+            DispatchQueue.main.async { self?.showAlert() }
+        })
+    }
     
-    func startMonitoringNetwork() {
-        
-        reachability.whenUnreachable = { reachability in
-            DispatchQueue.main.async { self.showAlert() }
-        }
-        
-        reachability.whenReachable = { reachability in
-            DispatchQueue.main.async { self.hideAlert() }
-        }
-        
-        do {
-            try reachability.startNotifier()
-        } catch {
-            print("Unable to start notifier")
-        }
-        
-        if reachability.isReachable {
-            DispatchQueue.main.async { self.hideAlert() }
-        } else {
-            DispatchQueue.main.async { self.showAlert() }
-        }
+    func stopMonitorConnectivity() {
+        NetworkManager.shared.removeOnlineObserver()
     }
     
     func showAlert() {
         
         headerView.showAlertButton()
         
-        if !UserDefaults.standard.offlineAlertWasShown() {
-            UserDefaults.standard.setOfflineAlertShown(value: true)
+        if !userDefaults.bool(for: userDefaults.wasOfflineAlertShown) {
+            userDefaults.updateObject(for: userDefaults.wasOfflineAlertShown, with: true)
             showOfflineAlert()
         }
     }
@@ -392,15 +333,10 @@ extension EventViewController {
     func hideAlert() {
         
         headerView.hideAlertButton()
-        
-        UserDefaults.standard.setOfflineAlertShown(value: false)
+        userDefaults.updateObject(for: userDefaults.wasOfflineAlertShown, with: false)
     }
     
     @objc func showOfflineAlert() {
-        
-        let alert = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you please check your Wifi or Cellular data?", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "On it!", style: .default , handler: nil))
-        
-        present(alert, animated: true, completion: nil)
+        showConnectionAlertFor(controller: self)
     }
 }

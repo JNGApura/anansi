@@ -155,7 +155,7 @@ class SearchTableViewController: UIViewController {
     
     private func fetchMyInterests() {
         
-        if let interests = UserDefaults.standard.value(forKey: userInfoType.interests.rawValue) as? [String] {
+        if let interests = userDefaults.stringList(for: userInfoType.interests.rawValue) {
             myInterests = interests
         }
     }

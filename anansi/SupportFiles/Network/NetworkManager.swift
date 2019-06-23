@@ -25,6 +25,9 @@ class NetworkManager {
     private let messagesDatabase = Database.database().reference().child("messages")
     private let partnerDatabase = Database.database().reference().child("partners")
     private let feedbackDatabase = Database.database().reference().child("feedback")
+    
+    // References
+    private let onlineRef = Database.database().reference(withPath: ".info/connected")
  
     // MARK: Sign-up / Log-in functions
     
@@ -72,7 +75,7 @@ class NetworkManager {
     }
     
     /// Handles user creation communication with firebase (database)
-    func createUserInDB(email: String, ticket: String, name: String, occupation: String, location: String, onSuccess: @escaping () -> Void) {
+    func createUserInDB(email: String, ticket: String, name: String, occupation: String, location: String, onSuccess: (() -> Void)?) {
         
         Auth.auth().signIn(withEmail: email, password: ticket) { (user, error) in
             if error != nil, let errorCode = AuthErrorCode(rawValue: error!._code) {
@@ -96,19 +99,19 @@ class NetworkManager {
                         print(err!.localizedDescription)
                         return
                     }
-                    onSuccess()
+                    onSuccess?()
             })
         }
     }
     
     /// Signs out user by request
-    func logout(onSuccess: @escaping () -> Void) {
+    func logout(onSuccess: (() -> Void)?) {
         do {
             try
-            // Logs user out
-            Auth.auth().signOut()
-            UserDefaults.standard.setLoggedIn(value: false)
-            onSuccess()
+                Auth.auth().signOut()
+                userDefaults.updateObject(for: userDefaults.isLoggedIn, with: false)
+                onlineRef.removeAllObservers()
+                onSuccess?()
             
         } catch let logoutError {
             print(logoutError)
@@ -116,7 +119,7 @@ class NetworkManager {
     }
     
     /// Stores image in Firebase storage
-    func storesImageInStorage(folder: String, image : UIImage, onSuccess: @escaping (String) -> Void) {
+    func storesImageInStorage(folder: String, image : UIImage, onSuccess: @escaping (String) -> Void, onFailure: (() -> Void)?) {
         
         let imageName = getUID()
         let storageRef = Storage.storage().reference().child(folder).child("\(imageName!)")
@@ -129,14 +132,14 @@ class NetworkManager {
             storageRef.putData(uploadImage, metadata: metadata) { (metadata, error) in
                 if error != nil {
                     print(error!)
-                    return
+                    onFailure?()
                 }
                 
                 storageRef.downloadURL(completion: { (imageURL, error) in
                     guard let downloadURL = imageURL else { return }
                     if let error = error {
                         print(error.localizedDescription)
-                        return
+                        onFailure?()
                     }
                     
                     onSuccess("\(downloadURL)")
@@ -154,7 +157,7 @@ class NetworkManager {
         //Removes image from storage
         storageRef.delete { error in
             if let error = error {
-                print(error)
+                print(error) // Silently ignore any error
             }
             onSuccess()
         }
@@ -377,30 +380,40 @@ class NetworkManager {
         }
     }
     
-    // TO DO: CHECK IF THIS IS THE RIGHT WAY TO DO IT
     // Get list of messages from a conversation
+    var messageDatabaseListenerChildAdded : DatabaseHandle!
+    var messageDatabaseListenerChildChanged : DatabaseHandle!
+    var messageDatabaseListenerChildRemoved : DatabaseHandle!
+    
     func observeConversation(withID chatID: String,
                              onAdd: (([String: Any], String) -> Void)?,
                              onChange: (([String: Any], String) -> Void)?,
                              onRemove: (([String: Any], String) -> Void)?) {
         
-        messagesDatabase.child(chatID).observe(.childAdded) { (dic) in
+        messageDatabaseListenerChildAdded = messagesDatabase.child(chatID).observe(.childAdded) { (dic) in
             
             guard let message = dic.value as? [String: Any] else { return }
             onAdd?(message, dic.key)
         }
         
-        messagesDatabase.child(chatID).observe(.childChanged) { (dic) in
+        messageDatabaseListenerChildChanged = messagesDatabase.child(chatID).observe(.childChanged) { (dic) in
             
             guard let message = dic.value as? [String: Any] else { return }
             onChange?(message, dic.key)
         }
         
-        messagesDatabase.child(chatID).observe(.childRemoved) { (dic) in
+        messageDatabaseListenerChildRemoved = messagesDatabase.child(chatID).observe(.childRemoved) { (dic) in
             
             guard let message = dic.value as? [String: Any] else { return }
             onRemove?(message, dic.key)
         }
+    }
+    
+    func removeObserversForConversation(withID chatID: String) {
+    
+        messagesDatabase.child(chatID).removeObserver(withHandle: messageDatabaseListenerChildAdded)
+        messagesDatabase.child(chatID).removeObserver(withHandle: messageDatabaseListenerChildChanged)
+        messagesDatabase.child(chatID).removeObserver(withHandle: messageDatabaseListenerChildRemoved)
     }
     
     // Create childnode for userMessages
@@ -545,9 +558,11 @@ class NetworkManager {
     }
     
     // Is user typing a message?
+    var isTypingObserver: DatabaseHandle!
+    
     func observeTypingInstances(from userID: String, onTyping: ((String) -> Void)?, onNotTyping: (() -> Void)?) {
         
-        isTypingDatabase.child(userID).child("isTypingTo").observe(.value) { (snapshot) in
+        isTypingObserver = isTypingDatabase.child(userID).child("isTypingTo").observe(.value) { (snapshot) in
             
             if snapshot.exists() {
                 onTyping?(snapshot.value as! String)
@@ -555,6 +570,11 @@ class NetworkManager {
                 onNotTyping?()
             }
         }
+    }
+    
+    func removeObserverTypingInstance(from userID: String) {
+        
+        isTypingDatabase.child(userID).child("isTypingTo").removeObserver(withHandle: isTypingObserver)
     }
     
     
@@ -578,6 +598,37 @@ class NetworkManager {
     func logEvent(name: String, parameters: [String : Any]?) {
         
         Analytics.logEvent(name, parameters: parameters)
+    }
+    
+    
+    // MARK: - CONNECTIVITY OBSERVERS
+    var onlineRefHandler : DatabaseHandle!
+    
+    func setOnlineObserver(onConnected: @escaping () -> Void, onDisconnected: @escaping () -> Void) {
+        
+        onlineRefHandler = onlineRef.observe(.value) { (snap) in
+            
+            /* guard let strongSelf = self else { return }
+             
+            // Saves a reference under the user's node
+            if let myID = strongSelf.getUID()  {
+                
+                if (snap.value as? Bool) ?? false {
+                    strongSelf.userDatabase.child(myID).child("isOnline").setValue(true)
+                    strongSelf.userDatabase.child(myID).child("isOnline").onDisconnectSetValue(ServerValue.timestamp())
+                }
+            }*/
+
+            if (ConnectionManager.shared.currentConnectivityStatus == .connected) {
+                onConnected()
+            } else {
+                onDisconnected()
+            }
+        }
+    }
+    
+    func removeOnlineObserver() {
+        onlineRef.removeObserver(withHandle: onlineRefHandler)
     }
     
 }

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import ReachabilitySwift
 import SafariServices
 
 protocol SendsUserBackProtocol {
@@ -141,20 +140,18 @@ class SettingsViewController: UIViewController {
     private func handleLogout() {
         
         // When network is unreachable
-        if !ReachabilityManager.shared.reachability.isReachable {
-            
-            let alertController = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you please check your Wifi or Cellular data?", preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: "On it!", style: .default, handler: nil))
-            
-            present(alertController, animated: true, completion: nil)
-            
+        if ConnectionManager.shared.currentConnectivityStatus != .connected {
+            showConnectionAlertFor(controller: self)
             return
         }
         
         // Resets UserDefault values
-        UserDefaults.standard.set([], forKey: "recentlyViewedIDs")
+        userDefaults.updateObject(for: userDefaults.recentlyViewedIDs, with: [])
         user?.saveInDisk(value: [], for: .interests)
         user?.saveInDisk(value: "", for: .profileImageURL)
+        
+        // Restores app badge
+        UIApplication.shared.applicationIconBadgeNumber = 0
         
         NetworkManager.shared.logout {
             

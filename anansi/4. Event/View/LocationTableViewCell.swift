@@ -12,15 +12,38 @@ import MapKit
 class LocationTableViewCell: UITableViewCell {
     
     let regionRadius: CLLocationDistance = 500
+    let ULisboaLocation = CLLocationCoordinate2DMake(Const.addressLatitude, Const.addressLongitude)
+    lazy var ULisboaRegion = MKCoordinateRegion(center: ULisboaLocation, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
     
-    var delegate: EventLocationCollectionViewCell?
+    weak var delegate: EventLocationCollectionViewCell?
     
-    lazy var mapView : MKMapView = {
-        let m = MKMapView()
-        m.mapType = MKMapType.standard
-        m.delegate = self
-        m.translatesAutoresizingMaskIntoConstraints = false
-        return m
+    lazy var mapImage : UIImageView = {
+        let i = UIImageView()
+        i.contentMode = .scaleAspectFill
+        i.clipsToBounds = true
+        i.translatesAutoresizingMaskIntoConstraints = false
+        return i
+    }()
+    
+    let activityIndicator: UIActivityIndicatorView = {
+        let ai = UIActivityIndicatorView()
+        ai.hidesWhenStopped = true
+        ai.color = .primary
+        ai.isHidden = false
+        ai.startAnimating()
+        ai.translatesAutoresizingMaskIntoConstraints = false
+        return ai
+    }()
+    
+    lazy var X : UIButton = {
+        let b = UIButton()
+        b.contentMode = .center
+        b.setImage(UIImage(named: "X")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        b.contentEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+        b.addTarget(self, action: #selector(openDirectionsActionSheet), for: .touchUpInside)
+        b.isHidden = true
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
     }()
     
     let addressLabel : UILabel = {
@@ -123,16 +146,24 @@ class LocationTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         
-         [mapView, addressLabel, directionImage, directionButton, sponsoredTag, kaptenLogo, kaptenCodeTitle, kaptenCodeDescription, promoCodeButton, promoCodeButtonTip].forEach { addSubview($0) }
+         [mapImage, activityIndicator, X, addressLabel, directionImage, directionButton, sponsoredTag, kaptenLogo, kaptenCodeTitle, kaptenCodeDescription, promoCodeButton, promoCodeButtonTip].forEach { addSubview($0) }
          
          NSLayoutConstraint.activate([
          
-             mapView.centerXAnchor.constraint(equalTo: centerXAnchor),
-             mapView.widthAnchor.constraint(equalTo: widthAnchor),
-             mapView.topAnchor.constraint(equalTo: topAnchor),
-             mapView.heightAnchor.constraint(equalToConstant: 280.0),
+             mapImage.centerXAnchor.constraint(equalTo: centerXAnchor),
+             mapImage.widthAnchor.constraint(equalTo: widthAnchor),
+             mapImage.topAnchor.constraint(equalTo: topAnchor),
+             mapImage.heightAnchor.constraint(equalToConstant: 280.0),
              
-             addressLabel.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: Const.marginEight * 2.0),
+             activityIndicator.centerXAnchor.constraint(equalTo: mapImage.centerXAnchor),
+             activityIndicator.centerYAnchor.constraint(equalTo: mapImage.centerYAnchor),
+             
+             X.centerXAnchor.constraint(equalTo: mapImage.centerXAnchor, constant: Const.marginEight),
+             X.centerYAnchor.constraint(equalTo: mapImage.centerYAnchor, constant: -Const.marginEight),
+             X.widthAnchor.constraint(equalTo: X.heightAnchor),
+             X.heightAnchor.constraint(equalToConstant: 32.0),
+             
+             addressLabel.topAnchor.constraint(equalTo: mapImage.bottomAnchor, constant: Const.marginEight * 2.0),
              addressLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.marginSafeArea),
              addressLabel.trailingAnchor.constraint(equalTo: directionImage.trailingAnchor, constant: -Const.marginSafeArea),
              
@@ -172,11 +203,33 @@ class LocationTableViewCell: UITableViewCell {
              
              promoCodeButtonTip.topAnchor.constraint(equalTo: promoCodeButton.bottomAnchor, constant: Const.marginEight / 2.0),
              promoCodeButtonTip.centerXAnchor.constraint(equalTo: promoCodeButton.centerXAnchor),
-         ])
-         
-         // set location in ULisboa
-         let ULisboaLocation = CLLocation(latitude: Const.addressLatitude, longitude: Const.addressLongitude)
-         centerMapOnLocation(location: ULisboaLocation)
+        ])
+        
+        // Creates Map snapshot
+        
+        let options = MKMapSnapshotter.Options()
+        options.region = ULisboaRegion
+        options.scale = UIScreen.main.scale
+        options.size = CGSize(width: frame.width, height: frame.width)
+        options.showsBuildings = true
+        options.showsPointsOfInterest = true
+        
+        let snapShotter = MKMapSnapshotter(options: options)
+        
+        snapShotter.start { [weak self] (snapshot, error) in
+            
+            guard let snapshot = snapshot, error == nil else {
+                print(error.debugDescription)
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self?.mapImage.image = snapshot.image
+                self?.X.isHidden = false
+                
+                self?.activityIndicator.stopAnimating()
+            }
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -196,61 +249,5 @@ class LocationTableViewCell: UITableViewCell {
         pasteboard.string = promoCodeButton.titleLabel?.text
         
         delegate?.openAlertBoxConfirmation(with: pasteboard.string!)
-    }
-}
-
-// MARK: MKMapViewDelegate
-
-extension LocationTableViewCell: MKMapViewDelegate {
-    
-    func centerMapOnLocation(location: CLLocation) {
-        
-        // Set region with 500m radius
-        let coordinateRegion = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: regionRadius, longitudinalMeters: regionRadius)
-        mapView.setRegion(coordinateRegion, animated: false)
-        
-        // Adds annotation with location (when tapped)
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = location.coordinate
-        annotation.title = "TEDxULisboa"
-        annotation.subtitle = "Reitoria da Universidade de Lisboa"
-        mapView.addAnnotation(annotation)
-        
-        if #available(iOS 9, *) {
-            mapView.showsScale = true
-            mapView.showsCompass = true
-        }
-        //mapView.selectAnnotation(mapView.annotations[0], animated: true)
-    }
-    
-    // Adds custom pin with "X"
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        guard !(annotation is MKUserLocation) else {
-            return nil
-        }
-        
-        let annotationIdentifier = "pin"
-        var annotationView: MKAnnotationView?
-        if let dequeuedAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: annotationIdentifier) {
-            annotationView = dequeuedAnnotationView
-            annotationView?.annotation = annotation
-        }
-        else {
-            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: annotationIdentifier)
-            annotationView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
-        }
-        
-        if let annotationView = annotationView {
-            
-            annotationView.canShowCallout = true
-            annotationView.image = UIImage(named: "X")?.withRenderingMode(.alwaysOriginal)
-            annotationView.centerOffset = CGPoint(x: annotationView.image!.size.width / 2, y: -annotationView.image!.size.height / 2)
-        }
-        return annotationView
-    }
-    
-    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        
-        delegate?.openActionSheet()
     }
 }

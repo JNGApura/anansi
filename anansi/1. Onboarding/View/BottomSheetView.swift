@@ -12,7 +12,7 @@ class BottomSheetView: UIViewController, UIGestureRecognizerDelegate {
     
     // MARK: - Custom initializers
     
-    let backgroundView : UIView = {
+    private let backgroundView : UIView = {
         let v = UIView()
         v.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         v.isOpaque = false
@@ -74,14 +74,45 @@ class BottomSheetView: UIViewController, UIGestureRecognizerDelegate {
         return b
     }()
     
+    // MARK: - Init
+    
+    init(title: String, description: String, image: UIImage) {
+        
+        sheetTitle.text = title
+        sheetIcon.image = image
+        sheetDescription.text = description
+        sheetDescription.formatTextWithLineSpacing(lineSpacing: 8, lineHeightMultiple: 1.1, hyphenation: 0.5, alignment: .left)
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - View lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         [backgroundView, bottomSheet].forEach( {view.addSubview($0)} )
-        
         [sheetIcon, sheetTitle, sheetDescription, border, button].forEach( {bottomSheet.addSubview($0)} )
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        UIView.animate(withDuration: 0.3, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.bottomSheet.alpha = 1.0
+            self.bottomSheet.transform = CGAffineTransform.identity
+        })
+    }
+    
+    override func viewWillLayoutSubviews() {
+        
+        // Need this here, so it can be assigned once rendered
+        backgroundView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
+        bottomSheet.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handleVerticalPan)))
         
         // In bottom-up order
         NSLayoutConstraint.activate([
@@ -124,46 +155,14 @@ class BottomSheetView: UIViewController, UIGestureRecognizerDelegate {
         bottomSheet.transform = CGAffineTransform(translationX: 0, y: 200)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        UIView.animate(withDuration: 0.3, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-            self.bottomSheet.alpha = 1.0
-            self.bottomSheet.transform = CGAffineTransform.identity
-        })
-    }
-    
-    override func viewWillLayoutSubviews() {
-        
-        // Need this here, so it can be assigned once rendered
-        backgroundView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
-        bottomSheet.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handleVerticalPan)))
-    }
-    
-     // MARK: - Custom functions
-
-    func setContent(title: String, description: String) {
-        
-        sheetTitle.text = title
-        
-        sheetDescription.text = description
-        sheetDescription.formatTextWithLineSpacing(lineSpacing: 8, lineHeightMultiple: 1.1, hyphenation: 0.5, alignment: .left)
-    }
-    
-    func setIcon(image: UIImage){
-        
-        sheetIcon.image = image
-    }
-    
     @objc func handleDismiss() {
         
         UIView.animate(withDuration: 0.3, delay: 0, options: UIView.AnimationOptions.curveEaseOut, animations: {
-            
             self.bottomSheet.alpha = 0.0
             self.bottomSheet.transform = CGAffineTransform(translationX: 0, y: 200)
-        }) { (true) in
             
-            self.dismiss(animated: true, completion: nil)
+        }) { [weak self] (true) in
+            self?.dismiss(animated: true, completion: nil)
         }
     }
     
@@ -181,8 +180,8 @@ class BottomSheetView: UIViewController, UIGestureRecognizerDelegate {
             
             UIView.animate(withDuration: 0.3, delay: 0, options: UIView.AnimationOptions.curveEaseOut, animations: {
                 self.bottomSheet.alpha = 0.0
-            }) { (true) in
-                self.dismiss(animated: true, completion: nil)
+            }) { [weak self] (true) in
+                self?.dismiss(animated: true, completion: nil)
             }
         }
     }

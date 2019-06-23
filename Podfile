@@ -13,7 +13,6 @@ target 'anansi' do
   pod 'Firebase/Database'
   pod 'Fabric', '~> 1.10.0'
   pod 'Crashlytics', '~> 3.13.0'
-  pod 'ReachabilitySwift', '~>3'
   pod 'Kingfisher', '~> 5.0'
 
   target 'anansiTests' do

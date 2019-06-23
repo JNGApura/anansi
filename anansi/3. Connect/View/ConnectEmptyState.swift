@@ -17,7 +17,7 @@ class ConnectEmptyState: UIView {
             
             stateTitle.text = placeholder
             stateDescription.text = Const.emptystateSubtitle[index!]
-            imageView.image = UIImage(named: "Connect-empty-\(index!)")!.withRenderingMode(.alwaysOriginal)
+            imageView.image = UIImage(named: "Connect-empty-\(index!)")!.withRenderingMode(.alwaysOriginal)            
         }
     }
     
@@ -56,7 +56,7 @@ class ConnectEmptyState: UIView {
         tl.translatesAutoresizingMaskIntoConstraints = false
         return tl
     }()
-    
+        
     override init(frame: CGRect) {
         super.init(frame: frame)
         

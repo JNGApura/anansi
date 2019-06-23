@@ -12,7 +12,7 @@ class TabBarController: UITabBarController {
 
     // Custom initializers
     
-    var tabList = ["Community", "Connect", "Event"]
+    var tabList = ["Event", "Community", "Connect"]
     
     fileprivate var tabBarViewControllers = [UINavigationController]()
     
@@ -53,8 +53,8 @@ class TabBarController: UITabBarController {
         // Remove label to tab bar items
         removeTabBarItemText()
         
-        // Set offline alert shown variable to false (reachability)
-        UserDefaults.standard.setOfflineAlertShown(value: false)
+        // Set offline alert shown variable to false (connectivity)
+        userDefaults.updateObject(for: userDefaults.wasOfflineAlertShown, with: false)
         
         // Requests notifications, if we haven't asked before
         if !PushNotificationManager.shared.hasSeenPushNotificationRequest() {
@@ -63,6 +63,12 @@ class TabBarController: UITabBarController {
                 PushNotificationManager.shared.updateFirestorePushTokenIfNeeded()
             }
         }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        // Add remove listener
     }
     
     override func didReceiveMemoryWarning() {
@@ -87,8 +93,6 @@ class TabBarController: UITabBarController {
         didSet {
             let pos = tabList.index(of: "Connect")
             
-            print(unreadChats)
-            
             if let tabitem = tabBar.items {
                 
                 // Tabitem badge
@@ -102,79 +106,73 @@ class TabBarController: UITabBarController {
     
     private func observeExistingConversations() {
         
-        NetworkManager.shared.observeExistingConversations(from: myID!, onAdd: { (chatID, _) in
+        NetworkManager.shared.observeExistingConversations(from: myID!, onAdd: { [weak self] (chatID, _) in
             
-            self.observeMessagesFromChat(withID: chatID)
+            self?.observeMessagesFromChat(withID: chatID)
         
-        }, onRemove: { (chatID, _) in
+        }, onRemove: { [weak self] (chatID, _) in
             
-            if self.unreadChats[chatID] != nil {
-                self.unreadChats[chatID] = nil
+            if self?.unreadChats[chatID] != nil {
+                self?.unreadChats[chatID] = nil
             }
             
-        }, noConversations: {
+        }, noConversations: { [weak self] in
             
-            self.unreadChats = [:]
+            self?.unreadChats = [:]
         })
     }
     
     private func observeMessagesFromChat(withID chatID: String) {
         
-        NetworkManager.shared.observeConversation(withID: chatID, onAdd: { (mesg, key) in
+        NetworkManager.shared.observeConversation(withID: chatID, onAdd: { [weak self] (mesg, key) in
             
             let chat = Message(dictionary: mesg, messageID: key)
             
             // if I'm the receiver
-            if self.myID == chat.getValue(forField: .receiver) as? String,
+            if self?.myID == chat.getValue(forField: .receiver) as? String,
                 let isRead = chat.getValue(forField: .isRead) as? Bool,
                 !isRead {
                 
-                if let listOfUnread = self.unreadChats[chatID] {
+                if let listOfUnread = self?.unreadChats[chatID] {
                     
                     if !listOfUnread.contains(key) {
-                        self.unreadChats[chatID]!.append(key)
+                        self?.unreadChats[chatID]!.append(key)
                     }
             
                 } else {
-                    self.unreadChats[chatID] = [key]
+                    self?.unreadChats[chatID] = [key]
                 }
             }
             
-        }, onChange: { (mesg, key) in
+        }, onChange: { [weak self] (mesg, key) in
             
             let chat = Message(dictionary: mesg, messageID: key)
             
             // Note: listOfUnreadChats only contains messages that I'm the receiver
-            if let listOfUnreadChats = self.unreadChats[chatID],
+            if let listOfUnreadChats = self?.unreadChats[chatID],
                 listOfUnreadChats.contains(key),
                 let isRead = chat.getValue(forField: .isRead) as? Bool,
-                isRead{
+                isRead {
                 
                 let i = listOfUnreadChats.index(of: key)
-                self.unreadChats[chatID]!.remove(at: i!)
+                self?.unreadChats[chatID]!.remove(at: i!)
                 
-                if self.unreadChats[chatID]!.count == 0 {
-                    self.unreadChats[chatID] = nil
+                if self?.unreadChats[chatID]!.count == 0 {
+                    self?.unreadChats[chatID] = nil
                 }
             }
             
-        }, onRemove: { (mesg, key) in
+        }, onRemove: { [weak self] (mesg, key) in
             
             // Note: listOfUnreadChats only contains messages that I'm the receiver
-            if let listOfUnreadChats = self.unreadChats[chatID],
+            if let listOfUnreadChats = self?.unreadChats[chatID],
                 listOfUnreadChats.contains(key) {
                 
-                print("Removed message was an unread message")
-                
                 let i = listOfUnreadChats.index(of: key)
-                self.unreadChats[chatID]!.remove(at: i!)
+                self?.unreadChats[chatID]!.remove(at: i!)
                 
-                print("Unread message at position \(i!) was removed")
-                
-                if self.unreadChats[chatID]!.count == 0 {
-                    self.unreadChats[chatID] = nil
-                    
-                    print("Upss, it seems unread chats for \(chatID) are decimated! (Marvel fan joke)")
+                if self?.unreadChats[chatID]!.count == 0 {
+                    self?.unreadChats[chatID] = nil
                 }
             }
         })
@@ -183,17 +181,15 @@ class TabBarController: UITabBarController {
     private func fetchImportantInfoFromMyself() {
         
         // Fetch me
-        NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
+        NetworkManager.shared.fetchUserOnce(userID: myID!) { (dictionary) in
             
             // Save necessary information on disk
             if let interests = dictionary[userInfoType.interests.rawValue] as? [String] {
-                UserDefaults.standard.set(interests, forKey: userInfoType.interests.rawValue)
-                UserDefaults.standard.synchronize()
+                userDefaults.updateObject(for: userInfoType.interests.rawValue, with: interests)
             }
             
             if let profileImageURL = dictionary[userInfoType.profileImageURL.rawValue] as? String {
-                UserDefaults.standard.set(profileImageURL, forKey: userInfoType.profileImageURL.rawValue)
-                UserDefaults.standard.synchronize()
+                userDefaults.updateObject(for: userInfoType.profileImageURL.rawValue, with: profileImageURL)
             }
         }
     }

@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol ChatAccessoryDelegate {
+protocol ChatAccessoryDelegate: class {
     func sendMessage(message: String)
     func isTypingMessage(value: Bool)
 }
@@ -21,7 +21,7 @@ class ChatAccessoryView: UIView {
         return .zero
     }
     
-    var delegate: ChatAccessoryDelegate?
+    weak var delegate: ChatAccessoryDelegate?
     
     var placeholderText = String() {
         didSet {
@@ -116,7 +116,7 @@ class ChatAccessoryView: UIView {
         let message = (inputTextView.text)!
         
         if message.count == 0 {
-            delegate?.sendMessage(message: ":compass:")
+            delegate?.sendMessage(message: Const.stickerString)
         } else {
             delegate?.sendMessage(message: message)
         }

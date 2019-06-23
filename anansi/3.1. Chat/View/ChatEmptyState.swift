@@ -8,27 +8,28 @@
 
 import UIKit
 
-protocol ChatEmptyStateDelegate {
+protocol ChatEmptyStateDelegate: class {
     func wave()
 }
 
 class ChatEmptyState: UIView {
     
-    var delegate: ChatEmptyStateDelegate?
+    weak var delegate: ChatEmptyStateDelegate?
+    
+    var topbarHeight : CGFloat!
     
     var user: User? {
         didSet {
             
             // Sets my profile image
-            if let myProfileImage = UserDefaults.standard.value(forKey: userInfoType.profileImageURL.rawValue) as? String {
+            if let myProfileImage = userDefaults.string(for: userInfoType.profileImageURL.rawValue) {
                 myImage.setImage(with: myProfileImage)
             } else {
                 myImage.image = UIImage(named: "profileImageTemplate")!.withRenderingMode(.alwaysOriginal)
             }
             
             // Sets conversation starter
-            var fullname = ((user?.getValue(forField: .name) as? String)!).components(separatedBy: " ")
-            let firstname = fullname.removeFirst()
+            let firstname = user!.firstname
             let CTA : [String] = ["This could be the start of a meaningful conversation with \(firstname).",
                                   "Don't be afraid to share your ideas with \(firstname).",
                                   "Type. Send. That easy!",
@@ -107,6 +108,9 @@ class ChatEmptyState: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        // Grabs topbar height from parent view
+        topbarHeight = frame.minY
+        
         backgroundColor = .background
         
         // Add subviews
@@ -134,7 +138,7 @@ class ChatEmptyState: UIView {
         
         NSLayoutConstraint.activate([
             
-            joinedImages.topAnchor.constraint(equalTo: topAnchor, constant: Const.marginSafeArea * 2),
+            joinedImages.topAnchor.constraint(equalTo: topAnchor, constant: topbarHeight + Const.marginSafeArea),
             joinedImages.centerXAnchor.constraint(equalTo: centerXAnchor),
             joinedImages.heightAnchor.constraint(equalToConstant: 56.0),
             joinedImages.widthAnchor.constraint(equalToConstant: 90.0),

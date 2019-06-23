@@ -7,14 +7,11 @@
 //
 
 import UIKit
-import ReachabilitySwift
 import SafariServices
 
 class SignUpController: UIViewController, UIScrollViewDelegate {
     
-    // Custom initializers
-    let defaults = UserDefaults.standard
-    
+    // Custom initializers    
     var currentPos : CGFloat! = 0
     
     var activeText: UITextView!
@@ -255,15 +252,25 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        ReachabilityManager.shared.addListener(listener: self)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+       
+        // Handles network connectivity
+        startMonitorConnectivity()
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        ReachabilityManager.shared.removeListener(listener: self)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        // Handles network connectivity
+        stopMonitorConnectivity()
+        
+        // Remove observers
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    deinit {
+        print("Reclaimed memory for SignUpController")
     }
     
     override func didReceiveMemoryWarning() {
@@ -277,12 +284,12 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
         
         if let url = URL(string: "fb-messenger://user-thread/tedxulisboa") {
             
-            UIApplication.shared.open(url, options: [:]) { (result) in
+            UIApplication.shared.open(url, options: [:]) { [weak self] (result) in
                 if !result {
                     
                     if let url = URL(string: "https://m.me/tedxulisboa") {
                         let vc = SFSafariViewController(url: url)
-                        self.present(vc, animated: true, completion: nil)
+                        self?.present(vc, animated: true, completion: nil)
                     }
                 }
             }
@@ -295,8 +302,9 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
         
         // About - Privacy Policy
         if let url = URL(string: "https://tedxulisboa.com/privacy-policy.html") {
+            
             let vc = SFSafariViewController(url: url)
-            self.present(vc, animated: true, completion: nil)
+            present(vc, animated: true, completion: nil)
         }
     }
     
@@ -331,106 +339,100 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
     @objc func handleLogin() {
         
         guard let email = emailText.text, let ticket = ticketText.text else { return }
-        self.errorTicket.text = ""
-        self.errorEmail.text = ""
-        self.showLoadingInButton() // Activity indicator shows up
+        errorTicket.text = ""
+        errorEmail.text = ""
+        showLoadingInButton() // Activity indicator shows up
         
         if email == "Email address" {
-            self.errorEmail.text = "Your email has an incorrect format. Try again?"
-            self.borderEmail.backgroundColor = .primary
-            self.emailText.shake()
-            self.borderEmail.shake()
+            errorEmail.text = "Your email has an incorrect format. Try again?"
+            borderEmail.backgroundColor = .primary
+            emailText.shake()
+            borderEmail.shake()
             
-            self.hideLoadingInButton() // Activity indicator is hidden
-            
+            hideLoadingInButton() // Activity indicator is hidden
             return
         }
         
         if ticket.range(of: #"^([0-9]{7}|[0-9]{8})$"#, options: .regularExpression) == nil {
-            self.errorTicket.text = "Ticket reference has 7 to 8 digits. Try again?"
-            self.borderTicket.backgroundColor = .primary
-            self.ticketText.shake()
-            self.borderTicket.shake()
+            errorTicket.text = "Ticket reference has 7 to 8 digits. Try again?"
+            borderTicket.backgroundColor = .primary
+            ticketText.shake()
+            borderTicket.shake()
             
-            self.hideLoadingInButton() // Activity indicator is hidden
-            
+            hideLoadingInButton() // Activity indicator is hidden
             return
         }
         
         // Presents an alert to the user informing the network is unreachable
-        if !ReachabilityManager.shared.reachability.isReachable {
-            
-            self.hideLoadingInButton()
-            
-            let alertController = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you please check your Wifi or Cellular data?", preferredStyle: .alert)
-            let ok = UIAlertAction(title: "Got it!", style: .default, handler: nil)
-            alertController.addAction(ok)
-            present(alertController, animated: true, completion: nil)
-            
+        if ConnectionManager.shared.currentConnectivityStatus != .connected {
+            hideLoadingInButton()
+            showConnectionAlertFor(controller: self)
             return
         }
         
         // All authentificatin is handled by NetworkManager.
         // createUser creates a new user, unless email is in incorrect format or ticket does not have 7 characters.
         // login signs in the user, unless ticket reference doesn't match or email doesn't match
-        NetworkManager.shared.createUserInAuth(email: email, ticket: ticket, onFail: { (errCode) in
+        NetworkManager.shared.createUserInAuth(email: email, ticket: ticket, onFail: { [weak self] (errCode) in
             
             switch errCode {
             case .invalidEmail:
-                self.errorEmail.text = "Your email has an incorrect format. Try again?"
-                self.borderEmail.backgroundColor = .primary
-                self.emailText.shake()
-                self.borderEmail.shake()
+                self?.errorEmail.text = "Your email has an incorrect format. Try again?"
+                self?.borderEmail.backgroundColor = .primary
+                self?.emailText.shake()
+                self?.borderEmail.shake()
                 
             case .weakPassword:
-                self.errorTicket.text = "Ticket reference has 7 to 8 digits. Try again?"
-                self.borderTicket.backgroundColor = .primary
-                self.ticketText.shake()
-                self.borderTicket.shake()
+                self?.errorTicket.text = "Ticket reference has 7 to 8 digits. Try again?"
+                self?.borderTicket.backgroundColor = .primary
+                self?.ticketText.shake()
+                self?.borderTicket.shake()
                 
                 if email == "" {
-                    self.errorEmail.text = "Your email has an incorrect format. Try again?"
-                    self.borderEmail.backgroundColor = .primary
-                    self.emailText.shake()
-                    self.borderEmail.shake()
+                    self?.errorEmail.text = "Your email has an incorrect format. Try again?"
+                    self?.borderEmail.backgroundColor = .primary
+                    self?.emailText.shake()
+                    self?.borderEmail.shake()
                 }
                 
             case .emailAlreadyInUse:
                 
-                NetworkManager.shared.login(email: email, ticket: ticket, onFail: { (errorCode) in
+                NetworkManager.shared.login(email: email, ticket: ticket,
+                onFail: { [weak self] (errorCode) in
                     
-                    switch errorCode {
-                    case .wrongPassword:
-                        self.errorTicket.text = "Your ticket reference doesn't match. Try again?"
-                        self.borderTicket.backgroundColor = .primary
-                        self.ticketText.shake()
-                        self.borderTicket.shake()
-                        
-                    case .invalidEmail:
-                        self.errorEmail.text = "Your email doesn't match. Try again?"
-                        self.borderEmail.backgroundColor = .primary
-                        self.emailText.shake()
-                        self.borderEmail.shake()
-                        
-                    default:
-                        print("Error: \(String(describing: errorCode))")
-                    }
-                    
-                    // If login is successful, sends user to ViewController, depending on if data is already on DB
-                }, onSuccess: {
-                    
-                    self.defaults.set(email, forKey: "email")
-                    self.defaults.set(ticket, forKey: "ticket")
-                    self.defaults.synchronize()
-                    
-                    if let isEmailVerified = NetworkManager.shared.isEmailVerified() {
-                        
-                        if !isEmailVerified {
-                            self.presentAlertWithEmailVerificationError()
+                        switch errorCode {
+                        case .wrongPassword:
+                            self?.errorTicket.text = "Your ticket reference doesn't match. Try again?"
+                            self?.borderTicket.backgroundColor = .primary
+                            self?.ticketText.shake()
+                            self?.borderTicket.shake()
                             
-                        } else {
-                            self.pushExistingUserToViewController()
+                        case .invalidEmail:
+                            self?.errorEmail.text = "Your email doesn't match. Try again?"
+                            self?.borderEmail.backgroundColor = .primary
+                            self?.emailText.shake()
+                            self?.borderEmail.shake()
+                            
+                        default:
+                            print("Error: \(String(describing: errorCode))")
                         }
+                    
+                // If login is successful, sends user to ViewController, depending on if data is already on DB
+                }, onSuccess: { [weak self] in
+                    guard let strongSelf = self else { return }
+                    
+                    userDefaults.updateObject(for: userInfoType.email.rawValue, with: email)
+                    userDefaults.updateObject(for: userInfoType.ticket.rawValue, with: ticket)
+                    
+                    if let isEmailVerified = NetworkManager.shared.isEmailVerified(),
+                        !isEmailVerified {
+                        
+                        emailVerificationErrorAlertFor(controller: strongSelf, handler: { [weak self] in
+                            self?.pushExistingUserToViewController()
+                        })
+                        
+                    } else {
+                        self?.pushExistingUserToViewController()
                     }
                 })
                 
@@ -438,16 +440,19 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
                 print("Error: \(String(describing: errCode))")
             }
             
-            self.hideLoadingInButton() // Activity indicator is hidden
+            self?.hideLoadingInButton() // Activity indicator is hidden
             
-        }) {
+        }) { [weak self] in
             
-            self.defaults.set(email, forKey: "email")
-            self.defaults.set(ticket, forKey: "ticket")
-            self.defaults.synchronize()
+            guard let strongSelf = self else { return }
+            
+            userDefaults.updateObject(for: userInfoType.email.rawValue, with: email)
+            userDefaults.updateObject(for: userInfoType.ticket.rawValue, with: ticket)
             
             // If user creation is successful, sends user to ProfilingViewController
-            self.presentAlertWithEmailVerification()
+            emailVerificationAlertFor(controller: strongSelf, handler: { [weak self] in
+                self?.pushExistingUserToViewController()
+            })
         }
     }
     
@@ -455,59 +460,37 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
     private func pushExistingUserToViewController() {
         
         // Recurring users might have changed phone, so UserDefaults (LoggedIn & Profiled) need to be updated to true
-        UserDefaults.standard.setLoggedIn(value: true)
+        userDefaults.updateObject(for: userDefaults.isLoggedIn, with: true)
         
         // Check if user was created
-        NetworkManager.shared.isUserCreated(onFail: {
+        NetworkManager.shared.isUserCreated(onFail: { [weak self] in
+            self?.pushNewUserToProfilingController()
             
-            self.pushNewUserToProfilingController()
-            
-        }) { (dictionary, id) in
-            
-            self.pushExistingUserToTabController()
+        }) { [weak self] (dictionary, id) in
+            self?.pushExistingUserToTabController()
         }
     }
     
     private func pushExistingUserToTabController() {
         
-        UserDefaults.standard.setProfiled(value: true)
+        userDefaults.updateObject(for: userDefaults.isProfiled, with: true)
         
         let controller = TabBarController()
         controller.modalPresentationStyle = .overFullScreen
         controller.modalTransitionStyle = .crossDissolve
-        self.present(controller, animated: true, completion: nil)
+        present(controller, animated: true, completion: nil)
         
     }
     
     private func pushNewUserToProfilingController() {
         
-        UserDefaults.standard.setLoggedIn(value: true)
-        UserDefaults.standard.setProfiled(value: false)
+        userDefaults.updateObject(for: userDefaults.isLoggedIn, with: true)
+        userDefaults.updateObject(for: userDefaults.isProfiled, with: false)
         
         let controller = ProfilingController()
         controller.modalPresentationStyle = .overFullScreen
         controller.modalTransitionStyle = .crossDissolve
-        self.present(controller, animated: true, completion: nil)
-    }
-    
-    private func presentAlertWithEmailVerification() {
-        
-        let alertVC = UIAlertController(title: "Are you, you?", message: "Yap, we need to confirm you're you, so we've send you an email to \(String(describing: defaults.value(forKey: "email")!)) 📩 Please make sure you verify your account whenever possible.", preferredStyle: .alert)
-        alertVC.addAction(UIAlertAction(title: "Got it", style: .default, handler: { (action) in
-            self.pushNewUserToProfilingController()
-        }))
-        
-        present(alertVC, animated: true, completion: nil)
-    }
-    
-    private func presentAlertWithEmailVerificationError() {
-        
-        let alertVC = UIAlertController(title: "We still don't know if you're you!", message: "We sent you another verification email to \(String(describing: defaults.value(forKey: "email")!)). Please verify your account within 1 bussiness day, otherwise your account will be put on hold 🚫", preferredStyle: .alert)
-        alertVC.addAction(UIAlertAction(title: "Upss, doing it now! 😅", style: .default, handler: { (action) in
-            self.pushExistingUserToViewController()
-        }))
-        
-        present(alertVC, animated: true, completion: nil)
+        present(controller, animated: true, completion: nil)
     }
     
     // Show activity indicator (spinner)
@@ -589,30 +572,31 @@ extension SignUpController: UITextViewDelegate {
     }
 }
 
-// Making LoginController to conform to NetworkStatusListener protocol
-extension SignUpController: NetworkStatusListener {
+// MARK: - ConnectionManager
+
+extension SignUpController {
     
-    public func networkStatusDidChange(status: Reachability.NetworkStatus) {
+    func startMonitorConnectivity() {
         
-        if status == .notReachable {
+        NetworkManager.shared.setOnlineObserver(onConnected: { [weak self] in
             
             DispatchQueue.main.async {
-                self.loginButton.isEnabled = false
-                self.loginButton.alpha = 0.4
+                self?.loginButton.isEnabled = true
+                self?.loginButton.alpha = 1
             }
             
-            // Presents an alert to the user informing the network is unreachable
-            let alertController = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you please check your Wifi or Cellular data?", preferredStyle: .alert)
-            let ok = UIAlertAction(title: "Got it!", style: .default, handler: nil)
-            alertController.addAction(ok)
-            present(alertController, animated: true, completion: nil)
-            
-        } else {
+        }, onDisconnected: { [weak self] in
+            guard let strongSelf = self else { return }
             
             DispatchQueue.main.async {
-                self.loginButton.isEnabled = true
-                self.loginButton.alpha = 1
+                strongSelf.loginButton.isEnabled = false
+                strongSelf.loginButton.alpha = 0.4
+                showConnectionAlertFor(controller: strongSelf)
             }
-        }
+        })
+    }
+    
+    func stopMonitorConnectivity() {
+        NetworkManager.shared.removeOnlineObserver()
     }
 }

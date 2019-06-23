@@ -10,9 +10,7 @@ import UIKit
 
 class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewControllerDelegate {
     
-    // Custom initializers
-    let defaults = UserDefaults.standard
-    
+    // Custom initializers    
     private let profilingPages = [
         ProfilingPage(title: "Thanks for signing in!",
                       description: "To connect with other attendees, you need to provide your real name:",
@@ -66,8 +64,8 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         return b
     }()
     
-    private lazy var pageControl: PageControlWithBars = {
-        let pc = PageControlWithBars()
+    private lazy var pageControl: PageControl = {
+        let pc = PageControl()
         pc.currentPage = currentPage
         pc.numberOfPages = profilingPages.count
         pc.spacing = 4.0
@@ -231,8 +229,19 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        // Remove keyboard notifications
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    deinit {
+        print("Reclaimed memory for ProfilingController")
     }
     
     // MARK: Custom functions
@@ -289,11 +298,11 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
             // Fades in answerTextField
             if nextPage != profilingPages.count - 1 {
                 
-                UIView.animate(withDuration: 0.3, animations: {
-                    self.answerText.alpha = 1.0
+                UIView.animate(withDuration: 0.3, animations: { [weak self] in
+                    self?.answerText.alpha = 1.0
                     
-                }, completion: { (true) in
-                    self.labelPlaceholder.isHidden = false
+                }, completion: { [weak self] (true) in
+                    self?.labelPlaceholder.isHidden = false
                 })
             } else {
                 
@@ -316,25 +325,23 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         
         switch currentPage {
         case 0:
-            defaults.set(answer, forKey: userInfoType.name.rawValue)
+            userDefaults.updateObject(for: userInfoType.name.rawValue, with: answer)
             
         case 1:
-            defaults.set(answer, forKey: userInfoType.occupation.rawValue)
+            userDefaults.updateObject(for: userInfoType.occupation.rawValue, with: answer)
             
         case 2:
-            defaults.set(answer, forKey: userInfoType.location.rawValue)
+            userDefaults.updateObject(for: userInfoType.location.rawValue, with: answer)
             
             // Now we're done with the mandatory fields, let's create the user!
             createUser()
             
         case 3:
-            defaults.set(imageURL, forKey: userInfoType.profileImageURL.rawValue)
+            userDefaults.updateObject(for: userInfoType.profileImageURL.rawValue, with: imageURL)
             
         default:
             print("Ups, something went wrong here!")
         }
-        
-        defaults.synchronize()
     }
     
     // Sends user to ProfilingController with custom transition
@@ -344,13 +351,12 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         self.answerText.resignFirstResponder()
         
         // Stores default booleans for the walkthrough / onboarding
-        let defaults = UserDefaults.standard
-        defaults.setProfiled(value: true)
+        userDefaults.updateObject(for: userDefaults.isProfiled, with: true)
         
-        defaults.setCommunityOnboarded(value: false)
-        defaults.setConnectOnboarded(value: false)
-        defaults.setEventOnboarded(value: false)
-        defaults.setProfileOnboarded(value: false)
+        userDefaults.updateObject(for: userDefaults.isCommunityOnboarded, with: false)
+        userDefaults.updateObject(for: userDefaults.isConnectOnboarded, with: false)
+        userDefaults.updateObject(for: userDefaults.isEventOnboarded, with: false)
+        userDefaults.updateObject(for: userDefaults.isProfileOnboarded, with: false)
         
         // Sends user to TabBarController
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -364,15 +370,16 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
     
     func createUser() {
         
-        let email = defaults.value(forKey: userInfoType.email.rawValue) as! String
-        let ticket = defaults.value(forKey: userInfoType.ticket.rawValue) as! String
-        let name = defaults.value(forKey: userInfoType.name.rawValue) as! String
-        let occupation = defaults.value(forKey: userInfoType.occupation.rawValue) as! String
-        let location = defaults.value(forKey: userInfoType.location.rawValue) as! String
+        let email = userDefaults.string(for: userInfoType.email.rawValue) ?? ""
+        let ticket = userDefaults.string(for: userInfoType.ticket.rawValue) ?? ""
+        let name = userDefaults.string(for: userInfoType.name.rawValue) ?? ""
+        let occupation = userDefaults.string(for: userInfoType.occupation.rawValue) ?? ""
+        let location = userDefaults.string(for: userInfoType.location.rawValue) ?? ""
         
-        NetworkManager.shared.createUserInDB(email: email, ticket: ticket, name: name, occupation: occupation, location: location) {
-            print(NetworkManager.shared.getUID()!)
-        }
+        NetworkManager.shared.createUserInDB(email: email, ticket: ticket, name: name, occupation: occupation, location: location, onSuccess: nil)
+        
+        // Print user UID
+        print(NetworkManager.shared.getUID()!)
     }
     
     // MARK : KEYBOARD-related functions
@@ -476,28 +483,30 @@ extension ProfilingController: UIImagePickerControllerDelegate, UINavigationCont
             activityIndicator.startAnimating()
             
             NetworkManager.shared.removesImageFromStorage(folder: "profile_images") {
-                
-                NetworkManager.shared.storesImageInStorage(folder: "profile_images", image: image) { (imageURL) in
-             
-                    self.imageURL = imageURL
+
+                NetworkManager.shared.storesImageInStorage(folder: "profile_images", image: image,
+                    onSuccess: { [weak self] (imageURL) in
                     
-                    NetworkManager.shared.register(value: imageURL, for: userInfoType.profileImageURL.rawValue, in: uid!)
+                        self?.imageURL = imageURL
+                        NetworkManager.shared.register(value: imageURL, for: userInfoType.profileImageURL.rawValue, in: uid!)
+                        
+                        self?.activityIndicator.isHidden = true
+                        self?.activityIndicator.stopAnimating()
+                        self?.profileImage.alpha = 1.0
+                        
+                        self?.profileImage.contentMode = .scaleAspectFill
+                        self?.profileImage.image = image
                     
-                    self.activityIndicator.isHidden = true
-                    self.activityIndicator.stopAnimating()
-                    self.profileImage.alpha = 1.0
-                    
-                    self.profileImage.contentMode = .scaleAspectFill
-                    self.profileImage.image = image
-                }
+                    }, onFailure: { [weak self] in
+                        
+                        self?.activityIndicator.isHidden = true
+                        self?.activityIndicator.stopAnimating()
+                        self?.profileImage.alpha = 1.0
+                        
+                        self?.profileImage.contentMode = .scaleAspectFill
+                        self?.profileImage.image = image
+                })
             }
-            
-            self.activityIndicator.isHidden = true
-            self.activityIndicator.stopAnimating()
-            self.profileImage.alpha = 1.0
-            
-            self.profileImage.contentMode = .scaleAspectFill
-            self.profileImage.image = image
         }
         
         picker.dismiss(animated: true, completion: nil)

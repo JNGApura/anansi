@@ -8,13 +8,13 @@
 
 import UIKit
 
-protocol StartNewChatDelegate {
+protocol StartNewChatDelegate: class {
     func showChatController(user: User)
 }
 
 class NewChatController: UIViewController {
     
-    var delegate: StartNewChatDelegate?
+    weak var delegate: StartNewChatDelegate?
     
     var suggestedSections = [String]()
     
@@ -98,6 +98,10 @@ class NewChatController: UIViewController {
         self.definesPresentationContext = true
     }
     
+    deinit {
+        print("NewChatController: Memory is freeee")
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -134,7 +138,7 @@ class NewChatController: UIViewController {
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+        super.viewDidDisappear(animated)
         
         NotificationCenter.default.removeObserver(self)
     }
@@ -163,26 +167,26 @@ class NewChatController: UIViewController {
     
     private func fetchMyInterests() {
         
-        if let interests = UserDefaults.standard.value(forKey: userInfoType.interests.rawValue) as? [String] {
+        if let interests = userDefaults.stringList(for: userInfoType.interests.rawValue) {
             myInterests = interests
         }
     }
     
     private func fetchRecentlyViewedUsers() {
         
-        if let recentlyViewed = UserDefaults.standard.value(forKey: "recentlyViewedIDs") as? [String] {
+        if let recentlyViewed = userDefaults.stringList(for: userDefaults.recentlyViewedIDs) {
             myRecentViewIDs = recentlyViewed
         }
     }
     
     func fetchUsers() {
         
-        NetworkManager.shared.fetchUsers(onAdd: { (dictionary, userID) in
+        NetworkManager.shared.fetchUsers(onAdd: { [weak self] (dictionary, userID) in
             
             if userID != NetworkManager.shared.getUID() {
                 let user = User()
                 user.set(dictionary: dictionary, id: userID)
-                self.users.append(user)
+                self?.users.append(user)
             }
             
         }, onChange: nil, onRemove: nil)
@@ -190,11 +194,12 @@ class NewChatController: UIViewController {
     
     func fetchTrendingUsers() {
         
-        NetworkManager.shared.fetchTrendingUsers(limited: 5, onSuccess: { (dictionary, userID) in
+        NetworkManager.shared.fetchTrendingUsers(limited: 5, onSuccess: { [weak self] (dictionary, userID) in
+            
             if userID != NetworkManager.shared.getUID() {
                 let user = User()
                 user.set(dictionary: dictionary, id: userID)
-                self.trendingUsers.append(user)
+                self?.trendingUsers.append(user)
             }
         })
     }

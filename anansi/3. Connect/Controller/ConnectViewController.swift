@@ -7,12 +7,8 @@
 //
 
 import UIKit
-import ReachabilitySwift
 
 class ConnectViewController: UIViewController {
-    
-    var presentTransition: UIViewControllerAnimatedTransitioning?
-    var dismissTransition: UIViewControllerAnimatedTransitioning?
     
     private var users = [String : User]()
     
@@ -92,8 +88,6 @@ class ConnectViewController: UIViewController {
         return v
     }()
     
-    let reachability = Reachability()!
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -116,7 +110,7 @@ class ConnectViewController: UIViewController {
             
             tableView.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
             tableView.widthAnchor.constraint(equalTo: headerView.widthAnchor),
-            tableView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 12.0),
+            tableView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             CTAbutton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Const.marginSafeArea + 4.0),
@@ -132,37 +126,36 @@ class ConnectViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Handles network reachablibity
-        startMonitoringNetwork()
-        
         // Placeholder message for empty state (or new chat page)
+        tableView.beginUpdates()
         CTA = Const.emptystateTitle[Int.random(in: 0 ..< Const.emptystateTitle.count)]
+        tableView.endUpdates()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if !UserDefaults.standard.isConnectOnboarded() {
+        // Handles network connectivity
+        startMonitorConnectivity()
+        
+        if !userDefaults.bool(for: userDefaults.isConnectOnboarded) {
             
             // Presents bottom sheet
-            let controller = BottomSheetView()
-            controller.setContent(title: "Connect",
-                                  description: "Get into authentic discussions and contribute to the dissemination of bold ideas here.")
-            controller.setIcon(image: UIImage(named: "Connect")!.withRenderingMode(.alwaysTemplate))
+            let controller = BottomSheetView(title: "Connect", description: "Get into authentic discussions and contribute to the dissemination of bold ideas here.", image: UIImage(named: "Connect")!.withRenderingMode(.alwaysTemplate))
             controller.modalPresentationStyle = .overFullScreen
             controller.modalTransitionStyle = .crossDissolve
             present(controller, animated: true, completion: nil)
             
             // Sets CommunityOnboarded to true
-            UserDefaults.standard.setConnectOnboarded(value: true)
+            userDefaults.updateObject(for: userDefaults.isConnectOnboarded, with: true)
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+        super.viewWillDisappear(animated)
         
-        // Stop NetworkStatusListener
-        reachability.stopNotifier()
+        // Handles network reachablibity
+        stopMonitorConnectivity()
     }
     
     override func didReceiveMemoryWarning() {
@@ -310,6 +303,12 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         
         let delete = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
             
+            // Handle disconnect while deleting
+            if ConnectionManager.shared.currentConnectivityStatus == .disconnected {
+                showConnectionAlertFor(controller: self)
+                return
+            }
+            
             let chat = self.latestChats[indexPath.row]
             if let receiverID = chat.partnerID() {
                 NetworkManager.shared.deleteUserMessageNode(from: self.myID!, to: receiverID, onDelete: nil)
@@ -333,59 +332,6 @@ extension ConnectViewController: StartNewChatDelegate {
     func showChatController(user: User) {
         
         showChatLogController(user: user)
-    }
-}
-
-// MARK: - NetworkStatusListener | Handles network reachability
-
-extension ConnectViewController {
-    
-    func startMonitoringNetwork() {
-        
-        reachability.whenUnreachable = { reachability in
-            DispatchQueue.main.async { self.showAlert() }
-        }
-        
-        reachability.whenReachable = { reachability in
-            DispatchQueue.main.async { self.hideAlert() }
-        }
-        
-        do {
-            try reachability.startNotifier()
-        } catch {
-            print("Unable to start notifier")
-        }
-        
-        if reachability.isReachable {
-            DispatchQueue.main.async { self.hideAlert() }
-        } else {
-            DispatchQueue.main.async { self.showAlert() }
-        }
-    }
-    
-    func showAlert() {
-        
-        headerView.showAlertButton()
-        
-        if !UserDefaults.standard.offlineAlertWasShown() {
-            UserDefaults.standard.setOfflineAlertShown(value: true)
-            showOfflineAlert()
-        }
-    }
-    
-    func hideAlert() {
-        
-        headerView.hideAlertButton()
-        
-        UserDefaults.standard.setOfflineAlertShown(value: false)
-    }
-    
-    @objc func showOfflineAlert() {
-        
-        let alert = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you check your data or wifi connection?", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "On it!", style: .default , handler: nil))
-        
-        present(alert, animated: true, completion: nil)
     }
 }
 
@@ -537,5 +483,43 @@ extension ConnectViewController {
             self.typingUserID = String()
             self.tableView.reloadData()
         })
+    }
+}
+
+// MARK: - ConnectionManager
+
+extension ConnectViewController {
+    
+    func startMonitorConnectivity() {
+        
+        NetworkManager.shared.setOnlineObserver(onConnected: { [weak self] in
+            DispatchQueue.main.async { self?.hideAlert() }
+        }, onDisconnected: { [weak self] in
+            DispatchQueue.main.async { self?.showAlert() }
+        })
+    }
+    
+    func stopMonitorConnectivity() {
+        NetworkManager.shared.removeOnlineObserver()
+    }
+    
+    func showAlert() {
+        
+        headerView.showAlertButton()
+        
+        if !userDefaults.bool(for: userDefaults.wasOfflineAlertShown) {
+            userDefaults.updateObject(for: userDefaults.wasOfflineAlertShown, with: true)
+            showOfflineAlert()
+        }
+    }
+    
+    func hideAlert() {
+        
+        headerView.hideAlertButton()
+        userDefaults.updateObject(for: userDefaults.wasOfflineAlertShown, with: false)
+    }
+    
+    @objc func showOfflineAlert() {
+        showConnectionAlertFor(controller: self)
     }
 }

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import ReachabilitySwift
 import SafariServices
 
 class LandingController: UIViewController {
@@ -99,13 +98,20 @@ class LandingController: UIViewController {
             hasTicketReferenceButton.heightAnchor.constraint(equalToConstant: Const.buttonHeight),
             hasTicketReferenceButton.widthAnchor.constraint(equalToConstant: 246.0)
         ])
-        
-        // Sets "isOnboarded" to true in UserDefaults
-        //UserDefaults.standard.setOnboarded(value: true)
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        print("bye")
+    }
+    
+    deinit {
+        print("Reclaimed memory for LandingController")
     }
     
     // MARK: Custom functions
@@ -115,15 +121,17 @@ class LandingController: UIViewController {
         
         let url = URL(string: "https://www.feverup.com/m/72092/?ref=6405")
         let vc = SFSafariViewController(url: url!)
-        self.present(vc, animated: true, completion: nil)
+        present(vc, animated: true, completion: nil)
     }
     
     // Sends user to SignUpController with custom transition
     @objc func toSignUp() {
-    
+        
         let controller = SignUpController()
         controller.modalPresentationStyle = .overFullScreen
         controller.modalTransitionStyle = .crossDissolve
         present(controller, animated: true, completion: nil)
+        
+        //dismiss(animated: true, completion: nil)
     }
 }

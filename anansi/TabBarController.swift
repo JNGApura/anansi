@@ -12,7 +12,7 @@ class TabBarController: UITabBarController {
 
     // Custom initializers
     
-    var tabList = ["Event", "Community", "Connect"]
+    var tabList = ["Community", "Connect", "Event"]
     
     fileprivate var tabBarViewControllers = [UINavigationController]()
     

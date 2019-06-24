@@ -10,19 +10,20 @@ import UIKit
 
 extension UICollectionView {
     
-    func scrollToBottom() {
+    func scrollToBottom(at position: UICollectionView.ScrollPosition) {
         
         var indexPath: IndexPath?
         
-        if self.numberOfSections > 1 {
-            let lastSection = self.numberOfSections - 1
+        if numberOfSections > 1 {
+            let lastSection = numberOfSections - 1
             indexPath = IndexPath(item: numberOfItems(inSection: lastSection) - 1, section: lastSection)
+            
         } else if numberOfItems(inSection: 0) > 0 && numberOfSections == 1 {
             indexPath = IndexPath(item: numberOfItems(inSection: 0) - 1, section: 0)
         }
         
         if let indexPath = indexPath {
-            scrollToItem(at: indexPath, at: .bottom, animated: true)
+            scrollToItem(at: indexPath, at: position, animated: true)
         }
     }
 }

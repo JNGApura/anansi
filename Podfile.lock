@@ -1,6 +1,7 @@
 PODS:
   - Crashlytics (3.13.0):
     - Fabric (~> 1.10.0)
+  - CropViewController (2.5.0)
   - Fabric (1.10.0)
   - Firebase/Auth (5.20.2):
     - Firebase/CoreOnly
@@ -94,6 +95,7 @@ PODS:
 
 DEPENDENCIES:
   - Crashlytics (~> 3.13.0)
+  - CropViewController
   - Fabric (~> 1.10.0)
   - Firebase/Auth
   - Firebase/Core
@@ -105,6 +107,7 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Crashlytics
+    - CropViewController
     - Fabric
     - Firebase
     - FirebaseAnalytics
@@ -126,6 +129,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Crashlytics: 1f5f752c7feac0add0cc1774756f96444fa3b1a7
+  CropViewController: 6c962d6fb264cc5cb325b622d5029d50c6c43e72
   Fabric: 09de1e053eb7dc415593166ad3e53d4c88123405
   Firebase: 0c8cf33f266410c61ab3e2265cfa412200351d9c
   FirebaseAnalytics: ece1aa57a4f43c64d53a648b5a5e05151aae947b
@@ -145,6 +149,6 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
 
-PODFILE CHECKSUM: 8ea4b9ee118d53f7b15822ebfaa4aa2ef54b8dab
+PODFILE CHECKSUM: 4aa6cbc3652110b44fd76a21572fd8d7e503b318
 
 COCOAPODS: 1.6.1

@@ -7,8 +7,14 @@
 //
 
 import UIKit
+import CropViewController
 
 class BasicInfoViewController: UIViewController, UIScrollViewDelegate {
+    
+    // Image picker
+    
+    private var picker: UIImagePickerController!
+    private weak var parentController: UIViewController?
     
     // Data
     weak var delegate: SettingsViewController?
@@ -253,13 +259,16 @@ extension BasicInfoViewController: UIImagePickerControllerDelegate, UINavigation
     
     @objc func chooseProfileImage() {
         
-        let picker = UIImagePickerController()
+        parentController = self
         
+        picker = UIImagePickerController()
         picker.delegate = self
-        picker.allowsEditing = true
+        picker.allowsEditing = false
+        picker.modalPresentationStyle = .overFullScreen
+        picker.modalPresentationCapturesStatusBarAppearance = true
         picker.navigationBar.isTranslucent = false
         
-        present(picker, animated: true, completion: nil)
+        parentController?.present(picker, animated: true, completion: nil)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -275,51 +284,69 @@ extension BasicInfoViewController: UIImagePickerControllerDelegate, UINavigation
         
         if let image = selectedImage {
             
-            let uid = user?.getValue(forField: .id) as! String
-
-            let folder = "profile_images"
-            
-            profileImage.alpha = 0.5
-            activityIndicator.isHidden = false
-            activityIndicator.startAnimating()
-            
-            NetworkManager.shared.removesImageFromStorage(folder: folder) {
-                
-                NetworkManager.shared.storesImageInStorage(folder: "profile_images", image: image,
-                    onSuccess: { [weak self] (imageURL) in
-                                                            
-                        NetworkManager.shared.register(value: imageURL, for: "profileImageURL", in: uid)
-                        
-                        // The following is not necessary since I'm fetching everything when we're back to profile
-                        // self.user?.setValue(value: imageURL, for: .profileImageURL)
-                        
-                        self?.activityIndicator.isHidden = true
-                        self?.activityIndicator.stopAnimating()
-                        self?.profileImage.alpha = 1.0
-                        
-                        self?.profileImage.contentMode = .scaleAspectFill
-                        self?.profileImage.image = image
-                        
-                        self?.user?.setValue(value: imageURL, for: .profileImageURL)
-                        self?.user?.saveInDisk(value: imageURL, for: .profileImageURL)
-                                                            
-                    }, onFailure: { [weak self] in
-                        
-                        self?.activityIndicator.isHidden = true
-                        self?.activityIndicator.stopAnimating()
-                        self?.profileImage.alpha = 1.0
-                        
-                        self?.profileImage.contentMode = .scaleAspectFill
-                        self?.profileImage.image = image
-                })
-            }
+            let cropController = CropViewController(croppingStyle: .circular, image: image)
+            cropController.delegate = self
+            picker.pushViewController(cropController, animated: true)
         }
-        
-        picker.dismiss(animated: true, completion: nil)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
 
-        dismiss(animated: true, completion: nil)
+        parentController?.dismiss(animated: true, completion: nil)
+        parentController = nil
+    }
+}
+
+extension BasicInfoViewController: CropViewControllerDelegate {
+    
+    
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+        
+        cropViewController.delegate = nil
+        
+        let uid = user?.getValue(forField: .id) as! String
+        
+        profileImage.alpha = 0.5
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+        
+        NetworkManager.shared.removesImageFromStorage(folder: "profile_images") {
+            
+            NetworkManager.shared.storesImageInStorage(folder: "profile_images", image: image,
+                onSuccess: { [weak self] (imageURL) in
+                                                        
+                    NetworkManager.shared.register(value: imageURL, for: userInfoType.profileImageURL.rawValue, in: uid)
+                    
+                    // The following is not necessary since I'm fetching everything when we're back to profile
+                    // self.user?.setValue(value: imageURL, for: .profileImageURL)
+                    
+                    self?.activityIndicator.isHidden = true
+                    self?.activityIndicator.stopAnimating()
+                    self?.profileImage.alpha = 1.0
+                    
+                    self?.profileImage.contentMode = .scaleAspectFill
+                    self?.profileImage.image = image
+                    
+                    self?.user?.setValue(value: imageURL, for: .profileImageURL)
+                    self?.user?.saveInDisk(value: imageURL, for: .profileImageURL)
+                                                        
+                }, onFailure: { [weak self] in
+                    
+                    self?.activityIndicator.isHidden = true
+                    self?.activityIndicator.stopAnimating()
+                    self?.profileImage.alpha = 1.0
+                    
+                    self?.profileImage.contentMode = .scaleAspectFill
+                    self?.profileImage.image = image
+            })
+        }
+        
+        parentController?.dismiss(animated: true, completion: nil)
+        parentController = nil
+    }
+    
+    func cropViewController(_ cropViewController: CropViewController, didFinishCancelled cancelled: Bool) {
+        
+        picker.popViewController(animated: true)
     }
 }

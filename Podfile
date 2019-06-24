@@ -14,6 +14,7 @@ target 'anansi' do
   pod 'Fabric', '~> 1.10.0'
   pod 'Crashlytics', '~> 3.13.0'
   pod 'Kingfisher', '~> 5.0'
+  pod 'CropViewController'
 
   target 'anansiTests' do
     inherit! :search_paths

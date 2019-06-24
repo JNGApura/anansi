@@ -7,8 +7,13 @@
 //
 
 import UIKit
+import CropViewController
 
 class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewControllerDelegate {
+    
+    // Image picker
+    private var picker: UIImagePickerController!
+    private weak var parentController: UIViewController?
     
     // Custom initializers    
     private let profilingPages = [
@@ -137,6 +142,7 @@ class ProfilingController: UIViewController, UIScrollViewDelegate, UIPageViewCon
         pc.view.translatesAutoresizingMaskIntoConstraints = false
         return pc
     }()
+    
     
     // MARK: View Lifecycle
     
@@ -454,13 +460,13 @@ extension ProfilingController: UIImagePickerControllerDelegate, UINavigationCont
     
     @objc func chooseProfileImage() {
         
-        let picker = UIImagePickerController()
-        
+        picker = UIImagePickerController()
         picker.delegate = self
-        picker.allowsEditing = true
-        picker.navigationBar.isTranslucent = false
+        picker.allowsEditing = false
+        picker.modalPresentationStyle = .overFullScreen
+        picker.modalPresentationCapturesStatusBarAppearance = true
         
-        present(picker, animated: true, completion: nil)
+        parentController?.present(picker, animated: true, completion: nil)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -476,44 +482,64 @@ extension ProfilingController: UIImagePickerControllerDelegate, UINavigationCont
         
         if let image = selectedImage {
             
-            let uid = NetworkManager.shared.getUID()
-
-            profileImage.alpha = 0.5
-            activityIndicator.isHidden = false
-            activityIndicator.startAnimating()
-            
-            NetworkManager.shared.removesImageFromStorage(folder: "profile_images") {
-
-                NetworkManager.shared.storesImageInStorage(folder: "profile_images", image: image,
-                    onSuccess: { [weak self] (imageURL) in
-                    
-                        self?.imageURL = imageURL
-                        NetworkManager.shared.register(value: imageURL, for: userInfoType.profileImageURL.rawValue, in: uid!)
-                        
-                        self?.activityIndicator.isHidden = true
-                        self?.activityIndicator.stopAnimating()
-                        self?.profileImage.alpha = 1.0
-                        
-                        self?.profileImage.contentMode = .scaleAspectFill
-                        self?.profileImage.image = image
-                    
-                    }, onFailure: { [weak self] in
-                        
-                        self?.activityIndicator.isHidden = true
-                        self?.activityIndicator.stopAnimating()
-                        self?.profileImage.alpha = 1.0
-                        
-                        self?.profileImage.contentMode = .scaleAspectFill
-                        self?.profileImage.image = image
-                })
-            }
+            let cropController = CropViewController(croppingStyle: .circular, image: image)
+            cropController.delegate = self
+            picker.pushViewController(cropController, animated: true)
         }
-        
-        picker.dismiss(animated: true, completion: nil)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         //print("Image picker was canceled")
-        dismiss(animated: true, completion: nil)
+        parentController?.dismiss(animated: true, completion: nil)
+        parentController = nil
+    }
+}
+
+extension ProfilingController: CropViewControllerDelegate {
+    
+    
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+        
+        cropViewController.delegate = nil
+        
+        let uid = NetworkManager.shared.getUID()
+        
+        profileImage.alpha = 0.5
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+        
+        NetworkManager.shared.removesImageFromStorage(folder: "profile_images") {
+            
+            NetworkManager.shared.storesImageInStorage(folder: "profile_images", image: image,
+                onSuccess: { [weak self] (imageURL) in
+                                                        
+                    self?.imageURL = imageURL
+                    NetworkManager.shared.register(value: imageURL, for: userInfoType.profileImageURL.rawValue, in: uid!)
+                    
+                    self?.activityIndicator.isHidden = true
+                    self?.activityIndicator.stopAnimating()
+                    self?.profileImage.alpha = 1.0
+                    
+                    self?.profileImage.contentMode = .scaleAspectFill
+                    self?.profileImage.image = image
+                                                        
+                }, onFailure: { [weak self] in
+                    
+                    self?.activityIndicator.isHidden = true
+                    self?.activityIndicator.stopAnimating()
+                    self?.profileImage.alpha = 1.0
+                    
+                    self?.profileImage.contentMode = .scaleAspectFill
+                    self?.profileImage.image = image
+            })
+        }
+        
+        parentController?.dismiss(animated: true, completion: nil)
+        parentController = nil
+    }
+    
+    func cropViewController(_ cropViewController: CropViewController, didFinishCancelled cancelled: Bool) {
+        
+        picker.popViewController(animated: true)
     }
 }

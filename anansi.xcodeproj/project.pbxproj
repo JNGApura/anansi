@@ -80,6 +80,7 @@
 		2CA98C4F22BFE882001E0D51 /* RevealableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C4E22BFE882001E0D51 /* RevealableView.swift */; };
 		2CA98C5122BFE899001E0D51 /* RevealableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C5022BFE899001E0D51 /* RevealableCollectionViewCell.swift */; };
 		2CA98C5322BFE995001E0D51 /* TimestampView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C5222BFE995001E0D51 /* TimestampView.swift */; };
+		2CA98C5522C0D677001E0D51 /* WorkItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C5422C0D677001E0D51 /* WorkItem.swift */; };
 		2CB6AFE62264122400E1702E /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6AFE52264122400E1702E /* SettingsTableViewCell.swift */; };
 		2CB6AFE8226481EC00E1702E /* ScheduleInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6AFE7226481EC00E1702E /* ScheduleInfoTableViewCell.swift */; };
 		2CBE2EC120351967009E5268 /* UIView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBE2EC020351967009E5268 /* UIView+.swift */; };
@@ -207,6 +208,7 @@
 		2CA98C4E22BFE882001E0D51 /* RevealableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevealableView.swift; sourceTree = "<group>"; };
 		2CA98C5022BFE899001E0D51 /* RevealableCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevealableCollectionViewCell.swift; sourceTree = "<group>"; };
 		2CA98C5222BFE995001E0D51 /* TimestampView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimestampView.swift; sourceTree = "<group>"; };
+		2CA98C5422C0D677001E0D51 /* WorkItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkItem.swift; sourceTree = "<group>"; };
 		2CB6AFE52264122400E1702E /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
 		2CB6AFE7226481EC00E1702E /* ScheduleInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleInfoTableViewCell.swift; sourceTree = "<group>"; };
 		2CBE2EC020351967009E5268 /* UIView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+.swift"; sourceTree = "<group>"; };
@@ -462,6 +464,7 @@
 				2C5BF2AF22A460C500B3D4F9 /* TopBar.swift */,
 				2C79C8F62036293900FFCF70 /* UICollectionViewAlignedLayout.swift */,
 				2C7F6F0D202595C1008AB0CD /* UserDefaultsManager.swift */,
+				2CA98C5422C0D677001E0D51 /* WorkItem.swift */,
 			);
 			path = CustomClasses;
 			sourceTree = "<group>";
@@ -1036,6 +1039,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-anansi/Pods-anansi-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/CropViewController/CropViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
@@ -1045,6 +1049,7 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CropViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
@@ -1118,6 +1123,7 @@
 				2C6D401B2287894F00FCF1F6 /* UserTableCell.swift in Sources */,
 				2C7F6F1420259604008AB0CD /* UIFont+.swift in Sources */,
 				2C42950120269C1900724385 /* UIViewController+.swift in Sources */,
+				2CA98C5522C0D677001E0D51 /* WorkItem.swift in Sources */,
 				2C5A5500204D207C006DB37A /* ReportConfirmationView.swift in Sources */,
 				2C87DACF200CA072004F8730 /* DateString.swift in Sources */,
 				2C7F6F1A2025D902008AB0CD /* ChatAccessoryView.swift in Sources */,

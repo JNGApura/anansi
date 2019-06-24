@@ -9,13 +9,15 @@
 import UIKit
 import SafariServices
 
-protocol SendsUserBackProtocol {
+protocol SendsUserBackProtocol: class {
     func sendsUserback(user: User)
 }
 
 class SettingsViewController: UIViewController {
     
     // Custom initializers
+    weak var delegate: SendsUserBackProtocol?
+    
     private let identifier = "SettingsCell"
     
     private var items = [SettingsRow]()
@@ -132,6 +134,7 @@ class SettingsViewController: UIViewController {
     
     @objc func back() {
         
+        delegate?.sendsUserback(user: user!)
         navigationController?.popViewController(animated: true)
     }
     

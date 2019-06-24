@@ -265,6 +265,7 @@ class ProfileViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
+        // Remove keyboard observers
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -441,6 +442,7 @@ class ProfileViewController: UIViewController {
     @objc func navigateToSettingsViewController(_ sender: UIBarButtonItem){
         
         let settingsController = SettingsViewController()
+        settingsController.delegate = self
         settingsController.user = user
 
         view.endEditing(true)
@@ -805,4 +807,14 @@ extension ProfileViewController: UIScrollViewDelegate {
         
         backgroundImage.layoutIfNeeded()
     }
+}
+
+// MARK: SendsUserBackProtocol
+
+extension ProfileViewController: SendsUserBackProtocol {
+    
+    func sendsUserback(user: User) {
+        self.user = user
+    }
+    
 }

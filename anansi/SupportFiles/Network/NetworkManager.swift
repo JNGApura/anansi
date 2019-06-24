@@ -21,7 +21,6 @@ class NetworkManager {
     // Databases
     private let userDatabase = Database.database().reference().child("users")
     private let userMessagesDatabase = Database.database().reference().child("users-messages")
-    private let isTypingDatabase = Database.database().reference().child("users-istyping")
     private let messagesDatabase = Database.database().reference().child("messages")
     private let partnerDatabase = Database.database().reference().child("partners")
     private let feedbackDatabase = Database.database().reference().child("feedback")
@@ -529,12 +528,12 @@ class NetworkManager {
         }
     }
     
-    // MARK: - ISTYPING DATABASE
+    // MARK: - ISTYPING INSTANCES
     
     // Create typing instance
     func createTypingInstance(from userID: String, to partnerID: String, onSucess: (() -> Void)?) {
         
-        isTypingDatabase.child(userID).updateChildValues(["isTypingTo" : partnerID] as [String : Any]) { (error, userDatabase) in
+        userDatabase.child(userID).updateChildValues(["isTypingTo" : partnerID] as [String : Any]) { (error, userDatabase) in
             if error != nil {
                 print(error!.localizedDescription)
                 return
@@ -542,13 +541,13 @@ class NetworkManager {
             onSucess?()
         }
         
-        isTypingDatabase.child(userID).onDisconnectRemoveValue()
+        userDatabase.child(userID).onDisconnectRemoveValue()
     }
     
     // Remove typing instance
     func removeTypingInstance(from userID: String, onSucess: (() -> Void)?) {
         
-        isTypingDatabase.child(userID).removeValue { (error, ref) in
+        userDatabase.child(userID).child("isTypingTo").removeValue { (error, ref) in
             if error != nil {
                 print(error!.localizedDescription)
                 return
@@ -562,7 +561,7 @@ class NetworkManager {
     
     func observeTypingInstances(from userID: String, onTyping: ((String) -> Void)?, onNotTyping: (() -> Void)?) {
         
-        isTypingObserver = isTypingDatabase.child(userID).child("isTypingTo").observe(.value) { (snapshot) in
+        isTypingObserver = userDatabase.child(userID).child("isTypingTo").observe(.value) { (snapshot) in
             
             if snapshot.exists() {
                 onTyping?(snapshot.value as! String)
@@ -574,7 +573,7 @@ class NetworkManager {
     
     func removeObserverTypingInstance(from userID: String) {
         
-        isTypingDatabase.child(userID).child("isTypingTo").removeObserver(withHandle: isTypingObserver)
+        userDatabase.child(userID).child("isTypingTo").removeObserver(withHandle: isTypingObserver)
     }
     
     

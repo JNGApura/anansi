@@ -154,6 +154,16 @@ class ConnectViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
+        // Remove conversation observers
+        
+        // Remove isTyping observer for each user
+        if latestChats.count > 0 {
+            
+            for chat in latestChats {
+                NetworkManager.shared.removeObserverTypingInstance(from: chat.partnerID()!)
+            }
+        }
+        
         // Handles network reachablibity
         stopMonitorConnectivity()
     }
@@ -258,13 +268,13 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         } else {
             
             // Fetches user once for the specific chatID and stores in users dictionary
-            NetworkManager.shared.fetchUserOnce(userID: partnerID!, onSuccess: { (dic) in
+            NetworkManager.shared.fetchUserOnce(userID: partnerID!, onSuccess: { [weak self] (dic) in
                 
                 let user = User()
                 user.set(dictionary: dic, id: partnerID!)
-                self.users[chatID] = user
+                self?.users[chatID] = user
                 
-                let isTyping = (user.getValue(forField: .id) as! String) == self.typingUserID
+                let isTyping = (user.getValue(forField: .id) as! String) == self?.typingUserID
                 cell.configure(with: chat, from: user, and: isTyping)
             })
         }
@@ -342,25 +352,25 @@ extension ConnectViewController {
     private func observeConversations(withID chatID: String) {
         
         // If there're conversations in Firebase
-        NetworkManager.shared.observeConversation(withID: chatID, onAdd: { (mesg, msgID) in
+        NetworkManager.shared.observeConversation(withID: chatID, onAdd: { [weak self] (mesg, msgID) in
             
             let chat = Message(dictionary: mesg, messageID: msgID)
             
             // THIS IS WHERE I NEED TO CHANGE TO UNLOCK PAGINATION BABY
             
-            if let listOfMessages = self.userChats[chatID] {
+            if let listOfMessages = self?.userChats[chatID] {
                 
                 if !listOfMessages.contains(chat) {
-                    self.userChats[chatID]!.append(chat)
+                    self?.userChats[chatID]!.append(chat)
                 }
                 
             } else {
-                self.userChats[chatID] = [chat]
+                self?.userChats[chatID] = [chat]
             }
             
             // Mark message as delivered, if I'm the receiver & !isDelivered
             if let receiver = chat.getValue(forField: .receiver) as? String,
-                receiver == self.myID!,
+                receiver == self?.myID!,
                 let isDelivered = chat.getValue(forField: .isDelivered) as? Bool,
                 !isDelivered {
                 
@@ -368,54 +378,54 @@ extension ConnectViewController {
                 // trigger the onChange method of the observeConversation function,
                 // so there is no need to add sortConversations() or reloadData()
                 
-                NetworkManager.shared.markMessagesAs(messageInfoType.isDelivered.rawValue, withID: msgID, from: chat.getValue(forField: .sender) as! String, to: self.myID!, onSuccess: nil)
+                NetworkManager.shared.markMessagesAs(messageInfoType.isDelivered.rawValue, withID: msgID, from: chat.getValue(forField: .sender) as! String, to: (self?.myID)!, onSuccess: nil)
                 
             } else {
                 
-                self.sortConversations() // this is important for table reload
-                self.tableView.reloadData()
+                self?.sortConversations() // this is important for table reload
+                self?.tableView.reloadData()
             }
             
-            self.areConversationsLoading = false
+            self?.areConversationsLoading = false
             
-        }, onChange: { (mesg, msgID) in
+        }, onChange: { [weak self] (mesg, msgID) in
             
             let chat = Message(dictionary: mesg, messageID: msgID)
             
-            let chats = self.userChats[chatID]
+            let chats = self?.userChats[chatID]
             for (index, element) in chats!.enumerated() {
                 
                 if (element.getValue(forField: .id) as? String == msgID) {
-                    self.userChats[chatID]![index] = chat
-                    self.sortConversations() // this is important for table reload
+                    self?.userChats[chatID]![index] = chat
+                    self?.sortConversations() // this is important for table reload
                 }
             }
             
-            self.tableView.reloadData()
+            self?.tableView.reloadData()
             
-        }, onRemove: { (mesg, msgID) in
+        }, onRemove: { [weak self] (mesg, msgID) in
             
-            if let listOfMessages = self.userChats[chatID] {
+            if let listOfMessages = self?.userChats[chatID] {
 
                 for (index, element) in listOfMessages.enumerated() {
                     
                     if (element.getValue(forField: .id) as? String == msgID) {
-                        self.userChats[chatID]!.remove(at: index)
+                        self?.userChats[chatID]!.remove(at: index)
 
-                        if self.userChats[chatID]!.count == 0 {
+                        if self?.userChats[chatID]!.count == 0 {
                             
                             // When UserMessage node is removed, it triggers observeExistingConversations onRemove
                             let chatPartnerID = element.partnerID()
-                            NetworkManager.shared.deleteUserMessageNode(from: self.myID!, to: chatPartnerID!, onDelete: nil)
+                            NetworkManager.shared.deleteUserMessageNode(from: (self?.myID)!, to: chatPartnerID!, onDelete: nil)
                             
                         } else {
-                            self.sortConversations() // this is important for table reload
+                            self?.sortConversations() // this is important for table reload
                         }
                     }
                 }
             }
             
-            self.tableView.reloadData()
+            self?.tableView.reloadData()
         })
         
         // In case there's a chatID, but no messages
@@ -424,64 +434,64 @@ extension ConnectViewController {
     
     private func observeUserConversations() {
         
-        NetworkManager.shared.observeExistingConversations(from: myID!, onAdd: { (chatID, partnerID) in
+        NetworkManager.shared.observeExistingConversations(from: myID!, onAdd: { [weak self] (chatID, partnerID) in
             
             // Adds messages to userChats dictionary
-            if !self.userChats.keys.contains(chatID) {
-                self.observeConversations(withID: chatID)
-                self.observeTyping(from: partnerID)
+            if let chatExistsInUserChats = self?.userChats.keys.contains(chatID), !chatExistsInUserChats {
+                self?.observeConversations(withID: chatID)
+                self?.observeTyping(from: partnerID)
             }
             
             // Fetches user once per chatID and stores in users dictionary
-            NetworkManager.shared.fetchUser(userID: partnerID, onSuccess: { (dic) in
+            NetworkManager.shared.fetchUser(userID: partnerID, onSuccess: { [weak self] (dic) in
                 
                 let user = User()
                 user.set(dictionary: dic, id: partnerID)
                 
-                self.users[chatID] = user
+                self?.users[chatID] = user
             })
             
-        }, onRemove: { (chatID, partnerID) in
+        }, onRemove: { [weak self] (chatID, partnerID) in
             
             // Removes conversation from userChats dictionary
-            if self.userChats.keys.contains(chatID) {
-                self.userChats[chatID] = nil
+            if let chatExistsInUserChats = self?.userChats.keys.contains(chatID), chatExistsInUserChats {
+                self?.userChats[chatID] = nil
                 
-                if self.userChats.count == 0 {
-                    self.latestChats = []
+                if self?.userChats.count == 0 {
+                    self?.latestChats = []
                 } else {
-                    self.sortConversations()
+                    self?.sortConversations()
                 }
             }
             
             // Removes user from users dictionary
-            if self.users.keys.contains(chatID) {
-                self.users[chatID] = nil
+            if let userExistsInUserList = self?.users.keys.contains(chatID), userExistsInUserList {
+                self?.users[chatID] = nil
             }
             
-            self.tableView.reloadData()
+            self?.tableView.reloadData()
             
-        }, noConversations: {
+        }, noConversations: { [weak self] in
             
             // Triggers empty state
-            self.areConversationsLoading = false
-            self.tableView.reloadData()
+            self?.areConversationsLoading = false
+            self?.tableView.reloadData()
         })
     }
     
     func observeTyping(from userID: String) {
         
-        NetworkManager.shared.observeTypingInstances(from: userID, onTyping: { (typingPartnerID) in
+        NetworkManager.shared.observeTypingInstances(from: userID, onTyping: { [weak self] (typingPartnerID) in
             
-            if typingPartnerID == self.myID! {
-                self.typingUserID = userID //the user is typing to me
-                self.tableView.reloadData()
+            if typingPartnerID == self?.myID! {
+                self?.typingUserID = userID //the user is typing to me
+                self?.tableView.reloadData()
             }
             
-        }, onNotTyping: {
+        }, onNotTyping: { [weak self] in
             
-            self.typingUserID = String()
-            self.tableView.reloadData()
+            self?.typingUserID = String()
+            self?.tableView.reloadData()
         })
     }
 }

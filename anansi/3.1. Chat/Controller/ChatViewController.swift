@@ -17,6 +17,8 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
     var cameFromUserProfile = false
     var cameFromSearch = false
     
+    var isScrollViewAtTheBottom = false
+    
     var hasBeenBlocked = false {
         didSet {
             if chatEmptyState != nil {
@@ -129,11 +131,9 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
         self.allMessages = messages
         
         let layout = UICollectionViewFlowLayout()
-        layout.estimatedItemSize = CGSize(width: UIScreen.main.bounds.width, height: 1.0) //UICollectionViewFlowLayout.automaticSize
-        
+        layout.estimatedItemSize = CGSize(width: UIScreen.main.bounds.width, height: 1.0)
         //layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         //layout.sectionInsetReference = .fromLayoutMargins
-        
         layout.scrollDirection = .vertical
         super.init(collectionViewLayout: layout)
     }
@@ -192,10 +192,7 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
         if !hasBeenBlocked {
             setupKeyboardObservers()
         }
-        
-        // This was not making the chatAV as first responder for some reason
-        //guard chatAccessoryView.inputTextView.isFirstResponder else { return }
-        
+
         // 2. Automatically presents keyboard if there's no message
         if dates.isEmpty {
             chatAccessoryView.inputTextView.becomeFirstResponder()
@@ -211,18 +208,9 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
                 self.chatAccessoryView.inputTextView.resignFirstResponder()
             }
             
+            // Re-factor to something else like "markMessagesAsRead"
             let allMessages = listOfMessagesPerDate.flatMap { $1 }
-            for message in allMessages {
-                
-                // If I'm the receiver && !isRead
-                if let receiver = message.getValue(forField: .receiver) as? String,
-                    receiver == self.myID!,
-                    let isRead = message.getValue(forField: .isRead) as? Bool,
-                    !isRead {
-                    
-                    NetworkManager.shared.markMessagesAs(messageInfoType.isRead.rawValue, withID: message.getValue(forField: .id) as! String, from: message.getValue(forField: .sender) as! String, to: myID!, onSuccess: nil)
-                }
-            }
+            markAsRead(messages: allMessages)
         }
     }
     
@@ -304,6 +292,7 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
         
         // This shows the list of messages starting from the last message
         if listOfMessagesPerDate.count - 1 >= 0 {
+            
             UIView.performWithoutAnimation {
                 if collectionView.contentSize.height < collectionView.bounds.height {
                     collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
@@ -313,6 +302,8 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
                     collectionView.setContentOffset(contentOffset, animated: false)
                 }
             }
+            
+            isScrollViewAtTheBottom = true
         }
         
         didLayoutFlag = true
@@ -445,7 +436,6 @@ extension ChatViewController {
         
         let date = dates[indexPath.section]
         let message = listOfMessagesPerDate[date]![indexPath.item]
-        //let usrimg = user.getValue(forField: .profileImageURL) as? String ?? ""
         
         let isIncoming = ((message.getValue(forField: .sender) as? String) != myID!)
         let showStatus = !isIncoming ? ((!partnerIsTyping && indexPath.section == lastsection && indexPath.item == lastitem) || (partnerIsTyping && indexPath.section == lastsection && indexPath.item == lastitem - 1)) : false
@@ -493,7 +483,6 @@ extension ChatViewController {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0.0
     }
-
 }
 
 // MARK: - Custom functions
@@ -540,11 +529,25 @@ extension ChatViewController {
         }
     }
     
+    func markAsRead(messages: [Message]) {
+        
+        for message in messages {
+            
+            // If I'm the receiver && !isRead
+            if let receiver = message.getValue(forField: .receiver) as? String,
+                receiver == self.myID!,
+                let isRead = message.getValue(forField: .isRead) as? Bool,
+                !isRead {
+                
+                NetworkManager.shared.markMessagesAs(messageInfoType.isRead.rawValue, withID: message.getValue(forField: .id) as! String, from: message.getValue(forField: .sender) as! String, to: myID!, onSuccess: nil)
+            }
+        }
+    }
     
     // MARK: - Keyboard-related functions
     
     func setupKeyboardObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(adjustKeyboard), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(adjustKeyboard), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(adjustKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
@@ -554,94 +557,35 @@ extension ChatViewController {
     
     @objc func adjustKeyboard(notification: NSNotification) {
         
-        guard let userInfo = notification.userInfo,
-            let keyboardEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
-        
-        print("Am I here?")
-        
+        // guard let userInfo = notification.userInfo else { return }
+        // guard let keyboardEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        //
         // NOTE: KeyboardEndFrame
         //           - includes inputAccessoryView when shown (59.3333)
         //           - includes inputAccessoryView and view.safeAreaInsets.bottom when hidden (59.3333 + 34.0 = 93.3333)
-        //let keyboardHeight = keyboardEndFrame.height - inputAccessoryView.frame.height //- view.safeAreaInsets.bottom
+        // let keyboardHeight = keyboardEndFrame.height - inputAccessoryView.frame.height //- view.safeAreaInsets.bottom
         
-        //if collectionView.contentSize.height > collectionView.frame.height - keyboardEndFrame.height {
-        //    self.collectionView.setContentOffset(CGPoint(x: 0, y: collectionView.contentOffset.y + keyboardHeight), animated: true)
-        //}
-        
-        // UNCOMMENT NEXT LINE
-        UIView.performWithoutAnimation {
-            //self.collectionView.scrollToBottom()
+        // If scrollView is at the bottom & keyboard will show, then scroll to bottom of collectionView
+        if isScrollViewAtTheBottom && notification.name == UIResponder.keyboardWillShowNotification {
+            DispatchQueue.main.async { self.collectionView.scrollToBottom(at: .top) }
         }
-
-        
-        //collectionView.layoutIfNeeded()
-        //collectionView.scrollRectToVisible(lastcell!.frame, animated: true)
-        
-        //print(keyboardHeight)
-        //print(inputAccessoryView.frame.height)
-        //print(view.safeAreaInsets.bottom)
-        
-        //print(collectionView.contentSize.height)
-        //print(collectionView.frame.height)
-        
-        //print(collectionView.contentOffset.y)
-        
-        /*
-        var collapseSpace : CGFloat
-        //if (collectionView.frame.height - collectionView.contentSize.height) > keyboardEndFrame.height {
-        //    collapseSpace = (collectionView.frame.height - collectionView.contentSize.height)
-        //}
-        
-        if collectionView.contentSize.height > (collectionView.frame.height - keyboardHeight) {
-            
-            if collectionView.contentSize.height > collectionView.frame.height {
-                collapseSpace = keyboardHeight
-            } else {
-                collapseSpace = keyboardHeight - (collectionView.frame.height - collectionView.contentSize.height)
-            }
-            
-        } else {
-            collapseSpace = 0
-        }
-        
-        //let distanceCellKeyboard = keyboardEndFrame.height - (view.frame.maxY - collectionView.frame.height)
-        
-        // let cellRealOrigin = tableView.convert(cell.frame.origin, to: self.view)
-        
-        //if collapseSpace < 0 { return }
-        
-        print(keyboardHeight)
-        //print(inputAccessoryView.frame.height)
-        //print(view.safeAreaInsets.bottom)
-        
-        //print(collectionView.contentSize.height)
-        //print(collectionView.frame.height)
-        
-        // TO DO LATER: There's an issue here, fix later.
-        
-        if notification.name == UIResponder.keyboardWillShowNotification {
-            
-            self.collectionView.setContentOffset(CGPoint(x: 0, y: collectionView.contentOffset.y + collapseSpace), animated: true)
-            //self.collectionView.layoutIfNeeded()
-
-        
-            keyboardIsActive = true
-            
-        } else {
-            
-            self.collectionView.setContentOffset(CGPoint(x: 0, y: collectionView.contentOffset.y - collapseSpace + inputAccessoryView.frame.height), animated: true)
-            //self.collectionView.layoutIfNeeded()
-            
-            keyboardIsActive = false
-        }*/
     }
     
     @objc override func dismissKeyboard() {
         chatAccessoryView.inputTextView.resignFirstResponder()
     }
     
-    func scrollToBottom() {
-        collectionView.scrollToBottom()
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        guard let contentOffsetY = collectionView?.contentOffset.y else { return }
+        guard let contentHeight = collectionView?.contentSize.height else { return }
+        guard let frameHeight = collectionView?.frame.size.height else { return }
+        
+        // Set isScrollViewAtTheBottom boolean
+        isScrollViewAtTheBottom = contentOffsetY >= (contentHeight - frameHeight - 200) // 200 margin might be enough
+        print(isScrollViewAtTheBottom)
+        
+        // Pagination should be implemented here
     }
     
     
@@ -747,7 +691,9 @@ extension ChatViewController {
                     strongSelf.collectionView.layoutIfNeeded()
                 })
                 
-                strongSelf.scrollToBottom()
+                if strongSelf.isScrollViewAtTheBottom {
+                    strongSelf.collectionView.scrollToBottom(at: .bottom)
+                }
             }
             
         }, onNotTyping: { [weak self] in
@@ -803,7 +749,7 @@ extension ChatViewController: ChatAccessoryDelegate {
         chatAccessoryView.inputTextView.placeholder = "Message \(user.firstname)"
         isTyping = false
         
-        scrollToBottom()
+        collectionView.scrollToBottom(at: .top)
     }
     
     func isTypingMessage(value: Bool) {
@@ -993,16 +939,18 @@ extension ChatViewController {
                     }
                 }
                 
-                // If I'm the receiver && !isRead, marks the message as read
-                if //strongSelf.isOnPage,
-                    let receiver = message.getValue(forField: .receiver) as? String, receiver == strongSelf.myID!,
-                    let isRead = message.getValue(forField: .isRead) as? Bool, !isRead {
+                // If user is at the bottom of collectionView, then we need to mark any incoming message as read
+                if strongSelf.isScrollViewAtTheBottom {
+                    strongSelf.collectionView.scrollToBottom(at: .top)
+                    strongSelf.markAsRead(messages: [message]) // Do I need this here?
                     
-                    NetworkManager.shared.markMessagesAs(messageInfoType.isRead.rawValue, withID: msgID, from: message.getValue(forField: .sender) as! String, to: strongSelf.myID!, onSuccess: nil)
+                } else {
+                    
+                    // TO DO:
+                    // Show widget to go to bottom
+                    // If I tap on that widget, the collectionview is scrolled to bottom and messages are marked as read
                 }
             }
-            
-            //strongSelf.scrollToBottom()
             
         }, onChange: { [weak self] (mesg, msgID) in
             guard let strongSelf = self else { return }
@@ -1079,7 +1027,7 @@ extension ChatViewController {
         })
         
         // In case there's a chatID, but no messages
-        //self.reload()
+        // should I reload the table?s
     }
 }
 

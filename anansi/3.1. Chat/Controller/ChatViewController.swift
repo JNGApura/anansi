@@ -271,9 +271,12 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     // MARK: Layout
+    private var didLayoutFlag: Bool = false
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        guard let collectionView = collectionView, !didLayoutFlag else { return }
         
         // Navbar
         topbar.setStatusBarHeight(with: statusBarHeight)
@@ -298,6 +301,21 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
             disconnectedView.widthAnchor.constraint(equalTo: view.widthAnchor),
             disconnectedView.heightAnchor.constraint(equalToConstant: 32.0),
         ])
+        
+        // This shows the list of messages starting from the last message
+        if listOfMessagesPerDate.count - 1 >= 0 {
+            UIView.performWithoutAnimation {
+                if collectionView.contentSize.height < collectionView.bounds.height {
+                    collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+                    
+                } else {
+                    let contentOffset = CGPoint(x: 0.0, y: collectionView.contentSize.height - (collectionView.bounds.size.height - chatAccessoryView.frame.height))
+                    collectionView.setContentOffset(contentOffset, animated: false)
+                }
+            }
+        }
+        
+        didLayoutFlag = true
     }
 }
 

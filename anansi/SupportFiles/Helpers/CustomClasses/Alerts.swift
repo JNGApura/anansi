@@ -32,6 +32,10 @@ func emailVerificationErrorAlertFor(controller: UIViewController, handler: (() -
 
 func showConnectionAlertFor(controller: UIViewController) {
     
+    // Haptic feedback
+    let generator = UIImpactFeedbackGenerator(style: .light)
+    generator.impactOccurred()
+    
     let alert = UIAlertController(title: "No internet connection 😳", message: "We'll keep trying to reconnect. Meanwhile, could you check your data or wifi connection?", preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: "On it!", style: .default , handler: nil))
     

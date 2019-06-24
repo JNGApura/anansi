@@ -23,6 +23,8 @@ class SearchTableViewController: UIViewController {
     var trendingUsers = [User]()
     var users = [User]()
     
+    var workItem = WorkItem() // For asynchronous load of search results
+    
     lazy var searchController : UISearchController = {
         let sc = UISearchController(searchResultsController: nil)
         sc.searchResultsUpdater = self
@@ -307,7 +309,10 @@ extension SearchTableViewController: UIScrollViewDelegate {
 extension SearchTableViewController: UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
     
     func updateSearchResults(for searchController: UISearchController) {
-        filterContentForSearchText(searchController.searchBar.text!)
+        
+        workItem.perform(after: 0.3) { [weak self] in
+            self?.filterContentForSearchText(searchController.searchBar.text!)
+        }
     }
     
     func didPresentSearchController(_ searchController: UISearchController) {

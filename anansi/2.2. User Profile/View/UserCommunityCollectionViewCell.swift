@@ -167,7 +167,7 @@ extension UserCommunityCollectionViewCell: UITableViewDelegate, UITableViewDataS
                 if let profileImageURL = user.getValue(forField: .profileImageURL) as? String { cell.profileImageURL = profileImageURL }
             }
             
-            cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
+            cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.3))
             return cell
         }
     }

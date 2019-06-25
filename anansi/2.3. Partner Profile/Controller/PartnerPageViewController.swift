@@ -375,7 +375,7 @@ extension PartnerPageViewController: UITableViewDelegate, UITableViewDataSource 
             cell.usersIDList = employeeList
             cell.employeeTableViewHeightAnchor?.constant = 72 * CGFloat(employeeList.count)
             
-            cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
+            cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.3))
             return cell
         
         } else if sections[section] == "Contact information" && (sectionDataToDisplay[section]?.count == iconForContactSection.count) {
@@ -385,7 +385,7 @@ extension PartnerPageViewController: UITableViewDelegate, UITableViewDataSource 
             cell.itemTitle.text = sectionDataToDisplay[section]?[indexPath.row]
             cell.itemIcon.image = UIImage(named: iconForContactSection[indexPath.row] as String)?.withRenderingMode(.alwaysTemplate)
             
-            cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
+            cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.3))
             return cell
             
         } else {

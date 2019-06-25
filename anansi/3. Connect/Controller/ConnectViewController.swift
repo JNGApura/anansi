@@ -284,7 +284,6 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
             cell.configure(with: chat, from: user, and: isTyping!)
         })*/
         
-        //cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.3))
         return cell
     }
     

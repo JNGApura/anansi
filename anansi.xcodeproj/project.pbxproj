@@ -81,6 +81,7 @@
 		2CA98C5122BFE899001E0D51 /* RevealableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C5022BFE899001E0D51 /* RevealableCollectionViewCell.swift */; };
 		2CA98C5322BFE995001E0D51 /* TimestampView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C5222BFE995001E0D51 /* TimestampView.swift */; };
 		2CA98C5522C0D677001E0D51 /* WorkItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C5422C0D677001E0D51 /* WorkItem.swift */; };
+		2CA98C5722C28120001E0D51 /* BackgroundLockable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C5622C28120001E0D51 /* BackgroundLockable.swift */; };
 		2CB6AFE62264122400E1702E /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6AFE52264122400E1702E /* SettingsTableViewCell.swift */; };
 		2CB6AFE8226481EC00E1702E /* ScheduleInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6AFE7226481EC00E1702E /* ScheduleInfoTableViewCell.swift */; };
 		2CBE2EC120351967009E5268 /* UIView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBE2EC020351967009E5268 /* UIView+.swift */; };
@@ -209,6 +210,7 @@
 		2CA98C5022BFE899001E0D51 /* RevealableCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevealableCollectionViewCell.swift; sourceTree = "<group>"; };
 		2CA98C5222BFE995001E0D51 /* TimestampView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimestampView.swift; sourceTree = "<group>"; };
 		2CA98C5422C0D677001E0D51 /* WorkItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkItem.swift; sourceTree = "<group>"; };
+		2CA98C5622C28120001E0D51 /* BackgroundLockable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundLockable.swift; sourceTree = "<group>"; };
 		2CB6AFE52264122400E1702E /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
 		2CB6AFE7226481EC00E1702E /* ScheduleInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleInfoTableViewCell.swift; sourceTree = "<group>"; };
 		2CBE2EC020351967009E5268 /* UIView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+.swift"; sourceTree = "<group>"; };
@@ -465,6 +467,7 @@
 				2C79C8F62036293900FFCF70 /* UICollectionViewAlignedLayout.swift */,
 				2C7F6F0D202595C1008AB0CD /* UserDefaultsManager.swift */,
 				2CA98C5422C0D677001E0D51 /* WorkItem.swift */,
+				2CA98C5622C28120001E0D51 /* BackgroundLockable.swift */,
 			);
 			path = CustomClasses;
 			sourceTree = "<group>";
@@ -1135,6 +1138,7 @@
 				2C6D401F2287896500FCF1F6 /* UserPageViewController.swift in Sources */,
 				2C70FBC820021793002E97E7 /* AppDelegate.swift in Sources */,
 				2C5A54FE204D138F006DB37A /* ReportAbuseController.swift in Sources */,
+				2CA98C5722C28120001E0D51 /* BackgroundLockable.swift in Sources */,
 				2CD55AD62033EFA100299926 /* ProfileViewController.swift in Sources */,
 				2C79C8FB20383AEB00FFCF70 /* InterestCell.swift in Sources */,
 				2CC3C8FA203E608900D70190 /* BottomSheetView.swift in Sources */,

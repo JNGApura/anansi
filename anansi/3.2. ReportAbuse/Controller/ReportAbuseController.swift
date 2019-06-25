@@ -343,7 +343,7 @@ class ReportAbuseViewController: UIViewController, UIScrollViewDelegate, UITable
         cell.textLabel?.text = abuseOptions[row]
         cell.textLabel?.font = UIFont.systemFont(ofSize: Const.bodyFontSize)
         cell.imageView?.image = UIImage(named: abuseOptionIcon[row])?.withRenderingMode(.alwaysTemplate)
-        cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
+        cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.3))
 
         return cell
     }

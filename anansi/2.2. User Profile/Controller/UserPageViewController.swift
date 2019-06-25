@@ -453,7 +453,7 @@ class UserPageViewController: UIViewController, UITableViewDelegate, UITableView
             cell.itemTitle.text = sectionDataToDisplay[section]?[indexPath.row]
             cell.itemIcon.image = UIImage(named: iconForContactSection[indexPath.row] as String)?.withRenderingMode(.alwaysTemplate)
             
-            cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
+            cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.3))
             return cell
             
         } else {

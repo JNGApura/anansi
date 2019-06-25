@@ -195,7 +195,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
         let item = items[indexPath.row]
         
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath as IndexPath) as! SettingsTableViewCell
-        cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
+        cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.3))
         
         // Title
         cell.itemTitle.text = item.title
@@ -231,7 +231,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
             
             cell.itemIcon.isHidden = true
             cell.itemArrow.isHidden = true
-            cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.background)
+            cell.selectedBackgroundView = createViewWithBackgroundColor(.background)
         }
         
         return cell

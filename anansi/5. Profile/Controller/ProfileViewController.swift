@@ -621,7 +621,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
              
                 let cell = tableView.dequeueReusableCell(withIdentifier: "InterestEmptyTableCell", for: indexPath) as! InterestProfileEmptyTableCell
                 cell.selectionStyle = .none
-                cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
+                cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.3))
                 return cell
             }
         }

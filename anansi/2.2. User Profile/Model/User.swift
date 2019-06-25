@@ -101,6 +101,12 @@ class User: NSObject {
         userDefaults.updateObject(for: field.rawValue, with: value)
     }
     
+    func eraseDisk() {
+        for field in iterateEnum(userInfoType.self) {
+            userDefaults.removeObject(for: field.rawValue)
+        }
+    }
+    
     // Sets value for field
     func setValue(value: Any, for field: userInfoType) {
         
@@ -242,21 +248,9 @@ class User: NSObject {
     }
     
     func reset() {
-        self.id = nil
-        self.email = nil
-        self.ticket = nil
-        self.name = nil
-        self.occupation = nil
-        self.location = nil
-        self.profileImageURL = nil
-        self.bio = nil
-        self.interests = nil
-        self.tedTitle = nil
-        self.sharedEmail = nil
-        self.website = nil
-        self.linkedin = nil
-        self.blockedUsers = nil
-        self.ranking = nil
+        for field in iterateEnum(userInfoType.self) {
+            removeValue(for: field)
+        }
     }
     
     // To iterate enums (for user model)

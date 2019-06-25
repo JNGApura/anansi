@@ -11,18 +11,14 @@ import UIKit
 class ConnectViewController: UIViewController {
     
     private var users = [String : User]()
-    
     private var latestChats = [Message]()
-    
     private var userChats = [String : [Message]]()
-    
+    private var usersTyping = [String]()
     private var conversationIDs = [String]()
-        
+    
     private var areConversationsLoading = true
     
     private var CTA : String!
-    
-    private var typingUserID = String()
     
     let myID = NetworkManager.shared.getUID()
     
@@ -42,15 +38,14 @@ class ConnectViewController: UIViewController {
         tv.register(ChatTableCell.self, forCellReuseIdentifier: "ChatCell")
         tv.delegate = self
         tv.dataSource = self
-        tv.rowHeight = UITableView.automaticDimension
-        tv.estimatedRowHeight = 96.0
+        tv.rowHeight = 84.0
+        tv.estimatedRowHeight = 84.0
         tv.separatorStyle = .none
         tv.allowsMultipleSelection = true
         tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: Const.marginSafeArea, right: 0)
         tv.translatesAutoresizingMaskIntoConstraints = false
         return tv
     }()
-    var tableViewHeightAnchor: NSLayoutConstraint?
     
     lazy var CTAbutton : UIButton = {
         let b = UIButton()
@@ -118,13 +113,18 @@ class ConnectViewController: UIViewController {
             CTAbutton.widthAnchor.constraint(equalToConstant: 56.0),
             CTAbutton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -Const.marginSafeArea + 4.0),
         ])
-        
-        // Observe conversations from DB
-        observeUserConversations()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        // Observe conversations from DB
+        observeUserConversations()
+        
+        // If someone is typing, then reload tableView to animate dots
+        if usersTyping.count != 0 {
+            tableView.reloadData()
+        }
         
         // Placeholder message for empty state (or new chat page)
         tableView.beginUpdates()
@@ -134,9 +134,6 @@ class ConnectViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        // Handles network connectivity
-        startMonitorConnectivity()
         
         if !userDefaults.bool(for: userDefaults.isConnectOnboarded) {
             
@@ -149,16 +146,23 @@ class ConnectViewController: UIViewController {
             // Sets CommunityOnboarded to true
             userDefaults.updateObject(for: userDefaults.isConnectOnboarded, with: true)
         }
+        
+        // Handles network connectivity
+        startMonitorConnectivity()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         // Remove conversation observers
+        if latestChats.count > 0 {
+            for chat in userChats {
+                NetworkManager.shared.removeObserversForConversation(withID: chat.key)
+            }
+        }
         
         // Remove isTyping observer for each user
         if latestChats.count > 0 {
-            
             for chat in latestChats {
                 NetworkManager.shared.removeObserverTypingInstance(from: chat.partnerID()!)
             }
@@ -172,11 +176,16 @@ class ConnectViewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
+    deinit {
+        print("ConnectViewController: Memory is freeee")
+    }
+    
     // MARK: - Layout
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        // Set profile image
         headerView.setProfileImage()
     }
     
@@ -258,28 +267,24 @@ extension ConnectViewController: UITableViewDelegate, UITableViewDataSource {
         
         let chat = latestChats[indexPath.row]
         let partnerID = chat.partnerID()
+        let isTyping = usersTyping.contains(partnerID!)
         let chatID = NetworkManager.shared.childNode(myID!, partnerID!)
         
-        if let user = users[chatID] {
-            
-            let isTyping = (user.getValue(forField: .id) as! String) == typingUserID
-            cell.configure(with: chat, from: user, and: isTyping)
-            
-        } else {
-            
-            // Fetches user once for the specific chatID and stores in users dictionary
-            NetworkManager.shared.fetchUserOnce(userID: partnerID!, onSuccess: { [weak self] (dic) in
-                
-                let user = User()
-                user.set(dictionary: dic, id: partnerID!)
-                self?.users[chatID] = user
-                
-                let isTyping = (user.getValue(forField: .id) as! String) == self?.typingUserID
-                cell.configure(with: chat, from: user, and: isTyping)
-            })
-        }
+        cell.configure(with: chat, from: users[chatID] ?? User(), and: isTyping)
         
-        cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.5))
+        /*
+        // Fetches user once for the specific chatID and stores in users dictionary
+        NetworkManager.shared.fetchUserOnce(userID: partnerID!, onSuccess: { [weak self] (dic) in
+            guard let strongSelf = self else { return }
+            
+            let user = User()
+            user.set(dictionary: dic, id: partnerID!)
+            strongSelf.users[chatID] = user
+            
+            cell.configure(with: chat, from: user, and: isTyping!)
+        })*/
+        
+        //cell.selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.3))
         return cell
     }
     
@@ -353,24 +358,25 @@ extension ConnectViewController {
         
         // If there're conversations in Firebase
         NetworkManager.shared.observeConversation(withID: chatID, onAdd: { [weak self] (mesg, msgID) in
+            guard let strongSelf = self else { return }
             
             let chat = Message(dictionary: mesg, messageID: msgID)
             
             // THIS IS WHERE I NEED TO CHANGE TO UNLOCK PAGINATION BABY
             
-            if let listOfMessages = self?.userChats[chatID] {
+            if let listOfMessages = strongSelf.userChats[chatID] {
                 
                 if !listOfMessages.contains(chat) {
-                    self?.userChats[chatID]!.append(chat)
+                    strongSelf.userChats[chatID]!.append(chat)
                 }
                 
             } else {
-                self?.userChats[chatID] = [chat]
+                strongSelf.userChats[chatID] = [chat]
             }
             
             // Mark message as delivered, if I'm the receiver & !isDelivered
             if let receiver = chat.getValue(forField: .receiver) as? String,
-                receiver == self?.myID!,
+                receiver == strongSelf.myID!,
                 let isDelivered = chat.getValue(forField: .isDelivered) as? Bool,
                 !isDelivered {
                 
@@ -378,54 +384,56 @@ extension ConnectViewController {
                 // trigger the onChange method of the observeConversation function,
                 // so there is no need to add sortConversations() or reloadData()
                 
-                NetworkManager.shared.markMessagesAs(messageInfoType.isDelivered.rawValue, withID: msgID, from: chat.getValue(forField: .sender) as! String, to: (self?.myID)!, onSuccess: nil)
+                NetworkManager.shared.markMessagesAs(messageInfoType.isDelivered.rawValue, withID: msgID, from: chat.getValue(forField: .sender) as! String, to: strongSelf.myID!, onSuccess: nil)
                 
             } else {
                 
-                self?.sortConversations() // this is important for table reload
-                self?.tableView.reloadData()
+                strongSelf.sortConversations() // this is important for table reload
+                strongSelf.tableView.reloadData()
             }
             
-            self?.areConversationsLoading = false
+            strongSelf.areConversationsLoading = false
             
         }, onChange: { [weak self] (mesg, msgID) in
+            guard let strongSelf = self else { return }
             
             let chat = Message(dictionary: mesg, messageID: msgID)
             
-            let chats = self?.userChats[chatID]
+            let chats = strongSelf.userChats[chatID]
             for (index, element) in chats!.enumerated() {
                 
                 if (element.getValue(forField: .id) as? String == msgID) {
-                    self?.userChats[chatID]![index] = chat
-                    self?.sortConversations() // this is important for table reload
+                    strongSelf.userChats[chatID]![index] = chat
+                    strongSelf.sortConversations() // this is important for table reload
                 }
             }
             
-            self?.tableView.reloadData()
+            strongSelf.tableView.reloadData()
             
         }, onRemove: { [weak self] (mesg, msgID) in
+            guard let strongSelf = self else { return }
             
-            if let listOfMessages = self?.userChats[chatID] {
+            if let listOfMessages = strongSelf.userChats[chatID] {
 
                 for (index, element) in listOfMessages.enumerated() {
                     
                     if (element.getValue(forField: .id) as? String == msgID) {
-                        self?.userChats[chatID]!.remove(at: index)
+                        strongSelf.userChats[chatID]!.remove(at: index)
 
-                        if self?.userChats[chatID]!.count == 0 {
+                        if strongSelf.userChats[chatID]!.count == 0 {
                             
                             // When UserMessage node is removed, it triggers observeExistingConversations onRemove
                             let chatPartnerID = element.partnerID()
-                            NetworkManager.shared.deleteUserMessageNode(from: (self?.myID)!, to: chatPartnerID!, onDelete: nil)
+                            NetworkManager.shared.deleteUserMessageNode(from: strongSelf.myID!, to: chatPartnerID!, onDelete: nil)
                             
                         } else {
-                            self?.sortConversations() // this is important for table reload
+                            strongSelf.sortConversations() // this is important for table reload
                         }
                     }
                 }
             }
             
-            self?.tableView.reloadData()
+            strongSelf.tableView.reloadData()
         })
         
         // In case there's a chatID, but no messages
@@ -435,63 +443,79 @@ extension ConnectViewController {
     private func observeUserConversations() {
         
         NetworkManager.shared.observeExistingConversations(from: myID!, onAdd: { [weak self] (chatID, partnerID) in
+            guard let strongSelf = self else { return }
             
             // Adds messages to userChats dictionary
-            if let chatExistsInUserChats = self?.userChats.keys.contains(chatID), !chatExistsInUserChats {
-                self?.observeConversations(withID: chatID)
-                self?.observeTyping(from: partnerID)
+            if !strongSelf.userChats.keys.contains(chatID) {
+                
+                DispatchQueue.global(qos: .default).async { [weak self] in
+                    self?.observeTyping(from: partnerID)
+                    self?.observeConversations(withID: chatID)
+                }
             }
             
-            // Fetches user once per chatID and stores in users dictionary
-            NetworkManager.shared.fetchUser(userID: partnerID, onSuccess: { [weak self] (dic) in
+            DispatchQueue.global(qos: .default).async { [weak self] in
                 
-                let user = User()
-                user.set(dictionary: dic, id: partnerID)
-                
-                self?.users[chatID] = user
-            })
+                // Fetches user once per chatID and stores in users dictionary
+                NetworkManager.shared.fetchUser(userID: partnerID, onSuccess: { (dic) in
+                    
+                    let user = User()
+                    user.set(dictionary: dic, id: partnerID)
+                    self?.users[chatID] = user
+                })
+            }
             
         }, onRemove: { [weak self] (chatID, partnerID) in
+            guard let strongSelf = self else { return }
             
             // Removes conversation from userChats dictionary
-            if let chatExistsInUserChats = self?.userChats.keys.contains(chatID), chatExistsInUserChats {
-                self?.userChats[chatID] = nil
+            if strongSelf.userChats.keys.contains(chatID) {
+                strongSelf.userChats[chatID] = nil
                 
-                if self?.userChats.count == 0 {
-                    self?.latestChats = []
+                if strongSelf.userChats.count == 0 {
+                    strongSelf.latestChats = []
                 } else {
-                    self?.sortConversations()
+                    strongSelf.sortConversations()
                 }
             }
             
             // Removes user from users dictionary
-            if let userExistsInUserList = self?.users.keys.contains(chatID), userExistsInUserList {
-                self?.users[chatID] = nil
+            if strongSelf.users.keys.contains(chatID) {
+                strongSelf.users[chatID] = nil
             }
             
-            self?.tableView.reloadData()
+            strongSelf.tableView.reloadData()
             
         }, noConversations: { [weak self] in
+            guard let strongSelf = self else { return }
             
             // Triggers empty state
-            self?.areConversationsLoading = false
-            self?.tableView.reloadData()
+            strongSelf.areConversationsLoading = false
+            strongSelf.tableView.reloadData()
         })
     }
     
     func observeTyping(from userID: String) {
         
-        NetworkManager.shared.observeTypingInstances(from: userID, onTyping: { [weak self] (typingPartnerID) in
-            
-            if typingPartnerID == self?.myID! {
-                self?.typingUserID = userID //the user is typing to me
-                self?.tableView.reloadData()
-            }
-            
-        }, onNotTyping: { [weak self] in
-            
-            self?.typingUserID = String()
-            self?.tableView.reloadData()
+        NetworkManager.shared.observeTypingInstances(from: userID,
+            onTyping: { [weak self] (typingPartnerID) in
+                guard let strongSelf = self else { return }
+                
+                if typingPartnerID == strongSelf.myID! {
+                    
+                    strongSelf.usersTyping.append(userID)
+                    strongSelf.tableView.reloadData()
+                }
+                
+            }, onNotTyping: { [weak self] in
+                guard let strongSelf = self else { return }
+                
+                if strongSelf.usersTyping.contains(userID) {
+                    
+                    let i = strongSelf.usersTyping.index(of: userID)
+                    strongSelf.usersTyping.remove(at: i!)
+                    strongSelf.tableView.reloadData()
+                }
         })
     }
 }

@@ -541,7 +541,7 @@ class NetworkManager {
             onSucess?()
         }
         
-        userDatabase.child(userID).onDisconnectRemoveValue()
+        userDatabase.child(userID).child("isTypingTo").onDisconnectRemoveValue()
     }
     
     // Remove typing instance

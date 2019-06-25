@@ -96,12 +96,10 @@ class ChatTableCell: UITableViewCell {
     
     let bubble: UIView = {
         let bv = UIView()
-        bv.layer.borderWidth = 2
-        bv.layer.borderColor = UIColor.init(red: 245/255.0, green: 245/255.0, blue: 248/255.0, alpha: 1.0).cgColor //UIColor.tertiary.withAlphaComponent(0.5).cgColor
-        bv.layer.cornerRadius = 8
+        bv.layer.cornerRadius = 10
         bv.layer.masksToBounds = true
         bv.clipsToBounds = true
-        bv.backgroundColor = UIColor.init(red: 245/255.0, green: 245/255.0, blue: 248/255.0, alpha: 1.0)
+        bv.backgroundColor = .init(red: 245/255.0, green: 245/255.0, blue: 248/255.0, alpha: 1.0)
         bv.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         bv.translatesAutoresizingMaskIntoConstraints = false
         return bv
@@ -153,6 +151,8 @@ class ChatTableCell: UITableViewCell {
             profileImageView.heightAnchor.constraint(equalToConstant: 60.0),
             
             name.heightAnchor.constraint(equalToConstant: 24.0),
+            lastMessage.heightAnchor.constraint(equalToConstant: 20.0),
+            timeLabel.heightAnchor.constraint(equalToConstant: 20.0),
             bottomStackView.heightAnchor.constraint(equalToConstant: 20.0),
             
             stackView.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
@@ -166,8 +166,8 @@ class ChatTableCell: UITableViewCell {
             
             bubble.topAnchor.constraint(equalTo: bottomStackView.topAnchor),
             bubble.leadingAnchor.constraint(equalTo: bottomStackView.leadingAnchor),
-            bubble.bottomAnchor.constraint(equalTo: bottomStackView.bottomAnchor),
-            bubble.widthAnchor.constraint(equalToConstant: 42.0),
+            bubble.heightAnchor.constraint(equalToConstant: 20.0),
+            bubble.widthAnchor.constraint(equalToConstant: 48.0),
             
             typingIndicator.centerXAnchor.constraint(equalTo: bubble.centerXAnchor),
             typingIndicator.centerYAnchor.constraint(equalTo: bubble.centerYAnchor),
@@ -186,13 +186,20 @@ class ChatTableCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        // Reset labels
         name.text = ""
         lastMessage.text = ""
         timeLabel.text = ""
         
+        // Reset profileImageTemplate
         profileImageView.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
         
+        // Hides readbadge
         readbadge.isHidden = true
+        
+        // Resets animation & hides typing bubble
+        bubble.isHidden = true
+        stopAnimating()
     }
     
     
@@ -232,14 +239,13 @@ class ChatTableCell: UITableViewCell {
                     readbadge.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
                     readbadge.backgroundColor = .clear
                 }
-            } else if !isRead && sender != myID {
                 
+            } else if !isRead && sender != myID {
                 readbadge.isHidden = false
                 readbadge.image = nil
                 readbadge.backgroundColor = .primary
 
             } else {
-                
                 readbadge.isHidden = true
                 readbadge.image = nil               // reset
                 readbadge.backgroundColor = .clear  // reset
@@ -257,7 +263,6 @@ class ChatTableCell: UITableViewCell {
             // Starts isTyping animation
             if !isAnimating {
                 startAnimating()
-                
             } else {
                 stopAnimating()
                 startAnimating()
@@ -296,29 +301,87 @@ class ChatTableCell: UITableViewCell {
         }
     }
     
+    /*
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        //let myViewBackgroundColor = self.backgroundColor
+        super.setHighlighted(highlighted, animated: animated)
+        self.backgroundColor = UIColor.tertiary.withAlphaComponent(0.3)
+    }
+    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        //let myViewBackgroundColor = self.backgroundColor
+        super.setSelected(selected, animated: animated)
+        self.backgroundColor = UIColor.tertiary.withAlphaComponent(0.3)
+    }*/
+    
+
+    /*
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+        if highlighted {
+            self.backgroundColor = UIColor.tertiary.withAlphaComponent(0.3)
+        } else {
+            UIView.animate(withDuration: 0.2, animations: {
+                self.backgroundColor = .clear
+            })
+            //self.backgroundColor = .clear
+            //UIView.animate(withDuration: 0.1, animations: {
+                
+            //})
+        }
+    }*/
+    
+    /*
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        if selected {
+            self.backgroundColor = UIColor.tertiary.withAlphaComponent(0.3)
+            self.selectedBackgroundView = createViewWithBackgroundColor(.clear)
+            
+            //self.backgroundColor = UIColor.tertiary.withAlphaComponent(0.3)
+        } else {
+            self.backgroundColor = .clear
+            self.selectedBackgroundView = createViewWithBackgroundColor(.clear)
+            //self.selectedBackgroundView = createViewWithBackgroundColor(.clear)
+            //UIView.animate(withDuration: 0.1, animations: {
+                
+            //})
+        }
+    }*/
+    
+    /*
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        self.backgroundColor = UIColor.tertiary.withAlphaComponent(0.3)
+    }
+    
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        self.backgroundColor = .background
+    }*/
+    
     
     // MARK: - Animation API
     
-    /// The `CABasicAnimation` applied when `isFadeEnabled` is TRUE
     open var opacityAnimationLayer: CABasicAnimation {
-        let animation = CABasicAnimation(keyPath: "opacity")
-        animation.fromValue = 1
-        animation.toValue = 0.5
-        animation.duration = 0.66
-        animation.repeatCount = .infinity
-        animation.autoreverses = true
-        return animation
+        let a = CABasicAnimation(keyPath: "opacity")
+        a.fromValue = 1
+        a.toValue = 0.5
+        a.duration = 0.66
+        a.repeatCount = .infinity
+        a.autoreverses = true
+        return a
     }
     
     /// Sets the state of the `TypingIndicator` to animating and applies animation layers
     open func startAnimating() {
         defer { isAnimating = true }
         guard !isAnimating else { return }
+        
         var delay: TimeInterval = 0
         for dot in typingIndicator.subviews {
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
-                guard let `self` = self else { return }
-                dot.layer.add(self.opacityAnimationLayer, forKey: "opacity")
+                guard let strongSelf = self else { return }
+                dot.layer.add(strongSelf.opacityAnimationLayer, forKey: "opacity")
             }
             delay += 0.33
         }
@@ -328,6 +391,7 @@ class ChatTableCell: UITableViewCell {
     open func stopAnimating() {
         defer { isAnimating = false }
         guard isAnimating else { return }
+        
         typingIndicator.subviews.forEach {
             $0.layer.removeAnimation(forKey: "opacity")
         }

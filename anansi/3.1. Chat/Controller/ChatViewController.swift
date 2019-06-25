@@ -166,10 +166,6 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
         [disconnectedView, topbar, titleLabelView].forEach { view.addSubview($0) }
         titleLabelView.setCustomSpacing(Const.marginEight, after: userImageView)
         
-        // Set up observers for messages & typing
-        observeMessages()
-        observeTyping()
-        
         // Do any additional setup after loading the view.
         setUser()
         setMessages()
@@ -177,6 +173,10 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        // Set up observers for messages & typing
+        observeMessages()
+        observeTyping()
         
         // Handles network connectivity
         startMonitorConnectivity()
@@ -672,53 +672,56 @@ extension ChatViewController {
         
         let receiverID = (user.getValue(forField: .id) as? String)!
         
-        NetworkManager.shared.observeTypingInstances(from: receiverID, onTyping: { [weak self] (partnerID) in
-            guard let strongSelf = self else { return }
-            
-            if partnerID == strongSelf.myID {
+        NetworkManager.shared.observeTypingInstances(from: receiverID,
+            onTyping: { [weak self] (partnerID) in
+                guard let strongSelf = self else { return }
                 
-                strongSelf.partnerIsTyping = true
+                print(partnerID)
                 
-                let lastsection = strongSelf.dates.count - 1
-                let typingMessage = Message(dictionary: [:], messageID: "typingMessage")
-                strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]!.append(typingMessage)
-                
-                // Insert new item in collectionView
-                strongSelf.collectionView.performBatchUpdates({
-                    let item = strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]!.count - 1
-                    strongSelf.collectionView.insertItems(at: [IndexPath(item: item, section: lastsection)])
-                }, completion: { (true) in
-                    strongSelf.collectionView.layoutIfNeeded()
-                })
-                
-                if strongSelf.isScrollViewAtTheBottom {
-                    strongSelf.collectionView.scrollToBottom(at: .bottom)
+                if partnerID == strongSelf.myID {
+                    
+                    strongSelf.partnerIsTyping = true
+                    
+                    let lastsection = strongSelf.dates.count - 1
+                    let typingMessage = Message(dictionary: [:], messageID: "typingMessage")
+                    strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]!.append(typingMessage)
+                    
+                    // Insert new item in collectionView
+                    strongSelf.collectionView.performBatchUpdates({
+                        let item = strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]!.count - 1
+                        strongSelf.collectionView.insertItems(at: [IndexPath(item: item, section: lastsection)])
+                    }, completion: { (true) in
+                        strongSelf.collectionView.layoutIfNeeded()
+                    })
+                    
+                    //if strongSelf.isScrollViewAtTheBottom {
+                        strongSelf.collectionView.scrollToBottom(at: .top)
+                    //}
                 }
-            }
             
-        }, onNotTyping: { [weak self] in
-            guard let strongSelf = self else { return }
-            
-            if strongSelf.partnerIsTyping {
+            }, onNotTyping: { [weak self] in
+                guard let strongSelf = self else { return }
                 
-                strongSelf.partnerIsTyping = false
-                
-                let lastsection = strongSelf.dates.count - 1
-                let lastitem = strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]!.count - 1
-                let lastMessageFromLastSection = strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]![lastitem]
-                
-                if (lastMessageFromLastSection.getValue(forField: .id) as! String) == "typingMessage" {
-                    strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]!.removeLast()
+                if strongSelf.partnerIsTyping {
+                    
+                    strongSelf.partnerIsTyping = false
+                    
+                    let lastsection = strongSelf.dates.count - 1
+                    let lastitem = strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]!.count - 1
+                    let lastMessageFromLastSection = strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]![lastitem]
+                    
+                    if (lastMessageFromLastSection.getValue(forField: .id) as! String) == "typingMessage" {
+                        strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]!.removeLast()
+                    }
+                    
+                    // Remove item in collectionView
+                    strongSelf.collectionView.performBatchUpdates({
+                        strongSelf.collectionView.deleteItems(at: [IndexPath(item: lastitem, section: lastsection)])
+                    }, completion: { (true) in
+                        strongSelf.collectionView.layoutIfNeeded()
+                    })
                 }
-                
-                // Remove item in collectionView
-                strongSelf.collectionView.performBatchUpdates({
-                    strongSelf.collectionView.deleteItems(at: [IndexPath(item: lastitem, section: lastsection)])
-                }, completion: { (true) in
-                    strongSelf.collectionView.layoutIfNeeded()
-                })
-            }
-        })
+            })
     }
 }
 

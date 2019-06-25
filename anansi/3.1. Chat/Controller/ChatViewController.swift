@@ -174,9 +174,10 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Set up observers for messages & typing
-        observeMessages()
-        observeTyping()
+        // Set up observers for messages
+        DispatchQueue.global(qos: .default).async { [unowned self] in
+            self.observeMessages()
+        }
         
         // Handles network connectivity
         startMonitorConnectivity()
@@ -211,6 +212,11 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
             // Re-factor to something else like "markMessagesAsRead"
             let allMessages = listOfMessagesPerDate.flatMap { $1 }
             markAsRead(messages: allMessages)
+            
+            // Set up observers for istyping (I need this to fire after viewDidLayoutSubviews, otherwise the layout & animation will be very messy)
+            DispatchQueue.global(qos: .default).async { [unowned self] in
+                self.observeTyping()
+            }
         }
     }
     
@@ -291,7 +297,7 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
         ])
         
         // This shows the list of messages starting from the last message
-        if listOfMessagesPerDate.count - 1 >= 0 {
+        if dates.count >= 0 {
             
             UIView.performWithoutAnimation {
                 if collectionView.contentSize.height < collectionView.bounds.height {
@@ -661,7 +667,6 @@ extension ChatViewController {
             if newValue {
                 let receiverID = (user.getValue(forField: .id) as? String)!
                 NetworkManager.shared.createTypingInstance(from: myID!, to: receiverID, onSucess: nil)
-                
             } else {
                 NetworkManager.shared.removeTypingInstance(from: myID!, onSucess: nil)
             }
@@ -675,8 +680,6 @@ extension ChatViewController {
         NetworkManager.shared.observeTypingInstances(from: receiverID,
             onTyping: { [weak self] (partnerID) in
                 guard let strongSelf = self else { return }
-                
-                print(partnerID)
                 
                 if partnerID == strongSelf.myID {
                     
@@ -694,9 +697,9 @@ extension ChatViewController {
                         strongSelf.collectionView.layoutIfNeeded()
                     })
                     
-                    //if strongSelf.isScrollViewAtTheBottom {
-                        strongSelf.collectionView.scrollToBottom(at: .top)
-                    //}
+                    if strongSelf.isScrollViewAtTheBottom {
+                        strongSelf.collectionView.scrollToBottom(at: .bottom)
+                    }                    
                 }
             
             }, onNotTyping: { [weak self] in

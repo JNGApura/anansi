@@ -192,9 +192,11 @@ class ChatTableCell: UITableViewCell {
         timeLabel.text = ""
         
         // Reset profileImageTemplate
-        profileImageView.image = UIImage(named: "profileImageTemplate")?.withRenderingMode(.alwaysOriginal)
+        profileImageView.image = nil
         
         // Hides readbadge
+        readbadge.image = nil
+        readbadge.backgroundColor = .clear
         readbadge.isHidden = true
         
         // Resets animation & hides typing bubble
@@ -301,63 +303,6 @@ class ChatTableCell: UITableViewCell {
         }
     }
     
-    /*
-    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
-        //let myViewBackgroundColor = self.backgroundColor
-        super.setHighlighted(highlighted, animated: animated)
-        self.backgroundColor = UIColor.tertiary.withAlphaComponent(0.3)
-    }
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        //let myViewBackgroundColor = self.backgroundColor
-        super.setSelected(selected, animated: animated)
-        self.backgroundColor = UIColor.tertiary.withAlphaComponent(0.3)
-    }*/
-    
-
-    /*
-    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
-        super.setHighlighted(highlighted, animated: animated)
-        if highlighted {
-            self.backgroundColor = UIColor.tertiary.withAlphaComponent(0.3)
-        } else {
-            UIView.animate(withDuration: 0.2, animations: {
-                self.backgroundColor = .clear
-            })
-            //self.backgroundColor = .clear
-            //UIView.animate(withDuration: 0.1, animations: {
-                
-            //})
-        }
-    }*/
-    
-    /*
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        if selected {
-            self.backgroundColor = UIColor.tertiary.withAlphaComponent(0.3)
-            self.selectedBackgroundView = createViewWithBackgroundColor(.clear)
-            
-            //self.backgroundColor = UIColor.tertiary.withAlphaComponent(0.3)
-        } else {
-            self.backgroundColor = .clear
-            self.selectedBackgroundView = createViewWithBackgroundColor(.clear)
-            //self.selectedBackgroundView = createViewWithBackgroundColor(.clear)
-            //UIView.animate(withDuration: 0.1, animations: {
-                
-            //})
-        }
-    }*/
-    
-    /*
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        self.backgroundColor = UIColor.tertiary.withAlphaComponent(0.3)
-    }
-    
-    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
-        self.backgroundColor = .background
-    }*/
-    
     
     // MARK: - Animation API
     
@@ -395,5 +340,25 @@ class ChatTableCell: UITableViewCell {
         typingIndicator.subviews.forEach {
             $0.layer.removeAnimation(forKey: "opacity")
         }
+    }
+}
+
+extension ChatTableCell: BackgroundLockable {
+    
+    var lockedBackgroundViews: [UIView] {
+        return [bubble, dots[0], dots[1], dots[2], separator]
+    }
+    
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        performActionWithLockedViews {
+            super.setHighlighted(highlighted, animated: animated)
+        }
+    }
+    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        performActionWithLockedViews {
+            super.setSelected(selected, animated: animated)
+        }
+        selectedBackgroundView = createViewWithBackgroundColor(UIColor.tertiary.withAlphaComponent(0.3))
     }
 }

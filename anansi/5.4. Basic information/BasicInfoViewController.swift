@@ -121,6 +121,10 @@ class BasicInfoViewController: UIViewController, UIScrollViewDelegate {
         
     }
     
+    deinit {
+        print("BasicInfoViewController: Memory is free!")
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

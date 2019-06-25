@@ -77,6 +77,10 @@ class SettingsViewController: UIViewController {
         }
     }
 
+    deinit {
+        print("BasicInfoViewController: Memory is free!")
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -150,8 +154,8 @@ class SettingsViewController: UIViewController {
         
         // Resets UserDefault values
         userDefaults.updateObject(for: userDefaults.recentlyViewedIDs, with: [])
-        user?.saveInDisk(value: [], for: .interests)
-        user?.saveInDisk(value: "", for: .profileImageURL)
+        user?.eraseDisk()
+        user?.reset()
         
         // Restores app badge
         UIApplication.shared.applicationIconBadgeNumber = 0

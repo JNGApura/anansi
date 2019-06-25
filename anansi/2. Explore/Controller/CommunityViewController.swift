@@ -92,14 +92,6 @@ class CommunityViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Fetch me
-        let myID = NetworkManager.shared.getUID()
-        NetworkManager.shared.fetchUser(userID: myID!) { (dictionary) in
-            
-            self.me.set(dictionary: dictionary, id: myID!)
-            self.headerView.setProfileImage()
-        }
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -239,10 +231,8 @@ extension CommunityViewController: UICollectionViewDataSource, UICollectionViewD
             cell.delegate = self
             cell.communityViewController = self
             
-            DispatchQueue.main.async {
-                self.fetchTrendingUsers {
-                    cell.users = self.trendingUsers
-                }
+            DispatchQueue.global(qos: .default).async { [unowned self] in
+                self.fetchTrendingUsers { cell.users = self.trendingUsers }
             }
             
             return cell
@@ -252,7 +242,7 @@ extension CommunityViewController: UICollectionViewDataSource, UICollectionViewD
             cell.profileDelegate = self
             cell.searchDelegate = self
             
-            DispatchQueue.main.async {
+            DispatchQueue.global(qos: .default).async { [unowned self] in
                 self.fetchUsers {
                     cell.userSectionTitles = self.userSectionTitles
                     cell.usersDictionary = self.usersDictionary
@@ -265,7 +255,7 @@ extension CommunityViewController: UICollectionViewDataSource, UICollectionViewD
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: partnerIdentifier, for: indexPath) as! PartnerCommunityCollectionViewController
             cell.delegate = self
             
-            DispatchQueue.main.async {
+            DispatchQueue.global(qos: .default).async { [unowned self] in
                 self.fetchPartners {
                     cell.partnerSections = self.partnerSections
                     cell.partnersInEachSection = self.partnersInEachSection

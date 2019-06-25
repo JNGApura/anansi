@@ -148,6 +148,10 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate {
         interestCollectionViewHeightAnchor?.constant = collectionView.contentSize.height
     }
     
+    deinit {
+        print("BasicInfoViewController: Memory is free!")
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

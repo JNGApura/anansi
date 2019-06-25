@@ -179,17 +179,15 @@ class TabBarController: UITabBarController {
     }
     
     private func fetchImportantInfoFromMyself() {
-        
+                        
         // Fetch me
         NetworkManager.shared.fetchUserOnce(userID: myID!) { (dictionary) in
             
-            // Save necessary information on disk
-            if let interests = dictionary[userInfoType.interests.rawValue] as? [String] {
-                userDefaults.updateObject(for: userInfoType.interests.rawValue, with: interests)
-            }
-            
-            if let profileImageURL = dictionary[userInfoType.profileImageURL.rawValue] as? String {
-                userDefaults.updateObject(for: userInfoType.profileImageURL.rawValue, with: profileImageURL)
+            for item in dictionary {
+                if let infoType = userInfoType(rawValue: item.key) {
+                    userDefaults.updateObject(for: infoType.rawValue, with: item.value)
+                    print(infoType.rawValue, item.value)
+                }
             }
         }
     }

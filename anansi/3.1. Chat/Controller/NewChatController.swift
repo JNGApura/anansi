@@ -183,27 +183,31 @@ class NewChatController: UIViewController {
     
     func fetchUsers() {
         
-        NetworkManager.shared.fetchUsers(onAdd: { [weak self] (dictionary, userID) in
-            
-            if userID != NetworkManager.shared.getUID() {
-                let user = User()
-                user.set(dictionary: dictionary, id: userID)
-                self?.users.append(user)
-            }
-            
-        }, onChange: nil, onRemove: nil)
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            NetworkManager.shared.fetchUsers(onAdd: { [weak self] (dictionary, userID) in
+                
+                if userID != NetworkManager.shared.getUID() {
+                    let user = User()
+                    user.set(dictionary: dictionary, id: userID)
+                    self?.users.append(user)
+                }
+                
+            }, onChange: nil, onRemove: nil)
+        }
     }
     
     func fetchTrendingUsers() {
         
-        NetworkManager.shared.fetchTrendingUsers(limited: 5, onSuccess: { [weak self] (dictionary, userID) in
-            
-            if userID != NetworkManager.shared.getUID() {
-                let user = User()
-                user.set(dictionary: dictionary, id: userID)
-                self?.trendingUsers.append(user)
-            }
-        })
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            NetworkManager.shared.fetchTrendingUsers(limited: 5, onSuccess: { [weak self] (dictionary, userID) in
+                
+                if userID != NetworkManager.shared.getUID() {
+                    let user = User()
+                    user.set(dictionary: dictionary, id: userID)
+                    self?.trendingUsers.append(user)
+                }
+            })
+        }
     }
     
     

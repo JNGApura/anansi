@@ -78,7 +78,7 @@ class SettingsViewController: UIViewController {
     }
 
     deinit {
-        print("BasicInfoViewController: Memory is free!")
+        print("SettingsViewController: Memory is free!")
     }
     
     override func didReceiveMemoryWarning() {

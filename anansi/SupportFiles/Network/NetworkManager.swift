@@ -607,14 +607,14 @@ class NetworkManager {
         
         onlineRefHandler = onlineRef.observe(.value) { (snap) in
             
-            /* guard let strongSelf = self else { return }
+            /* guard let self = self else { return }
              
             // Saves a reference under the user's node
-            if let myID = strongSelf.getUID()  {
+            if let myID = self.getUID()  {
                 
                 if (snap.value as? Bool) ?? false {
-                    strongSelf.userDatabase.child(myID).child("isOnline").setValue(true)
-                    strongSelf.userDatabase.child(myID).child("isOnline").onDisconnectSetValue(ServerValue.timestamp())
+                    self.userDatabase.child(myID).child("isOnline").setValue(true)
+                    self.userDatabase.child(myID).child("isOnline").onDisconnectSetValue(ServerValue.timestamp())
                 }
             }*/
 

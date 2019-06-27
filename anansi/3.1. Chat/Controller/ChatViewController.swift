@@ -11,11 +11,7 @@ import UIKit
 class ChatViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     //var isOnPage = false
-    
-    var keyboardIsActive = false
-    
     var cameFromUserProfile = false
-    var cameFromSearch = false
     
     var isScrollViewAtTheBottom = false
     
@@ -123,6 +119,21 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
     
     let statusBarHeight : CGFloat = UIApplication.shared.statusBarFrame.height
     
+    // Fetcher helpers for pagination
+    
+    let messagesToLoad : Int = 20
+    var canRefresh = false
+    //var messagesFetcher: MessagesFetcher!
+    //let chatHistoryFetcher = ChatHistoryFetcher()
+    
+    var refreshControl: UIRefreshControl = {
+        var r = UIRefreshControl()
+        r.tintColor = .primary
+        r.backgroundColor = .clear
+        //r.addTarget(self, action: #selector(performRefresh), for: .valueChanged)
+        return r
+    }()
+    
     
     // MARK: - Init
     
@@ -147,7 +158,7 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        
         self.collectionView.backgroundColor = .background
         self.collectionView.register(ChatMessageCell.self, forCellWithReuseIdentifier: "ChatCell")
         self.collectionView.register(StickerMessageCell.self, forCellWithReuseIdentifier: "StickerCell")
@@ -155,8 +166,9 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
         self.collectionView.register(ChatHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "ChatHeader")
         self.collectionView.registerClass(revealableViewClass: TimestampView.self, forRevealableViewReuseIdentifier: "RevealableTimestamp")
         
-        self.collectionView.alwaysBounceVertical = true
+        self.collectionView.alwaysBounceVertical = true // need to add animation to prevent bouncing when content height < view height
         self.collectionView.isDirectionalLockEnabled = true
+        self.collectionView.isPrefetchingEnabled = true
         
         // Adapt collectionView contentInset to account for the navbar
         self.collectionView.contentInset.top = Const.barHeight
@@ -169,6 +181,9 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
         // Do any additional setup after loading the view.
         setUser()
         setMessages()
+        
+        // Delegates
+        //chatHistoryFetcher.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -249,9 +264,8 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(true)
         
-        if keyboardIsActive {
-            chatAccessoryView.inputTextView.resignFirstResponder()
-        }
+        // Resigns first responder for inputTextView
+        chatAccessoryView.inputTextView.resignFirstResponder()
         
         // Set isTyping to false
         isTyping = false
@@ -295,9 +309,9 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
             disconnectedView.widthAnchor.constraint(equalTo: view.widthAnchor),
             disconnectedView.heightAnchor.constraint(equalToConstant: 32.0),
         ])
-        
+
         // This shows the list of messages starting from the last message
-        if dates.count >= 0 {
+        if !dates.isEmpty {
             
             UIView.performWithoutAnimation {
                 if collectionView.contentSize.height < collectionView.bounds.height {
@@ -311,6 +325,9 @@ class ChatViewController: UICollectionViewController, UICollectionViewDelegateFl
             
             isScrollViewAtTheBottom = true
         }
+        
+        // Refresh control
+        collectionView.refreshControl = canRefresh && allMessages.count >= messagesToLoad ? refreshControl : nil
         
         didLayoutFlag = true
     }
@@ -572,7 +589,7 @@ extension ChatViewController {
         // let keyboardHeight = keyboardEndFrame.height - inputAccessoryView.frame.height //- view.safeAreaInsets.bottom
         
         // If scrollView is at the bottom & keyboard will show, then scroll to bottom of collectionView
-        if isScrollViewAtTheBottom && notification.name == UIResponder.keyboardWillShowNotification {
+        if !dates.isEmpty && isScrollViewAtTheBottom && (notification.name == UIResponder.keyboardWillShowNotification) {
             DispatchQueue.main.async { self.collectionView.scrollToBottom(at: .top) }
         }
     }
@@ -592,6 +609,25 @@ extension ChatViewController {
         print(isScrollViewAtTheBottom)
         
         // Pagination should be implemented here
+        if scrollView.contentOffset.y < 0 {
+            
+            if contentHeight < UIScreen.main.bounds.height - chatAccessoryView.inputTextView.frame.height {
+                canRefresh = false
+            }
+            
+            if canRefresh && !refreshControl.isRefreshing {
+                canRefresh = false
+                performRefresh()
+            }
+            
+            // End refreshControl animation
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.refreshControl.endRefreshing()
+            }
+            
+        } else if scrollView.contentOffset.y >= 0 {
+            canRefresh = true
+        }
     }
     
     
@@ -679,49 +715,49 @@ extension ChatViewController {
         
         NetworkManager.shared.observeTypingInstances(from: receiverID,
             onTyping: { [weak self] (partnerID) in
-                guard let strongSelf = self else { return }
+                guard let self = self else { return }
                 
-                if partnerID == strongSelf.myID {
+                if partnerID == self.myID {
                     
-                    strongSelf.partnerIsTyping = true
+                    self.partnerIsTyping = true
                     
-                    let lastsection = strongSelf.dates.count - 1
+                    let lastsection = self.dates.count - 1
                     let typingMessage = Message(dictionary: [:], messageID: "typingMessage")
-                    strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]!.append(typingMessage)
+                    self.listOfMessagesPerDate[self.dates[lastsection]]!.append(typingMessage)
                     
                     // Insert new item in collectionView
-                    strongSelf.collectionView.performBatchUpdates({
-                        let item = strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]!.count - 1
-                        strongSelf.collectionView.insertItems(at: [IndexPath(item: item, section: lastsection)])
+                    self.collectionView.performBatchUpdates({
+                        let item = self.listOfMessagesPerDate[self.dates[lastsection]]!.count - 1
+                        self.collectionView.insertItems(at: [IndexPath(item: item, section: lastsection)])
                     }, completion: { (true) in
-                        strongSelf.collectionView.layoutIfNeeded()
+                        self.collectionView.layoutIfNeeded()
                     })
                     
-                    if strongSelf.isScrollViewAtTheBottom {
-                        strongSelf.collectionView.scrollToBottom(at: .bottom)
-                    }                    
+                    if self.isScrollViewAtTheBottom {
+                        self.collectionView.scrollToBottom(at: .bottom)
+                    }
                 }
             
             }, onNotTyping: { [weak self] in
-                guard let strongSelf = self else { return }
+                guard let self = self else { return }
                 
-                if strongSelf.partnerIsTyping {
+                if self.partnerIsTyping {
                     
-                    strongSelf.partnerIsTyping = false
+                    self.partnerIsTyping = false
                     
-                    let lastsection = strongSelf.dates.count - 1
-                    let lastitem = strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]!.count - 1
-                    let lastMessageFromLastSection = strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]![lastitem]
+                    let lastsection = self.dates.count - 1
+                    let lastitem = self.listOfMessagesPerDate[self.dates[lastsection]]!.count - 1
+                    let lastMessageFromLastSection = self.listOfMessagesPerDate[self.dates[lastsection]]![lastitem]
                     
                     if (lastMessageFromLastSection.getValue(forField: .id) as! String) == "typingMessage" {
-                        strongSelf.listOfMessagesPerDate[strongSelf.dates[lastsection]]!.removeLast()
+                        self.listOfMessagesPerDate[self.dates[lastsection]]!.removeLast()
                     }
                     
                     // Remove item in collectionView
-                    strongSelf.collectionView.performBatchUpdates({
-                        strongSelf.collectionView.deleteItems(at: [IndexPath(item: lastitem, section: lastsection)])
+                    self.collectionView.performBatchUpdates({
+                        self.collectionView.deleteItems(at: [IndexPath(item: lastitem, section: lastsection)])
                     }, completion: { (true) in
-                        strongSelf.collectionView.layoutIfNeeded()
+                        self.collectionView.layoutIfNeeded()
                     })
                 }
             })
@@ -892,6 +928,44 @@ extension ChatViewController: CellGestureRecognizerDelegate {
     }
 }
 
+// MARK: - Fetching messages
+
+extension ChatViewController {
+    
+    @objc func performRefresh() {
+        
+        let partnerID = user.getValue(forField: .id) as! String
+        let chatID = NetworkManager.shared.childNode(myID!, partnerID)
+        
+        // Should I do anything here re: refreshControl?
+        // collectionView.refreshControl = canRefresh && allMessages.count >= messagesToLoad ? refreshControl : nil
+
+        print("Performing refresh")
+        //chatLogHistoryFetcher.loadPreviousMessages(messages, conversation, messagesToLoad, true)
+    }
+}
+
+/*
+extension ChatViewController: ChatHistoryDelegate {
+    
+    func chatHistory(isEmpty: Bool) {
+        refreshControl.endRefreshing()
+    }
+    
+    func chatHistory(updated messages: [Message], at indexPaths: [IndexPath]) {
+        //contentSize = collectionView?.contentSize
+        refreshControl.endRefreshing()
+        
+        //self.messages = messages
+        
+        UIView.performWithoutAnimation {
+            collectionView?.performBatchUpdates ({
+                collectionView?.insertItems(at: indexPaths)
+            }, completion: nil)
+        }
+    }
+}*/
+
 // MARK: - NetworkManager
 
 extension ChatViewController {
@@ -903,52 +977,52 @@ extension ChatViewController {
         
         // If there're conversations in Firebase
         NetworkManager.shared.observeConversation(withID: chatID, onAdd: { [weak self] (mesg, msgID) in
-            guard let strongSelf = self else { return }
+            guard let self = self else { return }
             
             let message = Message(dictionary: mesg, messageID: msgID)
             
             if let timestamp = message.getValue(forField: .timestamp) as? NSNumber {
                 let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: timestamp.doubleValue))
                 
-                if !(strongSelf.dates.contains(dateString)) {
-                    strongSelf.dates.append(dateString)
-                    strongSelf.listOfMessagesPerDate[dateString] = [message]
+                if !(self.dates.contains(dateString)) {
+                    self.dates.append(dateString)
+                    self.listOfMessagesPerDate[dateString] = [message]
                     
                     // Insert new item in collectionView
-                    strongSelf.collectionView.performBatchUpdates({
-                        let lastSection = strongSelf.dates.count - 1
-                        let lastItem = strongSelf.listOfMessagesPerDate[dateString]!.count - 1
+                    self.collectionView.performBatchUpdates({
+                        let lastSection = self.dates.count - 1
+                        let lastItem = self.listOfMessagesPerDate[dateString]!.count - 1
                         
-                        strongSelf.collectionView.insertSections(IndexSet(integer: lastSection))
-                        strongSelf.collectionView.insertItems(at: [IndexPath(item: lastItem, section: lastSection)])
+                        self.collectionView.insertSections(IndexSet(integer: lastSection))
+                        self.collectionView.insertItems(at: [IndexPath(item: lastItem, section: lastSection)])
                         
                     }, completion: { (true) in
-                        strongSelf.collectionView.layoutIfNeeded()
+                        self.collectionView.layoutIfNeeded()
                     })
 
                 } else {
                     
                     // this is necessary, because I'm sending all my messages from ConnectViewController here and I don't want duplicates
-                    let messageKeysForDate = strongSelf.listOfMessagesPerDate[dateString]!.map { $0.getValue(forField: .id) as! String }
+                    let messageKeysForDate = self.listOfMessagesPerDate[dateString]!.map { $0.getValue(forField: .id) as! String }
                     if !messageKeysForDate.contains(msgID) {
-                        strongSelf.listOfMessagesPerDate[dateString]!.append(message)
+                        self.listOfMessagesPerDate[dateString]!.append(message)
                         
                         // Insert new item in collectionView
-                        strongSelf.collectionView.performBatchUpdates({
-                            let section = strongSelf.dates.index(of: dateString)!
-                            let lastItem = strongSelf.listOfMessagesPerDate[dateString]!.count - 1
-                            strongSelf.collectionView.insertItems(at: [IndexPath(item: lastItem, section: section)])
+                        self.collectionView.performBatchUpdates({
+                            let section = self.dates.index(of: dateString)!
+                            let lastItem = self.listOfMessagesPerDate[dateString]!.count - 1
+                            self.collectionView.insertItems(at: [IndexPath(item: lastItem, section: section)])
                             
                         }, completion: { (true) in
-                            strongSelf.collectionView.layoutIfNeeded()
+                            self.collectionView.layoutIfNeeded()
                         })
                     }
                 }
                 
                 // If user is at the bottom of collectionView, then we need to mark any incoming message as read
-                if strongSelf.isScrollViewAtTheBottom {
-                    strongSelf.collectionView.scrollToBottom(at: .top)
-                    strongSelf.markAsRead(messages: [message]) // Do I need this here?
+                if self.isScrollViewAtTheBottom {
+                    self.collectionView.scrollToBottom(at: .top)
+                    self.markAsRead(messages: [message]) // Do I need this here?
                     
                 } else {
                     
@@ -959,28 +1033,28 @@ extension ChatViewController {
             }
             
         }, onChange: { [weak self] (mesg, msgID) in
-            guard let strongSelf = self else { return }
+            guard let self = self else { return }
             
             let message = Message(dictionary: mesg, messageID: msgID)
             
             let timestamp = message.getValue(forField: .timestamp) as! NSNumber
             let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: timestamp.doubleValue))
             
-            if let chatsForDate = strongSelf.listOfMessagesPerDate[dateString] {
+            if let chatsForDate = self.listOfMessagesPerDate[dateString] {
                 for (index, element) in chatsForDate.enumerated() {
                     
                     if (element.getValue(forField: .id) as! String == msgID) {
-                        strongSelf.listOfMessagesPerDate[dateString]![index] = message
+                        self.listOfMessagesPerDate[dateString]![index] = message
                         
                         // Update item in collectionView
                         DispatchQueue.main.async {
                             
-                            strongSelf.collectionView.performBatchUpdates({
-                                let section = strongSelf.dates.index(of: dateString)!
-                                strongSelf.collectionView.reloadItems(at: [IndexPath(item: index, section: section)])
+                            self.collectionView.performBatchUpdates({
+                                let section = self.dates.index(of: dateString)!
+                                self.collectionView.reloadItems(at: [IndexPath(item: index, section: section)])
                                 
                             }, completion: { (true) in
-                                strongSelf.collectionView.layoutIfNeeded()
+                                self.collectionView.layoutIfNeeded()
                             })
                         }
                     }
@@ -988,43 +1062,43 @@ extension ChatViewController {
             }
             
         }, onRemove: { [weak self] (mesg, msgID) in
-            guard let strongSelf = self else { return }
+            guard let self = self else { return }
             
             let message = Message(dictionary: mesg, messageID: msgID)
             
             let timestamp = message.getValue(forField: .timestamp) as! NSNumber
             let dateString = createDateIntervalStringForMessage(from: NSDate(timeIntervalSince1970: timestamp.doubleValue))
             
-            if let chatsForDate = strongSelf.listOfMessagesPerDate[dateString] {
+            if let chatsForDate = self.listOfMessagesPerDate[dateString] {
                 
                 for (index, element) in chatsForDate.enumerated() {
                     
                     if (element.getValue(forField: .id) as! String == msgID) {
-                        strongSelf.listOfMessagesPerDate[dateString]!.remove(at: index)
+                        self.listOfMessagesPerDate[dateString]!.remove(at: index)
                         
                         // Remove item in collectionView
-                        strongSelf.collectionView.performBatchUpdates({
-                            let section = strongSelf.dates.index(of: dateString)!
-                            strongSelf.collectionView.deleteItems(at: [IndexPath(item: index, section: section)])
+                        self.collectionView.performBatchUpdates({
+                            let section = self.dates.index(of: dateString)!
+                            self.collectionView.deleteItems(at: [IndexPath(item: index, section: section)])
                             
                         }, completion: { (true) in
-                            strongSelf.collectionView.layoutIfNeeded()
+                            self.collectionView.layoutIfNeeded()
                         })
                     
                     }
                     
-                    if strongSelf.listOfMessagesPerDate[dateString]!.isEmpty {
-                        strongSelf.listOfMessagesPerDate[dateString] = nil
+                    if self.listOfMessagesPerDate[dateString]!.isEmpty {
+                        self.listOfMessagesPerDate[dateString] = nil
                         
-                        let i = strongSelf.dates.index(of: dateString)
-                        strongSelf.dates.remove(at: i!)
+                        let i = self.dates.index(of: dateString)
+                        self.dates.remove(at: i!)
                         
                         // Remove section in collectionView
-                        strongSelf.collectionView.performBatchUpdates({
-                            strongSelf.collectionView.deleteSections(IndexSet(integer: i!))
+                        self.collectionView.performBatchUpdates({
+                            self.collectionView.deleteSections(IndexSet(integer: i!))
                             
                         }, completion: { (true) in
-                            strongSelf.collectionView.layoutIfNeeded()
+                            self.collectionView.layoutIfNeeded()
                         })
                         
                     }

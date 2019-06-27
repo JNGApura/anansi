@@ -419,7 +419,7 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
                     
                 // If login is successful, sends user to ViewController, depending on if data is already on DB
                 }, onSuccess: { [weak self] in
-                    guard let strongSelf = self else { return }
+                    guard let self = self else { return }
                     
                     userDefaults.updateObject(for: userInfoType.email.rawValue, with: email)
                     userDefaults.updateObject(for: userInfoType.ticket.rawValue, with: ticket)
@@ -427,12 +427,12 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
                     if let isEmailVerified = NetworkManager.shared.isEmailVerified(),
                         !isEmailVerified {
                         
-                        emailVerificationErrorAlertFor(controller: strongSelf, handler: { [weak self] in
+                        emailVerificationErrorAlertFor(controller: self, handler: { [weak self] in
                             self?.pushExistingUserToViewController()
                         })
                         
                     } else {
-                        self?.pushExistingUserToViewController()
+                        self.pushExistingUserToViewController()
                     }
                 })
                 
@@ -444,13 +444,13 @@ class SignUpController: UIViewController, UIScrollViewDelegate {
             
         }) { [weak self] in
             
-            guard let strongSelf = self else { return }
+            guard let self = self else { return }
             
             userDefaults.updateObject(for: userInfoType.email.rawValue, with: email)
             userDefaults.updateObject(for: userInfoType.ticket.rawValue, with: ticket)
             
             // If user creation is successful, sends user to ProfilingViewController
-            emailVerificationAlertFor(controller: strongSelf, handler: { [weak self] in
+            emailVerificationAlertFor(controller: self, handler: { [weak self] in
                 self?.pushExistingUserToViewController()
             })
         }
@@ -586,12 +586,12 @@ extension SignUpController {
             }
             
         }, onDisconnected: { [weak self] in
-            guard let strongSelf = self else { return }
+            guard let self = self else { return }
             
             DispatchQueue.main.async {
-                strongSelf.loginButton.isEnabled = false
-                strongSelf.loginButton.alpha = 0.4
-                showConnectionAlertFor(controller: strongSelf)
+                self.loginButton.isEnabled = false
+                self.loginButton.alpha = 0.4
+                showConnectionAlertFor(controller: self)
             }
         })
     }

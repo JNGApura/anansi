@@ -149,7 +149,7 @@ class InterestsViewController: UIViewController, UIScrollViewDelegate {
     }
     
     deinit {
-        print("BasicInfoViewController: Memory is free!")
+        print("InterestsViewController: Memory is free!")
     }
     
     override func didReceiveMemoryWarning() {

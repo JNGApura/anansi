@@ -9,7 +9,7 @@
 import UIKit
 
 protocol StartNewChatDelegate: class {
-    func showChatController(user: User)
+    func showChatController(from: User)
 }
 
 class NewChatController: UIViewController {
@@ -322,7 +322,7 @@ extension NewChatController: UITableViewDelegate, UITableViewDataSource {
         searchController.dismiss(animated: true) {
             
             self.dismiss(animated: true) {
-                self.delegate?.showChatController(user: user)
+                self.delegate?.showChatController(from: user)
             }
         }
     }

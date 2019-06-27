@@ -325,8 +325,8 @@ class ChatTableCell: UITableViewCell {
         for dot in typingIndicator.subviews {
             
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
-                guard let strongSelf = self else { return }
-                dot.layer.add(strongSelf.opacityAnimationLayer, forKey: "opacity")
+                guard let self = self else { return }
+                dot.layer.add(self.opacityAnimationLayer, forKey: "opacity")
             }
             delay += 0.33
         }

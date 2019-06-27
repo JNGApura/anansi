@@ -186,7 +186,7 @@ class TabBarController: UITabBarController {
             for item in dictionary {
                 if let infoType = userInfoType(rawValue: item.key) {
                     userDefaults.updateObject(for: infoType.rawValue, with: item.value)
-                    print(infoType.rawValue, item.value)
+                    // print(infoType.rawValue, item.value)
                 }
             }
         }

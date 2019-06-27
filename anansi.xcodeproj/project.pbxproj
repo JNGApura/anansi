@@ -82,6 +82,8 @@
 		2CA98C5322BFE995001E0D51 /* TimestampView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C5222BFE995001E0D51 /* TimestampView.swift */; };
 		2CA98C5522C0D677001E0D51 /* WorkItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C5422C0D677001E0D51 /* WorkItem.swift */; };
 		2CA98C5722C28120001E0D51 /* BackgroundLockable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C5622C28120001E0D51 /* BackgroundLockable.swift */; };
+		2CA98C5A22C2E369001E0D51 /* MessagesFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C5922C2E369001E0D51 /* MessagesFetcher.swift */; };
+		2CA98C5C22C2E840001E0D51 /* ChatHistoryFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA98C5B22C2E840001E0D51 /* ChatHistoryFetcher.swift */; };
 		2CB6AFE62264122400E1702E /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6AFE52264122400E1702E /* SettingsTableViewCell.swift */; };
 		2CB6AFE8226481EC00E1702E /* ScheduleInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6AFE7226481EC00E1702E /* ScheduleInfoTableViewCell.swift */; };
 		2CBE2EC120351967009E5268 /* UIView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBE2EC020351967009E5268 /* UIView+.swift */; };
@@ -211,6 +213,8 @@
 		2CA98C5222BFE995001E0D51 /* TimestampView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimestampView.swift; sourceTree = "<group>"; };
 		2CA98C5422C0D677001E0D51 /* WorkItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkItem.swift; sourceTree = "<group>"; };
 		2CA98C5622C28120001E0D51 /* BackgroundLockable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundLockable.swift; sourceTree = "<group>"; };
+		2CA98C5922C2E369001E0D51 /* MessagesFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesFetcher.swift; sourceTree = "<group>"; };
+		2CA98C5B22C2E840001E0D51 /* ChatHistoryFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatHistoryFetcher.swift; sourceTree = "<group>"; };
 		2CB6AFE52264122400E1702E /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
 		2CB6AFE7226481EC00E1702E /* ScheduleInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleInfoTableViewCell.swift; sourceTree = "<group>"; };
 		2CBE2EC020351967009E5268 /* UIView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+.swift"; sourceTree = "<group>"; };
@@ -511,6 +515,15 @@
 			path = RevealableCell;
 			sourceTree = "<group>";
 		};
+		2CA98C5822C2E351001E0D51 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				2CA98C5922C2E369001E0D51 /* MessagesFetcher.swift */,
+				2CA98C5B22C2E840001E0D51 /* ChatHistoryFetcher.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
 		2CC437CA22849D5600EFB442 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -725,6 +738,7 @@
 		2CEE5ED72284999A00ACC42C /* 3.1. Chat */ = {
 			isa = PBXGroup;
 			children = (
+				2CA98C5822C2E351001E0D51 /* Support */,
 				2CEE5ED8228499AE00ACC42C /* Controller */,
 				2CEE5EDA228499B800ACC42C /* View */,
 				2CEE5ED9228499B200ACC42C /* Model */,
@@ -1104,6 +1118,7 @@
 				2C6924FC226DEB590007496A /* InterestProfileEmptyTableCell.swift in Sources */,
 				2C7F6F0E202595C1008AB0CD /* UserDefaultsManager.swift in Sources */,
 				2C7F6F02202594AC008AB0CD /* UICollectionView+.swift in Sources */,
+				2CA98C5A22C2E369001E0D51 /* MessagesFetcher.swift in Sources */,
 				2C0777442287C51000D246F0 /* CommunitySearchCell.swift in Sources */,
 				2CA98BCB22B0FA5C001E0D51 /* ChatHeaderView.swift in Sources */,
 				2CA98C0E22B85038001E0D51 /* Alerts.swift in Sources */,
@@ -1173,6 +1188,7 @@
 				2C708BDC200C40A0006E5ABD /* FeedbackPageView.swift in Sources */,
 				2C0DD5E122922EAF00188DA2 /* StickerMessageCell.swift in Sources */,
 				2CEBB155226244D700821896 /* LocationTableViewCell.swift in Sources */,
+				2CA98C5C22C2E840001E0D51 /* ChatHistoryFetcher.swift in Sources */,
 				2CA98C5122BFE899001E0D51 /* RevealableCollectionViewCell.swift in Sources */,
 				2CB6AFE62264122400E1702E /* SettingsTableViewCell.swift in Sources */,
 				2CEBB15722627F9800821896 /* CLLocation+.swift in Sources */,

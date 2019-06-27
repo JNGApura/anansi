@@ -10,20 +10,25 @@
       "title" : "Give us feedback",
       "url" : "feedback"
   }, {
+      "action" : "link",
+      "icon" : "beta",
+      "title" : "Be a beta tester",
+      "url" : "https://testflight.apple.com/join/BzlMVSfa"
+  }, {
     "action" : "link",
     "icon" : "instagram",
     "title" : "Follow us on Instagram",
     "url" : "https://www.instagram.com/tedxulisboa"
   }, {
-    "action" : "link",
-    "icon" : "terms",
-    "title" : "Privacy Policy",
-    "url" : "https://tedxulisboa.com/privacy-policy.html"
+      "action" : "link",
+      "icon" : "about",
+      "title" : "Check our website",
+      "url" : "https://tedxulisboa.com"
   }, {
     "action" : "link",
-    "icon" : "about",
-    "title" : "About TEDxULisboa",
-    "url" : "https://tedxulisboa.com"
+    "icon" : "terms",
+    "title" : "Read our Privacy Policy",
+    "url" : "https://tedxulisboa.com/privacy-policy.html"
   }, {
       "action" : "",
       "icon" : "",
